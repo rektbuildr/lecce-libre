@@ -40,3 +40,27 @@ export type LedgerEthTransactionService = {
     resolutionConfig: ResolutionConfig
   ) => Promise<LedgerEthTransactionResolution>;
 };
+
+export interface BreakDown {
+  counterparty: string;
+  amount: string;
+}
+
+export interface Asset {
+  type: string;
+  symbol: string;
+  contractAddress: string;
+}
+
+export interface BalanceChange {
+  delta: string;
+  asset: Asset;
+  breakdown: BreakDown[];
+}
+
+export type TransactionMetadata = {
+  aliasFrom: string | null;
+  aliasTo: string | null;
+  sideEffects: BalanceChange[];
+  errors: string[];
+};
