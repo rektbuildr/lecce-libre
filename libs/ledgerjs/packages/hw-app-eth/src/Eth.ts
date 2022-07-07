@@ -302,11 +302,48 @@ export default class Eth {
       }
     }
 
-    const rawTx = Buffer.from(rawTxHex, "hex");
-    const { vrsOffset, txType, chainId, chainIdTruncated } =
-      decodeTxInfo(rawTx);
+    const oracleStrings = [
+      ...(oracleMetadata.aliasFrom
+        ? [`(ENS) from ${oracleMetadata.aliasFrom}`]
+        : []),
+      ...(oracleMetadata.aliasTo ? [`(ENS) to ${oracleMetadata.aliasTo}`] : []),
+      ...oracleMetadata.sideEffects.map((sideEffect) => {
+        return `${sideEffect.asset.symbol} ${sideEffect.delta}`;
+      }),
+    ];
+
+    const oracleData = oracleStrings.join("\n");
+
+    const rawOracleData = Buffer.from(oracleData, "ascii");
+
+    const oracleHeader = Buffer.from([1]);
+    const oracleName = Buffer.from("oracle", "ascii");
+    const oracleLength = Buffer.from([rawOracleData.length]);
+
+    const oraclePayload = Buffer.concat([
+      oracleHeader,
+      oracleName,
+      oracleLength,
+      rawOracleData,
+    ]);
 
     const paths = splitPath(path);
+    const pathBuffer = Buffer.alloc(1 + paths.length * 4);
+
+    pathBuffer[0] = paths.length;
+    paths.forEach((element, index) => {
+      pathBuffer.writeUInt32BE(element, 1 + 4 * index);
+    });
+
+    const tempRawTx = Buffer.from(rawTxHex, "hex");
+
+    const { vrsOffset, txType, chainId, chainIdTruncated } =
+      decodeTxInfo(tempRawTx);
+
+    const rawTx = Buffer.concat([oraclePayload, pathBuffer, tempRawTx]);
+
+    console.log(rawTx);
+
     let response;
     let offset = 0;
     while (offset !== rawTx.length) {
@@ -322,19 +359,9 @@ export default class Eth {
         chunkSize = rawTx.length - offset;
       }
 
-      const buffer = Buffer.alloc(
-        first ? 1 + paths.length * 4 + chunkSize : chunkSize
-      );
+      const buffer = Buffer.alloc(chunkSize);
 
-      if (first) {
-        buffer[0] = paths.length;
-        paths.forEach((element, index) => {
-          buffer.writeUInt32BE(element, 1 + 4 * index);
-        });
-        rawTx.copy(buffer, 1 + 4 * paths.length, offset, offset + chunkSize);
-      } else {
-        rawTx.copy(buffer, 0, offset, offset + chunkSize);
-      }
+      rawTx.copy(buffer, 0, offset, offset + chunkSize);
 
       response = await this.transport
         .send(0xe0, 0x04, first ? 0x00 : 0x80, 0x00, buffer)
