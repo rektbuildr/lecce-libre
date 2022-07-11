@@ -41,7 +41,7 @@ jobs:
           echo "Emulator started"
 
       - uses: actions/checkout@v3
-      
+
       - name: env
         working-directory: tests/bot-rn
         run: |
@@ -66,7 +66,7 @@ jobs:
         run: docker pull ghcr.io/ledgerhq/speculos
       - name: install tests/bot-rn
         run: |
-          pnpm i --filter="tests/bot-rn" --filter="ledger-live" --frozen-lockfile
+          pnpm i --filter="tests/bot-rn..." --filter="ledger-live" --no-frozen-lockfile --unsafe-perm
 
       - name: Pre-fetch Javascript bundle
         # Prebuild the bundle so that's fast when the app starts.
@@ -81,9 +81,9 @@ jobs:
           curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=android&dev=true&minify=false&inlineSourceMap=true"
           echo "...javascript bundle ready."
 
-      - name: install and build
+      - name: install and build cli
         run: |
-          pnpm i --filter="live-cli..." --filter="ledger-live" --frozen-lockfile
+          pnpm i --filter="live-cli..." --filter="ledger-live" --no-frozen-lockfile --unsafe-perm
           pnpm build:cli
       - name: Bot Speculos
         env:
@@ -99,7 +99,7 @@ jobs:
         run: |
           mkdir libs/ledger-live-common/botreport
           nohup pnpm run:cli botLogProxy -p 8331 &
-      - name: build bot
+      - name: build bot mobile
         run: pnpm tests:bot-rn detox build e2e --configuration android
 
       - name: Detox Test
