@@ -62,12 +62,32 @@ jobs:
           node-version: 16.x
           cache: pnpm
           cache-dependency-path: "**/pnpm-lock.yaml"
+
+      - name: install and build cli
+        run: |
+          pnpm i --filter="live-cli..." --filter="ledger-live" --no-frozen-lockfile --unsafe-perm
+          pnpm build:cli
+
       - name: pull docker image
         run: docker pull ghcr.io/ledgerhq/speculos
+      - name: Bot Speculos
+        env:
+          SEED: ${{ secrets.SEED6 }}
+          BOT_REPORT_FOLDER: botreport
+          VERBOSE_FILE: botreport/logs_speculos.txt
+        run: |
+          mkdir -p botreport
+          nohup COINAPPS=$PWD/coin-apps pnpm run:cli botSpeculosProxy -p 4337 &
+      - name: Bot Logger
+        env:
+          VERBOSE_FILE: botreport/logs.txt
+        run: |
+          mkdir -p botreport
+          nohup pnpm run:cli botLogProxy -p 8331 &
+
       - name: install tests/bot-rn
         run: |
           pnpm i --filter="@tests/bot-rn..." --filter="ledger-live" --no-frozen-lockfile --unsafe-perm
-
       - name: Pre-fetch Javascript bundle
         # Prebuild the bundle so that's fast when the app starts.
         run: |
@@ -81,24 +101,6 @@ jobs:
           curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=android&dev=true&minify=false&inlineSourceMap=true"
           echo "...javascript bundle ready."
 
-      - name: install and build cli
-        run: |
-          pnpm i --filter="live-cli..." --filter="ledger-live" --no-frozen-lockfile --unsafe-perm
-          pnpm build:cli
-      - name: Bot Speculos
-        env:
-          SEED: ${{ secrets.SEED6 }}
-          BOT_REPORT_FOLDER: botreport
-          VERBOSE_FILE: botreport/logs_speculos.txt
-        run: |
-          mkdir libs/ledger-live-common/botreport
-          nohup COINAPPS=$PWD/coin-apps pnpm run:cli botSpeculosProxy -p 4337 &
-      - name: Bot Logger
-        env:
-          VERBOSE_FILE: botreport/logs.txt
-        run: |
-          mkdir libs/ledger-live-common/botreport
-          nohup pnpm run:cli botLogProxy -p 8331 &
       - name: build bot mobile
         run: pnpm tests:bot-rn detox build e2e --configuration android
 
@@ -116,7 +118,7 @@ jobs:
       - name: submit bot report
         uses: ledgerhq/ledger-live/tools/actions/submit-bot-report@develop
         with:
-          path: libs/ledger-live-common/botreport/
+          path: botreport/
           githubSha: ${{github.sha}}
           githubToken: ${{github.token}}
           slackApiToken: ${{secrets.SLACK_API_TOKEN}}
@@ -126,7 +128,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: botreport
-          path: libs/ledger-live-common/botreport/
+          path: botreport/
       - name: Test coverage
         if: always()
         run: npx codecov -F bot
