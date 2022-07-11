@@ -9,6 +9,12 @@ jobs:
   run-bot:
     runs-on: ubuntu-latest
     steps:
+      - name: env
+        working-directory: tests/bot-rn
+        run: |
+          echo GITHUB_RUN_ID=${{ github.run_id }} >> .ci.env
+          echo GITHUB_WORKFLOW=${{ github.workflow }} >> .ci.env
+
       - name: setup JDK 1.8
         uses: actions/setup-java@v1
         with:
@@ -40,14 +46,6 @@ jobs:
           $ANDROID_HOME/platform-tools/adb devices
           echo "Emulator started"
 
-      - name: env
-        working-directory: tests/bot-rn
-        run: |
-          echo GITHUB_RUN_ID=${{ github.run_id }} >> .ci.env
-          echo GITHUB_WORKFLOW=${{ github.workflow }} >> .ci.env
-          echo BOT_REPORT_FOLDER="not_used_but_needed_env"
-
-      - uses: actions/checkout@v3
       - name: Retrieving coin apps
         uses: actions/checkout@v3
         with:
@@ -59,7 +57,7 @@ jobs:
           version: latest
       - uses: actions/setup-node@v3
         with:
-          node-version: 14.x
+          node-version: 16.x
           cache: pnpm
           cache-dependency-path: "**/pnpm-lock.yaml"
       - name: pull docker image
