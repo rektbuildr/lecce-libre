@@ -55,8 +55,6 @@ jobs:
           echo "::set-output name=metro-cache::$HOME/.metro"
           echo "::set-output name=yarn-cache-dir::$(yarn cache dir)"
           echo "::set-output name=tempdir::$TMPDIR"
-          echo "::set-env name=ANDROID_HOME::/usr/local/lib/android/sdk"
-          echo "::set-env name=ANDROID_SDK_ROOT=/usr/local/lib/android/sdk"
 
       - name: Download Android Emulator Image
         run: |
