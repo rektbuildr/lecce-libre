@@ -6,8 +6,39 @@ on:
       - feat/LIVE-1162-bot-speculos-ios
 
 jobs:
+  is-org-member:
+    name: "Check Org Member"
+    uses: ledgerhq/ledger-live/.github/workflows/is-org-member.yml@develop
+    with:
+      username: ${{ github.actor }}
+      organisation: ledgerhq
+    secrets:
+      token: ${{ secrets.COMMON_READ_ORG }}
+
+  start-runner:
+    needs: [is-org-member]
+    if: ${{ needs.is-org-member.outputs.is-org-member }}
+    name: "start ec2 instance"
+    uses: ledgerhq/ledger-live/.github/workflows/start-linux-runner.yml@develop
+    with:
+      instance-type: c5.4xlarge
+    secrets:
+      CI_BOT_TOKEN: ${{ secrets.CI_BOT_TOKEN }}
+
+  stop-runner:
+    name: "stop ec2 instance"
+    if: ${{ always() && needs.start-runner.result == 'success' }}
+    needs: [start-runner, run-bot]
+    uses: ledgerhq/ledger-live/.github/workflows/stop-linux-runner.yml@develop
+    with:
+      label: ${{ needs.start-runner.outputs.label }}
+      ec2-instance-id: ${{ needs.start-runner.outputs.ec2-instance-id }}
+    secrets:
+      CI_BOT_TOKEN: ${{ secrets.CI_BOT_TOKEN }}
+
   run-bot:
-    runs-on: ubuntu-latest
+    runs-on: ${{ needs.start-runner.outputs.label }}
+    needs: [is-org-member, start-runner]
     env:
       EMULATOR_COMMAND: "-avd emu -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -nojni -memory 2048 -timezone 'Europe/London' -cores 2"
     steps:
@@ -24,6 +55,8 @@ jobs:
           echo "::set-output name=metro-cache::$HOME/.metro"
           echo "::set-output name=yarn-cache-dir::$(yarn cache dir)"
           echo "::set-output name=tempdir::$TMPDIR"
+          echo "::set-env name=ANDROID_HOME::/usr/local/lib/android/sdk"
+          echo "::set-env name=ANDROID_SDK_ROOT=/usr/local/lib/android/sdk"
 
       - name: Download Android Emulator Image
         run: |
