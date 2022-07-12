@@ -58,7 +58,7 @@ jobs:
 
       - name: Download Android Emulator Image
         run: |
-          echo "y" | $ANDROID_HOME/cmdline-tools/3.0/bin/sdkmanager --install "system-images;android-30;google_apis;x86"
+          echo "y" | $ANDROID_HOME/cmdline-tools/3.0/bin/sdkmanager --install "system-images;android-30;google_apis;x86_64"
           echo "no" | $ANDROID_HOME/cmdline-tools/3.0/bin/avdmanager create avd --force --name emu --device "Nexus 5X" -k 'system-images;android-30;google_apis;x86_64' -g google_apis
           $ANDROID_HOME/emulator/emulator -list-avds
 
