@@ -42,6 +42,10 @@ jobs:
     env:
       EMULATOR_COMMAND: "-avd emu -noaudio -gpu swiftshader_indirect -camera-back none -no-snapshot -no-window -no-boot-anim -nojni -memory 2048 -timezone 'Europe/London' -cores 2"
     steps:
+      - name: prepare runner
+        run: |
+          sudo growpart /dev/nvme0n1 1
+          sudo resize2fs /dev/nvme0n1p1
       - name: setup JDK 1.8
         uses: actions/setup-java@v1
         with:
