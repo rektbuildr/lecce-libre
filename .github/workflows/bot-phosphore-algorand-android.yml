@@ -82,8 +82,12 @@ jobs:
         continue-on-error: true
         run: |
           echo "Starting emulator"
+          unset ANDROID_SDK_ROOT
           nohup $ANDROID_HOME/emulator/emulator $EMULATOR_COMMAND -verbose &
           $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+
       - name: Start Android Emulator Retry 1
         id: emu2
         if: steps.emu1.outcome=='failure'
