@@ -54,74 +54,6 @@ jobs:
           echo "::set-output name=metro-cache::$HOME/.metro"
           echo "::set-output name=tempdir::$TMPDIR"
 
-      - name: Configure JDK 1.11
-        uses: actions/setup-java@v3.4.1
-        with:
-          distribution: 'temurin'
-          java-version: '11'
-          
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v2.0.8
-
-      - name: Download Emulator Image
-        # This can fail on network request, wrap with retry
-        uses: nick-invision/retry@v2
-        with:
-          timeout_minutes: 10
-          retry_wait_seconds: 60
-          max_attempts: 3
-          command: echo "y" | $ANDROID_HOME/cmdline-tools/6.0/bin/sdkmanager --install "system-images;android-30;google_apis;x86_64"
-
-      - name: Create Emulator
-        run: echo "no" | $ANDROID_HOME/cmdline-tools/6.0/bin/avdmanager create avd --force --name emu --device "Nexus 5X" -k 'system-images;android-30;google_apis;x86_64' -g google_apis
-
-      # These Emulator start steps are the current best practice to do retries on multi-line commands with persistent (nohup) processes
-      - name: Start Android Emulator
-        id: emu1
-        timeout-minutes: 5
-        continue-on-error: true
-        run: |
-          echo "Starting emulator"
-          unset ANDROID_SDK_ROOT
-          nohup $ANDROID_HOME/emulator/emulator $EMULATOR_COMMAND -verbose &
-          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
-        env:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
-
-      - name: Start Android Emulator Retry 1
-        id: emu2
-        if: steps.emu1.outcome=='failure'
-        timeout-minutes: 5
-        continue-on-error: true
-        run: |
-          echo "Starting emulator, second attempt"
-          $ANDROID_HOME/platform-tools/adb devices
-          sudo killall -9 $EMULATOR_EXECUTABLE || true
-          sleep 2
-          nohup $ANDROID_HOME/emulator/emulator $EMULATOR_COMMAND &
-          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
-      - name: Start Android Emulator Retry 2
-        id: emu3
-        if: steps.emu2.outcome=='failure'
-        timeout-minutes: 5
-        continue-on-error: true
-        run: |
-          echo "Starting emulator, third attempt"
-          $ANDROID_HOME/platform-tools/adb devices
-          sudo killall -9 $EMULATOR_EXECUTABLE || true
-          sleep 2
-          nohup $ANDROID_HOME/emulator/emulator $EMULATOR_COMMAND &
-          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
-      - name: Emulator Status
-        if: always()
-        run: |
-          if ${{ steps.emu1.outcome=='success' || steps.emu2.outcome=='success' || steps.emu3.outcome=='success' }}; then
-             echo "Emulator Started"
-          else
-             exit 1
-          fi
-
-
       - uses: actions/checkout@v3
 
       - name: env
@@ -183,19 +115,23 @@ jobs:
           curl --output /dev/null --silent --head --fail "http://localhost:8081/index.bundle?platform=android&dev=true&minify=false&inlineSourceMap=true"
           echo "...javascript bundle ready."
 
+
+      - name: run tests
+        uses: reactivecircus/android-emulator-runner@v2
+        timeout-minutes: 40
+        with:
+          api-level: 29
+          avd-name: emu
+          script: |
+            pnpm tests:bot-rn detox build e2e --configuration android
+            $ANDROID_HOME/platform-tools/adb devices
+            $ANDROID_HOME/platform-tools/adb shell settings put global window_animation_scale 0.0
+            $ANDROID_HOME/platform-tools/adb shell settings put global transition_animation_scale 0.0
+            $ANDROID_HOME/platform-tools/adb shell settings put global animator_duration_scale 0.0
+            pnpm tests:bot-rn test e2e --configuration android --cleanup --debug-synchronization 500 --detectOpenHandles --runInBand
+
       - name: build bot mobile
         run: pnpm tests:bot-rn detox build e2e --configuration android
-
-      - name: Detox Test
-        # Detox uses Espresso to choreograph steps in reaction to UI events, so we need to send a stream of taps.
-        timeout-minutes: 40
-        run: |
-          $ANDROID_HOME/platform-tools/adb devices
-          $ANDROID_HOME/platform-tools/adb shell settings put global window_animation_scale 0.0
-          $ANDROID_HOME/platform-tools/adb shell settings put global transition_animation_scale 0.0
-          $ANDROID_HOME/platform-tools/adb shell settings put global animator_duration_scale 0.0
-          pnpm tests:bot-rn test e2e --configuration android --cleanup --debug-synchronization 500 --detectOpenHandles --runInBand
-        shell: bash
 
       - name: submit bot report
         uses: ledgerhq/ledger-live/tools/actions/submit-bot-report@develop
