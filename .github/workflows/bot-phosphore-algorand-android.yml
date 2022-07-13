@@ -45,37 +45,72 @@ jobs:
           sudo growpart /dev/nvme0n1 1
           sudo resize2fs /dev/nvme0n1p1
 
-      - name: Use specific Java version for sdkmanager to work
-        uses: joschi/setup-jdk@v1
-        with:
-          java-version: 'openjdk8'
-          architecture: 'x64'
-        env:
-          # https://github.com/actions/toolkit/issues/641#issuecomment-728963957
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
-
-
       - name: Set workflow variables
         id: workflow-variables
         run: |
           echo "::set-output name=metro-cache::$HOME/.metro"
           echo "::set-output name=tempdir::$TMPDIR"
 
-      - name: Download Android Emulator Image
-        run: |
-          echo "y" | $ANDROID_HOME/tools/bin/sdkmanager --install "system-images;android-29;google_apis;x86"
-          echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd --force --name emu --device "Nexus 5X" -k 'system-images;android-29;google_apis;x86'
-          $ANDROID_HOME/emulator/emulator -list-avds
+      - name: Configure JDK 1.11
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '11'
 
-      - name: Android Emulator
+      - name: Download Emulator Image
+        # This can fail on network request, wrap with retry
+        uses: nick-invision/retry@v2
+        with:
+          timeout_minutes: 10
+          retry_wait_seconds: 60
+          max_attempts: 3
+          command: echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "system-images;android-30;google_apis;x86_64"
+
+      - name: Create Emulator
+        run: echo "no" | $ANDROID_HOME/cmdline-tools/latest/bin/avdmanager create avd --force --name TestingAVD --device "Nexus 5X" -k 'system-images;android-30;google_apis;x86_64' -g google_apis
+
+      # These Emulator start steps are the current best practice to do retries on multi-line commands with persistent (nohup) processes
+      - name: Start Android Emulator
+        id: emu1
         timeout-minutes: 5
         continue-on-error: true
         run: |
           echo "Starting emulator"
-          nohup $ANDROID_HOME/emulator/emulator -avd emu -no-audio -no-snapshot -no-window &
-          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done; input keyevent 82'
+          nohup $ANDROID_HOME/emulator/emulator $EMULATOR_COMMAND &
+          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
+      - name: Start Android Emulator Retry 1
+        id: emu2
+        if: steps.emu1.outcome=='failure'
+        timeout-minutes: 5
+        continue-on-error: true
+        run: |
+          echo "Starting emulator, second attempt"
           $ANDROID_HOME/platform-tools/adb devices
-          echo "Emulator started"
+          sudo killall -9 $EMULATOR_EXECUTABLE || true
+          sleep 2
+          nohup $ANDROID_HOME/emulator/emulator $EMULATOR_COMMAND &
+          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
+      - name: Start Android Emulator Retry 2
+        id: emu3
+        if: steps.emu2.outcome=='failure'
+        timeout-minutes: 5
+        continue-on-error: true
+        run: |
+          echo "Starting emulator, third attempt"
+          $ANDROID_HOME/platform-tools/adb devices
+          sudo killall -9 $EMULATOR_EXECUTABLE || true
+          sleep 2
+          nohup $ANDROID_HOME/emulator/emulator $EMULATOR_COMMAND &
+          $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done'
+      - name: Emulator Status
+        if: always()
+        run: |
+          if ${{ steps.emu1.outcome=='success' || steps.emu2.outcome=='success' || steps.emu3.outcome=='success' }}; then
+             echo "Emulator Started"
+          else
+             exit 1
+          fi
+
 
       - uses: actions/checkout@v3
 
