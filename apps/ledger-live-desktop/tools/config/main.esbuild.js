@@ -19,7 +19,16 @@ module.exports = {
   plugins: [
     ...common.plugins,
     CopyPlugin({
-      patterns: [{ from: path.join(rootFolder, "build/icons"), to: "build/icons" }],
+      patterns: [
+        { from: path.join(rootFolder, "build/icons"), to: "build/icons" },
+        {
+          from: path.join(
+            rootFolder,
+            "node_modules/@ledgerhq/live-common/node_modules/mm-app-eth/client",
+          ),
+          to: "build/mm-app-eth-client",
+        },
+      ],
     }),
   ],
 };
