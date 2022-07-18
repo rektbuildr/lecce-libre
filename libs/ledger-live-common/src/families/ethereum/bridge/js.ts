@@ -43,12 +43,8 @@ const broadcast = async ({
   signedOperation: { operation, signature },
 }) => {
   const api = apiForCurrency(account.currency);
-  let hash;
-  if (getEnv("SANDBOX_MODE") === 2) {
-    hash = operation.hash;
-  } else {
-    hash = await api.broadcastTransaction(signature);
-  }
+  const hash = await api.broadcastTransaction(signature);
+
   return patchOperationWithHash(operation, hash);
 };
 

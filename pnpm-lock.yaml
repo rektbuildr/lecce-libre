@@ -999,7 +999,7 @@ importers:
       leb128: ^0.0.5
       lodash: ^4.17.21
       lru-cache: 5.1.1
-      mm-app-eth: https://github.com/lambertkevin/mm-app-eth.git#4f43f16895250f8bdcc33bd262bf4629e1aed4cc
+      mm-app-eth: https://github.com/lambertkevin/mm-app-eth.git#00c66ef481342d97acafab448d49fb925024e456
       numeral: ^2.0.6
       object-hash: ^2.2.0
       performance-now: ^2.1.0
@@ -1128,7 +1128,7 @@ importers:
       leb128: 0.0.5
       lodash: 4.17.21
       lru-cache: 5.1.1
-      mm-app-eth: github.com/lambertkevin/mm-app-eth/4f43f16895250f8bdcc33bd262bf4629e1aed4cc
+      mm-app-eth: github.com/lambertkevin/mm-app-eth/00c66ef481342d97acafab448d49fb925024e456
       numeral: 2.0.6
       object-hash: 2.2.0
       performance-now: 2.1.0
@@ -50787,8 +50787,8 @@ packages:
       react-native: 0.67.3_shn3lkepuadv4od4dudas6ijbq
     dev: false
 
-  github.com/lambertkevin/mm-app-eth/4f43f16895250f8bdcc33bd262bf4629e1aed4cc:
-    resolution: {tarball: https://codeload.github.com/lambertkevin/mm-app-eth/tar.gz/4f43f16895250f8bdcc33bd262bf4629e1aed4cc}
+  github.com/lambertkevin/mm-app-eth/00c66ef481342d97acafab448d49fb925024e456:
+    resolution: {tarball: https://codeload.github.com/lambertkevin/mm-app-eth/tar.gz/00c66ef481342d97acafab448d49fb925024e456}
     name: mm-app-eth
     version: 1.0.0
     prepare: true

@@ -126,18 +126,11 @@ export const signOperation = ({
                 s: string;
                 v: string;
                 txHash?: string;
-              } =
-                getEnv("SANDBOX_MODE") === 2
-                  ? await (eth as MMEth).signTransactionAndBroadCast(
-                      freshAddressPath,
-                      txHex,
-                      resolution
-                    )
-                  : await eth.signTransaction(
-                      freshAddressPath,
-                      txHex,
-                      resolution
-                    );
+              } = await eth.signTransaction(
+                freshAddressPath,
+                txHex,
+                resolution
+              );
               if (cancelled) return;
               o.next({ type: "device-signature-granted" });
               // Second, we re-set some tx fields from the device signature
