@@ -46,8 +46,6 @@ const resolver: EthResolver = async (
 
   if (typeof message === "string") {
     result = await eth.signPersonalMessage(path, rawMessage.slice(2));
-
-    result["v"] = (result["v"] - 27).toString(16);
   } else {
     if (getEnv("EXPERIMENTAL_EIP712")) {
       result = await eth.signEIP712Message(path, message);
@@ -58,10 +56,9 @@ const resolver: EthResolver = async (
         bufferToHex(messageHash(message))
       );
     }
-
-    result["v"] = result["v"].toString(16);
   }
 
+  result["v"] = result["v"].toString(16);
   if (result["v"].length % 2 !== 0) {
     result["v"] = "0" + result["v"];
   }
