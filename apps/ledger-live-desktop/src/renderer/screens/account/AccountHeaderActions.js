@@ -102,7 +102,7 @@ const AccountHeaderSettingsButtonComponent = ({ account, parentAccount, openModa
           rounded
         />
       </Tooltip>
-      {["ethereum", "bsc", "polygon"].includes(currency.id) ? (
+      {["ethereum", "bsc", "polygon", "ethereum_goerli"].includes(currency.id) ? (
         <Tooltip content={t("walletconnect.titleAccount")}>
           <ButtonSettings onClick={onWalletConnect}>
             <Box justifyContent="center">
