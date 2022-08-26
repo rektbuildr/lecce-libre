@@ -4,6 +4,8 @@ import type { Unit } from "@ledgerhq/types-cryptoassets";
 import type { TransactionMode, ModeModule } from "./modules";
 import type { Range, RangeRaw } from "../../range";
 import type {
+  Account,
+  AccountRaw,
   TransactionCommon,
   TransactionCommonRaw,
   TransactionStatusCommon,
@@ -77,3 +79,7 @@ export type TypedMessageData = Omit<MessageData, "message"> & {
 export type TransactionStatus = TransactionStatusCommon;
 
 export type TransactionStatusRaw = TransactionStatusCommonRaw;
+
+export type EthereumAccount = Account;
+
+export type EthereumAccountRaw = AccountRaw;
