@@ -1,6 +1,6 @@
 import { DeviceModelId } from "@ledgerhq/devices";
 import { DeviceInfo } from "@ledgerhq/types-live";
-import { satisfies as versionSatisfies } from "semver";
+import { satisfies as versionSatisfies, coerce } from "semver";
 
 const deviceVersionRangesForUpdate: { [key in DeviceModelId]?: string } = {
   nanoS: ">=1.6.1",
@@ -15,6 +15,6 @@ export const isFirmwareUpdateVersionSupported = (
 ) =>
   Boolean(deviceVersionRangesForUpdate[modelId]) &&
   versionSatisfies(
-    deviceInfo.version,
+    coerce(deviceInfo.version),
     deviceVersionRangesForUpdate[modelId] as string,
   );

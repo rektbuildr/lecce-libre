@@ -15,21 +15,39 @@ import { addBackgroundEvent } from "../src/actions/appstate";
 const FIVE_MINUTES_IN_MS = 5 * 60 * 1000;
 
 /**
- * This task is not able to touch UI, but it will allow us to complete tasks
- * even when the device goes to the background. We don't have access to hooks
+ * This unorthodox way of doing the firmware update has an explanation, originally we implemented
+ * the USB OTG method and subsequently we added the BLE on top, it made little sense to rewrite
+ * it when it's working solidly this way.
+ *
+ * - [USB OTG] (Android) A background mode, invoked from the native Android part
+ * as a headlessJS runner that is not able to touch UI, but it will allow us to complete
+ * tasks even when the device goes to the background. We don't have access to hooks
  * because we are not inside a component but we can read/write the store so we'll
  * use that as the common-ground.
+ *
+ * - [BLE] A foreground mode, just rendering this as a component will start the firmware
+ * update process and use the same even syncronization as the USB original implementation
+ * to keep the UI up to date. The first implementation is not capable of working in the background
+ * but it shouldn't be too hard to move the long running task of FW payload transfer into a
+ * Runner on the native side if needed.
  */
-const TAG = "headlessJS";
+
 const BackgroundRunnerService = async ({
   deviceId,
   firmwareSerializedJson,
+  backgroundMode = true,
 }: {
   deviceId: string;
   firmwareSerializedJson: string;
+  backgroundMode: boolean;
 }) => {
-  const emitEvent = (e: FwUpdateBackgroundEvent) =>
+  const TAG = backgroundMode ? "headlessJS" : "BLEFWUpdate";
+
+  const emitEvent = (e: FwUpdateBackgroundEvent) => {
+    log(TAG, e);
     store.dispatch(addBackgroundEvent(e));
+  };
+
   const latestFirmware = JSON.parse(firmwareSerializedJson) as
     | FirmwareUpdateContext
     | null
@@ -37,16 +55,17 @@ const BackgroundRunnerService = async ({
 
   if (!latestFirmware) {
     log(TAG, "no need to update");
-    return 0;
+    return null;
   }
 
   const onError = (error: Error) => {
     emitEvent({ type: "error", error });
-    NativeModules.BackgroundRunner.stop();
+    if (backgroundMode) NativeModules.BackgroundRunner.stop();
   };
 
   const onFirmwareUpdated = () => {
-    NativeModules.BackgroundRunner.stop();
+    emitEvent({ type: "firmwareUpdated" });
+    if (backgroundMode) NativeModules.BackgroundRunner.stop();
   };
 
   const waitForOnlineDevice = (maxWait: number) =>
@@ -74,7 +93,8 @@ const BackgroundRunnerService = async ({
         emitEvent({ type: "flashingMcu" });
         mainFirmwareUpdate(deviceId, latestFirmware).subscribe({
           next: ({ progress, installing }) => {
-            if (progress === 1 && installing === "flash-mcu") {
+            // NB BLE didn't seem to emit the 100% but the update is still processed.
+            if (progress > 0.95 && installing === "flash-mcu") {
               // this is the point where we lose communication with the device until the update
               // is finished and the user has entered their PIN. Therefore the message here should
               // be generic about waiting for the firmware to finish and then entering the pin

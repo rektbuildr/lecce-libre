@@ -16,6 +16,7 @@ import {
   clearBackgroundEvents,
   dequeueBackgroundEvent,
 } from "../../actions/appstate";
+import BackgroundRunnerService from "../../../services/BackgroundRunnerService";
 import BottomModal from "../BottomModal";
 import GenericErrorView from "../GenericErrorView";
 import useLatestFirmware from "../../hooks/useLatestFirmware";
@@ -66,8 +67,18 @@ export default function FirmwareUpdate({
   const nextBackgroundEvent = useSelector(nextBackgroundEventSelector);
   const dispatch = useDispatch();
   const latestFirmware = useLatestFirmware(deviceInfo);
+  const bleFwUpdateFeatureFlag = useFeature("bleFwUpdateFeatureFlag");
 
   const { t } = useTranslation();
+  const maybeBleError = useCallback(
+    (event: BackgroundEvent | { type: "reset"; wired: boolean }) => {
+      if (!event.wired && !bleFwUpdateFeatureFlag.enabled) {
+        return new (BluetoothNotSupportedError as ErrorConstructor)();
+      }
+      return undefined;
+    },
+    [bleFwUpdateFeatureFlag.enabled],
+  );
 
   // reducer for the firmware update state machine
   const fwUpdateStateReducer = useCallback(
@@ -79,7 +90,7 @@ export default function FirmwareUpdate({
         case "confirmPin":
           return { step: "confirmPin" };
         case "downloadingUpdate":
-          if (event.progress) {
+          if (event.progress && device.wired) {
             NativeModules.BackgroundRunner.update(
               Math.round(event.progress * 100),
               t("FirmwareUpdate.Notifications.installing", {
@@ -89,9 +100,11 @@ export default function FirmwareUpdate({
           }
           return { step: "downloadingUpdate", progress: event.progress };
         case "confirmUpdate":
-          NativeModules.BackgroundRunner.requireUserAction(
-            t("FirmwareUpdate.Notifications.confirmOnDevice"),
-          );
+          if (device.wired) {
+            NativeModules.BackgroundRunner.requireUserAction(
+              t("FirmwareUpdate.Notifications.confirmOnDevice"),
+            );
+          }
           return { step: "confirmUpdate" };
         case "flashingMcu":
           return {
@@ -110,26 +123,22 @@ export default function FirmwareUpdate({
           return { step: "error", error: event.error };
         case "reset":
           return {
-            step: event.wired ? "confirmRecoveryBackup" : "error",
+            step: "confirmRecoveryBackup",
             progress: undefined,
-            error: event.wired
-              ? undefined
-              : new (BluetoothNotSupportedError as ErrorConstructor)(),
+            error: maybeBleError(event),
             installing: undefined,
           };
         default:
           return { ...state };
       }
     },
-    [t],
+    [device.wired, maybeBleError, t],
   );
 
   const [state, dispatchEvent] = useReducer(fwUpdateStateReducer, {
-    step: device.wired ? "confirmRecoveryBackup" : "error",
+    step: "confirmRecoveryBackup",
     progress: undefined,
-    error: device.wired
-      ? undefined
-      : new (BluetoothNotSupportedError as ErrorConstructor)(),
+    error: maybeBleError(device.wired),
     installing: undefined,
   });
 
@@ -138,7 +147,7 @@ export default function FirmwareUpdate({
   const onReset = useCallback(() => {
     dispatchEvent({ type: "reset", wired: device.wired });
     dispatch(clearBackgroundEvents());
-    NativeModules.BackgroundRunner.stop();
+    if (device.wired) NativeModules.BackgroundRunner.stop();
   }, [device.wired, dispatch]);
 
   // only allow closing of the modal when the update is not in an intermediate step
@@ -182,14 +191,25 @@ export default function FirmwareUpdate({
 
   const launchUpdate = useCallback(() => {
     if (latestFirmware) {
-      NativeModules.BackgroundRunner.start(
-        device.deviceId,
-        JSON.stringify(latestFirmware),
-        t("FirmwareUpdate.Notifications.preparingUpdate"),
-      );
+      if (device.wired) {
+        NativeModules.BackgroundRunner.start(
+          device.deviceId,
+          JSON.stringify(latestFirmware),
+          t("FirmwareUpdate.Notifications.preparingUpdate"),
+        );
+      } else {
+        // The wired firmware update goes through NativeModules.BackgroundRunner which emits events
+        // by adding them to the store from a headlessJS instance, in the BLE case we do the same
+        // but invoking the code explicitly from here ↓ instead of from the native side.
+        BackgroundRunnerService({
+          deviceId: device.deviceId,
+          firmwareSerializedJson: JSON.stringify(latestFirmware),
+          backgroundMode: false,
+        });
+      }
       dispatchEvent({ type: "downloadingUpdate", progress: 0 });
     }
-  }, [device.deviceId, latestFirmware, t]);
+  }, [device.deviceId, device.wired, latestFirmware, t]);
 
   const firmwareVersion = latestFirmware?.final?.name ?? "";
 
