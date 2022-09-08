@@ -6,6 +6,7 @@ import { Device } from "@ledgerhq/live-common/hw/actions/types";
 import { Button, Icons } from "@ledgerhq/native-ui";
 import { DeviceInfo } from "@ledgerhq/types-live";
 import { BluetoothNotSupportedError } from "@ledgerhq/live-common/errors";
+import { useFeature } from "@ledgerhq/live-common/featureFlags/index";
 import {
   DisconnectedDevice,
   DisconnectedDeviceDuringOperation,
@@ -71,13 +72,13 @@ export default function FirmwareUpdate({
 
   const { t } = useTranslation();
   const maybeBleError = useCallback(
-    (event: BackgroundEvent | { type: "reset"; wired: boolean }) => {
-      if (!event.wired && !bleFwUpdateFeatureFlag.enabled) {
+    (wired: boolean) => {
+      if (!wired && !bleFwUpdateFeatureFlag?.enabled) {
         return new (BluetoothNotSupportedError as ErrorConstructor)();
       }
       return undefined;
     },
-    [bleFwUpdateFeatureFlag.enabled],
+    [bleFwUpdateFeatureFlag],
   );
 
   // reducer for the firmware update state machine
@@ -125,7 +126,7 @@ export default function FirmwareUpdate({
           return {
             step: "confirmRecoveryBackup",
             progress: undefined,
-            error: maybeBleError(event),
+            error: maybeBleError(event?.wired),
             installing: undefined,
           };
         default:

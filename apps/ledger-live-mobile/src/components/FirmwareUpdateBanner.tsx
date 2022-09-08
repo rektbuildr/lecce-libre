@@ -68,7 +68,7 @@ const FirmwareUpdateBanner = ({
   };
 
   const usbFwUpdateFeatureFlag = useFeature("llmUsbFirmwareUpdate");
-  // const bleFwUpdateFeatureFlag = useFeature("bleFwUpdateFeatureFlag"); // TODO
+  // const bleFwUpdateFeatureFlag = useFeature("llmBLEFirmwareUpdate"); // TODO
 
   const isUsbFwVersionUpdateSupported =
     lastSeenDevice &&

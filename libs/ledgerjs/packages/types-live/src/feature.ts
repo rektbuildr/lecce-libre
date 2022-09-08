@@ -4,6 +4,7 @@ export type FeatureId =
   | "brazePushNotifications"
   | "llmNewDeviceSelection"
   | "llmUsbFirmwareUpdate"
+  | "llmBLEFirmwareUpdate"
   | "ratings"
   | "counterValue"
   | "deviceLocalization"

@@ -169,4 +169,7 @@ export const defaultFeatures: DefaultFeatures = {
   walletNftGallery: {
     enabled: false,
   },
+  llmBLEFirmwareUpdate: {
+    enabled: false,
+  },
 };
