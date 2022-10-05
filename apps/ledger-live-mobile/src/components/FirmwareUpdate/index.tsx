@@ -68,7 +68,7 @@ export default function FirmwareUpdate({
   const nextBackgroundEvent = useSelector(nextBackgroundEventSelector);
   const dispatch = useDispatch();
   const latestFirmware = useLatestFirmware(deviceInfo);
-  const bleFwUpdateFeatureFlag = useFeature("bleFwUpdateFeatureFlag");
+  const bleFwUpdateFeatureFlag = useFeature("llmBLEFirmwareUpdate");
 
   const { t } = useTranslation();
   const maybeBleError = useCallback(
