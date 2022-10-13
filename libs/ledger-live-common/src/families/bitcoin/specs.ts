@@ -328,7 +328,6 @@ const bitcoinTestnet: AppSpec<Transaction> = {
   appQuery: {
     model: DeviceModelId.nanoS,
     appName: "Bitcoin Test",
-    appVersion: "2.0.99-prerelease",
   },
   genericDeviceAction: acceptTransaction,
   test: genericTest,
@@ -338,11 +337,9 @@ const bitcoinTestnet: AppSpec<Transaction> = {
 const bitcoinGold: AppSpec<Transaction> = {
   name: "Bitcoin Gold",
   currency: getCryptoCurrencyById("bitcoin_gold"),
-  dependency: "Bitcoin Legacy",
   appQuery: {
     model: DeviceModelId.nanoS,
     appName: "BitcoinGold",
-    appVersion: "2.1.0-rc",
   },
   genericDeviceAction: acceptTransaction,
   test: genericTest,
@@ -356,11 +353,9 @@ const bchToCashaddrAddressWithoutPrefix = (recipient) =>
 const bitcoinCash: AppSpec<Transaction> = {
   name: "Bitcoin Cash",
   currency: getCryptoCurrencyById("bitcoin_cash"),
-  dependency: "Bitcoin Legacy",
   appQuery: {
     model: DeviceModelId.nanoS,
     appName: "BitcoinCash",
-    appVersion: "2.1.0-rc",
   },
   genericDeviceAction: acceptTransaction,
   test: genericTest,
@@ -382,11 +377,9 @@ const bitcoinCash: AppSpec<Transaction> = {
 const peercoin: AppSpec<Transaction> = {
   name: "Peercoin",
   currency: getCryptoCurrencyById("peercoin"),
-  dependency: "Bitcoin Legacy",
   appQuery: {
     model: DeviceModelId.nanoS,
     appName: "Peercoin",
-    appVersion: "2.1.0-rc",
   },
   genericDeviceAction: acceptTransaction,
   test: genericTest,
@@ -396,11 +389,9 @@ const peercoin: AppSpec<Transaction> = {
 const pivx: AppSpec<Transaction> = {
   name: "PivX",
   currency: getCryptoCurrencyById("pivx"),
-  dependency: "Bitcoin Legacy",
   appQuery: {
     model: DeviceModelId.nanoS,
     appName: "PivX",
-    appVersion: "2.1.0-rc",
   },
   genericDeviceAction: acceptTransaction,
   test: genericTest,
@@ -410,11 +401,9 @@ const pivx: AppSpec<Transaction> = {
 const qtum: AppSpec<Transaction> = {
   name: "Qtum",
   currency: getCryptoCurrencyById("qtum"),
-  dependency: "Bitcoin Legacy",
   appQuery: {
     model: DeviceModelId.nanoS,
     appName: "Qtum",
-    appVersion: "2.1.0-rc",
   },
   genericDeviceAction: acceptTransaction,
   test: genericTest,
@@ -424,11 +413,9 @@ const qtum: AppSpec<Transaction> = {
 const vertcoin: AppSpec<Transaction> = {
   name: "Vertcoin",
   currency: getCryptoCurrencyById("vertcoin"),
-  dependency: "Bitcoin Legacy",
   appQuery: {
     model: DeviceModelId.nanoS,
     appName: "Vertcoin",
-    appVersion: "2.1.0-rc",
   },
   genericDeviceAction: acceptTransaction,
   test: genericTest,
@@ -438,11 +425,9 @@ const vertcoin: AppSpec<Transaction> = {
 const viacoin: AppSpec<Transaction> = {
   name: "Viacoin",
   currency: getCryptoCurrencyById("viacoin"),
-  dependency: "Bitcoin Legacy",
   appQuery: {
     model: DeviceModelId.nanoS,
     appName: "Viacoin",
-    appVersion: "2.1.0-rc",
   },
   genericDeviceAction: acceptTransaction,
   test: genericTest,
@@ -456,11 +441,9 @@ const minDash = parseCurrencyUnit(
 const dash: AppSpec<Transaction> = {
   name: "Dash",
   currency: getCryptoCurrencyById("dash"),
-  dependency: "Bitcoin Legacy",
   appQuery: {
     model: DeviceModelId.nanoS,
     appName: "Dash",
-    appVersion: "2.1.0-rc",
   },
   genericDeviceAction: acceptTransaction,
   test: genericTest,
@@ -477,11 +460,9 @@ const minDoge = parseCurrencyUnit(
 const dogecoin: AppSpec<Transaction> = {
   name: "DogeCoin",
   currency: getCryptoCurrencyById("dogecoin"),
-  dependency: "Bitcoin Legacy",
   appQuery: {
     model: DeviceModelId.nanoS,
     appName: "Dogecoin",
-    appVersion: "2.1.0-rc",
   },
   genericDeviceAction: acceptTransaction,
   test: genericTest,
@@ -516,11 +497,9 @@ const minHorizen = parseCurrencyUnit(
 const zencash: AppSpec<Transaction> = {
   name: "Horizen",
   currency: getCryptoCurrencyById("zencash"),
-  dependency: "Bitcoin Legacy",
   appQuery: {
     model: DeviceModelId.nanoS,
     appName: "Horizen",
-    appVersion: "2.1.0-rc",
   },
   genericDeviceAction: acceptTransaction,
   test: genericTest,
@@ -536,11 +515,9 @@ const minDigibyte = parseCurrencyUnit(
 const digibyte: AppSpec<Transaction> = {
   name: "Digibyte",
   currency: getCryptoCurrencyById("digibyte"),
-  dependency: "Bitcoin Legacy",
   appQuery: {
     model: DeviceModelId.nanoS,
     appName: "Digibyte",
-    appVersion: "2.1.0-rc",
   },
   genericDeviceAction: acceptTransaction,
   test: genericTest,
@@ -557,11 +534,9 @@ const minKomodo = parseCurrencyUnit(
 const komodo: AppSpec<Transaction> = {
   name: "Komodo",
   currency: getCryptoCurrencyById("komodo"),
-  dependency: "Bitcoin Legacy",
   appQuery: {
     model: DeviceModelId.nanoS,
     appName: "Komodo",
-    appVersion: "2.1.0-rc",
   },
   genericDeviceAction: acceptTransaction,
   test: genericTest,
@@ -595,11 +570,9 @@ const minLitecoin = parseCurrencyUnit(
 const litecoin: AppSpec<Transaction> = {
   name: "Litecoin",
   currency: getCryptoCurrencyById("litecoin"),
-  dependency: "Bitcoin Legacy",
   appQuery: {
     model: DeviceModelId.nanoS,
     appName: "Litecoin",
-    appVersion: "2.1.0-rc",
   },
   genericDeviceAction: acceptTransaction,
   test: genericTest,
