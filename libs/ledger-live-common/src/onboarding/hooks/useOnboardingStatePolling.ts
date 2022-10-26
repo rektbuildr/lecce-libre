@@ -129,7 +129,7 @@ const getNewAllowedErrorIfChanged = (
   newError: Error | null
 ): Error | null => {
   // Only interested if the errors are instances of the same Error class
-  return prevError?.constructor === newError?.constructor
-    ? prevError
-    : newError;
+  // return prevError?.constructor === newError?.constructor
+  // Actually interested in the error values
+  return isEqual(prevError, newError) ? prevError : newError;
 };

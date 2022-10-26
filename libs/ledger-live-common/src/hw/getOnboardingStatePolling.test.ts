@@ -6,6 +6,8 @@ import Transport from "@ledgerhq/hw-transport";
 import {
   DeviceExtractOnboardingStateError,
   DisconnectedDevice,
+  StatusCodes,
+  TransportStatusError,
 } from "@ledgerhq/errors";
 import { withDevice } from "./deviceAccess";
 import getVersion from "./getVersion";
@@ -83,9 +85,46 @@ describe("getOnboardingStatePolling", () => {
           pollingPeriodMs,
         }).subscribe({
           next: (value) => {
-            expect(value.onboardingState).toBeNull();
-            expect(value.allowedError).toBeInstanceOf(DisconnectedDevice);
-            done();
+            try {
+              expect(value.onboardingState).toBeNull();
+              expect(value.allowedError).toBeInstanceOf(DisconnectedDevice);
+              done();
+            } catch (expectError) {
+              done(expectError);
+            }
+          },
+        });
+
+        // The timeout is equal to pollingPeriodMs by default
+        jest.advanceTimersByTime(pollingPeriodMs - 1);
+      });
+    });
+
+    describe("and this error is the device-locked response", () => {
+      it("should update the onboarding state to null and keep track of this device-locked error as an allowed error", (done) => {
+        mockedGetVersion.mockRejectedValue(
+          new TransportStatusError(StatusCodes.LOCKED_DEVICE)
+        );
+        mockedExtractOnboardingState.mockReturnValue(anOnboardingState);
+
+        const device = aDevice;
+
+        getOnboardingStatePolling({
+          deviceId: device.deviceId,
+          pollingPeriodMs,
+        }).subscribe({
+          next: (value) => {
+            try {
+              expect(value.onboardingState).toBeNull();
+              expect(value.allowedError).toBeInstanceOf(TransportStatusError);
+              // @ts-expect-error TransportStatusError is only defined as an Error
+              expect(value.allowedError?.statusCode).toBe(
+                StatusCodes.LOCKED_DEVICE
+              );
+              done();
+            } catch (expectError) {
+              done(expectError);
+            }
           },
         });
 
@@ -106,9 +145,13 @@ describe("getOnboardingStatePolling", () => {
           pollingPeriodMs,
         }).subscribe({
           next: (value) => {
-            expect(value.onboardingState).toBeNull();
-            expect(value.allowedError).toBeInstanceOf(TimeoutError);
-            done();
+            try {
+              expect(value.onboardingState).toBeNull();
+              expect(value.allowedError).toBeInstanceOf(TimeoutError);
+              done();
+            } catch (expectError) {
+              done(expectError);
+            }
           },
         });
 
@@ -129,9 +172,13 @@ describe("getOnboardingStatePolling", () => {
           fetchingTimeoutMs,
         }).subscribe({
           next: (value) => {
-            expect(value.onboardingState).toBeNull();
-            expect(value.allowedError).toBeInstanceOf(TimeoutError);
-            done();
+            try {
+              expect(value.onboardingState).toBeNull();
+              expect(value.allowedError).toBeInstanceOf(TimeoutError);
+              done();
+            } catch (expectError) {
+              done(expectError);
+            }
           },
         });
 
@@ -151,9 +198,13 @@ describe("getOnboardingStatePolling", () => {
           pollingPeriodMs,
         }).subscribe({
           error: (error) => {
-            expect(error).toBeInstanceOf(Error);
-            expect(error?.message).toBe("Unknown error");
-            done();
+            try {
+              expect(error).toBeInstanceOf(Error);
+              expect(error?.message).toBe("Unknown error");
+              done();
+            } catch (expectError) {
+              done(expectError);
+            }
           },
         });
 
@@ -178,11 +229,15 @@ describe("getOnboardingStatePolling", () => {
         pollingPeriodMs,
       }).subscribe({
         next: (value) => {
-          expect(value.onboardingState).toBeNull();
-          expect(value.allowedError).toBeInstanceOf(
-            DeviceExtractOnboardingStateError
-          );
-          done();
+          try {
+            expect(value.onboardingState).toBeNull();
+            expect(value.allowedError).toBeInstanceOf(
+              DeviceExtractOnboardingStateError
+            );
+            done();
+          } catch (expectError) {
+            done(expectError);
+          }
         },
       });
 
@@ -202,9 +257,13 @@ describe("getOnboardingStatePolling", () => {
         pollingPeriodMs,
       }).subscribe({
         next: (value) => {
-          expect(value.allowedError).toBeNull();
-          expect(value.onboardingState).toEqual(anOnboardingState);
-          done();
+          try {
+            expect(value.allowedError).toBeNull();
+            expect(value.onboardingState).toEqual(anOnboardingState);
+            done();
+          } catch (expectError) {
+            done(expectError);
+          }
         },
         error: (error) => {
           done(error);
@@ -230,10 +289,14 @@ describe("getOnboardingStatePolling", () => {
         pollingPeriodMs,
       }).subscribe({
         next: (value) => {
-          expect(value.onboardingState).toEqual(anOnboardingState);
-          expect(value.allowedError).toBeNull();
-          expect(spiedRepeat).toHaveBeenCalledTimes(1);
-          done();
+          try {
+            expect(value.onboardingState).toEqual(anOnboardingState);
+            expect(value.allowedError).toBeNull();
+            expect(spiedRepeat).toHaveBeenCalledTimes(1);
+            done();
+          } catch (expectError) {
+            done(expectError);
+          }
         },
         error: (error) => {
           done(error);

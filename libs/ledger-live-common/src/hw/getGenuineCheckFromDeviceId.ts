@@ -1,13 +1,15 @@
-import type { SocketEvent } from "@ledgerhq/types-live";
-import { from, Observable } from "rxjs";
-import { mergeMap } from "rxjs/operators";
+import type { DeviceInfo, SocketEvent } from "@ledgerhq/types-live";
+import { from, Observable, of, throwError } from "rxjs";
+import { catchError, delay, mergeMap } from "rxjs/operators";
 import getDeviceInfo from "./getDeviceInfo";
 import { withDevice } from "./deviceAccess";
 import genuineCheck from "./genuineCheck";
+import { StatusCodes, TransportStatusError } from "@ledgerhq/errors";
 
 export type GetGenuineCheckFromDeviceIdArgs = {
   deviceId: string;
   lockedDeviceTimeoutMs?: number;
+  pollingIntervalOnlockedDeviceMs?: number;
 };
 
 export type GetGenuineCheckFromDeviceIdResult = {
@@ -30,6 +32,7 @@ export type GetGenuineCheckFromDeviceIdOutput =
 export const getGenuineCheckFromDeviceId = ({
   deviceId,
   lockedDeviceTimeoutMs = 1000,
+  pollingIntervalOnlockedDeviceMs = 1000,
 }: GetGenuineCheckFromDeviceIdArgs): GetGenuineCheckFromDeviceIdOutput => {
   return new Observable((o) => {
     // In order to know if a device is locked or not.
@@ -40,22 +43,50 @@ export const getGenuineCheckFromDeviceId = ({
       o.next({ socketEvent: null, deviceIsLocked: true });
     }, lockedDeviceTimeoutMs);
 
-    // withDevice handles the unsubscribing cleaning when leaving the useEffect
-    withDevice(deviceId)((t) =>
-      from(getDeviceInfo(t)).pipe(
-        mergeMap((deviceInfo) => {
-          clearTimeout(lockedDeviceTimeout);
-          o.next({ socketEvent: null, deviceIsLocked: false });
-          return genuineCheck(t, deviceInfo);
-        })
-      )
-    ).subscribe({
-      next: (socketEvent: SocketEvent) => {
-        o.next({ socketEvent, deviceIsLocked: false });
-      },
-      error: (e) => {
-        o.error(e);
-      },
-    });
+    // Polling made with setTimeout and genuineCheckLoop because different versions
+    // of a catchError with retry on caughtSource have been tried unsuccesfully, probably
+    // because of withDevice and its current implementation as a higher order observable that
+    // can push multiple values that needs to be handled by a higher order mapping operator
+    const genuineCheckLoop = () => {
+      // withDevice handles the unsubscribing cleaning when leaving the useEffect
+      withDevice(deviceId)((t) =>
+        from(getDeviceInfo(t)).pipe(
+          mergeMap((deviceInfo) => {
+            clearTimeout(lockedDeviceTimeout);
+            o.next({ socketEvent: null, deviceIsLocked: false });
+            return genuineCheck(t, deviceInfo);
+          })
+        )
+      ).subscribe({
+        next: (socketEvent: SocketEvent) => {
+          o.next({ socketEvent, deviceIsLocked: false });
+        },
+        error: (e) => {
+          if (
+            e &&
+            e instanceof TransportStatusError &&
+            // @ts-expect-error TransportStatusError is only defined as an Error
+            e.statusCode === StatusCodes.LOCKED_DEVICE
+          ) {
+            clearTimeout(lockedDeviceTimeout);
+
+            // For unit test on Jest, the setTimeout needs to be set before the o.next
+            // It's ok, as pollingIntervalOnlockedDeviceMs > 0
+            setTimeout(() => {
+              genuineCheckLoop();
+            }, pollingIntervalOnlockedDeviceMs);
+
+            o.next({ socketEvent: null, deviceIsLocked: true });
+          } else {
+            o.error(e);
+          }
+        },
+        complete: () => {
+          o.complete();
+        },
+      });
+    };
+
+    setTimeout(genuineCheckLoop, 1);
   });
 };

@@ -22,7 +22,7 @@ import { useTranslation } from "react-i18next";
 import { getDeviceModel } from "@ledgerhq/devices";
 import { useDispatch } from "react-redux";
 import { CompositeScreenProps } from "@react-navigation/native";
-
+import { StatusCodes, TransportStatusError } from "@ledgerhq/errors";
 import { addKnownDevice } from "../../actions/ble";
 import { NavigatorName, ScreenName } from "../../const";
 import type { BaseNavigatorStackParamList } from "../../components/RootNavigator/BaseNavigator";
@@ -277,13 +277,37 @@ export const SyncOnboarding = ({
   // Reacts to allowedError from the polling to set or clean the desync timeout
   useEffect(() => {
     if (allowedError) {
-      desyncTimerRef.current = setTimeout(
-        handleDesyncTimedOut,
-        desyncTimeoutMs,
+      console.log(
+        `🚨 SyncOnboarding Comp: allowed error: ${JSON.stringify(
+          allowedError,
+        )}`,
       );
-      setIsDesyncOverlayOpen(true);
-      // Accelerates the polling to resync as fast as possible with the device
-      setPollingPeriodMs(shortPollingPeriodMs);
+
+      // A locked-device error means the device is already seeded
+      if (
+        allowedError instanceof TransportStatusError &&
+        (
+          allowedError as unknown as {
+            statusCode: typeof StatusCodes[keyof typeof StatusCodes];
+          }
+        ).statusCode === StatusCodes.LOCKED_DEVICE
+      ) {
+        console.log(`🖖 LOCKED DEVICE allowed error`);
+        // If other allowed error happened before, the timeout has been
+        // cleaned already by the useEffect cleanup function.
+        // Goes to the next step, which will stop the polling
+        setCompanionStepKey(CompanionStepKey.SoftwareCheck);
+      }
+      // Other type of allowed errors triggers the desync timer
+      else {
+        desyncTimerRef.current = setTimeout(
+          handleDesyncTimedOut,
+          desyncTimeoutMs,
+        );
+        setIsDesyncOverlayOpen(true);
+        // Accelerates the polling to resync as fast as possible with the device
+        setPollingPeriodMs(shortPollingPeriodMs);
+      }
     } else if (!allowedError) {
       // desyncTimer is cleared in the useEffect cleanup function
       setPollingPeriodMs(normalPollingPeriodMs);
