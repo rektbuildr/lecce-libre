@@ -44,7 +44,7 @@ const BackgroundRunnerService = async ({
   const TAG = backgroundMode ? "headlessJS" : "BLEFWUpdate";
 
   const emitEvent = (e: FwUpdateBackgroundEvent) => {
-    log(TAG, e);
+    log(TAG, JSON.stringify(e));
     store.dispatch(addBackgroundEvent(e));
   };
 

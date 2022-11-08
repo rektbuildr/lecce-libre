@@ -15,6 +15,6 @@ export const isFirmwareUpdateVersionSupported = (
 ) =>
   Boolean(deviceVersionRangesForUpdate[modelId]) &&
   versionSatisfies(
-    coerce(deviceInfo.version),
+    coerce(deviceInfo.version) || "0.0.0",
     deviceVersionRangesForUpdate[modelId] as string,
   );
