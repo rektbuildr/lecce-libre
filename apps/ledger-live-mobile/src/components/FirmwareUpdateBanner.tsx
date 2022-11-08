@@ -68,9 +68,9 @@ const FirmwareUpdateBanner = ({
   };
 
   const usbFwUpdateFeatureFlag = useFeature("llmUsbFirmwareUpdate");
-  // const bleFwUpdateFeatureFlag = useFeature("llmBLEFirmwareUpdate"); // TODO
+  const bleFwUpdateFeatureFlag = useFeature("llmBLEFirmwareUpdate");
 
-  const isUsbFwVersionUpdateSupported =
+  const isFwVersionUpdateSupported =
     lastSeenDevice &&
     isFirmwareUpdateVersionSupported(
       lastSeenDevice.deviceInfo,
@@ -78,7 +78,9 @@ const FirmwareUpdateBanner = ({
     );
   const isDeviceConnectedViaUSB = lastConnectedDevice?.wired === true;
   const usbFwUpdateActivated =
-    usbFwUpdateFeatureFlag?.enabled && isUsbFwVersionUpdateSupported;
+    usbFwUpdateFeatureFlag?.enabled && isFwVersionUpdateSupported;
+  const bleFwUpdateActivated =
+    bleFwUpdateFeatureFlag?.enabled && isFwVersionUpdateSupported;
 
   const fwUpdateActivatedButNotWired =
     usbFwUpdateActivated && !isDeviceConnectedViaUSB;
@@ -102,7 +104,9 @@ const FirmwareUpdateBanner = ({
           type="color"
           title={t("FirmwareUpdate.update")}
           onPress={
-            usbFwUpdateActivated ? onExperimentalFirmwareUpdate : onPress
+            usbFwUpdateActivated || bleFwUpdateActivated
+              ? onExperimentalFirmwareUpdate
+              : onPress
           }
           outline={false}
         />
