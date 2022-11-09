@@ -22,13 +22,16 @@ function setCurrentDevice(state) {
 
 const handlers: Object = {
   RESET_DEVICES: () => initialState,
-  ADD_DEVICE: (state: DevicesState, { payload: device }: { payload: Device }) =>
-    setCurrentDevice({
+  ADD_DEVICE: (state: DevicesState, { payload: device }: { payload: Device }) => {
+    const duplicate = state.devices.some(
+      d => d.deviceId === device.deviceId || d.deviceId?.id === device.deviceId?.id,
+    );
+    if (duplicate && state.currentDevice) return state;
+    return setCurrentDevice({
       ...state,
-      devices: [...state.devices, device].filter(
-        (v, i, s) => s.findIndex(t => t.deviceId === v.deviceId) === i,
-      ),
-    }),
+      devices: duplicate ? state.devices : [...state.devices, device],
+    });
+  },
   REMOVE_DEVICE: (state: DevicesState, { payload: device }: { payload: Device }) => ({
     ...state,
     currentDevice:

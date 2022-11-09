@@ -54,6 +54,7 @@
     "@ledgerhq/errors": "workspace:^",
     "@ledgerhq/hw-transport": "workspace:^",
     "@ledgerhq/hw-transport-http": "workspace:^",
+    "@ledgerhq/hw-transport-node-ble": "workspace:^",
     "@ledgerhq/hw-transport-node-hid-singleton": "workspace:^",
     "@ledgerhq/live-common": "workspace:^",
     "@ledgerhq/logs": "workspace:^",
