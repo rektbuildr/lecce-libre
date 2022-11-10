@@ -20,6 +20,7 @@ import {
   connectDevice,
   isDeviceDisconnected,
 } from "./platform";
+export * as noble from "@abandonware/noble";
 
 type Device = any;
 

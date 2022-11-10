@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Subscription } from "rxjs";
 import { ListenDescriptorEvent } from "@ledgerhq/hw-transport-node-hid-singleton";
-import { Device, DeviceModelId } from "@ledgerhq/types-devices";
+import { DeviceModelId } from "@ledgerhq/types-devices";
 import { addDevice, removeDevice, resetDevices } from "~/renderer/actions/devices";
 import { command } from "~/renderer/commands";
 
@@ -12,11 +12,10 @@ export const useListenToHidDevices = () => {
     let sub: Subscription;
     let subBt: Subscription;
 
-    // resetDevices();
+    resetDevices();
 
     function syncDevices() {
       const devices: { [key: string]: boolean } = {};
-
       sub = command("listenToHidDevices")().subscribe(
         ({ device, deviceModel, type, descriptor }: ListenDescriptorEvent) => {
           if (device) {
@@ -48,44 +47,45 @@ export const useListenToHidDevices = () => {
     }
 
     function syncBtDevices() {
-      const devices: { [key: string]: boolean } = {};
-      let lastDeviceId: string = null;
+      const bleDevices: { [key: string]: boolean } = {};
 
       subBt = command("listenBluetoothDevices")().subscribe(
         ({ device, deviceModel, type, descriptor }: ListenDescriptorEvent) => {
-          if (device && device.id !== lastDeviceId) {
-            lastDeviceId = device.id;
+          if (device) {
             const stateDevice = {
               deviceId: descriptor || "",
-              modelId: DeviceModelId.nanoX, // deviceModel ? deviceModel.id : DeviceModelId.nanoX,
+              modelId: deviceModel ? deviceModel.id : DeviceModelId.nanoX,
               wired: false,
             };
 
+            if (bleDevices[descriptor.id]) return;
+
             if (type === "add") {
-              devices[descriptor.id] = true;
+              bleDevices[descriptor.id] = true;
               dispatch(addDevice(stateDevice));
             } else if (type === "remove") {
-              delete devices[descriptor.id];
+              delete bleDevices[descriptor.id];
               dispatch(removeDevice(stateDevice));
             }
           }
         },
         error => {
           console.log("Bluetooth error.", error);
-          setTimeout(syncBtDevices, 1000);
+          setTimeout(syncBtDevices, 5000);
         },
         () => {
           console.log("Bluetooth end.");
-          setTimeout(syncBtDevices, 1000);
+          setTimeout(syncBtDevices, 5000);
         },
       );
     }
 
     const timeoutSyncDevices = setTimeout(syncDevices, 1000);
-    syncBtDevices();
+    const timeoutSynBtcDevices = setTimeout(syncBtDevices, 1000);
 
     return () => {
       clearTimeout(timeoutSyncDevices);
+      clearTimeout(timeoutSynBtcDevices);
       sub.unsubscribe();
       subBt.unsubscribe();
     };

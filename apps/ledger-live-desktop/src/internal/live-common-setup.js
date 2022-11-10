@@ -7,10 +7,9 @@ import { addAccessHook, setErrorRemapping } from "@ledgerhq/live-common/hw/devic
 import { setEnvUnsafe, getEnv } from "@ledgerhq/live-common/env";
 import { retry } from "@ledgerhq/live-common/promise";
 import TransportNodeHidSingleton from "@ledgerhq/hw-transport-node-hid-singleton";
-import BluetoothTransport from "@ledgerhq/hw-transport-node-ble";
+import BluetoothTransport, { noble } from "@ledgerhq/hw-transport-node-ble";
 import TransportHttp from "@ledgerhq/hw-transport-http";
 import { DisconnectedDevice } from "@ledgerhq/errors";
-import noble from "@abandonware/noble";
 
 /* eslint-disable guard-for-in */
 for (const k in process.env) {
@@ -58,20 +57,27 @@ if (getEnv("DEVICE_PROXY_URL")) {
   registerTransportModule({
     id: "ble",
     open: peripheral => {
-      const bluetoothPeripheral = noble._peripherals[peripheral?.id];
-      if (!bluetoothPeripheral) return false;
-      return retry(() => BluetoothTransport.open(noble._peripherals[peripheral.id]), {
-        maxRetry: 4,
-      });
+      if (peripheral?.id) {
+        const bluetoothPeripheral = noble._peripherals[peripheral.id];
+        if (!bluetoothPeripheral) return false;
+        return retry(() => BluetoothTransport.open(noble._peripherals[peripheral.id]), {
+          maxRetry: 4,
+        });
+      }
     },
     disconnect: id => BluetoothTransport.disconnect(id),
+    setAllowAutoDisconnect: () => undefined,
   });
   registerTransportModule({
     id: "hid",
-    open: devicePath => retry(() => TransportNodeHidSingleton.open(), { maxRetry: 4 }),
+    open: devicePath => {
+      if (typeof devicePath === "string") {
+        return retry(() => TransportNodeHidSingleton.open(), { maxRetry: 4 });
+      }
+    },
     disconnect: () => Promise.resolve(),
     setAllowAutoDisconnect: (transport, _, allow) => {
-      transport.setAllowAutoDisconnect(allow);
+      transport.setAllowAutoDisconnect && transport.setAllowAutoDisconnect(allow);
     },
   });
 }
