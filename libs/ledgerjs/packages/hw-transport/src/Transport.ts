@@ -278,7 +278,6 @@ export default class Transport {
         "An action was already pending on the Ledger device. Please deny or reconnect."
       );
     }
-
     let resolveBusy;
     const busyPromise: Promise<void> = new Promise((r) => {
       resolveBusy = r;
