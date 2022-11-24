@@ -30,10 +30,9 @@ export const getAppAndVersion = async (
 export const checkIsBtcLegacy = async (
   transport: Transport
 ): Promise<boolean> => {
-  const data = Buffer.from("058000005480000000800000000000000000000025", "hex");
   try {
-    //await transport.send(225, 0, 0, 0, data, [0x9000, 0xe000]);
-    await transport.send(0xe0, 0x40, 0, 2, data, [0x9000, 0xe000, 0x6d00]);
+    // Call old btc API, it will throw an exception with new btc app. It is a workaround to differentiate new/old btc nano app
+    await transport.send(0xe0, 0xc4, 0, 0);
   } catch (e: unknown) {
     return false;
   }
