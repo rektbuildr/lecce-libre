@@ -571,6 +571,28 @@ const installMcu = (
   }).pipe(remapSocketError(context));
 };
 
+function retrieveMcuVersion(
+  finalFirmware: FinalFirmware
+): Promise<McuVersion | undefined> {
+  return getMcus()
+    .then((mcus) =>
+      mcus.filter((deviceInfo) => {
+        const provider = getProviderId(deviceInfo);
+        return (mcu) => mcu.providers.includes(provider);
+      })
+    )
+    .then((mcus) =>
+      mcus.filter((mcu) => mcu.from_bootloader_version !== "none")
+    )
+    .then((mcus) =>
+      findBestMCU(
+        finalFirmware.mcu_versions
+          .map((id) => mcus.find((mcu) => mcu.id === id))
+          .filter(Boolean)
+      )
+    );
+}
+
 const API = {
   applicationsByDevice,
   listApps,
@@ -588,5 +610,6 @@ const API = {
   install,
   genuineCheck,
   installMcu,
+  retrieveMcuVersion,
 };
 export default API;
