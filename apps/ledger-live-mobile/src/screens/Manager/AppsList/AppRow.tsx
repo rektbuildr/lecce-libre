@@ -1,6 +1,7 @@
 import React, { memo, useMemo, useCallback } from "react";
 
 import { App } from "@ledgerhq/types-live";
+import { useFeature } from "@ledgerhq/live-common/featureFlags/index";
 
 import { State, Action } from "@ledgerhq/live-common/apps/index";
 import { useNotEnoughMemoryToInstall } from "@ledgerhq/live-common/apps/react";
@@ -61,6 +62,7 @@ const AppRow = ({
   setStorageWarning,
   optimisticState,
 }: Props) => {
+  const appAuthorNameFeature = useFeature("appAuthorName");
   const { name, bytes, version: appVersion, displayName, authorName } = app;
   const { installed, deviceInfo } = state;
 
@@ -97,9 +99,11 @@ const AppRow = ({
         >
           {displayName}
         </Text>
-        <Text variant="tiny" fontWeight="medium" color="neutral.c70">
-          {"by" + developedBy}
-        </Text>
+        {appAuthorNameFeature?.enabled && (
+          <Text variant="tiny" fontWeight="medium" color="neutral.c70">
+            {"by" + developedBy}
+          </Text>
+        )}
       </LabelContainer>
       <VersionContainer borderColor="neutral.c40" mx={3}>
         <Text
