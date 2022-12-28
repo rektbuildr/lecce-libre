@@ -202,7 +202,7 @@ jobs:
           force-avd-creation: false
           emulator-options: -verbose -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           ram-size: 4096M
-          script: pnpm mobile e2e:test -c android.emu.release --loglevel verbose --record-logs all --take-screenshots all --record-videos failing --forceExit --detectOpenHandles --cleanup --headless
+          script: pnpm mobile e2e:test -c android.emu.release --loglevel verbose --record-logs all --take-screenshots all --record-videos failing --force-adb-install --forceExit --detectOpenHandles --cleanup --headless
 
       - name: Upload test artifacts
         if: always()
