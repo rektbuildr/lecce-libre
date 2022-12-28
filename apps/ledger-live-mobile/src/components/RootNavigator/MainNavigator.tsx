@@ -114,6 +114,7 @@ export default function MainNavigator({
             <TabIcon
               Icon={Icons.GraphGrowMedium}
               i18nKey="tabs.market"
+              testId="market-navigator-button"
               {...props}
             />
           ),

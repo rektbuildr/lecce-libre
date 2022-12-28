@@ -7,6 +7,7 @@ type Props = {
   color: string;
   i18nKey: string;
   Icon: React.ComponentType<{ size?: number; color?: string }>;
+  testId?: string;
 };
 
 const TabIconContainer = styled.View`
@@ -16,10 +17,10 @@ const TabIconContainer = styled.View`
   padding-top: ${p => p.theme.space[2]}px;
 `;
 
-export default function TabIcon({ Icon, i18nKey, color }: Props) {
+export default function TabIcon({ Icon, i18nKey, color, testId }: Props) {
   const { t } = useTranslation();
   return (
-    <TabIconContainer>
+    <TabIconContainer testID={testId}>
       <Icon size={24} color={color} />
       <Text
         numberOfLines={1}
