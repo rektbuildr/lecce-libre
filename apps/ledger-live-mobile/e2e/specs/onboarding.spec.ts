@@ -48,10 +48,12 @@ describe("Onboarding", () => {
   });
 
   it("adds device via Bluetooth", async () => {
+    await onboardingSteps.addALedger();
+    await onboardingSteps.connectWithExistingDevice();
     onboardingSteps.bridgeAddDevices();
     await waitFor(onboardingSteps.getNanoDevice("David"))
       .toExist()
-      .withTimeout(3000);
+      .withTimeout(30000);
     await onboardingSteps.addDeviceViaBluetooth("David");
   });
 

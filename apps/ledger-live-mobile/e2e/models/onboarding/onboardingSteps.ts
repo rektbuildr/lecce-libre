@@ -21,6 +21,9 @@ export default class OnboardingSteps {
   getNanoDevice = (name = "") => getElementByText(`Nano X de ${name}`);
   getPairWithBluetooth = () => getElementByText("Pair with bluetooth");
   getMaybeLater = () => getElementById("Maybe later");
+  addALedgerButton = () => getElementById("add-a-ledger-button");
+  connectExistingLedgerButton = () =>
+    getElementById("connect-existing-ledger-button");
 
   async startOnboarding() {
     await tapByElement(this.getOnboardingGetStarted());
@@ -58,7 +61,7 @@ export default class OnboardingSteps {
     await tapByElement(this.getPairDeviceButton());
   }
 
-  bridgeAddDevices() {
+  async bridgeAddDevices() {
     bridge.addDevices();
   }
 
@@ -79,6 +82,14 @@ export default class OnboardingSteps {
 
   async openLedgerLive() {
     await tapByElement(this.getContinue());
+  }
+
+  async addALedger() {
+    await tapByElement(this.addALedgerButton());
+  }
+
+  async connectWithExistingDevice() {
+    await tapByElement(this.connectExistingLedgerButton());
   }
 
   async declineNotifications() {

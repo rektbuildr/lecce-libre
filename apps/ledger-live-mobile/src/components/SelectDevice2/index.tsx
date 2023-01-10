@@ -232,7 +232,7 @@ export default function SelectDevice({ onSelect, stopBleScanning }: Props) {
                 />
               ))
             ) : (
-              <Touchable onPress={onAddNewPress}>
+              <Touchable onPress={onAddNewPress} testID="add-a-ledger-button">
                 <Flex
                   p={5}
                   mb={4}
@@ -310,7 +310,10 @@ export default function SelectDevice({ onSelect, stopBleScanning }: Props) {
                   </Flex>
                 </Flex>
               </Touchable>
-              <Touchable onPress={openBlePairingFlow}>
+              <Touchable
+                onPress={openBlePairingFlow}
+                testID="connect-existing-ledger-button"
+              >
                 <Flex
                   backgroundColor="neutral.c30"
                   px={6}
