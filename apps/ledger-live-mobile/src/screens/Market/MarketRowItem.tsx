@@ -53,6 +53,7 @@ function MarketRowItem({ item, index, counterCurrency, locale, t }: Props) {
       alignItems="center"
       py="16px"
       key={index}
+      testID={`market-row-item-${item.id}`}
     >
       {internalCurrency ? (
         <CircleCurrencyIcon
