@@ -23,7 +23,7 @@ export class SwapPage {
     this.page = page;
     this.swapMenuButton = page.locator("data-test-id=drawer-swap-button");
     this.maxSpendableToggle = page.locator("data-test-id=swap-max-spendable-toggle");
-    this.accountByName = (accountName: string) => page.getByText(accountName);
+    this.accountByName = (accountName: string) => page.getByText(accountName).first();
     this.accountDropdownAddAccountButton = page.getByText("Add account");
     this.reverseSwapPairButton = page.locator("data-test-id=swap-reverse-pair-button");
     this.addToAccountButton = page.locator("data-test-id=add-destination-account-button");
@@ -37,8 +37,8 @@ export class SwapPage {
     this.changeTargetAccountButton = page
       .locator("data-test-id=change-exchange-details-button")
       .first();
-    this.targetAccountContainer = (accountName: string): Locator =>
-      page.locator(`data-test-id=target-account-container-${accountName}`).first();
+    this.targetAccountContainer = (accountName: string, index = 0): Locator =>
+      page.locator(`data-test-id=target-account-container-${accountName}`).nth(index);
     this.changeNetworkFeesButton = page
       .locator("data-test-id=change-exchange-details-button")
       .last();
@@ -77,8 +77,8 @@ export class SwapPage {
     await this.changeTargetAccountButton.click();
   }
 
-  async selectTargetAccount(accountName: string) {
-    await this.targetAccountContainer(accountName).click();
+  async selectTargetAccount(accountName: string, index = 0) {
+    await this.targetAccountContainer(accountName, index).click();
   }
 
   async openNetworkFeesDrawer() {

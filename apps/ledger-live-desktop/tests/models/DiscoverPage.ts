@@ -9,6 +9,7 @@ export class DiscoverPage {
   readonly disclaimerTitle: Locator;
   readonly disclaimerText: Locator;
   readonly liveAppLoadingSpinner: Locator;
+  readonly liveAppTitle: Locator;
   readonly getAllAccountsButton: Locator;
   readonly requestAccountButton: Locator;
   readonly selectAssetTitle: Locator;
@@ -29,6 +30,7 @@ export class DiscoverPage {
     this.disclaimerTitle = page.locator("data-test-id=live-app-disclaimer-drawer-title");
     this.disclaimerText = page.locator("text=External Application");
     this.liveAppLoadingSpinner = page.locator("data-test-id=live-app-loading-spinner");
+    this.liveAppTitle = page.locator("data-test-id=live-app-title");
     this.getAllAccountsButton = page.locator("data-test-id=get-all-accounts-button"); // TODO: make this into its own model
     this.requestAccountButton = page.locator("data-test-id=request-single-account-button");
     this.selectAssetTitle = page.locator("data-test-id=select-asset-drawer-title");
@@ -47,6 +49,11 @@ export class DiscoverPage {
   async openTestApp() {
     await this.testAppCatalogItem.click();
     await this.disclaimerTitle.waitFor({ state: "visible" });
+  }
+
+  async getLiveAppTitle() {
+    const text = await this.liveAppTitle.textContent();
+    return text;
   }
 
   async waitForLiveAppToLoad() {

@@ -1,6 +1,6 @@
 [
   {
-    "tag_name": "2.51.0",
-    "body": "\n### 🚀 Features\n\n- Ledger Live is no longer compatible with Windows 7.\n\n### 🌷 Improvements\n\n- We've made some tweaks to improve the staking experience for Ethereum (ETH) and make it easier to select and access staking providers.\n"
+    "tag_name": "2.52.0",
+    "body": "\n### 🚀 Features\n\n- Starting today, you can **stake MultiversX (EGLD)** through Ledger Live and earn rewards. In addition, we've added **support for** 3 MultiversX tokens—**Tether (USDT), Holoride (RIDE) and Maiar DEX (MEX)**.\n- Swapping crypto? Now you can **compare quotes from ParaSwap and 1inch** for 200 tokens and select the best offer.\n\n### 🗑 Removed features\n\n- Ledger Live no longer supports the **XSN network**.\n- **TronGrid** has been removed from the Experimental features.\n\n### 🐛 Fixes\n\n- The delegated ATOM wasn’t visible in the account or transaction history. We’ve fixed this.\n"
   }
 ]

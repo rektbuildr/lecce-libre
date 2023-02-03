@@ -95,7 +95,11 @@ const TargetAccount = memo(function TargetAccount({
       justifyContent="space-between"
       selected={selected}
       onClick={onClick}
-      data-test-id={`target-account-container-${account.name}`}
+      data-test-id={
+        account.token
+          ? `target-account-container-${account.token.name}`
+          : `target-account-container-${account.name}`
+      }
     >
       <Box horizontal alignItems="center" pl={isChild ? "8px" : 0}>
         {isChild && (
