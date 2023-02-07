@@ -430,6 +430,7 @@ export enum ScreenName {
   OnboardingProtectFlow = "OnboardingProtectFlow",
   SyncOnboardingCompanion = "SyncOnboardingCompanion",
   SyncOnboardingCompletion = "SyncOnboardingCompletion",
+  SyncOnboardingBleDevicePairingFlow = "SyncOnboardingBleDevicePairingFlow",
   DeviceModelSelection = "DeviceModelSelection",
   BleDevicesScanning = "BleDevicesScanning",
   BleDevicePairing = "BleDevicePairing",

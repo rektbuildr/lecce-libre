@@ -1,4 +1,5 @@
 import { Device } from "@ledgerhq/live-common/hw/actions/types";
+import { DeviceModelId } from "@ledgerhq/types-devices";
 import { ScreenName } from "../../../const";
 
 export type SyncOnboardingStackParamList = {
@@ -7,5 +8,8 @@ export type SyncOnboardingStackParamList = {
   };
   [ScreenName.SyncOnboardingCompletion]: {
     device: Device;
+  };
+  [ScreenName.SyncOnboardingBleDevicePairingFlow]: {
+    filterByDeviceModelId?: DeviceModelId;
   };
 };

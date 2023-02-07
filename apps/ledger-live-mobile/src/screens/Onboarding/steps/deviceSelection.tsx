@@ -1,23 +1,22 @@
 import React, { useMemo } from "react";
 import { Image } from "react-native";
 import { useTranslation } from "react-i18next";
-import { useNavigation } from "@react-navigation/native";
+import {
+  CompositeNavigationProp,
+  useNavigation,
+} from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 import { Text, ScrollListContainer } from "@ledgerhq/native-ui";
 import { getDeviceModel } from "@ledgerhq/devices/index";
 import useFeature from "@ledgerhq/live-common/featureFlags/useFeature";
 import { DeviceModelId } from "@ledgerhq/types-devices";
 import { TrackScreen } from "../../../analytics";
-import { ScreenName, NavigatorName } from "../../../const";
+import { NavigatorName, ScreenName } from "../../../const";
 import { OnboardingNavigatorParamList } from "../../../components/RootNavigator/types/OnboardingNavigator";
-import {
-  BaseNavigationComposite,
-  RootNavigationComposite,
-  StackNavigatorNavigation,
-} from "../../../components/RootNavigator/types/helpers";
+import { BaseNavigationComposite } from "../../../components/RootNavigator/types/helpers";
 import DeviceSetupView from "../../../components/DeviceSetupView";
-import { RootStackParamList } from "../../../components/RootNavigator/types/RootNavigator";
-import { NavigateInput } from "../../../components/RootNavigator/types/BaseNavigator";
 import ChoiceCard from "./ChoiceCard";
+import { SyncOnboardingStackParamList } from "../../../components/RootNavigator/types/SyncOnboardingNavigator";
 
 const nanoX = {
   source: require("../../../../assets/images/devices/NanoXCropped.png"),
@@ -40,12 +39,13 @@ const stax = {
   setupTime: 300000,
 };
 
-type NavigationProp = RootNavigationComposite<
-  BaseNavigationComposite<
-    StackNavigatorNavigation<
+type NavigationProp = BaseNavigationComposite<
+  CompositeNavigationProp<
+    StackNavigationProp<
       OnboardingNavigatorParamList,
       ScreenName.OnboardingDeviceSelection
-    >
+    >,
+    StackNavigationProp<SyncOnboardingStackParamList>
   >
 >;
 
@@ -65,36 +65,14 @@ function OnboardingStepDeviceSelection() {
     getDeviceModel(modelId)?.productName || modelId;
 
   const next = (deviceModelId: DeviceModelId) => {
-    // Add NanoX.id, NanoSP.id etc. when they will support the sync-onboarding
-    if ([stax.id].includes(deviceModelId)) {
-      const navigateInput: NavigateInput<RootStackParamList> = {
-        name: NavigatorName.BaseOnboarding,
+    // Add nanoX, nanoSP etc. when they will support the sync-onboarding
+    if ([DeviceModelId.stax].includes(deviceModelId)) {
+      navigation.navigate(NavigatorName.BaseOnboarding, {
+        screen: NavigatorName.SyncOnboarding,
         params: {
-          screen: NavigatorName.SyncOnboarding,
+          screen: ScreenName.SyncOnboardingBleDevicePairingFlow,
           params: {
-            screen: ScreenName.SyncOnboardingCompanion,
-            params: {
-              // @ts-expect-error BleDevicePairingFlow will set this param
-              device: null,
-            },
-          },
-        },
-      };
-      // On pairing success, navigate to the Sync Onboarding Companion
-      // navigation.push on stack navigation because with navigation.navigate
-      // it could not go back to this screen in certain cases.
-      navigation.push(NavigatorName.Base, {
-        screen: ScreenName.BleDevicePairingFlow,
-        params: {
-          filterByDeviceModelId: DeviceModelId.stax,
-          areKnownDevicesDisplayed: true,
-          onSuccessAddToKnownDevices: false,
-          onSuccessNavigateToConfig: {
-            // navigation.push on success because it could not correctly
-            // go back to the previous screens (BLE and then this screen).
-            navigationType: "push",
-            navigateInput,
-            pathToDeviceParam: "params.params.params.device",
+            filterByDeviceModelId: DeviceModelId.stax,
           },
         },
       });
