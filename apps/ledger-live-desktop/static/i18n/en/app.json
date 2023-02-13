@@ -1399,7 +1399,7 @@
         "label": "Popular"
       },
       "earn": {
-        "title": "Earn",
+        "title": "Stake",
         "description": "Grow your crypto with Ledger"
       }
     }
@@ -2958,7 +2958,7 @@
             "currentDelegation": "Current delegation",
             "newDelegation": "New delegation",
             "chooseValidator": "Choose a validator",
-            "warning": "You will have to wait <0>{{numberOfDays}}</0> to redelegate from the new validator, if you change your mind again",
+            "warning": "You will have to wait <0>{{numberOfDays}} days</0> to redelegate from the new validator, if you change your mind again",
             "amountLabel": "Amount to redelegate"
           },
           "device": {
@@ -2985,8 +2985,8 @@
         "steps": {
           "amount": {
             "title": "Amount",
-            "subtitle": "The undelegation process takes <0>{{numberOfDays}}</0> to finalize.",
-            "warning": "Rewards will be immediately cashed in. The undelegated amount will be back in the available balance after the <0>21-day timelock</0>.",
+            "subtitle": "The undelegation process takes <0>{{numberOfDays}} days</0> to finalize.",
+            "warning": "Rewards will be immediately cashed in. The undelegated amount will be back in the available balance after the <0>{{numberOfDays}}-day timelock</0>.",
             "fields": {
               "validator": "Validator",
               "amount": "Amount to undelegate"
@@ -5375,7 +5375,7 @@
       "description": "Signature must be applied within 30 seconds. Please try again."
     },
     "TronNotEnoughEnergy": {
-      "title": "Energy is lower than necessary. You might pay up to 20TRX in fees."
+      "title": "Energy is lower than necessary. You might pay up to 50 TRX in fees."
     },
     "PairingFailed": {
       "title": "Pairing unsuccessful",
