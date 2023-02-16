@@ -1,0 +1,1 @@
+import"../../../assets/js/modulepreload-polyfill.0c213636.js";import{j as n,c as e}from"../../../assets/js/client.5dec7e36.js";const r=()=>n("div",{className:"container",children:n("h1",{children:"Dev Tools Panel"})});function t(){const o=document.querySelector("#app-container");if(!o)throw new Error("Can not find #app-container");e(o).render(n(r,{}))}t();
