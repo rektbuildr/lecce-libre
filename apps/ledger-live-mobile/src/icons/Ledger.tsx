@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { SvgProps } from "react-native-svg";
 import { StyledPath, StyledSvg } from "./StyledSvg";
 

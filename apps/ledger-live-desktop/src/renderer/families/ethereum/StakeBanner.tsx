@@ -22,6 +22,7 @@ export const StakeBanner: React.FC<{ account: Account }> = ({ account }) => {
     stakeAccountBanner?.params ?? null;
   const state = getEthereumBannerState(account);
   const { stakeProvider } = state;
+  console.log("ACCOUNT", { account });
 
   if (stakeProvider === "lido" && !stakeAccountBannerParams?.eth?.lido) return null;
   if (stakeProvider === "kiln" && !stakeAccountBannerParams?.eth?.kiln) return null;
