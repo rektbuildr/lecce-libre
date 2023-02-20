@@ -178,7 +178,12 @@ export default class TransportWebHID extends Transport {
     const transport = new TransportWebHID(device);
 
     const onDisconnect = (e) => {
+      console.log(`🦕 HID disconnect: ${JSON.stringify(e)}`);
+      transport.exchangeBusyPromise = null;
+
       if (device === e.device) {
+        console.log(`🦕 HID disconnect: device === e`);
+
         getHID().removeEventListener("disconnect", onDisconnect);
 
         transport._emitDisconnect(new DisconnectedDevice());
@@ -200,6 +205,7 @@ export default class TransportWebHID extends Transport {
    * Release the transport device
    */
   async close(): Promise<void> {
+    console.log(`🦕 HID close`);
     await this.exchangeBusyPromise;
     this.device.removeEventListener("inputreport", this.onInputReport);
     await this.device.close();

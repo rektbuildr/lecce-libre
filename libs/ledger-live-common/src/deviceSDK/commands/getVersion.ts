@@ -17,9 +17,10 @@ export function getVersion(
   return new Observable((subscriber) => {
     // TODO: defines actual value
     const oldTimeout = transport.unresponsiveTimeout;
-    transport.setExchangeUnresponsiveTimeout(1000);
+    transport.setExchangeUnresponsiveTimeout(1500);
 
     const unresponsiveCallback = () => {
+      console.log(`🎨 getVersion unresponsive`);
       // Needs to push a value and not an error to allow the command to continue once
       // the device is not unresponsive anymore. Pushing an error would stop the command.
       subscriber.next({ type: "unresponsive" });

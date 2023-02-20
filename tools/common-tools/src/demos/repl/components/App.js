@@ -14,6 +14,7 @@ import { from, defer, Observable } from "rxjs";
 import { filter } from "rxjs/operators";
 import { listen } from "@ledgerhq/logs";
 import { open } from "@ledgerhq/live-common/lib/hw";
+import { getDeviceInfoAction } from "@ledgerhq/live-common/lib/deviceSDK/actions/getDeviceInfo";
 import { commands } from "../commands";
 import AsciiField from "./fields/AsciiField";
 import {
@@ -493,6 +494,22 @@ export default () => {
     [transport]
   );
 
+  const onDeviceSDK = useCallback(() => {
+    getDeviceInfoAction({ deviceId: "webhid" }).subscribe({
+      next: (event) => {
+        addLog({
+          type: "verbose",
+          text: `🧠 deviceSDK event: ${JSON.stringify(event)}`
+        });
+      },
+      error: (error) => {
+        addLogError(`🧠 deviceSDK error: ${JSON.stringify(error)}`);
+      },
+      complete: () => addLog("🧠 deviceSDK complete")
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
   return (
@@ -605,16 +622,16 @@ export default () => {
                 <FormContainer>
                   {selectedCommand
                     ? Object.keys(
-                        selectedCommand.dependencies || {}
-                      ).map((key) =>
-                        dependencies && dependencies[key] ? (
-                          <strong key={key}>
-                            '{key}' dependency resolved.
-                          </strong>
-                        ) : (
-                          <em key={key}>'{key}' dependency loading...</em>
-                        )
+                      selectedCommand.dependencies || {}
+                    ).map((key) =>
+                      dependencies && dependencies[key] ? (
+                        <strong key={key}>
+                          '{key}' dependency resolved.
+                        </strong>
+                      ) : (
+                        <em key={key}>'{key}' dependency loading...</em>
                       )
+                    )
                     : null}
                   {selectedCommand ? (
                     <Form
@@ -627,6 +644,11 @@ export default () => {
                 </FormContainer>
               </Section>
             ) : null}
+          </Section>
+          <Section>
+            <SectionRow>
+              <SendButton onClick={onDeviceSDK} title="get device info Device SDK" />
+            </SectionRow>
           </Section>
           <Section>
             <AdvancedContainer>

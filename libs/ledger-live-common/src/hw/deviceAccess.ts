@@ -111,12 +111,25 @@ export const withDevice =
         resolveQueuedDevice = resolve;
       });
 
-      log("withDevice", `${nonce}: Waiting for queue to complete`, {
-        deviceQueue,
-      });
+      log(
+        "withDevice",
+        `${nonce}: Waiting for queue to complete - deviceQueue: ${JSON.stringify(
+          !!deviceQueue
+        )}`,
+        {
+          deviceQueue,
+        }
+      );
       // For any new job, we'll now wait the exec queue to be available
-      deviceQueue
-        .then(() => open(deviceId)) // open the transport
+      // deviceQueue
+      //   .then(() => {
+      //     console.log(`🧙‍♂️ withDevice: ${nonce} - deviceQueue resolved -> open device`);
+      //     return open(deviceId);
+      //   }) // open the transport
+
+      console.log(`🧙‍♂️ withDevice: ${nonce} - opening device`);
+
+      open(deviceId)
         .then(async (transport) => {
           log("withDevice", `${nonce}: Starting job`);
           setAllowAutoDisconnect(transport, deviceId, false);
@@ -189,11 +202,13 @@ export const retryWhileErrors =
   (attempts: Observable<any>): Observable<any> =>
     attempts.pipe(
       mergeMap((error) => {
+        console.log(`🧙‍♂️ retryWhileErrors ${JSON.stringify(error)}`);
+
         if (!acceptError(error)) {
           return throwError(error);
         }
 
-        return timer(getEnv("WITH_DEVICE_POLLING_DELAY"));
+        return timer(500); // timer(getEnv("WITH_DEVICE_POLLING_DELAY"));
       })
     );
 

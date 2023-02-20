@@ -8,7 +8,7 @@ import isDevFirmware from "../../hw/isDevFirmware";
 import { withDevice } from "../../hw/deviceAccess";
 import { PROVIDERS } from "../../manager/provider";
 import { Observable } from "rxjs";
-import { map, switchMap } from "rxjs/operators";
+import { delay, map, switchMap } from "rxjs/operators";
 import { SharedTaskEvent, sharedLogicTaskWrapper } from "./core";
 import { quitApp } from "../commands/quitApp";
 
@@ -40,12 +40,30 @@ function internalGetDeviceInfoTask({
     return (
       withDevice(deviceId)((transport) =>
         quitApp(transport).pipe(
+          delay(1000),
           switchMap(() => {
+            console.log(`🦖 getDeviceInfo task: calling getVersion ⬇️`);
             return getVersion(transport);
           }),
           map((value) => {
             if (value.type === "unresponsive") {
-              return { type: "error" as const, error: new LockedDeviceError() };
+              console.log(
+                `🦖 getDeviceInfo 🔥 unresponsive 🔥: ${JSON.stringify(value)}`
+              );
+
+              // transport.close().then(() => {
+              //   console.log(
+              //     `🦖 getDeviceInfo unresponsive -> closed 🧼: ${JSON.stringify(
+              //       value
+              //     )}`
+              //   );
+              // });
+              // throw new LockedDeviceError();
+
+              subscriber.error(new LockedDeviceError());
+              return;
+
+              // return { type: "error" as const, error: new LockedDeviceError() };
             }
 
             const { firmwareInfo } = value;

@@ -1,4 +1,4 @@
-import { LockedDeviceError } from "@ledgerhq/errors";
+import { CantOpenDevice, DisconnectedDevice, LockedDeviceError } from "@ledgerhq/errors";
 import { Observable, of } from "rxjs";
 import { catchError, retryWhen, timeout } from "rxjs/operators";
 import { retryWhileErrors } from "../../hw/deviceAccess";
@@ -29,13 +29,20 @@ export function sharedLogicTaskWrapper<TaskArgumentsType, TaskEventsType>(
         .pipe(
           timeout(NO_RESPONSE_TIMEOUT_MS),
           retryWhen(
-            retryWhileErrors((error) => {
-              if (error instanceof LockedDeviceError) {
+            retryWhileErrors((error: unknown) => {
+              console.log(`🦖 retryWhileErrors ...: ${JSON.stringify(error)}`);
+              if (
+                error instanceof LockedDeviceError ||
+                error instanceof DisconnectedDevice ||
+                error instanceof CantOpenDevice
+              ) {
+                console.log(`🦖 retryWhileErrors ✅: ${JSON.stringify(error)}`);
                 // Emits to the action a locked device error event so it is aware of it before retrying
                 subscriber.next({ type: "error", error });
                 return true;
               }
 
+              console.log(`🦖 retryWhileErrors ❌: ${JSON.stringify(error)}`);
               // TODO: other errors on which to retry:
               // - CantOpenDevice: seems to be when device is USB plugged, powered on, but not yet unlocked for the 1st time
               //   since being powered on.

@@ -367,16 +367,25 @@ export function TransportStatusError(statusCode: number): void {
   const statusCodeStr = statusCode.toString(16);
   const message = `Ledger device: ${smsg} (0x${statusCodeStr})`;
 
+  console.log(`🥐 TransportStatusError: statusCode: ${statusCode}`);
   // Maps to a LockedDeviceError
   if (statusCode === StatusCodes.LOCKED_DEVICE) {
+    console.log("🥐 TransportStatusError: throwing new LockedDeviceError");
+    // console.log("🥐 TransportStatusError: 🧙‍♂️ creating new LockedDeviceError");
     throw new LockedDeviceError(message);
+    // const error = LockedDeviceError(message);
+    // this.name = error.name;
+    // this.message = error.message;
+    // this.stack = error.stack;
+    // this.statusCode = statusCode;
+    // this.statusText = statusText;
+  } else {
+    this.name = "TransportStatusError";
+    this.message = message;
+    this.stack = new Error().stack;
+    this.statusCode = statusCode;
+    this.statusText = statusText;
   }
-
-  this.name = "TransportStatusError";
-  this.message = message;
-  this.stack = new Error().stack;
-  this.statusCode = statusCode;
-  this.statusText = statusText;
 }
 TransportStatusError.prototype = new Error();
 
