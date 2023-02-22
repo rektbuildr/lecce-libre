@@ -1,10 +1,11 @@
 import { InformativeCard, Flex, Text } from "@ledgerhq/native-ui";
 import React, { memo, useCallback, useMemo } from "react";
-import { FlatList, Linking, TouchableOpacity } from "react-native";
+import { Linking, TouchableOpacity } from "react-native";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import styled, { useTheme } from "styled-components/native";
 import { InAppBrowser } from "react-native-inappbrowser-reborn";
 import { useTranslation } from "react-i18next";
+import { FlashList } from "@shopify/flash-list";
 import { track, TrackScreen } from "../../analytics";
 import { CryptopanicNewsWithMetadata } from "../../hooks/newsfeed/cryptopanicApi";
 import { inAppBrowserDefaultParams } from "../../components/InAppBrowser";
@@ -145,7 +146,7 @@ function NewsfeedPage() {
   ) : (
     <Flex>
       <TrackScreen category="NewsFeed" />
-      <FlatList
+      <FlashList
         data={posts}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
@@ -154,6 +155,7 @@ function NewsfeedPage() {
         ListFooterComponent={ready && hasMore ? ListFooterComponent : undefined}
         onRefresh={refresh}
         refreshing={loadingState === "refreshing"}
+        estimatedItemSize={91}
       />
     </Flex>
   );

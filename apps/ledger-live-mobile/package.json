@@ -108,6 +108,7 @@
     "@segment/sovran-react-native": "^0.4.4",
     "@sentry/cli": "^2.5.2",
     "@sentry/react-native": "^4.2.4",
+    "@shopify/flash-list": "^1.4.1",
     "@shopify/react-native-performance": "^4.1.2",
     "@shopify/react-native-performance-navigation": "^3.0.0",
     "asyncstorage-down": "^4.2.0",
