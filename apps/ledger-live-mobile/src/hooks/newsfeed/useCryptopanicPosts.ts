@@ -56,7 +56,7 @@ export function useCryptopanicPosts(
           setPosts(apiResult.results);
         }
         // Fixme: Limit page number to 4 (20 items per page), as having too many items in the list break the performance
-        setHasMore(!!apiResult.next && page < 4);
+        setHasMore(!!apiResult.next);
         setCurrentPage(page);
         setLastDataLoadingDate(new Date());
       } catch (e) {
