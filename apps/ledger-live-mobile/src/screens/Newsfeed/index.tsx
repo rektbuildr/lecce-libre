@@ -144,7 +144,7 @@ function NewsfeedPage() {
   return posts.length === 0 && ready ? (
     <EmptyState />
   ) : (
-    <Flex>
+    <>
       <TrackScreen category="NewsFeed" />
       <FlashList
         data={posts}
@@ -157,7 +157,7 @@ function NewsfeedPage() {
         refreshing={loadingState === "refreshing"}
         estimatedItemSize={91}
       />
-    </Flex>
+    </>
   );
 }
 
