@@ -1,6 +1,6 @@
 import { WebviewTag } from "electron";
 import * as remote from "@electron/remote";
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -13,7 +13,7 @@ import {
   useConfig,
   UiHook,
 } from "@ledgerhq/live-common/wallet-api/react";
-import { AppManifest } from "@ledgerhq/live-common/wallet-api/types";
+import { AppManifest, WalletAPIAccount } from "@ledgerhq/live-common/wallet-api/types";
 import trackingWrapper from "@ledgerhq/live-common/wallet-api/tracking";
 import { getEnv } from "@ledgerhq/live-common/env";
 
@@ -187,7 +187,7 @@ function useWebView({ manifest, inputs }: Pick<Props, "manifest" | "inputs">) {
     };
   }, []);
 
-  const { widgetLoaded, onLoad, onReload, onMessage } = useWalletAPIServer({
+  const { widgetLoaded, onLoad, onReload, onMessage, server } = useWalletAPIServer({
     manifest,
     accounts,
     tracking,
@@ -249,7 +249,7 @@ function useWebView({ manifest, inputs }: Pick<Props, "manifest" | "inputs">) {
     };
   }, [widgetLoaded]);
 
-  return { webviewRef, url, widgetLoaded, onReload, webviewStyle };
+  return { webviewRef, url, widgetLoaded, onReload, webviewStyle, server };
 }
 
 interface Props {
@@ -260,11 +260,30 @@ interface Props {
 }
 
 export function WebView({ manifest, onClose, inputs = {}, config }: Props) {
-  const { webviewRef, webviewStyle, url, widgetLoaded, onReload } = useWebView({
+  const { webviewRef, webviewStyle, url, widgetLoaded, onReload, server } = useWebView({
     manifest,
     inputs,
   });
 
+  const [selectedAccount, setSelectedAccount] = useState<WalletAPIAccount | null>(null);
+
+  const { selectedAccount$ } = server.getWalletContext();
+
+  useEffect(() => {
+    const subscription = selectedAccount$.subscribe(account => {
+      setSelectedAccount(account);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [selectedAccount$]);
+
+  console.log({
+    selectAccount: server.selectAccount,
+    selectedAccount,
+    server,
+  });
   return (
     <Container>
       <TrackPage category="Platform" name="App" appId={manifest.id} params={inputs} />
@@ -274,6 +293,8 @@ export function WebView({ manifest, onClose, inputs = {}, config }: Props) {
         onClose={onClose}
         webviewRef={webviewRef}
         config={config?.topBarConfig}
+        selectAccount={() => server.selectAccount()}
+        selectedAccount={selectedAccount}
       />
 
       <Wrapper>

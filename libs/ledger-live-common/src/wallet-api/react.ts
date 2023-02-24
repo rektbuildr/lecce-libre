@@ -11,6 +11,7 @@ import {
   WalletHandlers,
   useWalletAPIServer as useWalletAPIServerRaw,
   ServerConfig,
+  WalletAPIServer,
 } from "@ledgerhq/wallet-api-server";
 import {
   ServerError,
@@ -342,6 +343,7 @@ export function useWalletAPIServer({
   onLoad: () => void;
   onReload: () => void;
   onLoadError: () => void;
+  server: WalletAPIServer;
 } {
   const permission = usePermission(manifest);
   const transport = useTransport(webviewHook.postMessage);
@@ -356,6 +358,7 @@ export function useWalletAPIServer({
     accounts: walletAPIAccounts,
     currencies: walletAPICurrencies,
     permission,
+    selectedAccountId: "",
   });
 
   useEffect(() => {
@@ -684,5 +687,6 @@ export function useWalletAPIServer({
     onLoad,
     onReload,
     onLoadError,
+    server,
   };
 }

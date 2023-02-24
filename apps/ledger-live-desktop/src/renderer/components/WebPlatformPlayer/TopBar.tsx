@@ -6,6 +6,7 @@ import { Trans } from "react-i18next";
 import styled from "styled-components";
 
 import type { LiveAppManifest } from "@ledgerhq/live-common/platform/types";
+import { WalletAPIAccount } from "@ledgerhq/live-common/wallet-api/types";
 
 import { rgba } from "~/renderer/styles/helpers";
 import type { ThemedComponent } from "~/renderer/styles/StyleProvider";
@@ -103,7 +104,7 @@ const ItemContent: ThemedComponent<{}> = styled(Box).attrs(() => ({
   line-height: 20px;
 `;
 
-export const Separator: ThemedComponent<*> = styled.div`
+export const Separator: ThemedComponent<{}> = styled.div`
   margin-right: 16px;
   height: 15px;
   width: 1px;
@@ -118,6 +119,8 @@ export type Props = {
   onHelp?: Function,
   config?: TopBarConfig,
   webviewRef: RefObject<WebviewTag>,
+  selectAccount?: () => Promise<void>,
+  selectedAccount?: WalletAPIAccount | null,
 };
 
 const WebPlatformTopBar = ({
@@ -127,6 +130,8 @@ const WebPlatformTopBar = ({
   onClose,
   config = {},
   webviewRef,
+  selectAccount,
+  selectedAccount,
 }: Props) => {
   const { name, icon } = manifest;
 
@@ -238,6 +243,17 @@ const WebPlatformTopBar = ({
             <LightBulb size={16} />
             <ItemContent>
               <Trans i18nKey="common.sync.devTools" />
+            </ItemContent>
+          </ItemContainer>
+        </>
+      )}
+      {selectAccount && (
+        <>
+          <Separator />
+          <ItemContainer isInteractive onClick={selectAccount}>
+            <LightBulb size={16} />
+            <ItemContent>
+              Select Account
             </ItemContent>
           </ItemContainer>
         </>
