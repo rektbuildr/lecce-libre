@@ -289,6 +289,9 @@ const MainSideBar = () => {
   const handleClickExchange = useCallback(() => {
     push("/exchange");
   }, [push]);
+  const handleClickEarn = useCallback(() => {
+    push("/earn");
+  }, [push]);
 
   const handleClickLend = useCallback(() => {
     if (firstTimeLend) {
@@ -414,6 +417,16 @@ const MainSideBar = () => {
                   iconActiveColor="wallet"
                   onClick={handleClickExchange}
                   isActive={location.pathname === "/exchange"}
+                  disabled={noAccounts}
+                  collapsed={secondAnim}
+                />
+                <SideBarListItem
+                  id={"earn"}
+                  label={"Earn"}
+                  icon={IconExchange}
+                  iconActiveColor="wallet"
+                  onClick={handleClickEarn}
+                  isActive={location.pathname === "/earn"}
                   disabled={noAccounts}
                   collapsed={secondAnim}
                 />
