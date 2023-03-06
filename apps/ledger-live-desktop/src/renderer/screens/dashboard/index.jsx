@@ -34,6 +34,11 @@ import CurrencyDownStatusAlert from "~/renderer/components/CurrencyDownStatusAle
 import PostOnboardingHubBanner from "~/renderer/components/PostOnboardingHub/PostOnboardingHubBanner";
 import FeaturedButtons from "~/renderer/screens/dashboard/FeaturedButtons";
 
+// TEMP: REMOVE THIS
+import Button from "~/renderer/components/ButtonV3";
+import { getWorker, useWorker } from "~/renderer/webworkers";
+// /TEMP
+
 // This forces only one visible top banner at a time
 export const TopBannerContainer: ThemedComponent<{}> = styled.div`
   z-index: 19;
@@ -59,6 +64,16 @@ export default function DashboardPage() {
     accounts,
   ]);
   const isPostOnboardingBannerVisible = usePostOnboardingEntryPointVisibleOnWallet();
+
+  // TEMP: REMOVE THIS
+  const [a, setA] = React.useState(1.5);
+  const [b, setB] = React.useState(3);
+  const [result, setResult] = React.useState<number | undefined>(undefined);
+
+  useWorker("../../webworkers/workers/dummy.ts", "dummy", e => {
+    setResult(e.data);
+  });
+  // /TEMP
 
   const onAccountClick = useCallback(
     account => {
@@ -94,6 +109,16 @@ export default function DashboardPage() {
 
   return (
     <>
+      <div>
+        <div>
+          a: <input type="number" value={a} onChange={e => setA(e.target.value)} />
+        </div>
+        <div>
+          b: <input type="number" value={b} onChange={e => setB(e.target.value)} />
+        </div>
+        <div>floor(a * b) = {result ?? "not calculated yet"}</div>
+        <Button onClick={() => getWorker("dummy").postMessage([a, b])}>🏓 Calculate</Button>
+      </div>
       <TopBannerContainer>
         <MigrationBanner />
         <ClearCacheBanner />
