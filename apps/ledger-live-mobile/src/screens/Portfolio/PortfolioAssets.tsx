@@ -4,7 +4,14 @@ import React, { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { useStartProfiler } from "@shopify/react-native-performance";
-import { GestureResponderEvent } from "react-native";
+import { GestureResponderEvent, Button as RNButton } from "react-native";
+import {
+  isCurrencySupported,
+  listSupportedCurrencies,
+  listTokens,
+} from "@ledgerhq/live-common/currencies/index";
+import { Account, AccountLike } from "@ledgerhq/types-live";
+import { CryptoCurrency, TokenCurrency } from "@ledgerhq/types-cryptoassets";
 import { useDistribution } from "../../actions/general";
 import { TrackScreen } from "../../analytics";
 import { NavigatorName, ScreenName } from "../../const";
@@ -30,6 +37,14 @@ const PortfolioAssets = ({ hideEmptyTokenAccount, openAddModal }: Props) => {
     hideEmptyTokenAccount,
   });
   const discreetMode = useSelector(discreetModeSelector);
+  const listSupportedTokens = useMemo(
+    () => listTokens().filter(t => isCurrencySupported(t.parentCurrency)),
+    [],
+  );
+  const cryptoCurrencies = useMemo(
+    () => listSupportedCurrencies() as (TokenCurrency | CryptoCurrency)[],
+    [listSupportedTokens],
+  );
 
   const blacklistedTokenIds = useSelector(blacklistedTokenIdsSelector);
 
@@ -63,7 +78,32 @@ const PortfolioAssets = ({ hideEmptyTokenAccount, openAddModal }: Props) => {
         accountsLength={distribution.list && distribution.list.length}
         discreet={discreetMode}
       />
+      <RNButton
+        title="Staking flow"
+        onPress={() => {
+          navigation.navigate(NavigatorName.RequestAccount, {
+            screen: ScreenName.RequestAccountsSelectCrypto,
+            params: {
+              currencies: cryptoCurrencies,
+              allowAddAccount: true,
+              onSuccess: (account: AccountLike, parentAccount?: Account) => {
+                navigation.navigate(NavigatorName.Base, {
+                  screen: NavigatorName.NoFundsFlow,
+                  params: {
+                    screen: ScreenName.NoFunds,
+                    params: {
+                      account,
+                      parentAccount,
+                    }
+                  }
+                });
+              },
+            },
+          });
+        }}
+      />
       <Assets assets={assetsToDisplay} />
+
       {distribution.list.length < maxAssetsToDisplay ? (
         <Button
           type="shade"

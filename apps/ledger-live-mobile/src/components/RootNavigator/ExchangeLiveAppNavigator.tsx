@@ -1,10 +1,18 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useTheme } from "styled-components/native";
 import { Icons, Flex } from "@ledgerhq/native-ui";
 import { useFeature } from "@ledgerhq/live-common/featureFlags/index";
-import { findCryptoCurrencyByKeyword } from "@ledgerhq/live-common/currencies/index";
-import { ScreenName } from "../../const";
+import {
+  findCryptoCurrencyByKeyword,
+  isCurrencySupported,
+  listSupportedCurrencies,
+  listTokens,
+} from "@ledgerhq/live-common/currencies/index";
+import { Account, AccountLike } from "@ledgerhq/types-live";
+import { CryptoCurrency, TokenCurrency } from "@ledgerhq/types-cryptoassets";
+import { useNavigation } from "@react-navigation/native";
+import { NavigatorName, ScreenName } from "../../const";
 import { getStackNavigatorConfig } from "../../navigation/navigatorConfig";
 
 import PlatformApp from "../../screens/Platform/App";
@@ -20,6 +28,50 @@ const ExchangeBuy = (
     ScreenName.ExchangeBuy
   >,
 ) => {
+  const navigation = useNavigation();
+  const startStakeRequested = _props.route.params?.startStake;
+
+  const listSupportedTokens = useMemo(
+    () => listTokens().filter(t => isCurrencySupported(t.parentCurrency)),
+    [],
+  );
+  const cryptoCurrencies = useMemo(
+    () => listSupportedCurrencies() as (TokenCurrency | CryptoCurrency)[],
+    [listSupportedTokens],
+  );
+
+  const startStake = () =>
+    navigation.navigate(NavigatorName.RequestAccount, {
+      screen: ScreenName.RequestAccountsSelectCrypto,
+      params: {
+        currencies: cryptoCurrencies,
+        allowAddAccount: true,
+        onSuccess: (account: AccountLike, parentAccount?: Account) => {
+          navigation.navigate(NavigatorName.Base, {
+            screen: NavigatorName.NoFundsFlow,
+            params: {
+              screen: ScreenName.NoFunds,
+              params: {
+                account,
+                parentAccount,
+              },
+            },
+          });
+          // alert("success");
+        },
+        // onError: (e: Error) => {
+        //   console.log(e);
+        //   alert("error");
+        // },
+      },
+    });
+
+  useEffect(() => {
+    if (startStakeRequested) {
+      startStake();
+      navigation.setParams({ startStake: false });
+    }
+  }, [startStakeRequested]);
   // PTX smart routing feature flag - buy sell live app flag
   const ptxSmartRoutingMobile = useFeature("ptxSmartRoutingMobile");
   return (
