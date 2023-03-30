@@ -42,15 +42,26 @@ export type LoadImageEvent =
       imageHash: string;
     };
 
+export type LoadimageResult = {
+  imageHash: string;
+  imageSize: number;
+};
+
 export type LoadImageRequest = {
+  hexImage: string; // When provided, will skip the backup if it matches the hash.
+};
+
+export type Input = {
   deviceId: string;
-  hexImage: string;
+  request: LoadImageRequest;
 };
 
 export default function loadImage({
   deviceId,
-  hexImage,
-}: LoadImageRequest): Observable<LoadImageEvent> {
+  request,
+}: Input): Observable<LoadImageEvent> {
+  const { hexImage } = request;
+
   const sub = withDevice(deviceId)(
     (transport) =>
       new Observable((subscriber) => {

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { Button, Flex, Divider, Text, Input, Icons, BoxedIcon } from "@ledgerhq/react-ui";
 import { Device } from "@ledgerhq/live-common/hw/actions/types";
 import { useTranslation } from "react-i18next";
@@ -37,6 +37,8 @@ const EditDeviceName: React.FC<Props> = ({ onClose, deviceName, onSetName, devic
   const [error, setError] = useState<Error | undefined | null>(null);
   const [running, setRunning] = useState(false);
   const disableButton = running || (!completed && (deviceName === name || !name.trim() || error));
+
+  const request = useMemo(() => ({ name }), [name]);
 
   const onCloseDrawer = useCallback(() => {
     onClose();
@@ -116,7 +118,7 @@ const EditDeviceName: React.FC<Props> = ({ onClose, deviceName, onSetName, devic
           <Flex flex={1} alignItems="center" justifyContent="center" p={2}>
             <DeviceAction
               device={device}
-              request={name}
+              request={request}
               action={action}
               onClose={onClose}
               onResult={onSuccess}
