@@ -75,7 +75,7 @@ import type { TezosDelegationFlowParamList } from "../../../families/tezos/Deleg
 import type { TronVoteFlowParamList } from "../../../families/tron/VoteFlow/types";
 import type { NoFundsNavigatorParamList } from "./NoFundsNavigator";
 import type { StakeNavigatorParamList } from "./StakeNavigator";
-import type { ExploreTabNavigatorStackParamList } from "./ExploreTabNavigator";
+import { ExploreTabNavigatorStackParamList } from "./ExploreTabNavigator";
 
 type TradeParams = {
   type: "onRamp" | "offRamp";
@@ -333,6 +333,4 @@ export type BaseNavigatorStackParamList = {
   };
   [NavigatorName.NoFundsFlow]: NavigatorScreenParams<NoFundsNavigatorParamList>;
   [NavigatorName.StakeFlow]: NavigatorScreenParams<StakeNavigatorParamList>;
-
-  [ScreenName.RedirectToOnboardingRecoverFlow]: undefined;
 };

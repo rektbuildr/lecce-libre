@@ -513,8 +513,6 @@ export enum ScreenName {
   WalletNftGallery = "WalletNftGallery",
   NoFunds = "NoFunds",
   Stake = "Stake",
-
-  RedirectToOnboardingRecoverFlow = "RedirectToOnboardingRecoverFlow",
 }
 export enum NavigatorName {
   // Stack
