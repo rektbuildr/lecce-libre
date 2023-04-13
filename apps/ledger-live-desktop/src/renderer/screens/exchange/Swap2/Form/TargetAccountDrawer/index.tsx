@@ -67,7 +67,6 @@ const TargetAccount = memo(function TargetAccount({
   const name = getAccountName(account);
   const parentAccount =
     account?.type !== "Account" ? allAccounts?.find(a => a.id === account?.parentId) : null;
-  const parentName = parentAccount ? getAccountName(parentAccount) : undefined;
   const balance =
     account.type !== "ChildAccount" && account.spendableBalance
       ? account.spendableBalance
@@ -78,11 +77,11 @@ const TargetAccount = memo(function TargetAccount({
       ...swapDefaultTrack,
       button: "account",
       currency,
-      account: name,
-      parentAccount: parentName,
+      account,
+      parentAccount,
     });
     setAccount && setAccount(currency, account, parentAccount);
-  }, [swapDefaultTrack, currency, name, parentName, setAccount, account, parentAccount]);
+  }, [swapDefaultTrack, currency, account, parentAccount, setAccount]);
   const Wrapper = setAccount ? AccountWrapper : Box;
   return (
     <Wrapper

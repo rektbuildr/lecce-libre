@@ -188,7 +188,7 @@ const StepReceiveFunds = (props: StepProps) => {
           .join("/"),
         currency: currencyName,
         modal: "receive",
-        account: name,
+        account,
       });
       transitionTo("stakingFlow");
       history.push({
@@ -202,7 +202,6 @@ const StepReceiveFunds = (props: StepProps) => {
     currencyName,
     history,
     onClose,
-    name,
     receiveStakingFlowConfig?.enabled,
     receiveStakingFlowConfig?.params,
     transitionTo,

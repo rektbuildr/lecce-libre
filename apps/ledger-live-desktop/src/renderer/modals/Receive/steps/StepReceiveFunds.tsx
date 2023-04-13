@@ -218,7 +218,7 @@ const StepReceiveFunds = (props: StepProps) => {
           .join("/"),
         currency: currencyName,
         modal: "receive",
-        account: name,
+        account,
       });
       if (receiveStakingFlowConfig?.params?.[id]?.direct) {
         dispatch(
@@ -240,7 +240,6 @@ const StepReceiveFunds = (props: StepProps) => {
     account,
     currencyName,
     dispatch,
-    name,
     onClose,
     receiveStakingFlowConfig?.enabled,
     receiveStakingFlowConfig?.params,
