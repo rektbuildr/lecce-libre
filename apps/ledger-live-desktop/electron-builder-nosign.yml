@@ -21,8 +21,13 @@ mac:
 linux:
   artifactName: ${name}-${version}-${os}-${arch}.${ext}
   category: Finance
+  mimeTypes: [ x-scheme-handler/ledgerlive ] # Define MimeType
+  desktop: # Define desktop elem
+    exec: myapp %u
+    Name: Ledger Live test
+    MimeType: x-scheme-handler/ledgerlive
   target:
-    - target: AppImage
+    - target: deb
       arch:
         - x64
 

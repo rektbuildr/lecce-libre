@@ -211,3 +211,9 @@ function show(win: BrowserWindow) {
   win.show();
   setImmediate(() => win.focus());
 }
+
+console.log("!app.isDefaultProtocolClient", app.isDefaultProtocolClient("ledgerlive"));
+if (!app.isDefaultProtocolClient("ledgerlive")) {
+  // Define custom protocol handler. Deep linking works on packaged versions of the application!
+  app.setAsDefaultProtocolClient("ledgerlive", "test");
+}

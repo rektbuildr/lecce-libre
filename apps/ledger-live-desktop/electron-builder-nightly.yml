@@ -30,6 +30,9 @@ linux:
   artifactName: ${name}-${version}-${os}-${arch}.${ext}
   category: Finance
   icon: icons
+  mimeTypes: [ x-scheme-handler/ledgerlive ] # Define MimeType
+  desktop: # Define desktop elem
+    exec: myapp %u
   target:
     - target: AppImage
       arch:
