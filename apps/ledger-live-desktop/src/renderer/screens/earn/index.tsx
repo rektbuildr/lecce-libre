@@ -1,22 +1,28 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import Card from "~/renderer/components/Box/Card";
-import { counterValueCurrencySelector, languageSelector } from "~/renderer/reducers/settings";
 import { useRemoteLiveAppManifest } from "@ledgerhq/live-common/platform/providers/RemoteLiveAppProvider/index";
 import WebPlatformPlayer from "~/renderer/components/WebPlatformPlayer";
-import useTheme from "~/renderer/hooks/useTheme";
 import { useLocalLiveAppManifest } from "@ledgerhq/live-common/platform/providers/LocalLiveAppProvider/index";
 import { useDeepLinkListener } from "~/renderer/screens/earn/useDeepLinkListener";
+import {
+  counterValueCurrencySelector,
+  languageSelector,
+  localeSelector,
+  userThemeSelector,
+} from "~/renderer/reducers/settings";
 
 const DEFAULT_EARN_APP_ID = "earn";
 
 const Earn = () => {
-  const locale = useSelector(languageSelector);
-  const fiatCurrency = useSelector(counterValueCurrencySelector);
+  const theme = useSelector(userThemeSelector);
+  const locale = useSelector(localeSelector);
+  const lang = useSelector(languageSelector);
+  const { ticker: currencyTicker } = useSelector(counterValueCurrencySelector);
+
   const localManifest = useLocalLiveAppManifest(DEFAULT_EARN_APP_ID);
   const remoteManifest = useRemoteLiveAppManifest(DEFAULT_EARN_APP_ID);
   const manifest = localManifest || remoteManifest;
-  const themeType = useTheme().colors.palette.type;
 
   useDeepLinkListener();
 
@@ -36,11 +42,7 @@ const Earn = () => {
             },
           }}
           manifest={manifest}
-          inputs={{
-            theme: themeType,
-            lang: locale,
-            currencyTicker: fiatCurrency.ticker,
-          }}
+          inputs={{ theme, lang, currencyTicker, locale }}
         />
       ) : null}
     </Card>

@@ -16,6 +16,7 @@ import {
 } from "@ledgerhq/types-live";
 import { CryptoCurrency, Currency } from "@ledgerhq/types-cryptoassets";
 import { getEnv } from "@ledgerhq/live-common/env";
+import { ThemeNames } from "@ledgerhq/react-ui/styles";
 import { getLanguages, defaultLocaleForLanguage, Locale } from "~/config/languages";
 import { State } from ".";
 import regionsByKey from "~/renderer/screens/settings/sections/General/regions.json";
@@ -498,9 +499,12 @@ export const counterValueCurrencySelector = createSelector(
 export const countervalueFirstSelector = createSelector(storeSelector, s => s.countervalueFirst);
 export const developerModeSelector = (state: State): boolean => state.settings.developerMode;
 export const lastUsedVersionSelector = (state: State): string => state.settings.lastUsedVersion;
-export const userThemeSelector = (state: State): "dark" | "light" | undefined | null => {
-  const savedVal = state.settings.theme;
-  return ["dark", "light"].includes(savedVal as string) ? (savedVal as "dark" | "light") : "dark";
+export const userThemeSelector = (state: State): ThemeNames => {
+  const currentTheme = state.settings.theme;
+  if (currentTheme === "dark" || currentTheme === "light") {
+    return currentTheme;
+  }
+  return "dark";
 };
 
 type LanguageAndUseSystemLanguage = {
