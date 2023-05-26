@@ -292,6 +292,21 @@ function useWebView(
 
   const onMessage = useCallback(
     e => {
+      const { data } = e.nativeEvent;
+
+      try {
+        const parsedData = JSON.parse(data);
+
+        // Check if the message is what we're interested in
+        if (parsedData.log !== undefined) {
+          console.log("WebView log:", parsedData.log);
+        } else {
+          // If it's not, just ignore it
+          console.log("Received other message", parsedData);
+        }
+      } catch (err) {
+        console.error("Error parsing WebView message", err);
+      }
       if (e.nativeEvent?.data) {
         onMessageRaw(e.nativeEvent.data);
       }
@@ -345,8 +360,17 @@ export const WalletAPIWebview = forwardRef<WebviewAPI, WebviewProps>(
       webviewRef,
     );
 
+    const debugging = `
+      // Debug
+      window.console.log = function(message) {
+        window.ReactNativeWebView.postMessage(JSON.stringify({ log: message }));
+      };
+      true;
+    `;
+
     return (
       <RNWebView
+        injectedJavaScript={debugging}
         ref={webviewRef}
         startInLoadingState={true}
         showsHorizontalScrollIndicator={false}
