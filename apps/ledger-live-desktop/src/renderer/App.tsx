@@ -28,6 +28,10 @@ import { ConnectEnvsToSentry } from "~/renderer/components/ConnectEnvsToSentry";
 import PostOnboardingProviderWrapped from "~/renderer/components/PostOnboardingHub/logic/PostOnboardingProviderWrapped";
 import { useBraze } from "./hooks/useBraze";
 import { CounterValuesStateRaw } from "@ledgerhq/live-common/countervalues/types";
+import { Subject } from "rxjs";
+
+export const subjectWallet = new Subject();
+
 const reloadApp = (event: KeyboardEvent) => {
   if ((event.ctrlKey || event.metaKey) && event.key === "r") {
     window.api?.reloadRenderer();
@@ -39,6 +43,14 @@ type Props = {
 };
 const InnerApp = ({ initialCountervalues }: { initialCountervalues: CounterValuesStateRaw }) => {
   const [reloadEnabled, setReloadEnabled] = useState(true);
+
+  useEffect(() => {
+    let nb = 0;
+    setInterval(() => {
+      nb = nb + 1;
+      subjectWallet.next(nb);
+    }, 2000);
+  }, []);
 
   useBraze();
 

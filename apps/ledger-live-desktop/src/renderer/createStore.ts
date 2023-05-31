@@ -3,6 +3,7 @@ import thunk from "redux-thunk";
 import logger from "~/renderer/middlewares/logger";
 import analytics from "~/renderer/middlewares/analytics";
 import reducers, { State } from "~/renderer/reducers";
+import walletSyncMiddleware from "./middlewares/walletSync";
 type Props = {
   state?: State;
   dbMiddleware?: Middleware;
@@ -12,6 +13,7 @@ export default ({ state, dbMiddleware }: Props) => {
 
   // middlewares.push(require('./../middlewares/sentry').default)
   middlewares.push(analytics);
+  middlewares.push(walletSyncMiddleware);
   if (dbMiddleware) {
     middlewares.push(dbMiddleware);
   }

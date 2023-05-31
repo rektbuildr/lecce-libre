@@ -31,7 +31,7 @@ import dbMiddleware from "~/renderer/middlewares/db";
 import createStore from "~/renderer/createStore";
 import events from "~/renderer/events";
 import { setAccounts } from "~/renderer/actions/accounts";
-import { fetchSettings, setDeepLinkUrl } from "~/renderer/actions/settings";
+import { fetchSettings, initWalletSync, setDeepLinkUrl } from "~/renderer/actions/settings";
 import { lock, setOSDarkMode } from "~/renderer/actions/application";
 import {
   languageSelector,
@@ -92,6 +92,7 @@ async function init() {
     deepLinkUrl = url;
   });
   const initialSettings = (await getKey("app", "settings")) || {};
+  store.dispatch(initWalletSync());
   fetchSettings(
     deepLinkUrl
       ? {

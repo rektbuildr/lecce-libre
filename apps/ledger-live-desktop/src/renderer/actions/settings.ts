@@ -189,6 +189,9 @@ export function useTimeRange(): [
   return [val, setter, options];
 }
 
+export const initWalletSync = () => ({
+  type: "INIT_WALLET_SYNC",
+});
 export const setShowClearCacheBanner = (showClearCacheBanner: boolean) =>
   saveSettings({
     showClearCacheBanner,
