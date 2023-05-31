@@ -1,0 +1,21 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ledger-live
+  description: Ledger Live 
+  tags:
+    - typescript
+    - electron
+    - live
+    - b2c
+  links:
+    - url: https://github.com/LedgerHQ/ledger-live/
+      title: Repo
+      icon: github
+    - url: https://github.com/LedgerHQ/ledger-live/wiki
+      title: Wiki
+      icon: docs
+spec:
+  type: service
+  lifecycle: production 
+  owner: wallet-services
