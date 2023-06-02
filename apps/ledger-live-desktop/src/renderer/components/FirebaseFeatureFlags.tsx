@@ -1,4 +1,4 @@
-import React, { useCallback, ReactNode } from "react";
+import React, { useCallback, ReactNode, useEffect, useState, useRef } from "react";
 import isEqual from "lodash/isEqual";
 import semver from "semver";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,9 +6,31 @@ import { FeatureFlagsProvider } from "@ledgerhq/live-common/featureFlags/index";
 import { Feature, FeatureId } from "@ledgerhq/types-live";
 import { getAll, getValue } from "firebase/remote-config";
 import { getEnv } from "@ledgerhq/live-common/env";
-import { formatToFirebaseFeatureId, useFirebaseRemoteConfig } from "./FirebaseRemoteConfig";
+import { formatToFeatureId, useFirebaseRemoteConfig } from "./FirebaseRemoteConfig";
 import { overriddenFeatureFlagsSelector } from "../reducers/settings";
 import { setOverriddenFeatureFlag, setOverriddenFeatureFlags } from "../actions/settings";
+
+let callCount = 0;
+let callSumMs = 0;
+let startDate = 0;
+function on() {
+  startDate = performance.now();
+  callCount += 1;
+}
+function off() {
+  callSumMs += performance.now() - startDate;
+  console.log("average: ", callSumMs / callCount, "sum: ", callSumMs, callCount);
+}
+
+// const getFeatureWrapped = useCallback(
+//   (...args) => {
+//     on();
+//     const res = getFeature(...args);
+//     off();
+//     return res;
+//   },
+//   [getFeature],
+// );
 
 const checkFeatureFlagVersion = (feature: Feature) => {
   if (
@@ -29,52 +51,54 @@ type Props = {
   children?: ReactNode;
 };
 
+type AllValuesFirebaseId = Record<string, Feature>;
+type AllValuesFormattedIds = { [key in FeatureId]?: Feature };
+
 export const FirebaseFeatureFlagsProvider = ({ children }: Props): JSX.Element => {
   const remoteConfig = useFirebaseRemoteConfig();
+
+  const allValuesFirebaseIdRef = useRef<AllValuesFirebaseId>({});
+  const allValuesFormattedIdRef = useRef<AllValuesFormattedIds>({});
+
+  useEffect(() => {
+    if (remoteConfig) {
+      const allFeatures = getAll(remoteConfig);
+      const allValuesFirebaseId: AllValuesFirebaseId = {};
+      const allValuesFormattedIds: AllValuesFormattedIds = {};
+      Object.entries(allFeatures).forEach(([key, value]) => {
+        try {
+          const parsedValue = (JSON.parse(value.asString()) as unknown) as Feature;
+          allValuesFirebaseId[key] = parsedValue;
+          allValuesFormattedIds[formatToFeatureId(key)] = parsedValue;
+        } catch (e) {
+          console.error(e);
+        }
+      });
+      allValuesFirebaseIdRef.current = allValuesFirebaseId;
+      allValuesFormattedIdRef.current = allValuesFormattedIds;
+    }
+  }, [remoteConfig]);
 
   const localOverrides = useSelector(overriddenFeatureFlagsSelector);
   const dispatch = useDispatch();
 
-  const getAllFlags = useCallback((): Record<string, Feature> => {
-    if (remoteConfig) {
-      const allFeatures = getAll(remoteConfig);
-      const parsedFeatures = Object.entries(allFeatures).map(([key, value]) => {
-        return [key, JSON.parse(value.asString())];
-      });
-
-      return Object.fromEntries(parsedFeatures);
-    }
-
-    return {};
-  }, [remoteConfig]);
-
-  const isFeature = useCallback(
-    (key: string): boolean => {
-      if (!remoteConfig) {
-        return false;
-      }
-
-      try {
-        const value = getValue(remoteConfig, formatToFirebaseFeatureId(key));
-
-        if (!value || !value.asString()) {
-          return false;
-        }
-        return true;
-      } catch (error) {
-        console.error(`Failed to check if feature "${key}" exists`);
-        return false;
-      }
-    },
-    [remoteConfig],
+  const getAllFlags = useCallback(
+    (): Record<string, Feature> => allValuesFirebaseIdRef.current,
+    [],
   );
+
+  const isFeature = useCallback((key: string): boolean => {
+    try {
+      const value = allValuesFirebaseIdRef.current[key];
+      return Boolean(value);
+    } catch (error) {
+      console.error(`Failed to check if feature "${key}" exists`);
+      return false;
+    }
+  }, []);
 
   const getFeature = useCallback(
     (key: FeatureId, allowOverride = true): Feature | null => {
-      if (!remoteConfig) {
-        return null;
-      }
-
       try {
         // Nb prioritize local overrides
         if (allowOverride && localOverrides[key]) {
@@ -92,16 +116,25 @@ export const FirebaseFeatureFlagsProvider = ({ children }: Props): JSX.Element =
             };
         }
 
-        const value = getValue(remoteConfig, formatToFirebaseFeatureId(key));
-        const feature: Feature = JSON.parse(value.asString());
+        const feature = allValuesFormattedIdRef.current[key];
 
-        return checkFeatureFlagVersion(feature);
+        return feature ? checkFeatureFlagVersion(feature) : null;
       } catch (error) {
-        console.error(`Failed to retrieve feature "${key}"`);
+        console.error(`Failed to retrieve feature "${key}"`, error);
         return null;
       }
     },
-    [localOverrides, remoteConfig],
+    [localOverrides],
+  );
+
+  const getFeatureWrapped = useCallback(
+    (...args) => {
+      on();
+      const res = getFeature(...args);
+      off();
+      return res;
+    },
+    [getFeature],
   );
 
   const overrideFeature = useCallback(
@@ -129,7 +162,7 @@ export const FirebaseFeatureFlagsProvider = ({ children }: Props): JSX.Element =
   return (
     <FeatureFlagsProvider
       isFeature={isFeature}
-      getFeature={getFeature}
+      getFeature={getFeatureWrapped}
       overrideFeature={overrideFeature}
       resetFeature={resetFeature}
       resetFeatures={resetFeatures}

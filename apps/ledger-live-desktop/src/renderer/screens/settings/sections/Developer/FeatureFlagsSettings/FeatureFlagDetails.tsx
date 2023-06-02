@@ -71,4 +71,4 @@ const FeatureFlagDetails: React.FC<Props> = props => {
   );
 };
 
-export default FeatureFlagDetails;
+export default React.memo(FeatureFlagDetails);

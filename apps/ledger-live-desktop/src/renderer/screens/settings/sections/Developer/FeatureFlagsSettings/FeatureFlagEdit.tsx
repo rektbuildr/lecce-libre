@@ -110,4 +110,4 @@ const FeatureFlagEdit: React.FC<{ flagName: FeatureId; flagValue: Feature }> = p
   );
 };
 
-export default FeatureFlagEdit;
+export default React.memo(FeatureFlagEdit);

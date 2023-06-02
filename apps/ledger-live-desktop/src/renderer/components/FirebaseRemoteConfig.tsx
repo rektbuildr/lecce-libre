@@ -2,16 +2,27 @@ import React, { ReactNode, useContext, useEffect, useState } from "react";
 import { initializeApp } from "firebase/app";
 import { getRemoteConfig, fetchAndActivate, RemoteConfig } from "firebase/remote-config";
 import { defaultFeatures } from "@ledgerhq/live-common/featureFlags/index";
-import { DefaultFeatures } from "@ledgerhq/types-live";
+import { DefaultFeatures, FeatureId } from "@ledgerhq/types-live";
 import reduce from "lodash/reduce";
 import snakeCase from "lodash/snakeCase";
+import camelCase from "lodash/camelCase";
 import { getFirebaseConfig } from "~/firebase-setup";
 
 export const FirebaseRemoteConfigContext = React.createContext<RemoteConfig | null>(null);
 
 export const useFirebaseRemoteConfig = () => useContext(FirebaseRemoteConfigContext);
 
+/** `myFeatureName` to `feature_my_feature_name` */
 export const formatToFirebaseFeatureId = (id: string) => `feature_${snakeCase(id)}`;
+
+/** `feature_my_feature_name` to `myFeatureName` */
+export function formatToFeatureId(id: string): FeatureId {
+  if (!id.startsWith("feature_"))
+    throw new Error(
+      `invalid use of formatToFeatureId, expects strings that starts with "feature_"`,
+    );
+  return camelCase(id.slice("feature_".length)) as FeatureId;
+}
 
 // Firebase SDK treat JSON values as strings
 const formatDefaultFeatures = (config: DefaultFeatures) =>
@@ -23,6 +34,7 @@ const formatDefaultFeatures = (config: DefaultFeatures) =>
     }),
     {},
   );
+const formattedDefaultFeatures = formatDefaultFeatures(defaultFeatures);
 
 type Props = {
   children?: ReactNode;
@@ -48,10 +60,7 @@ export const FirebaseRemoteConfigProvider = ({ children }: Props): JSX.Element |
         if (__DEV__) {
           remoteConfig.settings.minimumFetchIntervalMillis = 0;
         }
-
-        remoteConfig.defaultConfig = {
-          ...formatDefaultFeatures(defaultFeatures),
-        };
+        remoteConfig.defaultConfig = formattedDefaultFeatures;
         await fetchAndActivate(remoteConfig);
         setConfig(remoteConfig);
       } catch (error) {
