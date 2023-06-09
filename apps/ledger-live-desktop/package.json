@@ -43,6 +43,7 @@
     "typecheck": "node scripts/typecheck.js"
   },
   "dependencies": {
+    "@ledgerhq/wss-sdk": "link:../../../wallet-sync-system/packages/wss-sdk",
     "@braze/web-sdk": "^4.6.3",
     "@electron/remote": "^2",
     "@ledgerhq/coin-framework": "workspace:^",

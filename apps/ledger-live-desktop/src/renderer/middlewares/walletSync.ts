@@ -1,5 +1,5 @@
 import { Middleware } from "redux";
-import { WalletSyncClient } from "@ledgerhq/wss-sdk/src/index";
+import { WalletSyncClient } from "@ledgerhq/wss-sdk";
 import { replaceAccounts } from "../actions/accounts";
 import { Account } from "@ledgerhq/types-live";
 import BigNumber from "bignumber.js";
