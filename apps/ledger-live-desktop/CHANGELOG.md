@@ -1,5 +1,24 @@
 # ledger-live-desktop
 
+## 2.62.0-experimental-update2.0
+
+### Minor Changes
+
+- [#3641](https://github.com/LedgerHQ/ledger-live/pull/3641) [`05a2c48860`](https://github.com/LedgerHQ/ledger-live/commit/05a2c488601ca5c5daae5602d4de60ddbd969adf) Thanks [@IAmMorrow](https://github.com/IAmMorrow)! - wallet-api wallet.userId now return the old userId
+
+* [`16ab2f48c6`](https://github.com/LedgerHQ/ledger-live/commit/16ab2f48c66ea586452381e362ac28b309671102) Thanks [@nparigi-ledger](https://github.com/nparigi-ledger)! - test1
+
+- [`798a289450`](https://github.com/LedgerHQ/ledger-live/commit/798a2894507b5d66e16609c09bc2a91cee8b9d59) Thanks [@nparigi-ledger](https://github.com/nparigi-ledger)! - test2
+
+### Patch Changes
+
+- [#3582](https://github.com/LedgerHQ/ledger-live/pull/3582) [`fbbd5be88c`](https://github.com/LedgerHQ/ledger-live/commit/fbbd5be88c3c5792dacccc89fb4f9f8e7e45a722) Thanks [@mcayuelas-ledger](https://github.com/mcayuelas-ledger)! - LLD - Analytics - Modifications to menu_entry_click_flagged
+
+- Updated dependencies []:
+  - @ledgerhq/coin-framework@0.3.6-experimental-update2.0
+  - @ledgerhq/domain-service@1.1.4-experimental-update2.0
+  - @ledgerhq/live-common@31.0.1-experimental-update2.0
+
 ## 2.61.0
 
 ### Minor Changes

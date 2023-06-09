@@ -1,5 +1,11 @@
 # @ledgerhq/cryptoassets
 
+## 9.8.0-experimental-update2.0
+
+### Minor Changes
+
+- [#3626](https://github.com/LedgerHQ/ledger-live/pull/3626) [`d1aa522db7`](https://github.com/LedgerHQ/ledger-live/commit/d1aa522db75f7ea850efe412abaa4dc7d37af6b7) Thanks [@henrily-ledger](https://github.com/henrily-ledger)! - Allow addtoken to replace existing token
+
 ## 9.7.0
 
 ### Minor Changes

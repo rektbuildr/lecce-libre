@@ -1,5 +1,18 @@
 # @ledgerhq/live-common
 
+## 31.0.1-experimental-update2.0
+
+### Patch Changes
+
+- Updated dependencies [[`d1aa522db7`](https://github.com/LedgerHQ/ledger-live/commit/d1aa522db75f7ea850efe412abaa4dc7d37af6b7)]:
+  - @ledgerhq/cryptoassets@9.8.0-experimental-update2.0
+  - @ledgerhq/coin-algorand@0.2.2-experimental-update2.0
+  - @ledgerhq/coin-evm@0.2.1-experimental-update2.0
+  - @ledgerhq/coin-framework@0.3.6-experimental-update2.0
+  - @ledgerhq/coin-polkadot@0.1.7-experimental-update2.0
+  - @ledgerhq/domain-service@1.1.4-experimental-update2.0
+  - @ledgerhq/hw-app-eth@6.33.6-experimental-update2.0
+
 ## 31.0.0
 
 ### Major Changes
