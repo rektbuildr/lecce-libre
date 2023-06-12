@@ -1,5 +1,11 @@
 # ledger-live-desktop
 
+## 2.62.0-experimental-update3.2
+
+### Minor Changes
+
+- [`c1394df76f`](https://github.com/LedgerHQ/ledger-live/commit/c1394df76ff3e02585cfcc4ab534162c066a502a) Thanks [@nparigi-ledger](https://github.com/nparigi-ledger)! - add autoupdate
+
 ## 2.62.0-experimental-update3.1
 
 ### Minor Changes
