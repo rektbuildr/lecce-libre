@@ -4,6 +4,7 @@ import { Flex, Text, Button, Divider } from "@ledgerhq/react-ui";
 import { useTranslation } from "react-i18next";
 import { DeviceModelId } from "@ledgerhq/devices";
 import DeviceIllustration from "./DeviceIllustration";
+import withAnimation from "~/renderer/components/withAnimation";
 
 type Props = {
   onSkip: () => void;
@@ -36,12 +37,14 @@ const ChangeDeviceLanguagePrompt: React.FC<Props> = ({
       <Divider />
       <Flex alignSelf="flex-end" justifySelf="flex-end" columnGap={5} py={8} px={12}>
         <Button onClick={onSkip}>{t("common.cancel")}</Button>
-        <Button data-test-id="install-language-button" variant="main" onClick={onConfirm}>
+        <WrappedButton onClickConfetti data-test-id="install-language-button" variant="main" onClick={()=>{}}>
           {t("deviceLocalization.changeLanguage")}
-        </Button>
+        </WrappedButton>
       </Flex>
     </Flex>
   );
 };
 
+
+const WrappedButton = withAnimation(Button);
 export default withV3StyleProvider(ChangeDeviceLanguagePrompt);

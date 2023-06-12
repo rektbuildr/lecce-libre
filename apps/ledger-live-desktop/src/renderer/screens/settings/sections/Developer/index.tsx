@@ -19,6 +19,8 @@ import EnableStagingNftMetadataServiceToggle from "./EnableStagingNftMetadataSer
 import LottieTester from "../Experimental/LottieTester";
 import StorylyTester from "../Experimental/StorylyTester";
 import PostOnboardingHubTester from "../Experimental/PostOnboardingHubTester";
+import ConfettiToggle from "./WithAnimationToggle";
+import Confetti from "./WithAnimation";
 
 const Default = () => {
   const { t } = useTranslation();
@@ -63,6 +65,7 @@ const Default = () => {
       </Row>
       <RunLocalAppButton />
       <CustomLockScreenToggle />
+      <ConfettiToggle />
       <FeatureFlagsSettings />
       <Row
         title={t("settings.developer.enableLearnStagingUrl")}
@@ -93,6 +96,7 @@ const SectionDeveloper = () => (
     <TrackPage category="Settings" name="Developer" />
     <Switch>
       <Route path="/settings/developer/custom-locksscreen-assets" component={CustomLockScreen} />
+      <Route path="/settings/developer/withAnimation" component={Confetti} />
       <Route component={Default} />
     </Switch>
   </>
