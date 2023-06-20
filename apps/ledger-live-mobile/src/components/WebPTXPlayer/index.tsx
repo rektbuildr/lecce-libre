@@ -66,6 +66,9 @@ function BackToWhitelistedDomain({
     }
 
     navigation.goBack();
+    // navigation.navigate(NavigatorName.Base, {
+    //   screen: NavigatorName.Main,
+    // });
   };
 
   return (
@@ -80,7 +83,9 @@ function BackToWhitelistedDomain({
       </TouchableOpacity>
     </View>
   );
-}
+};
+
+const MemoizedBackToWhitelistedDomain = React.memo(BackToWhitelistedDomain);
 
 function HeaderRight({ onClose }: { onClose?: () => void }) {
   const { colors } = useTheme();
@@ -167,7 +172,7 @@ export const WebPTXPlayer = ({ manifest, inputs }: Props) => {
       headerRight: () => <HeaderRight onClose={onClose} />,
       headerLeft: () =>
         isWhitelistedDomain ? null : (
-          <BackToWhitelistedDomain
+          <MemoizedBackToWhitelistedDomain
             manifest={manifest}
             webviewURL={webviewState.url}
             lastMatchingURL={lastMatchingURL.current}
