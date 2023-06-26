@@ -80,6 +80,23 @@ const genericTest = ({
     if (transaction.opReturnData) {
       // transaction.recipient has format <coinId>:<address>
       const [, recipientAddress] = transaction.recipient.split(":");
+      log("bch", "HHHHHHHHHHHHHHHHHHHHHHHH");
+      log("bch", transaction.recipient);
+      const expectedSenders = nonDeterministicPicking
+        ? operation.senders
+        : (txInputs!.map(t => t.address).filter(Boolean) as string[]);
+
+      log("bch", expectedSenders.join(","));
+      const expectedRecipients = txOutputs!
+        .filter(o => o.address && !o.isChange)
+        .map(o => o.address) as string[];
+      log("bch", expectedRecipients.join(","));
+      const sss = operation.senders.join(",");
+      const rrr = operation.recipients.join(",");
+      log("bch", sss);
+      log("bch", rrr);
+      log("bch", nonDeterministicPicking.toString());
+      log("bch", "HHHHHHHHHHHHHHHHHHHHHHHH");
       expect(operation.recipients).toContain(recipientAddress);
       expect(operation.recipients.length).toBe(2);
     } else {
