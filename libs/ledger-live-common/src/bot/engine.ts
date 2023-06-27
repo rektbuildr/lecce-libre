@@ -148,6 +148,7 @@ export async function runWithAppSpec<T extends Transaction>(
     // Scan all existing accounts
     const beforeScanTime = now();
     t = now();
+    console.warn("DEBUG-Transport", "runWithAppSpec", `scanAccounts with ${device.id}`);
     let accounts = await bridge
       .scanAccounts({
         currency,

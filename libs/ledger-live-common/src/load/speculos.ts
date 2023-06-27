@@ -83,13 +83,14 @@ export async function createSpeculosDevice(
     coinapps: string;
   },
   maxRetry = 3,
+  id?: string,
 ): Promise<{
   transport: SpeculosTransport;
   id: string;
   appPath: string;
 }> {
   const { model, firmware, appName, appVersion, seed, coinapps, dependency } = arg;
-  const speculosID = `speculosID-${++idCounter}`;
+  const speculosID = id ?? `speculosID-${++idCounter}`;
   const apiPort = 30000 + idCounter;
   const vncPort = 35000 + idCounter;
 
@@ -212,7 +213,7 @@ export async function createSpeculosDevice(
 
   if (!hasSucceed) {
     await delay(1000);
-    return createSpeculosDevice(arg, maxRetry - 1);
+    return createSpeculosDevice(arg, maxRetry - 1, speculosID);
   }
 
   const transport = await SpeculosTransport.open({
@@ -464,7 +465,7 @@ registerTransportModule({
       const obj = data[id];
 
       if (!obj) {
-        throw new Error("speculos transport was destroyed");
+        throw new Error(`speculos transport (${id}) was destroyed`);
       }
 
       return Promise.resolve(obj.transport);
