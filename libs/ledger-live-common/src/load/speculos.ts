@@ -45,6 +45,7 @@ export async function releaseSpeculosDevice(id: string) {
   const obj = data[id];
 
   if (obj) {
+    console.warn("DEBUG-Transport", "releaseSpeculosDevice", `${id}`);
     await obj.destroy();
   }
 }
@@ -188,6 +189,11 @@ export async function createSpeculosDevice(
     } else if (data.includes("address already in use")) {
       if (maxRetry > 0) {
         log("speculos", "retrying speculos connection");
+        console.warn(
+          "DEBUG-Transport",
+          "p.stderr.on data",
+          `${speculosID}: destroy with data (${data})`,
+        );
         destroy();
         resolveReady(false);
       }
@@ -197,6 +203,7 @@ export async function createSpeculosDevice(
     log("speculos", `${speculosID} closed`);
 
     if (!destroyed) {
+      console.warn("DEBUG-Transport", "p.on close", `${speculosID}`);
       destroy();
       rejectReady(new Error(`speculos process failure. ${latestStderr || ""}`));
     }
