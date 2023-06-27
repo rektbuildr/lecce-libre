@@ -148,7 +148,11 @@ export async function runWithAppSpec<T extends Transaction>(
     // Scan all existing accounts
     const beforeScanTime = now();
     t = now();
-    console.warn("DEBUG-Transport", "runWithAppSpec", `scanAccounts with ${device.id}`);
+    console.warn(
+      `DEBUG-Transport (${deviceParams.appName})`,
+      "runWithAppSpec",
+      `scanAccounts (${spec.name}) with ${device.id}`,
+    );
     let accounts = await bridge
       .scanAccounts({
         currency,
@@ -165,7 +169,11 @@ export async function runWithAppSpec<T extends Transaction>(
         reduce<Account, Account[]>((all, a) => all.concat(a), []),
         timeoutWith(
           getEnv("BOT_TIMEOUT_SCAN_ACCOUNTS"),
-          throwError(new Error("scan accounts timeout for currency " + currency.name)),
+          throwError(
+            new Error(
+              `scan accounts (${deviceParams.appName} - ${spec.name} - ${device.id}) timeout for currency ${currency.name}`,
+            ),
+          ),
         ),
       )
       .toPromise();

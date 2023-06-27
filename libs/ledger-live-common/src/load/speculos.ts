@@ -51,6 +51,7 @@ export async function releaseSpeculosDevice(id: string) {
 }
 
 export function closeAllSpeculosDevices() {
+  console.warn("DEBUG-Transport", "closeAllSpeculosDevices");
   return Promise.all(Object.keys(data).map(releaseSpeculosDevice));
 }
 
