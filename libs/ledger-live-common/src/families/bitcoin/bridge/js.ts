@@ -43,9 +43,10 @@ const signerContext: SignerContext = (
   crypto: CryptoCurrency,
   fn: (signer: Btc) => Promise<string>,
 ): Promise<string> =>
-  withDevice(deviceId)(transport =>
-    from(fn(new Btc({ transport, currency: crypto.id }))),
-  ).toPromise();
+  withDevice(deviceId)(transport => {
+    const signer = new Btc({ transport, currency: crypto.id });
+    return from(fn(signer));
+  }).toPromise();
 
 const currencyBridge: CurrencyBridge = {
   scanAccounts: scanAccounts(signerContext),
