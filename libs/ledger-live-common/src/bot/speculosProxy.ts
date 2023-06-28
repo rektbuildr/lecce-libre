@@ -1,4 +1,4 @@
-import network from "../network";
+import network from "@ledgerhq/live-network/network";
 import SpeculosTransportProxy from "./SpeculosTransportProxy";
 import { registerTransportModule } from "../hw";
 import type { DeviceModelId } from "@ledgerhq/devices";

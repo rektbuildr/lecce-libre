@@ -1,33 +1,16 @@
-import { toAccountRaw } from "../account";
-import { Account } from "../types";
 import { logFile } from "./speculosProxy";
 import { getEnv } from "../env";
 import { promiseAllBatched } from "../promise";
+import { Account } from "@ledgerhq/types-live";
 
-function makeAppJSON(accounts: Account[]) {
-  const jsondata = {
-    data: {
-      settings: {
-        hasCompletedOnboarding: true,
-      },
-      accounts: accounts.map((account) => ({
-        data: toAccountRaw(account),
-        version: 1,
-      })),
-    },
-  };
-  return JSON.stringify(jsondata);
-}
 
 export const botReportFolder = async ({
   body,
   slackCommentTemplate,
-  allAccountsBefore,
   allAccountsAfter,
 }: {
   body: string;
   slackCommentTemplate: string;
-  allAccountsBefore: Account[];
   allAccountsAfter: Account[];
 }) => {
   await promiseAllBatched(

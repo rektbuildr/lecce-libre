@@ -1,11 +1,9 @@
 import fs from "fs";
 import path from "path";
 import { toAccountRaw } from "../account";
-import { Account } from "../types";
 import { getEnv } from "../env";
 import { sha256 } from "../crypto";
 import type {
-  AppSpec,
   MutationReport,
   MinimalSerializedMutationReport,
   MinimalSerializedReport,
@@ -14,6 +12,7 @@ import type {
 } from "./types";
 import { formatError } from "./formatters";
 import { Transaction } from "../generated/types";
+import { Account } from "@ledgerhq/types-live";
 
 function convertMutation<T extends Transaction>(
   report: MutationReport<T>,
@@ -82,13 +81,15 @@ export const botReportFolder = async ({
   allAccountsAfter,
   results,
   allAppPaths,
+  githubBody
 }: {
   BOT_REPORT_FOLDER: string;
   body: string;
   slackCommentTemplate: string;
   allAccountsAfter: Account[];
-  results,
-  allAppPaths,
+  results: SpecReport<any>[],
+  allAppPaths: string[],
+  githubBody: string
 }) => {
   if (BOT_REPORT_FOLDER) {
 const BOT_ENVIRONMENT = getEnv("BOT_ENVIRONMENT");

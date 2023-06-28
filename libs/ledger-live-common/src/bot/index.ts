@@ -39,8 +39,6 @@ type Arg = Partial<{
 const usd = getFiatCurrencyByTicker("USD");
 
 export async function bot({ currency, family, mutation }: Arg = {}): Promise<void> {
-  const SEED = getEnv("SEED");
-  invariant(SEED, "SEED required");
   const specs: any[] = [];
   const specsLogs: string[][] = [];
   const maybeCurrency = currency ? findCryptoCurrencyByKeyword(currency) : undefined;
@@ -604,7 +602,8 @@ export async function bot({ currency, family, mutation }: Arg = {}): Promise<voi
     slackCommentTemplate,
     allAccountsAfter,
     results,
-    allAppPaths
+    allAppPaths,
+    githubBody
   });
 
 

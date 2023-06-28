@@ -1940,6 +1940,9 @@ importers:
       '@ledgerhq/hw-transport-mocker':
         specifier: workspace:^
         version: link:../ledgerjs/packages/hw-transport-mocker
+      '@ledgerhq/hw-transport-node-speculos':
+        specifier: workspace:^
+        version: link:../ledgerjs/packages/hw-transport-node-speculos
       '@ledgerhq/hw-transport-node-speculos-http':
         specifier: workspace:^
         version: link:../ledgerjs/packages/hw-transport-node-speculos-http
@@ -14545,15 +14548,6 @@ packages:
       semver: 7.3.8
     dev: false
 
-  /@ledgerhq/devices@8.0.0:
-    resolution: {integrity: sha512-gSnRT0KPca+LIpaC6D/WZQjOAlSI5uCvK1dmxXtKhODLAj735rX5Z3SnGnLUavRCHNbUi44FzgvloF5BKTkh7A==}
-    dependencies:
-      '@ledgerhq/errors': 6.12.7
-      '@ledgerhq/logs': 6.10.1
-      rxjs: 6.6.7
-      semver: 7.3.8
-    dev: false
-
   /@ledgerhq/devices@8.0.4:
     resolution: {integrity: sha512-dxOiWZmtEv1tgw70+rW8gviCRZUeGDUnxY6HUPiRqTAc0Ts2AXxiJChgAsPvIywWTGW+S67Nxq1oTZdpRbdt+A==}
     dependencies:
@@ -14580,10 +14574,6 @@ packages:
 
   /@ledgerhq/errors@5.50.0:
     resolution: {integrity: sha512-gu6aJ/BHuRlpU7kgVpy2vcYk6atjB4iauP2ymF7Gk0ez0Y/6VSMVSJvubeEQN+IV60+OBK0JgeIZG7OiHaw8ow==}
-    dev: false
-
-  /@ledgerhq/errors@6.12.3:
-    resolution: {integrity: sha512-djiMSgB/7hnK3aLR/c5ZMMivxjcI7o2+y3VKcsZZpydPoVf9+FXqeJPRfOwmJ0JxbQ//LinUfWpIfHew8LkaVw==}
     dev: false
 
   /@ledgerhq/errors@6.12.7:
@@ -14645,14 +14635,6 @@ packages:
       events: 3.3.0
     dev: false
 
-  /@ledgerhq/hw-transport@6.28.1:
-    resolution: {integrity: sha512-RaZe+abn0zBIz82cE9tp7Y7aZkHWWbEaE2yJpfxT8AhFz3fx+BU0kLYzuRN9fmA7vKueNJ1MTVUCY+Ex9/CHSQ==}
-    dependencies:
-      '@ledgerhq/devices': 8.0.0
-      '@ledgerhq/errors': 6.12.3
-      events: 3.3.0
-    dev: false
-
   /@ledgerhq/hw-transport@6.28.5:
     resolution: {integrity: sha512-xmw5RhYbqExBBqTvOnOjN/RYNIGMBxFJ+zcYNfkfw/E+uEY3L7xq8Z7sC/n7URTT6xtEctElqduBJnBQE4OQtw==}
     dependencies:
@@ -14690,7 +14672,7 @@ packages:
   /@ledgerhq/wallet-api-client@0.15.2:
     resolution: {integrity: sha512-mjTOP7k0dETDPZuRKbaIJH6yHNZsDkwE6bwdZDFGyI2TlCly5HKmVUjHzePOF4VA+JgOmvL03YAh2NunrVICsA==}
     dependencies:
-      '@ledgerhq/hw-transport': 6.28.1
+      '@ledgerhq/hw-transport': 6.28.5
       '@ledgerhq/wallet-api-core': 0.16.0
       bignumber.js: 9.1.0
     dev: false
@@ -14698,7 +14680,7 @@ packages:
   /@ledgerhq/wallet-api-client@0.15.5:
     resolution: {integrity: sha512-HTgWbzFX7Zcn9fIHkNo4qwZGojUxwHRBGuwqb89L7j3q+wfWmU8SixkFCtnwXU4II2Ura8EYQfdZ7ilMUwUwog==}
     dependencies:
-      '@ledgerhq/hw-transport': 6.28.1
+      '@ledgerhq/hw-transport': 6.28.5
       '@ledgerhq/wallet-api-core': 0.18.0
       bignumber.js: 9.1.0
     dev: false
@@ -14715,7 +14697,7 @@ packages:
   /@ledgerhq/wallet-api-core@0.17.1:
     resolution: {integrity: sha512-JiPhjthLJST1efqubouoTZYqeoiMnlsN2IEiei4oBZWgM0mrKGrVjMeGOGAfKaM+P3aIREvVIwsrIzYwNQALFw==}
     dependencies:
-      '@ledgerhq/errors': 6.12.3
+      '@ledgerhq/errors': 6.12.7
       bignumber.js: 9.1.0
       uuid: 9.0.0
       zod: 3.19.1
@@ -14724,7 +14706,7 @@ packages:
   /@ledgerhq/wallet-api-core@0.18.0:
     resolution: {integrity: sha512-qqi6q6S7ygijKYJSFH1sZgKdNorqudbwmi/0ZuC7bZ8zg2XVJ/6UzGJA9WARSU5buaFJ431ktBycP4Albv+BqA==}
     dependencies:
-      '@ledgerhq/errors': 6.12.3
+      '@ledgerhq/errors': 6.12.7
       bignumber.js: 9.1.0
       uuid: 9.0.0
       zod: 3.19.1
@@ -14765,7 +14747,7 @@ packages:
   /@ledgerhq/wallet-api-simulator@0.12.5(react@17.0.2):
     resolution: {integrity: sha512-4Ld2vvuyfzXP8XxysDUKXVXbZgN/jcXacuqnuHjbyFDRD7e0cxtKOPDDBbBAtJMZ3lYRVSuRlvYcr/iQDsM95Q==}
     dependencies:
-      '@ledgerhq/hw-transport': 6.28.1
+      '@ledgerhq/hw-transport': 6.28.5
       '@ledgerhq/hw-transport-http': 6.27.16
       '@ledgerhq/wallet-api-client': 0.15.5
       '@ledgerhq/wallet-api-core': 0.18.0
@@ -20908,7 +20890,7 @@ packages:
     resolution: {integrity: sha512-gyBO8FarBrItPGAfrnm4J7vrIWMsr9xqgfzgN4PAqY7eEmL8MDuZtdpk6B6DBuJ3hYbqxvOEa0QPhNzBxnGPeA==}
     engines: {node: '>=6.0.0'}
     dependencies:
-      '@ledgerhq/hw-transport': 6.28.1
+      '@ledgerhq/hw-transport': 6.28.5
       '@stablelib/blake2b': 1.0.1
       '@taquito/taquito': 13.0.1
       '@taquito/utils': 13.0.1
@@ -31543,7 +31525,7 @@ packages:
     engines: {node: '>=6'}
     peerDependencies:
       eslint: '>=5'
-      jest: ^24.0.0
+      jest: '*'
     peerDependenciesMeta:
       jest:
         optional: true
@@ -31558,7 +31540,7 @@ packages:
     peerDependencies:
       '@typescript-eslint/eslint-plugin': ^4.0.0 || ^5.0.0
       eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
-      jest: ^27.0.0
+      jest: '*'
     peerDependenciesMeta:
       '@typescript-eslint/eslint-plugin':
         optional: true
@@ -33508,8 +33490,8 @@ packages:
     resolution: {integrity: sha512-1F98CftAvTDNQPkhTSSYpcr5eiw/R0op3RXcV5GkJBTw67FvZ6JI+CsQ5iu2FICKnE51WKjH2y26V7+cjXboIg==}
     hasBin: true
     peerDependencies:
-      react: 17.0.1
-      react-native: 0.64.2
+      react: '*'
+      react-native: '*'
     peerDependenciesMeta:
       react:
         optional: true
@@ -44007,7 +43989,7 @@ packages:
   /metro-transform-worker@0.73.9(metro-minify-terser@0.73.9):
     resolution: {integrity: sha512-Rq4b489sIaTUENA+WCvtu9yvlT/C6zFMWhU4sq+97W29Zj0mPBjdk+qGT5n1ZBgtBIJzZWt1KxeYuc17f4aYtQ==}
     peerDependencies:
-      metro-minify-terser: 0.73.9
+      metro-minify-terser: '*'
     peerDependenciesMeta:
       metro-minify-terser:
         optional: true
@@ -44619,6 +44601,7 @@ packages:
   /minizlib@2.1.2:
     resolution: {integrity: sha512-bAxsR8BVfj60DWXHE3u30oHzfl4G7khkSuPW+qvpd7jFRHm7dLxOjUk1EHACJ/hxLY8phGJ0YhYHZo7jil7Qdg==}
     engines: {node: '>= 8'}
+    requiresBuild: true
     dependencies:
       minipass: 3.1.6
       yallist: 4.0.0
