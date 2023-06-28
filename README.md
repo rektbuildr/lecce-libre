@@ -11,26 +11,45 @@
   </h4>
 </h3>
 
+[![gitpoap badge](https://public-api.gitpoap.io/v1/repo/LedgerHQ/ledger-live/badge)](https://www.gitpoap.io/gh/LedgerHQ/ledger-live)
+
 ## About
 
 `ledger-live` is a **monorepository** whose purpose is to centralize all the JavaScript code related to the [**Ledger Live**](https://www.ledger.com/ledger-live) applications in one place.
 
 [**Ledger Live**](https://www.ledger.com/ledger-live) is our platform of apps and services integrated specifically to work with your Nano device. It functions as a secure gateway to the crypto ecosystem. This means accessing a variety of crypto, NFT and DeFi based services directly and seamlessly from your hardware wallet – a better, simpler user experience that bypasses a major security concern known as blind signing.
 
+Developers looking to integrate their blockchain in Ledger Live are invited to head to the [**Developer Portal**](https://developers.ledger.com) where they will find the section [**Blockchain Support**](https://developers.ledger.com/docs/coin/general-process).
+
 ## Installation
 
-In order to interact with any package contained in this repository you will need to install the following:
+> 💡 **This is only a minimal setup. You will need to perform additional installation steps depending on the package you want to work on, please refer to its nested readme file.**
 
-- [**Node.js@16.x.x**](https://nodejs.org/)
-- [**PnPm@7.x.x**](https://pnpm.io/)
-
-**This is only a minimal setup. You will need to perform additional installation steps depending on the package you want to work on, please refer to its nested readme file.**
-
-Then, clone the repository and install the dependencies:
+### Cloning
 
 ```bash
 git clone git@github.com:LedgerHQ/ledger-live.git
 cd ledger-live
+```
+
+### Proto
+
+**⚠️ Important**: In order to use install the right version of the tools you will need to install the [`proto`](https://moonrepo.dev/proto) toolchain manager.
+Please follow the instructions on the [**proto**](https://moonrepo.dev/docs/proto/install) website to install it.
+
+Once you have installed `proto`, please run the following command:
+
+```bash
+# Will download and install the supported versions of nodejs, npm and pnpm.
+# Run it from the root or a subfolder of the repository.
+proto use
+```
+
+### Dependencies
+
+Use the [pnpm](https://pnpm.io/fr/) package manager to install the dependencies in the whole workspace:
+
+```bash
 pnpm i
 # Alternatively, if you want to bypass the postinstall scripts which can be long to run
 # pnpm i --ignore-scripts
@@ -65,14 +84,14 @@ To run nested scripts which are not covered at the root, you should **not** chan
 Every package has an **alias** defined (see application or library tables or check out the [`package.json`](https://github.com/LedgerHQ/ledger-live/blob/develop/package.json) file) that you can use as a prefix when running the script from the root.
 
 ```sh
-# `pnpm desktop` is one of the shorthands written to to avoid changing the working directory.
+# `pnpm desktop` is one of the shorthands written to avoid changing the working directory.
 
 # The following command will run the nested `test` script.
 # `test` is defined inside the `./apps/ledger-live-desktop/package.json` file.
 pnpm desktop test
 ```
 
-**Note that when using these kind of scripts you will have to make sure that the dependencies are built beforehand.**
+**Note that when using these kinds of scripts you will have to make sure that the dependencies are built beforehand.**
 
 ### Scoping
 
@@ -192,7 +211,7 @@ Description tests TBD
 
 Please check the general guidelines for contributing to Ledger Live projects: [`CONTRIBUTING.md`](https://github.com/LedgerHQ/ledger-live/blob/develop/CONTRIBUTING.md).
 
-Each separate project may also contain specific guidelines inside their own folder.
+Each separate project may also contain specific guidelines inside its own folder.
 
 In the meantime here are some important highlights:
 
@@ -218,7 +237,7 @@ For more information on the nightly releases, have a look at our [wiki](https://
 
 ### Libraries
 
-Nightly version of library packages are pushed every night to npm.
+Nightly versions of library packages are pushed every night to npm.
 
 To install a nightly library use the `@nightly` dist-tag.
 

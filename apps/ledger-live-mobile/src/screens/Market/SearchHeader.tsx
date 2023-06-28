@@ -1,12 +1,13 @@
 import { SearchInput } from "@ledgerhq/native-ui";
-import { useDebounce } from "@ledgerhq/live-common/lib/hooks/useDebounce";
+import { useDebounce } from "@ledgerhq/live-common/hooks/useDebounce";
 import React, { memo, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { MarketListRequestParams } from "@ledgerhq/live-common/market/types";
 import { track } from "../../analytics";
 
 type Props = {
   search?: string;
-  refresh: (params: any) => void;
+  refresh: (params: MarketListRequestParams) => void;
 };
 
 function SearchHeader({ search, refresh }: Props) {
@@ -26,15 +27,15 @@ function SearchHeader({ search, refresh }: Props) {
         limit: 20,
       });
     }
-  }, [debouncedSearch, refresh]);
+  }, [debouncedSearch, refresh, search]);
 
   useEffect(() => {
-    setInputSearch(search)
+    setInputSearch(search);
   }, [setInputSearch, search]);
 
   return (
     <SearchInput
-      value={inputSearch}
+      value={inputSearch ?? ""}
       onChange={setInputSearch}
       placeholder={t("common.search")}
     />

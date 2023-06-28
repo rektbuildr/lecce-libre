@@ -17,7 +17,7 @@ import { getEnv } from "../env";
 export const runAppOp = (
   { appByName, deviceInfo }: State,
   appOp: AppOp,
-  exec: Exec
+  exec: Exec,
 ): Observable<RunnerEvent> => {
   const app = appByName[appOp.name];
 
@@ -45,7 +45,7 @@ export const runAppOp = (
     defer(() => exec(appOp, deviceInfo.targetId, app)).pipe(
       throttleTime(100),
       materialize(),
-      map((n) => {
+      map(n => {
         switch (n.kind) {
           case "N":
             return <RunnerEvent>{
@@ -70,73 +70,89 @@ export const runAppOp = (
           default:
             throw new Error("invalid notification of kind=" + n.kind);
         }
-      })
-    )
+      }),
+    ),
   );
+};
+
+type InlineInstallProgress = {
+  globalProgress: number;
+  itemProgress: number;
+  currentAppOp: AppOp | null | undefined;
+  installQueue: string[];
 };
 
 export const runAllWithProgress = (
   state: State,
   exec: Exec,
-  precision = 100
-): Observable<number> => {
+  precision = 100,
+): Observable<InlineInstallProgress> => {
   const total = state.uninstallQueue.length + state.installQueue.length;
 
   function globalProgress(s, localProgress) {
-    let p =
-      1 -
-      (s.uninstallQueue.length + s.installQueue.length - localProgress) / total;
+    let p = 1 - (s.uninstallQueue.length + s.installQueue.length - localProgress) / total;
     p = Math.round(p * precision) / precision;
     return p;
   }
 
-  return concat(
-    ...getActionPlan(state).map((appOp) => runAppOp(state, appOp, exec))
-  ).pipe(
-    map(
-      (event) =>
-        <Action>{
-          type: "onRunnerEvent",
-          event,
-        }
-    ),
-    scan(reducer, state),
-    mergeMap((s) => {
-      const { currentProgressSubject } = s;
-      if (!currentProgressSubject) return of(globalProgress(s, 0));
-      return currentProgressSubject.pipe(map((v) => globalProgress(s, v)));
+  return concat(...getActionPlan(state).map(appOp => runAppOp(state, appOp, exec))).pipe(
+    map(event => {
+      if (event.type === "runError") {
+        throw event.error;
+      }
+      return <Action>{
+        type: "onRunnerEvent",
+        event,
+      };
     }),
-    distinctUntilChanged()
+    scan(reducer, state),
+    mergeMap(s => {
+      // Nb if you also want to expose the uninstall queue, feel free.
+      const { currentProgressSubject, currentAppOp, installQueue } = s;
+
+      if (!currentProgressSubject)
+        return of({
+          globalProgress: globalProgress(s, 0),
+          itemProgress: 0,
+          installQueue,
+          currentAppOp,
+        });
+
+      // Expose more information about what's happening during the install
+      return currentProgressSubject.pipe(
+        map(v => ({
+          globalProgress: globalProgress(s, v),
+          itemProgress: v,
+          installQueue,
+          currentAppOp,
+        })),
+      );
+    }),
+    distinctUntilChanged(),
   );
 };
 // use for CLI, no change of the state over time
 export const runAll = (state: State, exec: Exec): Observable<State> =>
-  concat(
-    ...getActionPlan(state).map((appOp) => runAppOp(state, appOp, exec))
-  ).pipe(
+  concat(...getActionPlan(state).map(appOp => runAppOp(state, appOp, exec))).pipe(
     map(
-      (event) =>
+      event =>
         <Action>{
           type: "onRunnerEvent",
           event,
-        }
+        },
     ),
-    reduce(reducer, state)
+    reduce(reducer, state),
   );
-export const runOneAppOp = (
-  state: State,
-  appOp: AppOp,
-  exec: Exec
-): Observable<State> =>
+export const runOneAppOp = (state: State, appOp: AppOp, exec: Exec): Observable<State> =>
   runAppOp(state, appOp, exec).pipe(
     map(
-      (event) =>
+      event =>
         <Action>{
           type: "onRunnerEvent",
           event,
-        }
+        },
     ),
-    reduce(reducer, state)
+    reduce(reducer, state),
   );
 export const runOne = (state: State, exec: Exec): Observable<State> => {
   const next = getNextAppOp(state);

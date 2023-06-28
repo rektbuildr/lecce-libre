@@ -1,73 +1,102 @@
 import type { DeviceAction } from "../../bot/types";
 import type { Transaction } from "./types";
 import { formatCurrencyUnit } from "../../currencies";
-import { deviceActionFlow } from "../../bot/specs";
+import { deviceActionFlow, formatDeviceAmount, SpeculosButton } from "../../bot/specs";
 
-const expectedAmount = ({ account, status }) =>
-  formatCurrencyUnit(account.unit, status.amount, {
-    disableRounding: true,
-    useGrouping: false,
-  }) + " XLM";
+const expectedAmount = ({ account, status, transaction }) => {
+  if (transaction.assetCode && transaction.assetIssuer) {
+    const amount = formatDeviceAmount(account.currency, status.amount, {
+      hideCode: true,
+    });
 
-const acceptTransaction: DeviceAction<Transaction, any> = deviceActionFlow({
+    return `${amount} ${transaction.assetCode}@${truncateAddress(transaction.assetIssuer, 3, 4)}`;
+  }
+
+  return formatDeviceAmount(account.currency, status.amount, {
+    postfixCode: true,
+  });
+};
+
+const truncateAddress = (stellarAddress: string, start = 6, end = 6) =>
+  `${stellarAddress.slice(0, start)}..${stellarAddress.slice(-end)}`;
+
+export const acceptTransaction: DeviceAction<Transaction, any> = deviceActionFlow({
   steps: [
     {
-      title: "Starting Balance",
-      button: "Rr",
-      expectedValue: expectedAmount,
+      title: "Review",
+      button: SpeculosButton.RIGHT,
     },
     {
-      title: "Send",
-      button: "Rr",
-      expectedValue: expectedAmount,
+      title: "Memo Text",
+      button: SpeculosButton.RIGHT,
+      expectedValue: ({ transaction }) => transaction.memoValue || "",
     },
     {
-      title: "Fee",
-      button: "Rr",
+      title: "Max Fee",
+      button: SpeculosButton.RIGHT,
       expectedValue: ({ account, status }) =>
         formatCurrencyUnit(account.unit, status.estimatedFees, {
           disableRounding: true,
         }) + " XLM",
     },
     {
-      title: "Destination",
-      button: "Rr",
-      expectedValue: ({ transaction }) => transaction.recipient,
-    },
-    {
-      title: "Create Account",
-      button: "Rr",
-      expectedValue: ({ transaction }) => transaction.recipient,
-    },
-    {
-      title: "Memo",
-      button: "Rr",
-      expectedValue: ({ transaction }) => transaction.memoValue || "[none]",
-    },
-    {
-      title: "Network",
-      button: "Rr",
-      expectedValue: () => "Public",
-    },
-    {
-      title: "Time Bounds",
-      button: "Rr",
+      title: "Sequence Num",
+      button: SpeculosButton.RIGHT,
     },
     {
       title: "Tx Source",
-      button: "Rr",
-      expectedValue: ({ account }) => account.freshAddress,
+      button: SpeculosButton.RIGHT,
+      expectedValue: ({ account }) => truncateAddress(account.freshAddress),
     },
     {
-      title: "Review",
-      button: "Rr",
+      title: "Operation Type",
+      button: SpeculosButton.RIGHT,
+      // Operation type can be Payment (or Create Account) or Change Trust.
+      // Create Account type is coming from operation, not transaction.
+      // Testing in `specs.ts`.
+    },
+    {
+      title: "Change Trust",
+      button: SpeculosButton.RIGHT,
+      expectedValue: ({ transaction }) =>
+        `${transaction.assetCode || ""}@${truncateAddress(transaction.assetIssuer || "", 3, 4)}`,
+      maxY: 5,
+    },
+    {
+      title: "Create Account",
+      button: SpeculosButton.RIGHT,
+      expectedValue: ({ transaction }) => transaction.recipient,
+      maxY: 5,
+    },
+    {
+      title: "Send",
+      button: SpeculosButton.RIGHT,
+      expectedValue: expectedAmount,
+    },
+    {
+      title: "Destination",
+      button: SpeculosButton.RIGHT,
+      expectedValue: ({ transaction }) => transaction.recipient,
     },
     {
       title: "Finalize",
-      button: "LRlr",
+      button: SpeculosButton.BOTH,
+    },
+    {
+      title: "Starting Balance",
+      button: SpeculosButton.RIGHT,
+    },
+    {
+      title: "Network",
+      button: SpeculosButton.RIGHT,
+    },
+    {
+      title: "Valid Before (UTC)",
+      button: SpeculosButton.RIGHT,
+    },
+    {
+      title: "Valid After (UTC)",
+      button: SpeculosButton.RIGHT,
     },
   ],
 });
-export default {
-  acceptTransaction,
-};

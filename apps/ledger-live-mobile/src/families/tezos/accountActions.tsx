@@ -1,15 +1,19 @@
 import React from "react";
 import { Trans } from "react-i18next";
-import type { AccountLike } from "@ledgerhq/live-common/lib/types";
-import { getAccountDelegationSync, isAccountDelegating } from "@ledgerhq/live-common/lib/families/tezos/bakers";
-import { Account } from "@ledgerhq/live-common/lib/types";
+import type { Account, AccountLike } from "@ledgerhq/types-live";
+import {
+  getAccountDelegationSync,
+  isAccountDelegating,
+} from "@ledgerhq/live-common/families/tezos/bakers";
 import { Icons } from "@ledgerhq/native-ui";
 import { NavigatorName, ScreenName } from "../../const";
+import { ActionButtonEvent } from "../../components/FabActions";
+
+type NavigationParamsType = readonly [name: string, options: object];
 
 const getExtraSendActionParams = ({ account }: { account: AccountLike }) => {
   const delegation = getAccountDelegationSync(account);
-  const sendShouldWarnDelegation =
-    delegation && delegation.sendShouldWarnDelegation;
+  const sendShouldWarnDelegation = delegation && delegation.sendShouldWarnDelegation;
 
   return sendShouldWarnDelegation
     ? {
@@ -24,8 +28,7 @@ const getExtraSendActionParams = ({ account }: { account: AccountLike }) => {
 
 const getExtraReceiveActionParams = ({ account }: { account: AccountLike }) => {
   const delegation = getAccountDelegationSync(account);
-  const sendShouldWarnDelegation =
-    delegation && delegation.receiveShouldWarnDelegation;
+  const sendShouldWarnDelegation = delegation && delegation.receiveShouldWarnDelegation;
 
   return sendShouldWarnDelegation
     ? {
@@ -38,13 +41,26 @@ const getExtraReceiveActionParams = ({ account }: { account: AccountLike }) => {
     : {};
 };
 
-const getActions = ({ account, parentAccount }: { account: Account,  parentAccount: Account }) => {
-  const delegationDisabled = (isAccountDelegating(account) || account.type !== "Account");
-
-  return [
-    {
-      disabled: delegationDisabled,
-      navigationParams: [
+const getMainActions = ({
+  account,
+  parentAccount,
+}: {
+  account: Account;
+  parentAccount: Account;
+}): ActionButtonEvent[] | null | undefined => {
+  const delegationDisabled = isAccountDelegating(account) || account.type !== "Account";
+  const navigationParams = delegationDisabled
+    ? [
+        NavigatorName.NoFundsFlow,
+        {
+          screen: ScreenName.NoFunds,
+          params: {
+            account,
+            parentAccount,
+          },
+        },
+      ]
+    : [
         NavigatorName.TezosDelegationFlow,
         {
           screen: ScreenName.DelegationStarted,
@@ -53,9 +69,20 @@ const getActions = ({ account, parentAccount }: { account: Account,  parentAccou
             parentId: parentAccount ? parentAccount.id : undefined,
           },
         },
-      ],
+      ];
+
+  return [
+    {
+      id: "stake",
+      navigationParams: navigationParams as unknown as NavigationParamsType,
       label: <Trans i18nKey="account.stake" />,
       Icon: Icons.ClaimRewardsMedium,
+      event: "button_clicked",
+      eventProperties: {
+        button: "stake",
+        currency: "XTZ",
+        page: "Account Page",
+      },
     },
   ];
 };
@@ -63,5 +90,5 @@ const getActions = ({ account, parentAccount }: { account: Account,  parentAccou
 export default {
   getExtraSendActionParams,
   getExtraReceiveActionParams,
-  getActions
+  getMainActions,
 };

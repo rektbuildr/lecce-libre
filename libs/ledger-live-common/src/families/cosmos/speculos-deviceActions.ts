@@ -1,5 +1,5 @@
 import type { DeviceAction } from "../../bot/types";
-import { deviceActionFlow } from "../../bot/specs";
+import { deviceActionFlow, SpeculosButton } from "../../bot/specs";
 import type { Transaction } from "./types";
 const typeWording = {
   send: "Send",
@@ -9,80 +9,78 @@ const typeWording = {
   claimReward: "Withdraw Reward",
   claimRewardCompound: "(not tested)",
 };
-const acceptTransaction: DeviceAction<Transaction, any> = deviceActionFlow({
+
+export const acceptTransaction: DeviceAction<Transaction, any> = deviceActionFlow({
   steps: [
     {
       title: "Sequence",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
     },
     {
       title: "Chain ID",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
     },
     {
       title: "Account",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
     },
     {
       title: "Type",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       expectedValue: ({ transaction }) => typeWording[transaction.mode],
     },
     {
       title: "Validator Source",
-      button: "Rr",
-      expectedValue: ({ transaction }) =>
-        transaction.cosmosSourceValidator || "",
+      button: SpeculosButton.RIGHT,
+      expectedValue: ({ transaction }) => transaction.sourceValidator || "",
     },
     {
       title: "Validator Dest",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       expectedValue: ({ transaction }) => transaction.validators[0].address,
     },
     {
       title: "Validator",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       expectedValue: ({ transaction }, acc) =>
-        transaction.validators[
-          acc.filter((a) => a.title === "Validator").length
-        ].address,
+        transaction.validators[acc.filter(a => a.title === "Validator").length].address,
     },
     {
       title: "Memo",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       expectedValue: ({ transaction }) => transaction.memo || "",
     },
     {
       title: "Fee",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
     },
     {
       title: "Gas",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       expectedValue: ({ transaction }) => transaction.gas?.toString() || "",
     },
     {
       title: "Amount",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
     },
     {
       title: "From",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       expectedValue: ({ account }) => account.freshAddress,
     },
     {
       title: "To",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       expectedValue: ({ transaction }) => transaction.recipient,
     },
     {
       title: "Delegator",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       expectedValue: ({ account }) => account.freshAddress,
     },
     {
       title: "APPROVE",
-      button: "LRlr",
+      button: SpeculosButton.BOTH,
       final: true,
     },
     {
@@ -90,6 +88,3 @@ const acceptTransaction: DeviceAction<Transaction, any> = deviceActionFlow({
     },
   ],
 });
-export default {
-  acceptTransaction,
-};

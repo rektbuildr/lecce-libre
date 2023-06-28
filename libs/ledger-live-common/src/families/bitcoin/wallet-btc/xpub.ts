@@ -1,15 +1,14 @@
 import { maxBy, range, some } from "lodash";
 import BigNumber from "bignumber.js";
 import { TX, Address, IStorage } from "./storage/types";
-import EventEmitter from "./utils/eventemitter";
 import { IExplorer } from "./explorer/types";
 import { ICrypto } from "./crypto/types";
 import { PickingStrategy } from "./pickingstrategies/types";
-import * as utils from "./utils";
+import { computeDustAmount, maxTxSizeCeil } from "./utils";
 import { TransactionInfo, InputInfo, OutputInfo } from "./types";
 
 // names inside this class and discovery logic respect BIP32 standard
-class Xpub extends EventEmitter {
+class Xpub {
   storage: IStorage;
 
   explorer: IExplorer;
@@ -30,8 +29,6 @@ class Xpub extends EventEmitter {
 
   GAP = 20;
 
-  syncing: { [key: string]: boolean } = {};
-
   // need to be bigger than the number of tx from the same address that can be in the same block
   txsSyncArraySize = 1000;
 
@@ -48,7 +45,6 @@ class Xpub extends EventEmitter {
     xpub: string;
     derivationMode: string;
   }) {
-    super();
     this.storage = storage;
     this.explorer = explorer;
     this.crypto = crypto;
@@ -58,173 +54,101 @@ class Xpub extends EventEmitter {
     this.freshAddressIndex = 0;
   }
 
-  async syncAddress(account: number, index: number) {
-    const address = await this.crypto.getAddress(
-      this.derivationMode,
-      this.xpub,
-      account,
-      index
-    );
+  async syncAddress(account: number, index: number, needReorg: boolean): Promise<boolean> {
+    const address = await this.crypto.getAddress(this.derivationMode, this.xpub, account, index);
 
     this.storage.addAddress(
       `${this.crypto.network.name}-${this.derivationMode}-${this.xpub}-${account}-${index}`,
-      address
-    );
-    await this.whenSynced("address", address);
-
-    const data = {
-      type: "address",
-      key: address,
-      account,
-      index,
       address,
-    };
-
-    this.emitSyncing(data);
-
-    // TODO handle eventual reorg case using lastBlock
-
-    let total = 0;
-    try {
-      // TODO perf: bad : looping in the tx array
+    );
+    if (needReorg) {
       await this.checkAddressReorg(account, index);
-
-      // in case pendings have changed we clean them out
-      // TODO perf : bad : looping in the tx array
-      const hasPendings = !!this.storage.getLastTx({
-        confirmed: false,
-        account,
-        index,
-      });
-      if (hasPendings) {
-        this.storage.removePendingTxs({ account, index });
-      }
-      total = await this.fetchHydrateAndStoreNewTxs(address, account, index);
-    } catch (e) {
-      this.emitSyncedFailed(data);
-      throw e;
     }
-
-    this.emitSynced({ ...data, total });
-
-    const lastTx = this.storage.getLastTx({
+    // in case pendings have changed we clean them out
+    const hasPendings = this.storage.hasPendingTx({
       account,
       index,
     });
-    if (account === 0 && lastTx) {
+    if (hasPendings) {
+      this.storage.removePendingTxs({ account, index });
+    }
+    await this.fetchHydrateAndStoreNewTxs(address, account, index);
+    const hasTx = this.storage.hasTx({
+      account,
+      index,
+    });
+    if (account === 0 && hasTx) {
       this.freshAddressIndex = Math.max(this.freshAddressIndex, index + 1);
     }
-    return !!lastTx;
+
+    return hasTx;
   }
 
-  async checkAddressesBlock(account: number, index: number) {
+  async checkAddressesBlock(account: number, index: number, needReorg: boolean): Promise<boolean> {
     const addressesResults = await Promise.all(
-      range(this.GAP).map((_, key) => this.syncAddress(account, index + key))
+      range(this.GAP).map((_, key) => this.syncAddress(account, index + key, needReorg)),
     );
-    return some(addressesResults, (lastTx) => !!lastTx);
+    return some(addressesResults, lastTx => !!lastTx);
   }
 
-  async syncAccount(account: number) {
-    await this.whenSynced("account", account.toString());
-
-    this.emitSyncing({
-      type: "account",
-      key: account,
-      account,
-    });
-
+  async syncAccount(account: number, needReorg: boolean): Promise<number> {
     let index = 0;
-
-    try {
-      // eslint-disable-next-line no-await-in-loop
-      while (await this.checkAddressesBlock(account, index)) {
-        index += this.GAP;
-      }
-    } catch (e) {
-      this.emitSyncedFailed({
-        type: "account",
-        key: account,
-        account,
-      });
-      throw e;
+    // eslint-disable-next-line no-await-in-loop
+    while (await this.checkAddressesBlock(account, index, needReorg)) {
+      index += this.GAP;
     }
-
-    this.emitSynced({
-      type: "account",
-      key: account,
-      account,
-      index,
-    });
     return index;
   }
 
   // TODO : test fail case + incremental
-  async sync() {
-    await this.whenSynced("all");
-    this.emitSyncing({ type: "all" });
+  async sync(): Promise<void> {
     this.freshAddressIndex = 0;
-    let account = 0;
-    try {
-      // eslint-disable-next-line no-await-in-loop
-      while (account < 2 && (await this.syncAccount(account))) {
-        // account=0 for receive address; account=1 for change address. No need to handle account>1
-        account += 1;
+    const highestBlockFromStorage = this.storage.getHighestBlockHeightAndHash();
+    let needReorg = !!highestBlockFromStorage;
+    if (highestBlockFromStorage) {
+      const highestBlockFromExplorer = await this.explorer.getBlockByHeight(
+        highestBlockFromStorage.height,
+      );
+      if (highestBlockFromExplorer?.hash === highestBlockFromStorage.hash) {
+        needReorg = false;
       }
-    } catch (e) {
-      this.emitSyncedFailed({ type: "all" });
-      throw e;
     }
-
-    this.emitSynced({ type: "all", account });
+    await Promise.all([
+      this.syncAccount(0, needReorg), // for receive addresses
+      this.syncAccount(1, needReorg), // for change addresses
+    ]);
     this.freshAddress = await this.crypto.getAddress(
       this.derivationMode,
       this.xpub,
       0,
-      this.freshAddressIndex
+      this.freshAddressIndex,
     );
-    return account;
   }
 
-  async getXpubBalance() {
-    await this.whenSynced("all");
-
+  async getXpubBalance(): Promise<BigNumber> {
     const addresses = await this.getXpubAddresses();
-
     return this.getAddressesBalance(addresses);
   }
 
-  async getAccountBalance(account: number) {
-    await this.whenSynced("account", account.toString());
-
+  async getAccountBalance(account: number): Promise<BigNumber> {
     const addresses = await this.getAccountAddresses(account);
-
     return this.getAddressesBalance(addresses);
   }
 
-  async getAddressBalance(address: Address) {
-    await this.whenSynced("address", address.address);
-
+  async getAddressBalance(address: Address): Promise<BigNumber> {
     const unspentUtxos = this.storage.getAddressUnspentUtxos(address);
-
-    return unspentUtxos.reduce(
-      (total, { value }) => total.plus(value),
-      new BigNumber(0)
-    );
+    return unspentUtxos.reduce((total, { value }) => total.plus(value), new BigNumber(0));
   }
 
-  async getXpubAddresses() {
-    await this.whenSynced("all");
+  async getXpubAddresses(): Promise<Address[]> {
     return this.storage.getUniquesAddresses({});
   }
 
-  async getAccountAddresses(account: number) {
-    await this.whenSynced("account", account.toString());
+  async getAccountAddresses(account: number): Promise<Address[]> {
     return this.storage.getUniquesAddresses({ account });
   }
 
-  async getNewAddress(account: number, gap: number) {
-    await this.whenSynced("account", account.toString());
-
+  async getNewAddress(account: number, gap: number): Promise<Address> {
     const accountAddresses = await this.getAccountAddresses(account);
     const lastIndex = (maxBy(accountAddresses, "index") || { index: -1 }).index;
     let index: number;
@@ -234,15 +158,11 @@ class Xpub extends EventEmitter {
       index = lastIndex + gap;
     }
     const address: Address = {
-      address: await this.crypto.getAddress(
-        this.derivationMode,
-        this.xpub,
-        account,
-        index
-      ),
+      address: await this.crypto.getAddress(this.derivationMode, this.xpub, account, index),
       account,
       index,
     };
+
     return address;
   }
 
@@ -253,35 +173,55 @@ class Xpub extends EventEmitter {
     changeAddress: Address;
     utxoPickingStrategy: PickingStrategy;
     sequence: number;
+    opReturnData?: Buffer;
   }): Promise<TransactionInfo> {
-    await this.whenSynced("all");
-
     const outputs: OutputInfo[] = [];
+
+    const {
+      amount,
+      opReturnData,
+      destAddress,
+      changeAddress,
+      utxoPickingStrategy,
+      feePerByte,
+      sequence,
+    } = params;
 
     // outputs splitting
     // btc only support value fitting in uint64 and the lib
     // we use to serialize output only take js number in params
     // that are actually even more restricted
-    const desiredOutputLeftToFit = {
-      script: this.crypto.toOutputScript(params.destAddress),
-      value: params.amount,
-      address: params.destAddress,
+    const desiredOutputLeftToFit: OutputInfo = {
+      script: this.crypto.toOutputScript(destAddress),
+      value: amount,
+      address: destAddress,
       isChange: false,
     };
+
     while (desiredOutputLeftToFit.value.gt(this.OUTPUT_VALUE_MAX)) {
       outputs.push({
         script: desiredOutputLeftToFit.script,
         value: new BigNumber(this.OUTPUT_VALUE_MAX),
-        address: params.destAddress,
+        address: destAddress,
         isChange: false,
       });
-      desiredOutputLeftToFit.value = desiredOutputLeftToFit.value.minus(
-        this.OUTPUT_VALUE_MAX
-      );
+
+      desiredOutputLeftToFit.value = desiredOutputLeftToFit.value.minus(this.OUTPUT_VALUE_MAX);
     }
 
     if (desiredOutputLeftToFit.value.gt(0)) {
       outputs.push(desiredOutputLeftToFit);
+    }
+
+    if (opReturnData) {
+      const opReturnOutput: OutputInfo = {
+        script: this.crypto.toOpReturnOutputScript(opReturnData),
+        value: new BigNumber(0),
+        address: null,
+        isChange: false,
+      };
+
+      outputs.push(opReturnOutput);
     }
 
     // now we select only the output needed to cover the amount + fee
@@ -290,21 +230,16 @@ class Xpub extends EventEmitter {
       unspentUtxos: unspentUtxoSelected,
       fee,
       needChangeoutput,
-    } = await params.utxoPickingStrategy.selectUnspentUtxosToUse(
-      this,
-      outputs,
-      params.feePerByte
-    );
+    } = await utxoPickingStrategy.selectUnspentUtxosToUse(this, outputs, feePerByte);
 
     const txHexs = await Promise.all(
-      unspentUtxoSelected.map((unspentUtxo) =>
-        this.explorer.getTxHex(unspentUtxo.output_hash)
-      )
+      unspentUtxoSelected.map(unspentUtxo => this.explorer.getTxHex(unspentUtxo.output_hash)),
     );
+
     const txs = await Promise.all(
-      unspentUtxoSelected.map((unspentUtxo) =>
-        this.storage.getTx(unspentUtxo.address, unspentUtxo.output_hash)
-      )
+      unspentUtxoSelected.map(unspentUtxo =>
+        this.storage.getTx(unspentUtxo.address, unspentUtxo.output_hash),
+      ),
     );
 
     const inputs: InputInfo[] = unspentUtxoSelected.map((utxo, index) => {
@@ -314,148 +249,117 @@ class Xpub extends EventEmitter {
         address: utxo.address,
         output_hash: utxo.output_hash,
         output_index: utxo.output_index,
-        sequence: params.sequence,
+        sequence,
       };
     });
-    const associatedDerivations: [number, number][] = unspentUtxoSelected.map(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      (utxo, index) => [txs[index].account, txs[index].index]
-    );
 
-    const txSize = utils.maxTxSizeCeil(
+    const associatedDerivations: [number, number][] = unspentUtxoSelected.map((_utxo, index) => {
+      if (txs[index] == null) {
+        throw new Error("Invalid index in txs[index]");
+      }
+      return [txs[index]?.account || 0, txs[index]?.index || 0];
+    });
+
+    const txSize = maxTxSizeCeil(
       unspentUtxoSelected.length,
-      outputs.map((o) => o.address),
+      outputs.map(o => o.script),
       true,
       this.crypto,
-      this.derivationMode
+      this.derivationMode,
     );
-    const dustAmount = utils.computeDustAmount(this.crypto, txSize);
+
+    const dustLimit = computeDustAmount(this.crypto, txSize);
+
     // Abandon the change output if change output amount is less than dust amount
-    if (
-      needChangeoutput &&
-      total.minus(params.amount).minus(fee) > dustAmount
-    ) {
+    if (needChangeoutput && total.minus(amount).minus(fee).gt(dustLimit)) {
       outputs.push({
-        script: this.crypto.toOutputScript(params.changeAddress.address),
-        value: total.minus(params.amount).minus(fee),
-        address: params.changeAddress.address,
+        script: this.crypto.toOutputScript(changeAddress.address),
+        value: total.minus(amount).minus(fee),
+        address: changeAddress.address,
         isChange: true,
       });
     }
 
-    const outputsValue: BigNumber = outputs.reduce(
-      (cur, o) => cur.plus(o.value),
-      new BigNumber(0)
-    );
+    const outputsValue: BigNumber = outputs.reduce((cur, o) => cur.plus(o.value), new BigNumber(0));
 
     return {
       inputs,
       associatedDerivations,
       outputs,
       fee: total.minus(outputsValue).toNumber(),
-      changeAddress: params.changeAddress,
+      changeAddress: changeAddress,
     };
   }
 
-  async broadcastTx(rawTxHex: string) {
+  async broadcastTx(rawTxHex: string): Promise<any> {
     return this.explorer.broadcast(rawTxHex);
   }
 
   // internal
-  async getAddressesBalance(addresses: Address[]) {
-    const balances = await Promise.all(
-      addresses.map((address) => this.getAddressBalance(address))
-    );
+  async getAddressesBalance(addresses: Address[]): Promise<BigNumber> {
+    const balances = await Promise.all(addresses.map(address => this.getAddressBalance(address)));
 
-    return balances.reduce(
-      (total, balance) => total.plus(balance),
-      new BigNumber(0)
-    );
-  }
-
-  // TODO : test the different syncing protection logic
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  emitSyncing(data: any) {
-    this.syncing[`${data.type}-${data.key}`] = true;
-    this.emit("syncing", data);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  emitSynced(data: any) {
-    this.syncing[`${data.type}-${data.key}`] = false;
-    this.emit("synced", data);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  emitSyncedFailed(data: any) {
-    this.syncing[`${data.type}-${data.key}`] = false;
-    this.emit("syncfail", data);
-  }
-
-  whenSynced(type: string, key?: string): Promise<void> {
-    return new Promise((resolve) => {
-      if (!this.syncing[`${type}-${key}`]) {
-        resolve();
-      } else {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const handler = (evt: any) => {
-          if (evt.type === type && evt.key === key) {
-            resolve();
-            this.removeListener("synced", handler);
-          }
-        };
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        this.on("synced", handler);
-      }
-    });
+    return balances.reduce((total, balance) => total.plus(balance), new BigNumber(0));
   }
 
   async fetchHydrateAndStoreNewTxs(
     address: string,
     account: number,
-    index: number
-  ) {
+    index: number,
+  ): Promise<number> {
     let pendingTxs: TX[] = [];
     let txs: TX[] = [];
     let inserted = 0;
     do {
-      const lastTx = this.storage.getLastTx({
-        account,
-        index,
-        confirmed: true,
-      });
-
-      txs = await this.explorer.getAddressTxsSinceLastTxBlock(
-        this.txsSyncArraySize,
-        { address, account, index },
-        lastTx
-      );
-      if (pendingTxs.length === 0) {
-        pendingTxs = txs.filter((tx) => !tx.block);
+      const lastTxBlockheight =
+        this.storage.getLastConfirmedTxBlock({
+          account,
+          index,
+        })?.height || 0;
+      if (pendingTxs.length > 0) {
+        txs = await this.explorer.getTxsSinceBlockheight(
+          this.txsSyncArraySize,
+          { address, account, index },
+          lastTxBlockheight,
+          false,
+        );
+        inserted += this.storage.appendTxs(txs); // insert not pending tx
+      } else {
+        [pendingTxs, txs] = await Promise.all([
+          this.explorer.getTxsSinceBlockheight(
+            this.txsSyncArraySize,
+            { address, account, index },
+            0,
+            true,
+          ),
+          this.explorer.getTxsSinceBlockheight(
+            this.txsSyncArraySize,
+            { address, account, index },
+            lastTxBlockheight,
+            false,
+          ),
+        ]);
+        inserted += this.storage.appendTxs(txs); // insert not pending tx
       }
-      inserted += this.storage.appendTxs(txs.filter((tx) => tx.block)); // only insert not pending tx
-    } while (txs.length - pendingTxs.length >= this.txsSyncArraySize); // check whether page is full, if not, it is the last page
-    inserted += this.storage.appendTxs(pendingTxs);
+    } while (txs.length >= this.txsSyncArraySize); // check whether page is full, if not, it is the last page
+    inserted += this.storage.appendTxs(pendingTxs); // insert pending tx
     return inserted;
   }
 
-  async checkAddressReorg(account: number, index: number) {
-    const lastTx = this.storage.getLastTx({
+  async checkAddressReorg(account: number, index: number): Promise<void> {
+    const lastConfirmedTxBlock = this.storage.getLastConfirmedTxBlock({
       account,
       index,
-      confirmed: true,
     });
 
-    if (!lastTx) {
+    if (!lastConfirmedTxBlock) {
       return;
     }
 
-    const block = await this.explorer.getBlockByHeight(lastTx.block.height);
+    const block = await this.explorer.getBlockByHeight(lastConfirmedTxBlock.height);
 
     // all good the block is valid
-    if (block && block.hash === lastTx.block.hash) {
+    if (block && block.hash === lastConfirmedTxBlock.hash) {
       return;
     }
 

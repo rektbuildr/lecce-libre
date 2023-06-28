@@ -3,15 +3,7 @@ import { scan, catchError, tap } from "rxjs/operators";
 import { useEffect, useState } from "react";
 import { log } from "@ledgerhq/logs";
 import { TransportStatusError } from "@ledgerhq/errors";
-import type {
-  TokenCurrency,
-  AccountLike,
-  Account,
-  Transaction,
-  TransactionStatus,
-  SignedOperation,
-  SignOperationEvent,
-} from "../../types";
+import type { Transaction, TransactionStatus } from "../../generated/types";
 import { TransactionRefusedOnDevice } from "../../errors";
 import { getMainAccount } from "../../account";
 import { getAccountBridge } from "../../bridge";
@@ -19,6 +11,13 @@ import type { ConnectAppEvent, Input as ConnectAppInput } from "../connectApp";
 import type { Action, Device } from "./types";
 import type { AppRequest, AppState } from "./app";
 import { createAction as createAppAction } from "./app";
+import type {
+  Account,
+  AccountLike,
+  SignedOperation,
+  SignOperationEvent,
+} from "@ledgerhq/types-live";
+import type { TokenCurrency } from "@ledgerhq/types-cryptoassets";
 type State = {
   signedOperation: SignedOperation | null | undefined;
   deviceSignatureRequested: boolean;
@@ -31,7 +30,7 @@ type TransactionRequest = {
   parentAccount: Account | null | undefined;
   account: AccountLike;
   transaction: Transaction;
-  status: TransactionStatus;
+  status?: TransactionStatus;
   appName?: string;
   dependencies?: AppRequest[];
   requireLatestFirmware?: boolean;
@@ -40,15 +39,12 @@ type TransactionResult =
   | {
       signedOperation: SignedOperation;
       device: Device;
+      swapId?: string;
     }
   | {
       transactionSignError: Error;
     };
-type TransactionAction = Action<
-  TransactionRequest,
-  TransactionState,
-  TransactionResult
->;
+type TransactionAction = Action<TransactionRequest, TransactionState, TransactionResult>;
 
 const mapResult = ({
   device,
@@ -84,7 +80,7 @@ const reducer = (state: State, e: Event): State => {
     case "error": {
       const { error } = e;
       const transactionSignError =
-        // @ts-expect-error typescript doesn't check against the TransportStatusError type
+        // @ts-expect-error TODO: fix this
         error instanceof TransportStatusError && error.statusCode === 0x6985
           ? new TransactionRefusedOnDevice()
           : error;
@@ -104,22 +100,19 @@ const reducer = (state: State, e: Event): State => {
       return { ...state, deviceStreamingProgress: e.progress };
   }
 
+  // Code may never reach here but we want to prevent runtime errors
   return state;
 };
 
 export const createAction = (
-  connectAppExec: (arg0: ConnectAppInput) => Observable<ConnectAppEvent>
+  connectAppExec: (arg0: ConnectAppInput) => Observable<ConnectAppEvent>,
 ): TransactionAction => {
   const useHook = (
     reduxDevice: Device | null | undefined,
-    txRequest: TransactionRequest
+    txRequest: TransactionRequest,
   ): TransactionState => {
-    const { transaction, appName, dependencies, requireLatestFirmware } =
-      txRequest;
-    const mainAccount = getMainAccount(
-      txRequest.account,
-      txRequest.parentAccount
-    );
+    const { transaction, appName, dependencies, requireLatestFirmware } = txRequest;
+    const mainAccount = getMainAccount(txRequest.account, txRequest.parentAccount);
     const appState = createAppAction(connectAppExec).useHook(reduxDevice, {
       account: mainAccount,
       appName,
@@ -142,27 +135,20 @@ export const createAction = (
           deviceId: device.deviceId,
         })
         .pipe(
-          catchError((error) =>
+          catchError(error =>
             of<{ type: "error"; error: Error }>({
               type: "error",
               error,
-            })
+            }),
           ),
           tap((e: Event) => log("actions-transaction-event", e.type, e)),
-          scan(reducer, initialState)
+          scan(reducer, initialState),
         )
         .subscribe((x: any) => setState(x));
       return () => {
         sub.unsubscribe();
       };
-    }, [
-      device,
-      mainAccount,
-      transaction,
-      opened,
-      inWrongDeviceForAccount,
-      error,
-    ]);
+    }, [device, mainAccount, transaction, opened, inWrongDeviceForAccount, error]);
     return {
       ...appState,
       ...state,

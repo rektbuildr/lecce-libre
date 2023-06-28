@@ -7,7 +7,7 @@ export function splitTransaction(
   isSegwitSupported: boolean | null | undefined = false,
   hasTimestamp = false,
   hasExtraData = false,
-  additionals: Array<string> = []
+  additionals: Array<string> = [],
 ): Transaction {
   const inputs: TransactionInput[] = [];
   const outputs: TransactionOutput[] = [];
@@ -17,19 +17,24 @@ export function splitTransaction(
   let nExpiryHeight = Buffer.alloc(0);
   let nVersionGroupId = Buffer.alloc(0);
   let extraData = Buffer.alloc(0);
+  let witnessScript, locktime;
   const isDecred = additionals.includes("decred");
+  const isZencash = additionals.includes("zencash");
+  const isZcash = additionals.includes("zcash");
   const transaction = Buffer.from(transactionHex, "hex");
   const version = transaction.slice(offset, offset + 4);
   const overwinter =
     version.equals(Buffer.from([0x03, 0x00, 0x00, 0x80])) ||
-    version.equals(Buffer.from([0x04, 0x00, 0x00, 0x80]));
+    version.equals(Buffer.from([0x04, 0x00, 0x00, 0x80])) ||
+    version.equals(Buffer.from([0x05, 0x00, 0x00, 0x80]));
+  const isZcashv5 = isZcash && version.equals(Buffer.from([0x05, 0x00, 0x00, 0x80]));
   offset += 4;
-
   if (
     !hasTimestamp &&
     isSegwitSupported &&
     transaction[offset] === 0 &&
-    transaction[offset + 1] !== 0
+    transaction[offset + 1] !== 0 &&
+    !isZencash
   ) {
     offset += 2;
     witness = true;
@@ -44,7 +49,11 @@ export function splitTransaction(
     nVersionGroupId = transaction.slice(offset, 4 + offset);
     offset += 4;
   }
-
+  if (isZcashv5) {
+    locktime = transaction.slice(offset + 4, offset + 8);
+    nExpiryHeight = transaction.slice(offset + 8, offset + 12);
+    offset += 12;
+  }
   let varint = getVarint(transaction, offset);
   const numberInputs = varint[0];
   offset += varint[1];
@@ -76,11 +85,9 @@ export function splitTransaction(
       tree,
     });
   }
-
   varint = getVarint(transaction, offset);
   const numberOutputs = varint[0];
   offset += varint[1];
-
   for (let i = 0; i < numberOutputs; i++) {
     const amount = transaction.slice(offset, offset + 8);
     offset += 8;
@@ -100,18 +107,16 @@ export function splitTransaction(
     });
   }
 
-  let witnessScript, locktime;
-
   if (witness) {
     witnessScript = transaction.slice(offset, -4);
     locktime = transaction.slice(transaction.length - 4);
-  } else {
+  } else if (!isZcashv5) {
     locktime = transaction.slice(offset, offset + 4);
   }
 
   offset += 4;
 
-  if (overwinter || isDecred) {
+  if ((overwinter || isDecred) && !isZcashv5) {
     nExpiryHeight = transaction.slice(offset, offset + 4);
     offset += 4;
   }
@@ -156,9 +161,6 @@ export function splitTransaction(
     nExpiryHeight,
     extraData,
   };
-  log(
-    "btc",
-    `splitTransaction ${transactionHex}:\n${formatTransactionDebug(t)}`
-  );
+  log("btc", `splitTransaction ${transactionHex}:\n${formatTransactionDebug(t)}`);
   return t;
 }

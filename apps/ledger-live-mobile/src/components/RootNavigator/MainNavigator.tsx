@@ -1,46 +1,60 @@
-// @flow
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useTheme } from "styled-components/native";
 import { Icons } from "@ledgerhq/native-ui";
 
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { BottomTabBarProps, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useSelector } from "react-redux";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useManagerNavLockCallback } from "./CustomBlockRouterNavigator";
 import { ScreenName, NavigatorName } from "../../const";
 import { PortfolioTabIcon } from "../../screens/Portfolio";
 import Transfer, { TransferTabIcon } from "../TabBar/Transfer";
 import TabIcon from "../TabIcon";
 import MarketNavigator from "./MarketNavigator";
 import PortfolioNavigator from "./PortfolioNavigator";
-import {
-  hasOrderedNanoSelector,
-  readOnlyModeEnabledSelector,
-} from "../../reducers/settings";
+import { hasOrderedNanoSelector, readOnlyModeEnabledSelector } from "../../reducers/settings";
 import ManagerNavigator, { ManagerTabIcon } from "./ManagerNavigator";
 import DiscoverNavigator from "./DiscoverNavigator";
 import customTabBar from "../TabBar/CustomTabBar";
+import { MainNavigatorParamList } from "./types/MainNavigator";
+import { isMainNavigatorVisibleSelector } from "../../reducers/appstate";
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<MainNavigatorParamList>();
 
-type RouteParams = {
-  hideTabNavigation?: boolean;
-};
-export default function MainNavigator({
-  route: { params },
-}: {
-  route: { params: RouteParams };
-}) {
+// NB The default behaviour is not reset route params, leading to always having the same
+// search query or preselected tab after the first time (ie from Swap/Sell), that's why we
+// override the navigation from tabs.
+// https://github.com/react-navigation/react-navigation/issues/6674#issuecomment-562813152
+
+export default function MainNavigator() {
   const { colors } = useTheme();
   const readOnlyModeEnabled = useSelector(readOnlyModeEnabledSelector);
   const hasOrderedNano = useSelector(hasOrderedNanoSelector);
-
-  const { hideTabNavigation } = params || {};
+  const isMainNavigatorVisible = useSelector(isMainNavigatorVisibleSelector);
+  const managerNavLockCallback = useManagerNavLockCallback();
 
   const insets = useSafeAreaInsets();
   const tabBar = useMemo(
-    () => ({ ...props }) => customTabBar({ ...props, colors, insets }),
-    [insets, colors],
+    () =>
+      ({ ...props }: BottomTabBarProps): JSX.Element =>
+        customTabBar({
+          ...props,
+          colors,
+          insets,
+          hideTabBar: !isMainNavigatorVisible,
+        }),
+    [colors, insets, isMainNavigatorVisible],
   );
+
+  const managerLockAwareCallback = useCallback(
+    callback => {
+      // NB This is conditionally going to show the confirmation modal from the manager
+      // in the event of having ongoing installs/uninstalls.
+      managerNavLockCallback ? managerNavLockCallback(() => callback) : callback();
+    },
+    [managerNavLockCallback],
+  );
+
   return (
     <Tab.Navigator
       tabBar={tabBar}
@@ -52,11 +66,10 @@ export default function MainNavigator({
             borderTopWidth: 1,
             elevation: 5,
             shadowColor: colors.neutral.c30,
-            backgroundColor: colors.background.main,
+            backgroundColor: colors.opacityDefault.c10,
           },
-          hideTabNavigation ? { display: "none" } : {},
         ],
-
+        unmountOnBlur: true, // Nb prevents ghost device interactions
         tabBarShowLabel: false,
         tabBarActiveTintColor: colors.palette.primary.c80,
         tabBarInactiveTintColor: colors.palette.neutral.c70,
@@ -70,16 +83,15 @@ export default function MainNavigator({
         options={{
           headerShown: false,
           unmountOnBlur: true,
-          tabBarIcon: (props: any) => <PortfolioTabIcon {...props} />,
+          tabBarIcon: props => <PortfolioTabIcon {...props} />,
         }}
         listeners={({ navigation }) => ({
-          tabPress: (e: any) => {
+          tabPress: e => {
             e.preventDefault();
-            // NB The default behaviour is not reset route params, leading to always having the same
-            // search query or preselected tab after the first time (ie from Swap/Sell)
-            // https://github.com/react-navigation/react-navigation/issues/6674#issuecomment-562813152
-            navigation.navigate(NavigatorName.Portfolio, {
-              screen: ScreenName.Portfolio,
+            managerLockAwareCallback(() => {
+              navigation.navigate(NavigatorName.Portfolio, {
+                screen: ScreenName.Portfolio,
+              });
             });
           },
         })}
@@ -90,22 +102,17 @@ export default function MainNavigator({
         options={{
           headerShown: false,
           unmountOnBlur: true,
-          tabBarIcon: (props: any) => (
-            <TabIcon
-              Icon={Icons.GraphGrowMedium}
-              i18nKey="tabs.market"
-              {...props}
-            />
+          tabBarIcon: props => (
+            <TabIcon Icon={Icons.GraphGrowMedium} i18nKey="tabs.market" {...props} />
           ),
         }}
         listeners={({ navigation }) => ({
-          tabPress: (e: any) => {
+          tabPress: e => {
             e.preventDefault();
-            // NB The default behaviour is not reset route params, leading to always having the same
-            // search query or preselected tab after the first time (ie from Swap/Sell)
-            // https://github.com/react-navigation/react-navigation/issues/6674#issuecomment-562813152
-            navigation.navigate(NavigatorName.Market, {
-              screen: ScreenName.MarketList,
+            managerLockAwareCallback(() => {
+              navigation.navigate(NavigatorName.Market, {
+                screen: ScreenName.MarketList,
+              });
             });
           },
         })}
@@ -116,7 +123,7 @@ export default function MainNavigator({
         component={Transfer}
         options={{
           headerShown: false,
-          tabBarIcon: (props: any) => <TransferTabIcon {...props} />,
+          tabBarIcon: () => <TransferTabIcon />,
         }}
       />
       <Tab.Screen
@@ -124,22 +131,17 @@ export default function MainNavigator({
         component={DiscoverNavigator}
         options={{
           headerShown: false,
-          tabBarIcon: (props: any) => (
-            <TabIcon
-              Icon={Icons.PlanetMedium}
-              i18nKey="tabs.discover"
-              {...props}
-            />
+          tabBarIcon: props => (
+            <TabIcon Icon={Icons.PlanetMedium} i18nKey="tabs.discover" {...props} />
           ),
         }}
         listeners={({ navigation }) => ({
-          tabPress: (e: any) => {
+          tabPress: e => {
             e.preventDefault();
-            // NB The default behaviour is not reset route params, leading to always having the same
-            // search query or preselected tab after the first time (ie from Swap/Sell)
-            // https://github.com/react-navigation/react-navigation/issues/6674#issuecomment-562813152
-            navigation.navigate(NavigatorName.Discover, {
-              screen: ScreenName.DiscoverScreen,
+            managerLockAwareCallback(() => {
+              navigation.navigate(NavigatorName.Discover, {
+                screen: ScreenName.DiscoverScreen,
+              });
             });
           },
         })}
@@ -148,29 +150,28 @@ export default function MainNavigator({
         name={NavigatorName.Manager}
         component={ManagerNavigator}
         options={{
-          tabBarIcon: (props: any) => <ManagerTabIcon {...props} />,
+          tabBarIcon: props => <ManagerTabIcon {...props} />,
           tabBarTestID: "TabBarManager",
         }}
         listeners={({ navigation }) => ({
-          tabPress: (e: any) => {
+          tabPress: e => {
             e.preventDefault();
-            if (hasOrderedNano) {
-              navigation.navigate(ScreenName.PostBuyDeviceSetupNanoWallScreen);
-            } else if (readOnlyModeEnabled) {
-              navigation.navigate(NavigatorName.BuyDevice);
-            } else {
-              // NB The default behaviour is not reset route params, leading to always having the same
-              // search query or preselected tab after the first time (ie from Swap/Sell)
-              // https://github.com/react-navigation/react-navigation/issues/6674#issuecomment-562813152
-              navigation.navigate(NavigatorName.Manager, {
-                screen: ScreenName.Manager,
-                params: {
-                  tab: undefined,
-                  searchQuery: undefined,
-                  updateModalOpened: undefined,
-                },
-              });
-            }
+            managerLockAwareCallback(() => {
+              if (readOnlyModeEnabled && hasOrderedNano) {
+                navigation.navigate(ScreenName.PostBuyDeviceSetupNanoWallScreen);
+              } else if (readOnlyModeEnabled) {
+                navigation.navigate(NavigatorName.BuyDevice);
+              } else {
+                navigation.navigate(NavigatorName.Manager, {
+                  screen: ScreenName.Manager,
+                  params: {
+                    tab: undefined,
+                    searchQuery: undefined,
+                    updateModalOpened: undefined,
+                  },
+                });
+              }
+            });
           },
         })}
       />

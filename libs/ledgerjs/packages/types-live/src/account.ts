@@ -1,24 +1,16 @@
 import type { BigNumber } from "bignumber.js";
-import type {
-  CryptoCurrency,
-  TokenCurrency,
-  Unit,
-} from "@ledgerhq/types-cryptoassets";
+import type { CryptoCurrency, TokenCurrency, Unit } from "@ledgerhq/types-cryptoassets";
 import type { OperationRaw, Operation } from "./operation";
 import type { DerivationMode } from "./derivation";
 import type { SwapOperation, SwapOperationRaw } from "./swap";
-import type { NFT, NFTRaw } from "./nft";
+import { ProtoNFT, ProtoNFTRaw } from "./nft";
 
-// This is the old cache and now DEPRECATED (pre v2 portfoli)
 export type GranularityId = "HOUR" | "DAY" | "WEEK";
 
 // the cache is maintained for as many granularity as we need on Live.
 // it's currently an in memory cache so there is no problem regarding the storage.
 // in future, it could be saved and we can rethink how it's stored (independently of how it's in memory)
-export type BalanceHistoryCache = Record<
-  GranularityId,
-  BalanceHistoryDataCache
->;
+export type BalanceHistoryCache = Record<GranularityId, BalanceHistoryDataCache>;
 
 // the way BalanceHistoryDataCache works is:
 // - a "cursor" date which is the "latestDate" representing the latest datapoint date. it's null if it never was loaded or if it's empty.
@@ -30,9 +22,7 @@ export type BalanceHistoryDataCache = {
   balances: number[];
 };
 
-/**
- * A token belongs to an Account and share the parent account address
- */
+/** A token belongs to an Account and share the parent account address */
 export type TokenAccount = {
   type: "TokenAccount";
   id: string;
@@ -41,8 +31,6 @@ export type TokenAccount = {
   token: TokenCurrency;
   balance: BigNumber;
   spendableBalance: BigNumber;
-  // in case of compound, this is the associated balance for the associated ctoken
-  compoundBalance?: BigNumber;
   creationDate: Date;
   operationsCount: number;
   operations: Operation[];
@@ -60,9 +48,7 @@ export type TokenAccount = {
   }>;
 };
 
-/**
- * A child account belongs to an Account but has its own address.
- */
+/** A child account belongs to an Account but has its own address */
 export type ChildAccount = {
   type: "ChildAccount";
   id: string;
@@ -85,9 +71,7 @@ export type ChildAccount = {
   swapHistory: SwapOperation[];
 };
 
-/**
- *
- */
+/** */
 export type Address = {
   address: string;
   derivationPath: string;
@@ -153,6 +137,8 @@ export type Account = {
   // ------------------------------------- Specific account fields
   // currency of this account
   currency: CryptoCurrency;
+  // Some blockchains may use a different currency than the main one to pay fees
+  feesCurrency?: CryptoCurrency | TokenCurrency;
   // user preferred unit to use. unit is coming from currency.units. You can assume currency.units.indexOf(unit) will work. (make sure to preserve reference)
   unit: Unit;
   // The total number of operations (operations[] can be partial)
@@ -168,6 +154,9 @@ export type Account = {
   pendingOperations: Operation[];
   // used to know when the last sync happened
   lastSyncDate: Date;
+  // A configuration for the endpoint to use. (usecase: Ripple node)
+  // FIXME drop and introduce a config{} object
+  endpointConfig?: string | null | undefined;
   // An account can have sub accounts.
   // A sub account can be either a token account or a child account in some blockchain.
   // They are attached to the parent account in the related blockchain.
@@ -185,33 +174,27 @@ export type Account = {
   // currently there are no "raw" version of it because no need to at this stage.
   // could be in future when pagination is needed.
   balanceHistoryCache: BalanceHistoryCache;
+  // On some blockchain, an account can have resources (gained, delegated, ...)
   // Swap operations linked to this account
   swapHistory: SwapOperation[];
   // Hash used to discard tx history on sync
   syncHash?: string;
   // Array of NFTs computed by diffing NFTOperations ordered from newest to oldest
-  nfts?: NFT[];
+  nfts?: ProtoNFT[];
 };
 
-/**
- * super type that is either a token or a child account
- */
+/** super type that is either a token or a child account */
 export type SubAccount = TokenAccount | ChildAccount;
-/**
- * One of the Account type
- */
+
+/** One of the Account type */
 export type AccountLike = Account | SubAccount;
+
 /**
- * an array of AccountLikes
+ * An array of AccountLikes
  */
-export type AccountLikeArray =
-  | AccountLike[]
-  | TokenAccount[]
-  | ChildAccount[]
-  | Account[];
-/**
- *
- */
+export type AccountLikeArray = AccountLike[] | TokenAccount[] | ChildAccount[] | Account[];
+
+/** */
 export type TokenAccountRaw = {
   type: "TokenAccountRaw";
   id: string;
@@ -224,7 +207,6 @@ export type TokenAccountRaw = {
   pendingOperations: OperationRaw[];
   balance: string;
   spendableBalance?: string;
-  compoundBalance?: string;
   balanceHistoryCache?: BalanceHistoryCache;
   swapHistory?: SwapOperationRaw[];
   approvals?: Array<{
@@ -232,9 +214,8 @@ export type TokenAccountRaw = {
     value: string;
   }>;
 };
-/**
- *
- */
+
+/** */
 export type ChildAccountRaw = {
   type: "ChildAccountRaw";
   id: string;
@@ -251,9 +232,8 @@ export type ChildAccountRaw = {
   balanceHistoryCache?: BalanceHistoryCache;
   swapHistory?: SwapOperationRaw[];
 };
-/**
- *
- */
+
+/** */
 export type AccountRaw = {
   id: string;
   seedIdentifier: string;
@@ -274,6 +254,7 @@ export type AccountRaw = {
   // this is optional for backward compat
   // ------------------------------------- Specific raw fields
   currencyId: string;
+  feesCurrencyId?: string;
   operations: OperationRaw[];
   pendingOperations: OperationRaw[];
   unitMagnitude: number;
@@ -283,13 +264,20 @@ export type AccountRaw = {
   balanceHistoryCache?: BalanceHistoryCache;
   swapHistory?: SwapOperationRaw[];
   syncHash?: string;
-  nfts?: NFTRaw[];
+  nfts?: ProtoNFTRaw[];
 };
-/**
- *
- */
+
+/** */
 export type SubAccountRaw = TokenAccountRaw | ChildAccountRaw;
-/**
- *
- */
+
+/** */
 export type AccountRawLike = AccountRaw | SubAccountRaw;
+
+/** */
+export type AccountIdParams = {
+  type: string;
+  version: string;
+  currencyId: string;
+  xpubOrAddress: string;
+  derivationMode: DerivationMode;
+};

@@ -1,18 +1,11 @@
 import { of, throwError } from "rxjs";
-import {
-  ManagerAppDepInstallRequired,
-  ManagerAppDepUninstallRequired,
-} from "@ledgerhq/errors";
-import {
-  getDependencies,
-  getDependents,
-  whitelistDependencies,
-} from "./polyfill";
+import { ManagerAppDepInstallRequired, ManagerAppDepUninstallRequired } from "@ledgerhq/errors";
+import { getDependencies, getDependents, whitelistDependencies } from "./polyfill";
 import { findCryptoCurrency } from "../currencies";
 import type { ListAppsResult, AppOp, Exec, InstalledItem } from "./types";
-import type { App, DeviceInfo, FinalFirmware } from "../types/manager";
 import { getBTCValues } from "../countervalues/mock";
-import { DeviceModelId } from "@ledgerhq/devices";
+import { DeviceModelId, identifyTargetId } from "@ledgerhq/devices";
+import { App, DeviceInfo, FinalFirmware } from "@ledgerhq/types-live";
 
 export const deviceInfo155 = {
   version: "1.5.5",
@@ -25,6 +18,48 @@ export const deviceInfo155 = {
   majMin: "1.5",
   targetId: 823132164,
 };
+
+export const deviceInfo210lo5: DeviceInfo = {
+  bootloaderVersion: "1.16",
+  hardwareVersion: 0,
+  isBootloader: false,
+  isOSU: false,
+  isRecoveryMode: false,
+  languageId: 0,
+  majMin: "2.1",
+  managerAllowed: false,
+  mcuVersion: "2.30",
+  onboarded: true,
+  pinValidated: true,
+  providerName: null,
+  seTargetId: 855638020,
+  seVersion: "2.1.0-lo5",
+  targetId: 855638020,
+  version: "2.1.0-lo5",
+};
+
+export const deviceInfo210 = {
+  version: "2.1.0",
+  mcuVersion: "2.30",
+  seVersion: "2.1.0",
+  mcuBlVersion: undefined,
+  majMin: "2.1",
+  providerName: null,
+  targetId: 855638020,
+  hasDevFirmware: false,
+  seTargetId: 855638020,
+  mcuTargetId: undefined,
+  isOSU: false,
+  isBootloader: false,
+  isRecoveryMode: false,
+  managerAllowed: true,
+  pinValidated: true,
+  onboarded: true,
+  bootloaderVersion: "1.16",
+  hardwareVersion: 0,
+  languageId: 0,
+};
+
 const firmware155: FinalFirmware = {
   id: 24,
   name: "1.5.5",
@@ -54,7 +89,7 @@ export const parseInstalled = (installedDesc: string): InstalledItem[] =>
   installedDesc
     .split(",")
     .filter(Boolean)
-    .map((a) => {
+    .map(a => {
       const trimmed = a.trim();
       const m = /(.*)\(outdated\)/.exec(trimmed);
 
@@ -88,21 +123,22 @@ export const parseInstalled = (installedDesc: string): InstalledItem[] =>
 export function mockListAppsResult(
   appDesc: string,
   installedDesc: string,
-  deviceInfo: DeviceInfo
+  deviceInfo: DeviceInfo,
+  deviceModelId?: DeviceModelId,
 ): ListAppsResult {
   const tickersByMarketCap = Object.keys(getBTCValues());
   const apps = appDesc
     .split(",")
-    .map((a) => a.trim())
+    .map(a => a.trim())
     .filter(Boolean)
     .map((name, i) => {
-      const dependencies = whitelistDependencies.includes(name)
-        ? []
-        : getDependencies(name);
-      const currency = findCryptoCurrency((c) => c.managerAppName === name);
-      const indexOfMarketCap = currency
-        ? tickersByMarketCap.indexOf(currency.ticker)
-        : -1;
+      const dependencies = whitelistDependencies.includes(name) ? [] : getDependencies(name);
+      const currency =
+        // try to find the "official" currency when possible (2 currencies can have the same manager app and ticker)
+        findCryptoCurrency(c => c.name === name) ||
+        // Else take the first one with that manager app
+        findCryptoCurrency(c => c.managerAppName === name);
+      const indexOfMarketCap = currency ? tickersByMarketCap.indexOf(currency.ticker) : -1;
       return {
         id: i,
         app: i,
@@ -133,42 +169,42 @@ export function mockListAppsResult(
       };
     });
   const appByName = {};
-  apps.forEach((app) => {
+  apps.forEach(app => {
     appByName[app.name] = app;
   });
   const installed = parseInstalled(installedDesc);
   return {
+    deviceName: "Mock device name",
     appByName,
-    appsListNames: apps.map((a) => a.name),
+    appsListNames: apps.map(a => a.name),
     deviceInfo,
-    deviceModelId: <DeviceModelId>"nanoS",
+    deviceModelId:
+      deviceModelId ||
+      (deviceInfo.seTargetId
+        ? identifyTargetId(deviceInfo.seTargetId)?.id ?? DeviceModelId.nanoS
+        : DeviceModelId.nanoS),
     firmware: firmware155,
     installed,
     installedAvailable: true,
+    customImageBlocks: 0,
   };
 }
 
-export const mockExecWithInstalledContext = (
-  installedInitial: InstalledItem[]
-): Exec => {
+export const mockExecWithInstalledContext = (installedInitial: InstalledItem[]): Exec => {
   let installed = installedInitial.slice(0);
   return (appOp: AppOp, targetId: string | number, app: App) => {
     if (appOp.name !== app.name) {
       throw new Error("appOp.name must match app.name");
     }
 
-    if (
-      getDependents(app.name).some((dep) =>
-        installed.some((i) => i.name === dep)
-      )
-    ) {
+    if (getDependents(app.name).some(dep => installed.some(i => i.name === dep))) {
       return throwError(new ManagerAppDepUninstallRequired(""));
     }
 
     if (appOp.type === "install") {
       const deps = getDependencies(app.name);
-      deps.forEach((dep) => {
-        const depInstalled = installed.find((i) => i.name === dep);
+      deps.forEach(dep => {
+        const depInstalled = installed.find(i => i.name === dep);
 
         if (!depInstalled || !depInstalled.updated) {
           return throwError(new ManagerAppDepInstallRequired(""));
@@ -178,7 +214,7 @@ export const mockExecWithInstalledContext = (
 
     switch (appOp.type) {
       case "install":
-        if (!installed.some((i) => i.name === appOp.name)) {
+        if (!installed.some(i => i.name === appOp.name)) {
           installed = installed.concat({
             name: appOp.name,
             updated: true,
@@ -192,7 +228,7 @@ export const mockExecWithInstalledContext = (
         break;
 
       case "uninstall":
-        installed = installed.filter((a) => a.name !== appOp.name);
+        installed = installed.filter(a => a.name !== appOp.name);
         break;
     }
 
@@ -205,7 +241,7 @@ export const mockExecWithInstalledContext = (
       },
       {
         progress: 1,
-      }
+      },
     );
   };
 };

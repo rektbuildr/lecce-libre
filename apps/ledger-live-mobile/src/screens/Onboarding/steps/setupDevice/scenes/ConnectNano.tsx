@@ -1,11 +1,13 @@
 import React, { useCallback, useState } from "react";
-import { Flex } from "@ledgerhq/native-ui";
 import { useDispatch } from "react-redux";
-import { Device } from "@ledgerhq/live-common/lib/hw/actions/types";
-import connectManager from "@ledgerhq/live-common/lib/hw/connectManager";
-import { createAction } from "@ledgerhq/live-common/lib/hw/actions/manager";
+import { Flex } from "@ledgerhq/native-ui";
+import { Device } from "@ledgerhq/live-common/hw/actions/types";
+import { useFeature } from "@ledgerhq/live-common/featureFlags/index";
+import connectManager from "@ledgerhq/live-common/hw/connectManager";
+import { createAction, Result } from "@ledgerhq/live-common/hw/actions/manager";
 import DeviceActionModal from "../../../../../components/DeviceActionModal";
 import SelectDevice from "../../../../../components/SelectDevice";
+import SelectDevice2 from "../../../../../components/SelectDevice2";
 import { TrackScreen } from "../../../../../analytics";
 import Button from "../../../../../components/PreventDoubleClickButton";
 
@@ -28,8 +30,14 @@ const ConnectNanoScene = ({
   const dispatch = useDispatch();
   const [device, setDevice] = useState<Device | undefined>();
 
+  const newDeviceSelectionFeatureFlag = useFeature("llmNewDeviceSelection");
+
+  // Does not react to an header update request:
+  // Keeping the header (back arrow and information button) from the onboarding.
+  const requestToSetHeaderOptions = useCallback(() => undefined, []);
+
   const onSetDevice = useCallback(
-    device => {
+    async (device: Device) => {
       dispatch(setLastConnectedDevice(device));
       setDevice(device);
       dispatch(setReadOnlyMode(false));
@@ -39,7 +47,7 @@ const ConnectNanoScene = ({
   );
 
   const directNext = useCallback(
-    device => {
+    async device => {
       dispatch(setLastConnectedDevice(device));
       dispatch(setReadOnlyMode(false));
       dispatch(setHasOrderedNano(false));
@@ -49,13 +57,14 @@ const ConnectNanoScene = ({
   );
 
   const onResult = useCallback(
-    (info: any) => {
+    (info: Result) => {
       /** if list apps succeed we update settings with state of apps installed */
       if (info) {
-        const hasAnyAppinstalled =
+        const hasAnyAppinstalled = !!(
           info.result &&
           info.result.installed &&
-          info.result.installed.length > 0;
+          info.result.installed.length > 0
+        );
 
         dispatch(installAppFirstTime(hasAnyAppinstalled));
         setDevice(undefined);
@@ -73,17 +82,25 @@ const ConnectNanoScene = ({
     <>
       <TrackScreen category="Onboarding" name="PairNew" />
       <Flex flex={1}>
-        <SelectDevice
-          withArrows
-          usbOnly={usbOnly}
-          deviceModelId={deviceModelId}
-          onSelect={usbOnly ? onSetDevice : directNext}
-          autoSelectOnAdd
-          hideAnimation
-        />
+        {newDeviceSelectionFeatureFlag?.enabled ? (
+          <SelectDevice2
+            onSelect={onSetDevice}
+            stopBleScanning={!!device}
+            requestToSetHeaderOptions={requestToSetHeaderOptions}
+            isChoiceDrawerDisplayedOnAddDevice={false}
+          />
+        ) : (
+          <SelectDevice
+            withArrows
+            usbOnly={usbOnly}
+            onSelect={usbOnly ? onSetDevice : directNext}
+            autoSelectOnAdd
+            hideAnimation
+          />
+        )}
       </Flex>
       <DeviceActionModal
-        onClose={setDevice}
+        onClose={() => setDevice(undefined)}
         device={device}
         onResult={onResult}
         action={action}
@@ -109,7 +126,7 @@ const Next = ({ onNext }: { onNext: () => void }) => {
         onNext();
       }}
     >
-      (DEV) skip this step
+      (DEV) SKIP THIS STEP
     </Button>
   ) : null;
 };

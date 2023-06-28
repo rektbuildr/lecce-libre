@@ -3,13 +3,17 @@ import { BaseTextProps } from "./index";
 
 export type FontWeightTypes = "medium" | "semiBold" | "bold";
 
+export const fontWeightTypes: FontWeightTypes[] = ["medium", "semiBold", "bold"];
+
 const bracketSizes: Record<TextVariants, number> = {
   h1: 32,
+  h1Inter: 32,
   h2: 28,
   h3: 20,
   h4: 18,
   h5: 18,
   large: 20,
+  largeLineHeight: 20,
   body: 20,
   bodyLineHeight: 20,
   paragraph: 20,
@@ -17,6 +21,7 @@ const bracketSizes: Record<TextVariants, number> = {
   small: 16,
   subtitle: 16,
   tiny: 16,
+  tinyAlpha: 16,
 };
 
 export function getBracketSize({ variant }: { variant?: TextVariants }): number {
@@ -30,6 +35,7 @@ export function getTextTypeStyle({ bracket }: { bracket?: boolean }): Record<
     lineHeight?: string;
     paddingTop?: number;
     textTransform?: string;
+    letterSpacing?: number;
   }
 > {
   return {
@@ -38,6 +44,11 @@ export function getTextTypeStyle({ bracket }: { bracket?: boolean }): Record<
       lineHeight: "32px",
       paddingTop: bracket ? 5 : 0,
       textTransform: "uppercase",
+    },
+    h1Inter: {
+      fontFamily: "Inter",
+      lineHeight: "42px",
+      letterSpacing: -1,
     },
     h2: {
       fontFamily: "Alpha",
@@ -59,6 +70,10 @@ export function getTextTypeStyle({ bracket }: { bracket?: boolean }): Record<
     },
     large: {
       fontFamily: "Inter",
+    },
+    largeLineHeight: {
+      fontFamily: "Inter",
+      lineHeight: "27.2px",
     },
     body: {
       fontFamily: "Inter",
@@ -83,6 +98,9 @@ export function getTextTypeStyle({ bracket }: { bracket?: boolean }): Record<
     },
     tiny: {
       fontFamily: "Inter",
+    },
+    tinyAlpha: {
+      fontFamily: "Alpha",
     },
   };
 }

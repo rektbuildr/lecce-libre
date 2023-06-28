@@ -1,3 +1,8 @@
+export enum TxStatus {
+  Ok = "Ok",
+  Fail = "Fail",
+}
+
 export interface EstimatedFeesRequest {
   to?: string;
   from: string;
@@ -23,7 +28,7 @@ export interface TransactionResponse {
   hash: string;
   timestamp: number;
   height: number;
-  fee?: string;
+  fee?: number;
 }
 
 export interface BalanceResponse {

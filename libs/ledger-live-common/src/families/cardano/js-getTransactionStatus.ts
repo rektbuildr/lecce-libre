@@ -1,16 +1,21 @@
 import { BigNumber } from "bignumber.js";
 import {
-  NotEnoughBalance,
   RecipientRequired,
   FeeNotLoaded,
   InvalidAddress,
   AmountRequired,
+  NotEnoughBalance,
 } from "@ledgerhq/errors";
-import type { Account, TransactionStatus } from "../../types";
-import type { CardanoResources, Token, Transaction } from "./types";
+import type {
+  CardanoAccount,
+  CardanoResources,
+  Token,
+  Transaction,
+  TransactionStatus,
+} from "./types";
 import { isValidAddress } from "./logic";
 import { utils as TyphonUtils } from "@stricahq/typhonjs";
-import { CardanoMinAmountError } from "./errors";
+import { CardanoMinAmountError, CardanoNotEnoughFunds } from "./errors";
 import { AccountAwaitingSendPendingOperations } from "../../errors";
 import { getNetworkParameters } from "./networks";
 import { decodeTokenAssetId, decodeTokenCurrencyId } from "./buildSubAccounts";
@@ -18,8 +23,8 @@ import estimateMaxSpendable from "./js-estimateMaxSpendable";
 import { buildTransaction } from "./js-buildTransaction";
 
 const getTransactionStatus = async (
-  a: Account,
-  t: Transaction
+  a: CardanoAccount,
+  t: Transaction,
 ): Promise<TransactionStatus> => {
   const errors: Record<string, Error> = {};
   const warnings: Record<string, Error> = {};
@@ -38,7 +43,7 @@ const getTransactionStatus = async (
 
   const tokenAccount =
     t.subAccountId && a.subAccounts
-      ? a.subAccounts.find((a) => {
+      ? a.subAccounts.find(a => {
           return a.id === t.subAccountId;
         })
       : undefined;
@@ -62,16 +67,14 @@ const getTransactionStatus = async (
     ];
   } else {
     // ADA transaction
-    amount = t.useAllAmount
-      ? await estimateMaxSpendable({ account: a, transaction: t })
-      : amount;
+    amount = t.useAllAmount ? await estimateMaxSpendable({ account: a, transaction: t }) : amount;
     totalSpent = amount.plus(estimatedFees);
   }
 
   const minTransactionAmount = TyphonUtils.calculateMinUtxoAmount(
     tokensToSend,
     new BigNumber(cardanoResources.protocolParams.lovelacePerUtxoWord),
-    false
+    false,
   );
 
   if (!t.fees) {
@@ -85,17 +88,12 @@ const getTransactionStatus = async (
   }
 
   if (!amount.gt(0)) {
-    errors.amount = useAllAmount
-      ? new NotEnoughBalance()
-      : new AmountRequired();
+    errors.amount = useAllAmount ? new CardanoNotEnoughFunds() : new AmountRequired();
   } else if (!t.subAccountId && amount.lt(minTransactionAmount)) {
     errors.amount = new CardanoMinAmountError("", {
       amount: minTransactionAmount.div(1e6).toString(),
     });
-  } else if (
-    (tokenAccount && totalSpent.gt(tokenAccount.balance)) ||
-    totalSpent.gt(a.balance)
-  ) {
+  } else if (tokenAccount ? totalSpent.gt(tokenAccount.balance) : totalSpent.gt(a.balance)) {
     errors.amount = new NotEnoughBalance();
   } else {
     try {
@@ -105,7 +103,7 @@ const getTransactionStatus = async (
         e.message.toLowerCase() === "not enough ada" ||
         e.message.toLowerCase() === "not enough tokens"
       ) {
-        errors.amount = new NotEnoughBalance();
+        errors.amount = new CardanoNotEnoughFunds();
       }
       throw e;
     }

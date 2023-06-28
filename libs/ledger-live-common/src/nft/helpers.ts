@@ -1,7 +1,7 @@
 import eip55 from "eip55";
 import BigNumber from "bignumber.js";
-import { encodeNftId } from ".";
-import { decodeAccountId } from "../account";
+import { encodeNftId } from "@ledgerhq/coin-framework/nft/nftId";
+import { decodeAccountId, groupAccountsOperationsByDay } from "../account";
 
 import type { Batch, BatchElement, Batcher } from "./NftMetadataProvider/types";
 import type {
@@ -9,10 +9,11 @@ import type {
   Operation,
   ProtoNFT,
   NFT,
-  CryptoCurrency,
   NFTCollectionMetadataResponse,
-} from "../types";
-import { API, apiForCurrency } from "../api/Ethereum";
+  Account,
+} from "@ledgerhq/types-live";
+import { API, apiForCurrency } from "../families/ethereum/api";
+import type { CryptoCurrency } from "@ledgerhq/types-cryptoassets";
 
 export const nftsFromOperations = (ops: Operation[]): ProtoNFT[] => {
   const nftsMap = ops
@@ -20,7 +21,7 @@ export const nftsFromOperations = (ops: Operation[]): ProtoNFT[] => {
     // make sure we have the operation in chronological order (older first)
     .sort((a, b) => a.date.getTime() - b.date.getTime())
     // if ops are Operations get the prop nftOperations, else ops are considered nftOperations already
-    .flatMap((op) => (op?.nftOperations?.length ? op.nftOperations : op))
+    .flatMap(op => (op?.nftOperations?.length ? op.nftOperations : op))
     .reduce((acc: Record<string, ProtoNFT>, nftOp: Operation) => {
       let { contract } = nftOp;
       if (!contract) {
@@ -83,10 +84,10 @@ export const nftsFromOperations = (ops: Operation[]): ProtoNFT[] => {
  */
 export const nftsByCollections = (
   nfts: Array<ProtoNFT | NFT> = [],
-  collectionAddress?: string
+  collectionAddress?: string,
 ): Record<string, Array<ProtoNFT | NFT>> | Array<ProtoNFT | NFT> => {
   return collectionAddress
-    ? nfts.filter((n) => n.contract === collectionAddress)
+    ? nfts.filter(n => n.contract === collectionAddress)
     : nfts.reduce((acc, nft) => {
         const { contract } = nft;
 
@@ -99,18 +100,11 @@ export const nftsByCollections = (
       }, {});
 };
 
-export const getNftKey = (
-  contract: string,
-  tokenId: string,
-  currencyId: string
-): string => {
+export const getNftKey = (contract: string, tokenId: string, currencyId: string): string => {
   return `${currencyId}-${contract}-${tokenId}`;
 };
 
-export const getNftCollectionKey = (
-  contract: string,
-  currencyId: string
-): string => {
+export const getNftCollectionKey = (contract: string, currencyId: string): string => {
   return `${currencyId}-${contract}`;
 };
 
@@ -124,7 +118,7 @@ export const getNftCollectionKey = (
  */
 const makeBatcher = (
   call: API["getNFTMetadata"] | API["getNFTCollectionMetadata"],
-  chainId: number
+  chainId: number,
 ): Batcher =>
   (() => {
     const queue: BatchElement[] = [];
@@ -145,7 +139,7 @@ const makeBatcher = (
 
             return acc;
           },
-          { elements: [], resolvers: [], rejecters: [] } as Batch
+          { elements: [], resolvers: [], rejecters: [] } as Batch,
         );
         // Empty the queue
         queue.length = 0;
@@ -156,9 +150,9 @@ const makeBatcher = (
             // Resolve each batch element with its own resolver and only its response
             res.forEach((metadata, index) => resolvers[index](metadata));
           })
-          .catch((err) => {
+          .catch(err => {
             // Reject all batch element with the error
-            rejecters.forEach((reject) => reject(err));
+            rejecters.forEach(reject => reject(err));
           });
       });
     };
@@ -171,7 +165,7 @@ const makeBatcher = (
               contract: string;
               tokenId: string;
             }
-          | { contract: string }
+          | { contract: string },
       ): Promise<NFTMetadataResponse | NFTCollectionMetadataResponse> {
         return new Promise((resolve, reject) => {
           queue.push({ element, resolve, reject });
@@ -190,7 +184,7 @@ const batchersMap = new Map();
  * to implement an even more generic solution
  */
 export const metadataCallBatcher = (
-  currency: CryptoCurrency
+  currency: CryptoCurrency,
 ): { loadNft: Batcher["load"]; loadCollection: Batcher["load"] } => {
   const api: API = apiForCurrency(currency);
   const chainId = currency?.ethereumLikeInfo?.chainId;
@@ -212,3 +206,63 @@ export const metadataCallBatcher = (
     loadCollection: batchers.collection.load,
   };
 };
+
+export const getNFT = (
+  contract?: string,
+  tokenId?: string,
+  nfts?: ProtoNFT[],
+): ProtoNFT | undefined => nfts?.find(nft => nft.contract === contract && nft.tokenId === tokenId);
+
+const SUPPORTED_CURRENCIES = ["ethereum", "polygon"];
+
+export const groupByCurrency = (nfts: ProtoNFT[]): ProtoNFT[] => {
+  const groupMap = new Map<string, ProtoNFT[]>();
+  SUPPORTED_CURRENCIES.forEach(elem => groupMap.set(elem, []));
+
+  // GROUPING
+  nfts.forEach(nft => {
+    const currency = nft.currencyId;
+    const group = groupMap.get(currency) ?? [];
+    group?.push(nft);
+    groupMap.set(currency, group);
+  });
+
+  return Array.from(groupMap, ([_key, value]) => value).flat();
+};
+
+export function orderByLastReceived(accounts: Account[], nfts: ProtoNFT[]): ProtoNFT[] {
+  const orderedNFTs: ProtoNFT[] = [];
+  let operationMapping: Operation[] = [];
+
+  const res = groupAccountsOperationsByDay(accounts, {
+    count: Infinity,
+  });
+
+  // Sections are sorted by Date, the most recent being the first
+  res.sections.forEach(section => {
+    // Get all operation linked to the reception of an NFT
+    const operations = section.data.filter(d => d.type === "NFT_IN" && d.contract && d.tokenId);
+    operationMapping = operationMapping.concat(operations);
+  });
+
+  operationMapping.forEach(operation => {
+    // Prevent multiple occurences due to Exchange Send/Receive same NFT several times
+    const isAlreadyIn = orderedNFTs.find(
+      nft => nft.contract === operation.contract && nft.tokenId === operation.tokenId,
+    );
+
+    if (!isAlreadyIn) {
+      const nft = getNFT(operation.contract, operation.tokenId, nfts);
+      if (nft) orderedNFTs.push(nft);
+    }
+  });
+
+  return groupByCurrency([...new Set(orderedNFTs)]);
+}
+
+export const GENESIS_PASS_COLLECTION_CONTRACT = "0x33c6Eec1723B12c46732f7AB41398DE45641Fa42";
+export const INFINITY_PASS_COLLECTION_CONTRACT = "0xfe399E9a4B0bE4087a701fF0B1c89dABe7ce5425";
+
+export const hasNftInAccounts = (nftCollection: string, accounts: Account[]): boolean =>
+  accounts &&
+  accounts.some(account => account?.nfts?.some((nft: ProtoNFT) => nft?.contract === nftCollection));

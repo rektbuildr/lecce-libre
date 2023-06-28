@@ -1,6 +1,6 @@
 {
   "name": "@ledgerhq/hw-app-helium",
-  "version": "6.27.1",
+  "version": "6.29.11",
   "description": "Ledger Hardware Wallet Helium Application API",
   "keywords": [
     "Ledger",
@@ -13,12 +13,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/LedgerHQ/ledgerjs"
+    "url": "https://github.com/LedgerHQ/ledger-live.git"
   },
   "bugs": {
-    "url": "https://github.com/LedgerHQ/ledgerjs/issues"
+    "url": "https://github.com/LedgerHQ/ledger-live/issues"
   },
-  "homepage": "https://github.com/LedgerHQ/ledgerjs",
+  "homepage": "https://github.com/LedgerHQ/ledger-live/tree/develop/libs/ledgerjs/packages/hw-app-helium",
   "publishConfig": {
     "access": "public"
   },
@@ -27,20 +27,28 @@
   "types": "lib/Helium.d.ts",
   "license": "Apache-2.0",
   "dependencies": {
-    "@helium/address": "^4.0.0",
-    "@helium/proto": "^1.5.0",
-    "@helium/transactions": "^4.1.0",
+    "@helium/address": "^4.6.2",
+    "@helium/proto": "^1.6.0",
+    "@helium/transactions": "^4.7.5",
     "@ledgerhq/errors": "workspace:^",
     "@ledgerhq/hw-transport": "workspace:^",
     "@ledgerhq/logs": "workspace:^",
-    "bignumber.js": "^9.0.1",
+    "bignumber.js": "^9.1.0",
     "bip32-path": "^0.4.2",
     "long": "^5.2.0"
   },
   "devDependencies": {
     "@ledgerhq/hw-transport-mocker": "workspace:^",
     "@ledgerhq/hw-transport-node-speculos": "workspace:^",
-    "axios": "^0.26.1"
+    "@types/jest": "^29.5.0",
+    "@types/node": "^18.15.3",
+    "axios": "^0.26.1",
+    "documentation": "13.2.4",
+    "jest": "^28.1.1",
+    "rimraf": "^4.4.1",
+    "source-map-support": "^0.5.21",
+    "ts-jest": "^28.0.5",
+    "ts-node": "^10.4.0"
   },
   "scripts": {
     "clean": "rimraf lib lib-es",
@@ -48,7 +56,7 @@
     "prewatch": "pnpm build",
     "watch": "tsc --watch",
     "doc": "documentation readme src/** --section=API --pe ts --re ts --re d.ts",
-    "lint": "eslint ./src --no-error-on-unmatched-pattern --ext .ts,.tsx",
+    "lint": "eslint ./src --no-error-on-unmatched-pattern --ext .ts,.tsx --cache",
     "lint:fix": "pnpm lint --fix",
     "test": "jest"
   }

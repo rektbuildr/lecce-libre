@@ -1,11 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import coininfo from "coininfo";
 import { Currency, ICrypto } from "./types";
 import * as crypto from "./index";
 
-export default function cryptoFactory(currency: Currency) {
+export default function cryptoFactory(currency: Currency): ICrypto {
   let res: ICrypto;
   switch (currency) {
     case "bitcoin": {
@@ -83,11 +80,6 @@ export default function cryptoFactory(currency: Currency) {
       res = new crypto.ViaCoin({ network });
       break;
     }
-    case "stakenet": {
-      const network = coininfo.bitcoin.main.toBitcoinJS();
-      res = new crypto.Stakenet({ network });
-      break;
-    }
     case "stealthcoin": {
       const network = coininfo.bitcoin.main.toBitcoinJS();
       res = new crypto.Stealth({ network });
@@ -109,3 +101,4 @@ export default function cryptoFactory(currency: Currency) {
   }
   return res;
 }
+// TODO: Currently, all bitcoin currencies included setSupportedCurrencies must be supported here. We are working on a new way to support/enable new currencies

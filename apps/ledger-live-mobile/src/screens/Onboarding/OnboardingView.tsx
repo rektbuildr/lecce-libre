@@ -1,7 +1,7 @@
 import React from "react";
 import { View, TouchableOpacity } from "react-native";
 import { useNavigation, StackActions } from "@react-navigation/native";
-import { Icons } from "@ledgerhq/native-ui/assets";
+import { Icons } from "@ledgerhq/native-ui/assets/index";
 import { Flex, Text, ScrollListContainer } from "@ledgerhq/native-ui";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "styled-components/native";
@@ -20,7 +20,9 @@ type Props = {
   footer?: React.ReactNode;
   hasBackButton?: boolean;
   hasCloseButton?: boolean;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   customBackAction?: () => {};
+  // eslint-disable-next-line @typescript-eslint/ban-types
   customCloseAction?: () => {};
   centerTitle?: boolean;
 };
@@ -39,43 +41,33 @@ function OnboardingView({
   const { colors } = useTheme();
   const navigation = useNavigation();
 
+  // eslint-disable-next-line consistent-return
   const handlecustomBackAction = () => {
     if (customBackAction) return customBackAction();
     navigation.goBack();
   };
 
+  // eslint-disable-next-line consistent-return
   const handlecustomCloseAction = () => {
     if (customCloseAction) return customCloseAction();
     navigation.dispatch(StackActions.popToTop());
   };
 
   return (
-    <SafeAreaView
-      style={[{ flex: 1 }, { backgroundColor: colors.background.main }]}
-    >
+    <SafeAreaView style={[{ flex: 1 }, { backgroundColor: colors.background.main }]}>
       {/* HEADER */}
       <Flex mb={8} px={6} pt={8}>
-        <Flex
-          flexDirection="row"
-          justifyContent="space-between"
-          mb={subTitle ? 9 : 6}
-        >
+        <Flex flexDirection="row" justifyContent="space-between" mb={subTitle ? 9 : 6}>
           <View>
             {hasBackButton ? (
-              <TouchableOpacity
-                onPress={handlecustomBackAction}
-                hitSlop={hitSlop}
-              >
+              <TouchableOpacity onPress={handlecustomBackAction} hitSlop={hitSlop}>
                 <Icons.ArrowLeftMedium size="24px" />
               </TouchableOpacity>
             ) : null}
           </View>
           <View>
             {hasCloseButton ? (
-              <TouchableOpacity
-                onPress={handlecustomCloseAction}
-                hitSlop={hitSlop}
-              >
+              <TouchableOpacity onPress={handlecustomCloseAction} hitSlop={hitSlop}>
                 <Icons.CloseMedium size="24px" />
               </TouchableOpacity>
             ) : null}
@@ -102,7 +94,7 @@ function OnboardingView({
           </Flex>
         ) : null}
       </Flex>
-      <ScrollListContainer flex={1} px={6} bg="background.main">
+      <ScrollListContainer flex={1} bg="background.main" mx={6}>
         {/* BODY */}
         {children ? <Flex flex={1}>{children}</Flex> : null}
       </ScrollListContainer>

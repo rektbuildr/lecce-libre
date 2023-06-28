@@ -1,6 +1,6 @@
 import { BigNumber } from "bignumber.js";
 import type { Transaction /* TransactionMode */ } from "./types";
-import { Account } from "../../types";
+import { Account } from "@ledgerhq/types-live";
 
 const createTransaction = (_: Account): Transaction => {
   return {
@@ -17,10 +17,7 @@ const createTransaction = (_: Account): Transaction => {
   };
 };
 
-export const updateTransaction = (
-  t: Transaction,
-  patch: Partial<Transaction>
-): Transaction => {
+export const updateTransaction = (t: Transaction, patch: Partial<Transaction>): Transaction => {
   return { ...t, ...patch };
 };
 

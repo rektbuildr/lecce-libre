@@ -3,11 +3,8 @@ import React from "react";
 import { connect } from "react-redux";
 import { Text } from "@ledgerhq/native-ui";
 import { setCountervalue } from "../../../actions/settings";
-import {
-  counterValueCurrencySelector,
-  supportedCountervalues,
-} from "../../../reducers/settings";
-import { State } from "../../../reducers";
+import { counterValueCurrencySelector, supportedCountervalues } from "../../../reducers/settings";
+import { State } from "../../../reducers/types";
 import makeGenericSelectScreen from "../../makeGenericSelectScreen";
 
 const items = supportedCountervalues
@@ -20,7 +17,7 @@ const mapStateToProps = (state: State) => ({
 });
 
 const mapDispatchToProps = {
-  onValueChange: ({ value }: any) => setCountervalue(value),
+  onValueChange: ({ value }: { value: string }) => setCountervalue(value),
 };
 
 const Screen = makeGenericSelectScreen({
@@ -38,5 +35,4 @@ const Screen = makeGenericSelectScreen({
   ),
 });
 
-// $FlowFixMe
 export default connect(mapStateToProps, mapDispatchToProps)(Screen);

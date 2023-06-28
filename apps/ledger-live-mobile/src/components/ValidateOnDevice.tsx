@@ -2,32 +2,32 @@ import React from "react";
 import invariant from "invariant";
 import { ScrollView } from "react-native";
 import { useTranslation } from "react-i18next";
-import {
-  Account,
-  AccountLike,
-  Transaction,
-  TransactionStatus,
-} from "@ledgerhq/live-common/lib/types";
+import { Account, AccountLike } from "@ledgerhq/types-live";
+import { Transaction, TransactionStatus } from "@ledgerhq/live-common/generated/types";
 import {
   getMainAccount,
   getAccountUnit,
-} from "@ledgerhq/live-common/lib/account";
-import { Device } from "@ledgerhq/live-common/lib/hw/actions/types";
+  getFeesCurrency,
+  getFeesUnit,
+} from "@ledgerhq/live-common/account/index";
+import { Device } from "@ledgerhq/live-common/hw/actions/types";
 
 import {
   getDeviceTransactionConfig,
   DeviceTransactionField,
-} from "@ledgerhq/live-common/lib/transaction";
+} from "@ledgerhq/live-common/transaction/index";
 import { getDeviceModel } from "@ledgerhq/devices";
 
 import { useTheme } from "@react-navigation/native";
 import styled from "styled-components/native";
-import { Flex, Log } from "@ledgerhq/native-ui";
+import { Flex } from "@ledgerhq/native-ui";
+import { DeviceModelId } from "@ledgerhq/types-devices";
 import Alert from "./Alert";
 import perFamilyTransactionConfirmFields from "../generated/TransactionConfirmFields";
 import { DataRowUnitValue, TextValueField } from "./ValidateOnDeviceDataRow";
 import Animation from "./Animation";
-import getDeviceAnimation from "./DeviceAction/getDeviceAnimation";
+import { getDeviceAnimation } from "../helpers/getDeviceAnimation";
+import { TitleText } from "./DeviceAction/rendering";
 
 export type FieldComponentProps = {
   account: AccountLike;
@@ -39,12 +39,7 @@ export type FieldComponentProps = {
 
 export type FieldComponent = React.ComponentType<FieldComponentProps>;
 
-function AmountField({
-  account,
-  parentAccount,
-  status,
-  field,
-}: FieldComponentProps) {
+function AmountField({ account, parentAccount, status, field }: FieldComponentProps) {
   let unit;
   if (account.type === "TokenAccount") {
     unit = getAccountUnit(account);
@@ -52,27 +47,15 @@ function AmountField({
     const mainAccount = getMainAccount(account, parentAccount);
     unit = getAccountUnit(mainAccount);
   }
-  return (
-    <DataRowUnitValue label={field.label} unit={unit} value={status.amount} />
-  );
+  return <DataRowUnitValue label={field.label} unit={unit} value={status.amount} />;
 }
 
-function FeesField({
-  account,
-  parentAccount,
-  status,
-  field,
-}: FieldComponentProps) {
+function FeesField({ account, parentAccount, status, field }: FieldComponentProps) {
   const mainAccount = getMainAccount(account, parentAccount);
   const { estimatedFees } = status;
-  const feesUnit = getAccountUnit(mainAccount);
-  return (
-    <DataRowUnitValue
-      label={field.label}
-      unit={feesUnit}
-      value={estimatedFees}
-    />
-  );
+  const currency = getFeesCurrency(mainAccount);
+  const feesUnit = getFeesUnit(currency);
+  return <DataRowUnitValue label={field.label} unit={feesUnit} value={estimatedFees} />;
 }
 
 function AddressField({ field }: FieldComponentProps) {
@@ -87,7 +70,7 @@ function TextField({ field }: FieldComponentProps) {
   return <TextValueField label={field.label} value={field.value} />;
 }
 
-const commonFieldComponents: { [key: any]: FieldComponent } = {
+const commonFieldComponents: Record<string, FieldComponent> = {
   amount: AmountField,
   fees: FeesField,
   address: AddressField,
@@ -97,9 +80,16 @@ const commonFieldComponents: { [key: any]: FieldComponent } = {
 type Props = {
   device: Device;
   status: TransactionStatus;
-  transaction: Transaction;
+  transaction: Transaction & { mode?: string };
   account: AccountLike;
   parentAccount: Account | null | undefined;
+};
+
+type SubComponentCommonProps = {
+  account: AccountLike;
+  parentAccount?: Account | null | undefined;
+  transaction: Transaction;
+  status: TransactionStatus;
 };
 
 export default function ValidateOnDevice({
@@ -113,15 +103,39 @@ export default function ValidateOnDevice({
   const theme = dark ? "dark" : "light";
   const { t } = useTranslation();
   const mainAccount = getMainAccount(account, parentAccount);
-  const r = perFamilyTransactionConfirmFields[mainAccount.currency.family];
+  const r =
+    perFamilyTransactionConfirmFields[
+      mainAccount.currency.family as keyof typeof perFamilyTransactionConfirmFields
+    ];
 
   const fieldComponents = {
     ...commonFieldComponents,
     ...(r && r.fieldComponents),
   };
-  const Warning = r && r.warning;
-  const Title = r && r.title;
-  const Footer = r && r.footer;
+  const Warning =
+    r &&
+    (
+      r as {
+        warning?: React.ComponentType<SubComponentCommonProps & { recipientWording: string }>;
+      }
+    ).warning;
+  const Title =
+    r &&
+    (
+      r as {
+        title?: React.ComponentType<SubComponentCommonProps>;
+      }
+    ).title;
+  const Footer =
+    r &&
+    (
+      r as {
+        footer?: React.ComponentType<{
+          transaction: Transaction;
+          recipientWording: string;
+        }>;
+      }
+    ).footer;
 
   const fields = getDeviceTransactionConfig({
     account,
@@ -134,8 +148,7 @@ export default function ValidateOnDevice({
     `ValidateOnDevice.recipientWording.${transaction.mode || "send"}`,
   );
   const recipientWording =
-    transRecipientWording !==
-    `ValidateOnDevice.recipientWording.${transaction.mode || "send"}`
+    transRecipientWording !== `ValidateOnDevice.recipientWording.${transaction.mode || "send"}`
       ? transRecipientWording
       : t("ValidateOnDevice.recipientWording.send");
 
@@ -148,15 +161,20 @@ export default function ValidateOnDevice({
       ? transTitleWording
       : t("ValidateOnDevice.title.send", getDeviceModel(device.modelId));
 
+  const isBigLottie = device.modelId === DeviceModelId.stax;
+
   return (
-    <RootContainer>
-      <ScrollContainer>
-        <InnerContainer>
-          <AnimationContainer>
-            <Animation
-              source={getDeviceAnimation({ device, key: "validate", theme })}
-            />
-          </AnimationContainer>
+    <Flex flex={1}>
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: "center",
+        }}
+      >
+        <Flex alignItems="center">
+          <Flex marginBottom={isBigLottie ? 0 : 8}>
+            <Animation source={getDeviceAnimation({ device, key: "sign", theme })} />
+          </Flex>
           {Title ? (
             <Title
               account={account}
@@ -170,7 +188,9 @@ export default function ValidateOnDevice({
 
           <DataRowsContainer>
             {fields.map((field, i) => {
-              const MaybeComponent = fieldComponents[field.type];
+              const MaybeComponent = fieldComponents[field.type as keyof typeof fieldComponents] as
+                | React.ComponentType<FieldComponentProps>
+                | undefined;
               if (!MaybeComponent) {
                 console.warn(
                   `TransactionConfirm field ${field.type} is not implemented! add a generic implementation in components/TransactionConfirm.js or inside families/*/TransactionConfirmFields.js`,
@@ -199,54 +219,20 @@ export default function ValidateOnDevice({
               />
             ) : null}
           </DataRowsContainer>
-        </InnerContainer>
-      </ScrollContainer>
+        </Flex>
+      </ScrollView>
       {Footer ? (
         <Footer transaction={transaction} recipientWording={recipientWording} />
       ) : (
-        <FooterContainer>
+        <Flex>
           <Alert type="help">{recipientWording}</Alert>
-        </FooterContainer>
+        </Flex>
       )}
-    </RootContainer>
+    </Flex>
   );
 }
 
-const RootContainer = styled(Flex).attrs({
-  flex: 1,
-})``;
-
 const DataRowsContainer = styled(Flex).attrs({
-  marginVertical: 24,
+  my: 7,
   alignSelf: "stretch",
 })``;
-
-const InnerContainer = styled(Flex).attrs({
-  flexDirection: "column",
-  justifyContent: "center",
-  alignItems: "center",
-  flex: 1,
-})``;
-
-const FooterContainer = styled(Flex).attrs({
-  padding: 16,
-})``;
-
-const AnimationContainer = styled(Flex).attrs({
-  marginBottom: 40,
-})``;
-
-const ScrollContainer = styled(ScrollView)`
-  flex: 1;
-  padding: 16px;
-`;
-
-const TitleContainer = styled(Flex).attrs({
-  py: 8,
-})``;
-
-const TitleText = ({ children }: { children: React.ReactNode }) => (
-  <TitleContainer>
-    <Log>{children}</Log>
-  </TitleContainer>
-);

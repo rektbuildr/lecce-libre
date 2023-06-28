@@ -1,37 +1,29 @@
 import React from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { Box, Flex, Text } from "@ledgerhq/native-ui";
+import { IconType } from "@ledgerhq/native-ui/components/Icon/type";
 
 type Props = {
   name: string;
-  icon?: React.ReactNode;
+  Icon?: IconType;
   onPress?: () => void;
   RightComponent?: React.ReactNode;
 };
 
-export default function AccountSectionLabel({
-  name,
-  icon,
-  onPress,
-  RightComponent,
-}: Props) {
+export default function AccountSectionLabel({ name, Icon, onPress, RightComponent }: Props) {
   return (
-    <TouchableOpacity
-      style={styles.container}
-      onPress={onPress}
-      disabled={!onPress}
-    >
+    <TouchableOpacity style={styles.container} onPress={onPress} disabled={!onPress}>
       <Flex flexDirection={"row"} alignItems={"center"} flex={1}>
-        <Text variant={"h3"} color={"neutral.c100"}>
+        <Text variant="small" fontWeight="semiBold" color="neutral.c70" uppercase>
           {name}
         </Text>
-        <Box ml={3} mb={2}>
-          {icon}
-        </Box>
+        {Icon && (
+          <Box ml={2}>
+            <Icon size={16} color={"neutral.c70"} />
+          </Box>
+        )}
       </Flex>
-      {!!RightComponent && (
-        <View style={styles.rightWrapper}>{RightComponent}</View>
-      )}
+      {!!RightComponent && <View style={styles.rightWrapper}>{RightComponent}</View>}
     </TouchableOpacity>
   );
 }
@@ -40,7 +32,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 12,
   },
   rightWrapper: {
     alignSelf: "flex-end",

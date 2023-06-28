@@ -1,4 +1,4 @@
-import type { FiatCurrency } from "./types";
+import type { FiatCurrency } from "@ledgerhq/types-cryptoassets";
 // inspired by https://github.com/smirzaei/currency-formatter/blob/master/currencies.json
 
 function fiat(name, ticker, defaultSymbol, defaultMagnitude): FiatCurrency {
@@ -71,7 +71,7 @@ const byTicker: Record<string, FiatCurrency> = {
   VUV: fiat("Ni-Vanuatu Vatu", "VUV", "VT", 0),
   ZAR: fiat("South African Rand", "ZAR", "R", 2),
 };
-const list = Object.keys(byTicker).map((k) => byTicker[k]);
+const list = Object.keys(byTicker).map(k => byTicker[k]);
 
 /**
  *
@@ -85,9 +85,7 @@ export function hasFiatCurrencyTicker(ticker: string): boolean {
  *
  * @param {*} ticker
  */
-export function findFiatCurrencyByTicker(
-  ticker: string
-): FiatCurrency | null | undefined {
+export function findFiatCurrencyByTicker(ticker: string): FiatCurrency | null | undefined {
   return byTicker[ticker];
 }
 

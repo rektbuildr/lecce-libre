@@ -15,15 +15,12 @@ if (process.env.IGNORE_INTEGRATION_TESTS) {
 if (process.env.ONLY_INTEGRATION_TESTS) {
   testRegex = "(/__tests__/.*|(\\.|/)integration\\.(test|spec))\\.[jt]sx?$";
 }
-if (process.env.ONLY_BOT_TESTS) {
-  testRegex = "(\\.|/)test\\.bot\\.ts$";
-}
 const reporters = ["default"];
 if (process.env.CI) {
   reporters.push("github-actions");
 }
 
-export default {
+const defaultConfig = {
   preset: "ts-jest",
   globals: {
     "ts-jest": {
@@ -44,4 +41,22 @@ export default {
   testRegex,
   transformIgnorePatterns: ["/node_modules/(?!|@babel/runtime/helpers/esm/)"],
   moduleDirectories: ["node_modules", "cli/node_modules"],
+};
+
+export default {
+  projects: [
+    {
+      ...defaultConfig,
+      testPathIgnorePatterns: [
+        ...testPathIgnorePatterns,
+        "(/__tests__/.*|(\\.|/)react\\.test|spec)\\.tsx",
+      ],
+    },
+    {
+      ...defaultConfig,
+      displayName: "dom",
+      testEnvironment: "jsdom",
+      testRegex: "(/__tests__/.*|(\\.|/)react\\.test|spec)\\.tsx",
+    },
+  ],
 };

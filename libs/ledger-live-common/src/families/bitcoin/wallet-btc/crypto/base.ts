@@ -1,8 +1,6 @@
 // from https://github.com/LedgerHQ/xpub-scan/blob/master/src/actions/deriveAddresses.ts
 
 import * as bjs from "bitcoinjs-lib";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import { toOutputScript } from "bitcoinjs-lib/src/address";
 import bs58check from "bs58check";
 import { DerivationModes } from "../types";
@@ -10,6 +8,9 @@ import { ICrypto } from "./types";
 import bs58 from "bs58";
 import bech32 from "bech32";
 import BIP32 from "./bip32";
+
+// https://developer.bitcoin.org/devguide/transactions.html#null-data
+export const OP_RETURN_DATA_SIZE_LIMIT = 83; // bytes
 
 export function fallbackValidateAddress(address: string): boolean {
   try {
@@ -27,12 +28,10 @@ export function fallbackValidateAddress(address: string): boolean {
 }
 
 class Base implements ICrypto {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   network: any;
   protected static bip32Cache = {}; // xpub + account + index to publicKey
   public static addressCache = {}; // derivationMode + xpub + account + index to address
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor({ network }: { network: any }) {
     this.network = network;
     this.network.dustThreshold = 3000;
@@ -40,11 +39,7 @@ class Base implements ICrypto {
     this.network.usesTimestampedTransaction = false;
   }
 
-  protected async getPubkeyAt(
-    xpub: string,
-    account: number,
-    index: number
-  ): Promise<Buffer> {
+  protected async getPubkeyAt(xpub: string, account: number, index: number): Promise<Buffer> {
     // a cache is stored in Base.bip32Cache to optimize the calculation
     // at each step, we make sure the level has been calculated and calc if necessary
 
@@ -62,7 +57,7 @@ class Base implements ICrypto {
         chainCode,
         this.network,
         depth,
-        i
+        i,
       );
     }
 
@@ -77,9 +72,7 @@ class Base implements ICrypto {
     const keyIndex = `${keyAccount}-${index}`;
     let indexLevelP = Base.bip32Cache[keyIndex]; // it's stored as promise
     if (!indexLevelP) {
-      Base.bip32Cache[keyIndex] = indexLevelP = accountLevelP.then((a) =>
-        a.derive(index)
-      );
+      Base.bip32Cache[keyIndex] = indexLevelP = accountLevelP.then(a => a.derive(index));
     }
 
     // We can finally return the publicKey. in most case, indexLevelP will be "resolved"
@@ -87,16 +80,8 @@ class Base implements ICrypto {
   }
 
   // derive legacy address at account and index positions
-  protected async getLegacyAddress(
-    xpub: string,
-    account: number,
-    index: number
-  ): Promise<string> {
-    const publicKeyBuffer: Buffer = await this.getPubkeyAt(
-      xpub,
-      account,
-      index
-    );
+  protected async getLegacyAddress(xpub: string, account: number, index: number): Promise<string> {
+    const publicKeyBuffer: Buffer = await this.getPubkeyAt(xpub, account, index);
     const publicKeyHash160: Buffer = bjs.crypto.hash160(publicKeyBuffer);
     return bjs.address.toBase58Check(publicKeyHash160, this.network.pubKeyHash);
   }
@@ -105,13 +90,9 @@ class Base implements ICrypto {
   private async getNativeSegWitAddress(
     xpub: string,
     account: number,
-    index: number
+    index: number,
   ): Promise<string> {
-    const publicKeyBuffer: Buffer = await this.getPubkeyAt(
-      xpub,
-      account,
-      index
-    );
+    const publicKeyBuffer: Buffer = await this.getPubkeyAt(xpub, account, index);
     const publicKeyHash160: Buffer = bjs.crypto.hash160(publicKeyBuffer);
     const words: number[] = bech32.toWords(publicKeyHash160);
     words.unshift(0x00);
@@ -119,20 +100,9 @@ class Base implements ICrypto {
   }
 
   // derive SegWit at account and index positions
-  private async getSegWitAddress(
-    xpub: string,
-    account: number,
-    index: number
-  ): Promise<string> {
-    const publicKeyBuffer: Buffer = await this.getPubkeyAt(
-      xpub,
-      account,
-      index
-    );
-    const redeemOutput: Buffer = bjs.script.compile([
-      0,
-      bjs.crypto.hash160(publicKeyBuffer),
-    ]);
+  private async getSegWitAddress(xpub: string, account: number, index: number): Promise<string> {
+    const publicKeyBuffer: Buffer = await this.getPubkeyAt(xpub, account, index);
+    const redeemOutput: Buffer = bjs.script.compile([0, bjs.crypto.hash160(publicKeyBuffer)]);
     const publicKeyHash160: Buffer = bjs.crypto.hash160(redeemOutput);
     const payload: Buffer = Buffer.allocUnsafe(21);
     payload.writeUInt8(this.network.scriptHash, 0);
@@ -145,21 +115,15 @@ class Base implements ICrypto {
     derivationMode: string,
     xpub: string,
     account: number,
-    index: number
+    index: number,
   ): Promise<string> {
-    if (
-      Base.addressCache[
-        `${this.network.name}-${derivationMode}-${xpub}-${account}-${index}`
-      ]
-    ) {
+    if (Base.addressCache[`${this.network.name}-${derivationMode}-${xpub}-${account}-${index}`]) {
       return Base.addressCache[
         `${this.network.name}-${derivationMode}-${xpub}-${account}-${index}`
       ];
     }
     const res = this.customGetAddress(derivationMode, xpub, account, index);
-    Base.addressCache[
-      `${this.network.name}-${derivationMode}-${xpub}-${account}-${index}`
-    ] = res;
+    Base.addressCache[`${this.network.name}-${derivationMode}-${xpub}-${account}-${index}`] = res;
     return res;
   }
 
@@ -167,7 +131,7 @@ class Base implements ICrypto {
     derivationMode: string,
     xpub: string,
     account: number,
-    index: number
+    index: number,
   ): Promise<string> {
     switch (derivationMode) {
       case DerivationModes.LEGACY:
@@ -181,24 +145,13 @@ class Base implements ICrypto {
     }
   }
 
-  // infer address type from its syntax
-  getDerivationMode(address: string): DerivationModes {
-    if (address.match("^(bc1|tb1).*")) {
-      return DerivationModes.NATIVE_SEGWIT;
-    }
-    if (address.match("^(3|2|M).*")) {
-      return DerivationModes.SEGWIT;
-    }
-    if (address.match("^(1|n|m|L).*")) {
-      return DerivationModes.LEGACY;
-    }
-    throw new Error(
-      "INVALID ADDRESS: ".concat(address).concat(" is not a valid address")
-    );
-  }
-
   toOutputScript(address: string): Buffer {
     return toOutputScript(address, this.network);
+  }
+
+  toOpReturnOutputScript(data: Buffer): Buffer {
+    const script = bjs.payments.embed({ data: [data] });
+    return script.output!;
   }
 
   validateAddress(address: string): boolean {
@@ -206,13 +159,11 @@ class Base implements ICrypto {
     const res = bs58check.decodeUnsafe(address);
     if (!res) return false;
     return (
-      res.length > 3 &&
-      (res[0] === this.network.pubKeyHash || res[0] === this.network.scriptHash)
+      res.length > 3 && (res[0] === this.network.pubKeyHash || res[0] === this.network.scriptHash)
     );
   }
 
-  // eslint-disable-next-line
-  isTaprootAddress(address: string): boolean {
+  isTaprootAddress(_address: string): boolean {
     return false;
   }
 }

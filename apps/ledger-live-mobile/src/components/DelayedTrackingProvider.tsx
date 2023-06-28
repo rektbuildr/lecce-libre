@@ -8,7 +8,7 @@ export type SegmentTrackingEvent = {
   type: "segment";
   payload: {
     id: string;
-    properties: any;
+    properties?: Error | Record<string, unknown> | null;
   };
 };
 
@@ -39,9 +39,7 @@ const getDelayedEvents = async (): Promise<TrackingEvent[] | null> => {
   }
 };
 
-export const pushDelayedTrackingEvent = async (
-  event: TrackingEvent,
-): Promise<void> => {
+export const pushDelayedTrackingEvent = async (event: TrackingEvent): Promise<void> => {
   try {
     const events = (await getDelayedEvents()) || [];
 
@@ -49,9 +47,7 @@ export const pushDelayedTrackingEvent = async (
 
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(events));
   } catch (error) {
-    console.error(
-      `Failed to push new delayed tracking event with error "${error}"`,
-    );
+    console.error(`Failed to push new delayed tracking event with error "${error}"`);
   }
 };
 
@@ -93,16 +89,14 @@ export default function DelayedTrackingProvider() {
             default:
               console.error(
                 `Badly formatted tracking event found with the type "${
-                  (event as any).type
+                  (event as { type: unknown }).type
                 }"`,
               );
               break;
           }
         });
       } catch (error) {
-        console.error(
-          `Failed to handle delayed tracking events with error "${error}"`,
-        );
+        console.error(`Failed to handle delayed tracking events with error "${error}"`);
       }
     };
     handleDelayedTracking();

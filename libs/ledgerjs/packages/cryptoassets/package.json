@@ -1,27 +1,73 @@
 {
   "name": "@ledgerhq/cryptoassets",
-  "version": "6.28.2",
+  "version": "9.8.0",
   "description": "Ledger crypto-assets list",
   "keywords": [
     "Ledger"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/LedgerHQ/ledgerjs"
+    "url": "https://github.com/LedgerHQ/ledger-live.git"
   },
   "bugs": {
-    "url": "https://github.com/LedgerHQ/ledgerjs/issues"
+    "url": "https://github.com/LedgerHQ/ledger-live/issues"
   },
-  "homepage": "https://github.com/LedgerHQ/ledgerjs",
+  "homepage": "https://github.com/LedgerHQ/ledger-live/tree/develop/libs/ledgerjs/packages/cryptoassets",
   "publishConfig": {
     "access": "public"
   },
   "main": "lib/index.js",
   "module": "lib-es/index.js",
   "types": "lib/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "*.json": [
+        "*.json"
+      ],
+      "*": [
+        "lib/*"
+      ],
+      "lib/*": [
+        "lib/*"
+      ],
+      "lib-es/*": [
+        "lib-es/*"
+      ]
+    }
+  },
+  "exports": {
+    "./lib/*": "./lib/*.js",
+    "./lib/*.js": "./lib/*.js",
+    "./lib-es/*": "./lib-es/*.js",
+    "./lib-es/*.js": "./lib-es/*.js",
+    "./*": {
+      "require": "./lib/*.js",
+      "default": "./lib-es/*.js"
+    },
+    "./*.js": {
+      "require": "./lib/*.js",
+      "default": "./lib-es/*.js"
+    },
+    ".": {
+      "require": "./lib/index.js",
+      "default": "./lib-es/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "license": "Apache-2.0",
   "dependencies": {
     "invariant": "2"
+  },
+  "devDependencies": {
+    "@ledgerhq/types-cryptoassets": "workspace:^",
+    "@types/jest": "^29.5.0",
+    "@types/node": "^18.15.3",
+    "documentation": "13.2.4",
+    "jest": "^28.1.1",
+    "rimraf": "^4.4.1",
+    "source-map-support": "^0.5.21",
+    "ts-jest": "^28.0.5",
+    "ts-node": "^10.4.0"
   },
   "scripts": {
     "clean": "rimraf lib lib-es",
@@ -29,7 +75,7 @@
     "prewatch": "pnpm build",
     "watch": "tsc --watch",
     "doc": "documentation readme src/** --section=API --pe ts --re ts --re d.ts",
-    "lint": "eslint ./src --no-error-on-unmatched-pattern --ext .ts,.tsx",
+    "lint": "eslint ./src --no-error-on-unmatched-pattern --ext .ts,.tsx --cache",
     "lint:fix": "pnpm lint --fix",
     "test": "jest"
   },

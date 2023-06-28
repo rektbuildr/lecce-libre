@@ -1,5 +1,5 @@
 import { BigNumber } from "bignumber.js";
-import type { Account } from "../../types";
+import type { Account } from "@ledgerhq/types-live";
 import type { Transaction } from "./types";
 import getEstimatedFees from "./js-getFeesForTransaction";
 
@@ -26,10 +26,10 @@ export const createTransaction = (): Transaction => ({
  * @param {*} t
  * @param {*} patch
  */
-export const updateTransaction = (
-  t: Transaction,
-  patch: Partial<Transaction>
-) => ({ ...t, ...patch });
+export const updateTransaction = (t: Transaction, patch: Partial<Transaction>) => ({
+  ...t,
+  ...patch,
+});
 
 /**
  * Prepare transaction before checking status

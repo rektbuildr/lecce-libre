@@ -2,9 +2,9 @@ import React, { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import { TouchableOpacity, View, StyleSheet, SectionList } from "react-native";
-import { findTokenById } from "@ledgerhq/live-common/lib/currencies";
-import { CryptoCurrency, TokenCurrency } from "@ledgerhq/live-common/lib/types";
-import { useTheme } from "styled-components/native";
+import { findTokenById } from "@ledgerhq/live-common/currencies/index";
+import { CryptoCurrency, TokenCurrency } from "@ledgerhq/types-cryptoassets";
+import { DefaultTheme, useTheme } from "styled-components/native";
 import SettingsRow from "../../../components/SettingsRow";
 import { showToken } from "../../../actions/settings";
 import {
@@ -16,11 +16,17 @@ import LText from "../../../components/LText";
 import CurrencyIcon from "../../../components/CurrencyIcon";
 import { TrackScreen } from "../../../analytics";
 import HideEmptyTokenAccountsRow from "./HideEmptyTokenAccountsRow";
+import FilterTokenOperationsZeroAmountRow from "./FilterTokenOperationsZeroAmountRow";
 import Close from "../../../icons/Close";
 import { ScreenName } from "../../../const";
+import { SettingsNavigatorStackParamList } from "../../../components/RootNavigator/types/SettingsNavigator";
+import type { Theme } from "../../../colors";
+import { StackNavigatorProps } from "../../../components/RootNavigator/types/helpers";
 
-export default function AccountsSettings({ navigation }: { navigation: any }) {
-  const { colors } = useTheme();
+export default function AccountsSettings({
+  navigation,
+}: StackNavigatorProps<SettingsNavigatorStackParamList, ScreenName.AccountsSettings>) {
+  const { colors } = useTheme() as DefaultTheme & Theme;
   const { t } = useTranslation();
   const blacklistedTokenIds = useSelector(blacklistedTokenIdsSelector);
   const currencies = useSelector(cryptoCurrenciesSelector);
@@ -28,16 +34,9 @@ export default function AccountsSettings({ navigation }: { navigation: any }) {
   const dispatch = useDispatch();
 
   const renderSectionHeader = useCallback(
-    ({
-      section: { parentCurrency },
-    }: {
-      section: { parentCurrency: CryptoCurrency };
-    }) => (
+    ({ section: { parentCurrency } }: { section: { parentCurrency: CryptoCurrency } }) => (
       <View style={styles.section}>
-        <LText
-          primary
-          style={[styles.sectionTitle, { backgroundColor: colors.card }]}
-        >
+        <LText style={[styles.sectionTitle, { backgroundColor: colors.card }]}>
           {parentCurrency.name}
         </LText>
       </View>
@@ -88,6 +87,7 @@ export default function AccountsSettings({ navigation }: { navigation: any }) {
           />
         )}
         <HideEmptyTokenAccountsRow />
+        <FilterTokenOperationsZeroAmountRow />
         <SettingsRow
           event="HideEmptyTokenAccountsRow"
           title={t("settings.accounts.blacklistedTokens")}
@@ -136,7 +136,7 @@ export default function AccountsSettings({ navigation }: { navigation: any }) {
 
 const styles = StyleSheet.create({
   root: {
-    paddingHorizontal: 16,
+    paddingTop: 16,
     marginBottom: 2,
     flex: 1,
   },

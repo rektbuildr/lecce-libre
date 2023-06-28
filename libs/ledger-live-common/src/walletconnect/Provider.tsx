@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer } from "react";
 import WalletConnectClient from "@walletconnect/client";
 import { parseCallRequest } from "./index";
-import type { AccountLike } from "../types";
+import type { AccountLike } from "@ledgerhq/types-live";
 export const STATUS = {
   DISCONNECTED: 0x00,
   CONNECTING: 0x01,
@@ -36,18 +36,14 @@ export let disconnect: (...args: Array<any>) => any = () => {};
 export let approveSession: (account: AccountLike) => void = () => {};
 export let setCurrentCallRequestResult: (...args: Array<any>) => any = () => {};
 export let setCurrentCallRequestError: (...args: Array<any>) => any = () => {};
-export let handleCallRequest: (payload: any) => Promise<any> = () =>
-  Promise.resolve();
+export let handleCallRequest: (payload: any) => Promise<any> = () => Promise.resolve();
 
 // reducer
 const reducer = (state: State, update) => {
   return {
     ...state,
     ...update,
-    session:
-      update.session === null
-        ? {}
-        : { ...state.session, ...(update.session || {}) },
+    session: update.session === null ? {} : { ...state.session, ...(update.session || {}) },
   };
 };
 
@@ -63,6 +59,18 @@ const initialState = {
 };
 export const context = React.createContext<State>(initialState);
 
+type Props = {
+  children: React.ReactNode;
+  useAccount: (...args: Array<any>) => any;
+  onMessage: (...args: Array<any>) => any;
+  onSessionRestarted: (...args: Array<any>) => any;
+  onRemoteDisconnected: (...args: Array<any>) => any;
+  isReady: boolean;
+  saveWCSession: (...args: Array<any>) => any;
+  getWCSession: (...args: Array<any>) => any;
+  WalletConnect?: typeof WalletConnectClient;
+};
+
 const ProviderCommon = ({
   children,
   useAccount,
@@ -73,22 +81,12 @@ const ProviderCommon = ({
   saveWCSession,
   getWCSession,
   WalletConnect = WalletConnectClient,
-}: {
-  children: React.ReactNode;
-  useAccount: (...args: Array<any>) => any;
-  onMessage: (...args: Array<any>) => any;
-  onSessionRestarted: (...args: Array<any>) => any;
-  onRemoteDisconnected: (...args: Array<any>) => any;
-  isReady: boolean;
-  saveWCSession: (...args: Array<any>) => any;
-  getWCSession: (...args: Array<any>) => any;
-  WalletConnect: any;
-}) => {
+}: Props): JSX.Element => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const account = useAccount(state.session.accountId);
 
   // actions
-  connect = (uri) => {
+  connect = uri => {
     let connector;
 
     try {
@@ -100,7 +98,7 @@ const ProviderCommon = ({
           : {
               uri,
               clientMeta,
-            }
+            },
       );
     } catch (e) {
       dispatch({
@@ -133,16 +131,14 @@ const ProviderCommon = ({
         status: STATUS.CONNECTED,
       });
     });
-    connector.on("disconnect", () => {
-      disconnect();
-    });
-    connector.on("error", (error) => {
+    connector.on("disconnect", () => disconnect());
+    connector.on("error", (error: Error) => {
       dispatch({
         status: STATUS.ERROR,
         error,
       });
     });
-    connector.on("call_request", (error, payload) => {
+    connector.on("call_request", (error: Error, payload: unknown | null) => {
       if (error) {
         dispatch({
           status: STATUS.ERROR,
@@ -153,6 +149,7 @@ const ProviderCommon = ({
 
       handleCallRequest(payload);
     });
+
     dispatch({
       error: null,
       connector,
@@ -175,8 +172,7 @@ const ProviderCommon = ({
     }
 
     if (state.status !== STATUS.DISCONNECTED) {
-      const disconnectedAccount =
-        state.status === STATUS.CONNECTED ? account : null;
+      const disconnectedAccount = state.status === STATUS.CONNECTED ? account : null;
       dispatch({
         session: null,
         dappInfo: null,
@@ -189,7 +185,7 @@ const ProviderCommon = ({
     }
   };
 
-  handleCallRequest = async (payload) => {
+  handleCallRequest = async payload => {
     if (state.currentCallRequestId) {
       state.connector.rejectRequest({
         id: payload.id,
@@ -230,7 +226,7 @@ const ProviderCommon = ({
     }
   };
 
-  approveSession = (account) => {
+  approveSession = account => {
     if (!state.connector || account.type !== "Account") {
       return;
     }
@@ -246,7 +242,7 @@ const ProviderCommon = ({
     });
   };
 
-  setCurrentCallRequestResult = (result) => {
+  setCurrentCallRequestResult = result => {
     if (!state.currentCallRequestId || !state.connector) {
       return;
     }
@@ -260,7 +256,7 @@ const ProviderCommon = ({
     });
   };
 
-  setCurrentCallRequestError = (error) => {
+  setCurrentCallRequestError = error => {
     if (!state.currentCallRequestId || !state.connector) {
       return;
     }
@@ -299,12 +295,7 @@ const ProviderCommon = ({
     saveWCSession(state.session);
   }, [saveWCSession, state.initDone, state.session]);
   useEffect(() => {
-    if (
-      account &&
-      state.session.session &&
-      state.status === STATUS.DISCONNECTED &&
-      isReady
-    ) {
+    if (account && state.session.session && state.status === STATUS.DISCONNECTED && isReady) {
       connect();
       onSessionRestarted(account);
     }

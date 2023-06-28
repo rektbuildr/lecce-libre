@@ -1,13 +1,25 @@
-import estimateMaxSpendable from "./js-estimateMaxSpendable";
+import network from "@ledgerhq/live-network/network";
+import type { Account } from "@ledgerhq/types-live";
 import BigNumber from "bignumber.js";
-import type { Account } from "../../types";
+import estimateMaxSpendable from "./js-estimateMaxSpendable";
 import type { Transaction } from "./types";
 
-// NOTE: Hedera declares stable fees in USD
-//       If we can get the current USD/HBAR price here..
-//       > transfer fee is 0.0001 USD
-export const estimatedFees = new BigNumber("83300"); // 0.000833 ℏ (as of 2021-09-20)
 export const estimatedFeeSafetyRate = 2;
+
+export async function getEstimatedFees(): Promise<BigNumber> {
+  try {
+    const { data } = await network({
+      method: "GET",
+      url: "https://countervalues.live.ledger.com/latest/direct?pairs=hbar:usd",
+    });
+
+    return new BigNumber(10000).dividedBy(data[0]);
+  } catch {
+    // as fees are based on a currency conversion, we stay
+    // on the safe side here and double the estimate for "max spendable"
+    return new BigNumber("150200").multipliedBy(estimatedFeeSafetyRate); // 0.001502 ℏ (as of 2023-03-14)
+  }
+}
 
 export async function calculateAmount({
   account,
@@ -19,19 +31,18 @@ export async function calculateAmount({
   amount: BigNumber;
   totalSpent: BigNumber;
 }> {
-  const amount =
-    transaction.useAllAmount === true
-      ? await estimateMaxSpendable({ account })
-      : transaction.amount;
+  const amount = transaction.useAllAmount
+    ? await estimateMaxSpendable({ account })
+    : transaction.amount;
 
   return {
     amount,
-    totalSpent: amount.plus(estimatedFees),
+    totalSpent: amount.plus(await getEstimatedFees()),
   };
 }
 
 // NOTE: convert from the non-url-safe version of base64 to the url-safe version (that the explorer uses)
-export function base64ToUrlSafeBase64(data: string) {
+export function base64ToUrlSafeBase64(data: string): string {
   // Might be nice to use this alternative if .nvmrc changes to >= Node v14.18.0
   // base64url encoding option isn't supported until then
   // Buffer.from(data, "base64").toString("base64url");

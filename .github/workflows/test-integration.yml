@@ -35,28 +35,25 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ github.event.inputs.ref || github.ref }}
+          ref: ${{ inputs.ref || github.ref }}
           fetch-depth: 0
-      - uses: pnpm/action-setup@v2.1.0
+      - name: Setup the toolchain
+        uses: ./tools/actions/composites/setup-toolchain
         with:
-          version: latest
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          cache: pnpm
-          cache-dependency-path: "**/pnpm-lock.yaml"
-      - name: Bump npm to latest
+          upgrade_npm: ${{ matrix.os == 'windows-latest' }}
+      - name: Install node-gyp globally
+        if: runner.os == 'Windows'
         run: |
-          npm i -g npm
-          npm --version
+          pnpm add -g node-gyp
       - name: Install dependencies
-        run: pnpm i --filter="!./apps/**"
+        run: pnpm i --filter="live-common..." --filter="ledger-live"
       - name: Build
-        run: pnpm build:libs
+        run: pnpm build:llc
       - name: Test
         shell: bash
         env:
-          FILTER: ${{ github.event.inputs.filter }}
+          FILTER: ${{ inputs.filter }}
+          VERBOSE_FILE: logs.txt
         run: |
           pnpm common ci-test-integration $FILTER
           git diff --exit-code libs/ledger-live-common/src
@@ -67,3 +64,9 @@ jobs:
           name: ${{ format('live-common-src-{0}', matrix.os) }}
           path: |
             libs/ledger-live-common/src
+      - name: (On Failure) Upload logs
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: logs.txt
+          path: logs.txt

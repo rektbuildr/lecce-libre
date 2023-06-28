@@ -1,9 +1,10 @@
 import { renderHook, act } from "@testing-library/react-hooks";
 import { getCryptoCurrencyById, getTokenById } from "@ledgerhq/cryptoassets";
 import { selectorStateDefaultValues, useToState } from ".";
-import { genAccount, genTokenAccount } from "../../../mock/account";
-import { Account } from "../../../types";
+import { genTokenAccount } from "@ledgerhq/coin-framework/mocks/account";
+import { genAccount } from "../../../mock/account";
 import BigNumber from "bignumber.js";
+import type { Account } from "@ledgerhq/types-live";
 
 const BTC = getCryptoCurrencyById("bitcoin");
 const ETH = getCryptoCurrencyById("ethereum");

@@ -29,7 +29,7 @@ const defaultsSignTransaction = {
   sigHashType: SIGHASH_ALL,
   segwit: false,
   additionals: [],
-  onDeviceStreaming: (_e) => {},
+  onDeviceStreaming: _e => {},
   onDeviceSignatureGranted: () => {},
   onDeviceSignatureRequested: () => {},
 };
@@ -38,9 +38,7 @@ const defaultsSignTransaction = {
  *
  */
 export type CreateTransactionArg = {
-  inputs: Array<
-    [Transaction, number, string | null | undefined, number | null | undefined]
-  >;
+  inputs: Array<[Transaction, number, string | null | undefined, number | null | undefined]>;
   associatedKeysets: string[];
   changePath?: string;
   outputScriptHex: string;
@@ -51,17 +49,13 @@ export type CreateTransactionArg = {
   additionals: Array<string>;
   expiryHeight?: Buffer;
   useTrustedInputForSegwit?: boolean;
-  onDeviceStreaming?: (arg0: {
-    progress: number;
-    total: number;
-    index: number;
-  }) => void;
+  onDeviceStreaming?: (arg0: { progress: number; total: number; index: number }) => void;
   onDeviceSignatureRequested?: () => void;
   onDeviceSignatureGranted?: () => void;
 };
 export async function createTransaction(
   transport: Transport,
-  arg: CreateTransactionArg
+  arg: CreateTransactionArg,
 ): Promise<string> {
   const signTx = { ...defaultsSignTransaction, ...arg };
   const {
@@ -113,6 +107,7 @@ export async function createTransaction(
   };
 
   const isDecred = additionals.includes("decred");
+  const isZcash = additionals.includes("zcash");
   const isXST = additionals.includes("stealthcoin");
   const startTime = Date.now();
   const sapling = additionals.includes("sapling");
@@ -126,11 +121,13 @@ export async function createTransaction(
     (!!expiryHeight && !isDecred);
   // Inputs are provided as arrays of [transaction, output_index, optional redeem script, optional sequence]
   // associatedKeysets are provided as arrays of [path]
+  const lockTimeBuffer = Buffer.alloc(4);
+  lockTimeBuffer.writeUInt32LE(lockTime, 0);
   const nullScript = Buffer.alloc(0);
   const nullPrevout = Buffer.alloc(0);
   const defaultVersion = Buffer.alloc(4);
   !!expiryHeight && !isDecred
-    ? defaultVersion.writeUInt32LE(sapling ? 0x80000004 : 0x80000003, 0)
+    ? defaultVersion.writeUInt32LE(isZcash ? 0x80000005 : sapling ? 0x80000004 : 0x80000003, 0) // v5 format for zcash refer to https://zips.z.cash/zip-0225
     : isXST
     ? defaultVersion.writeUInt32LE(2, 0)
     : defaultVersion.writeUInt32LE(1, 0);
@@ -147,28 +144,18 @@ export async function createTransaction(
     timestamp: Buffer.alloc(0),
   };
   const getTrustedInputCall =
-    useBip143 && !useTrustedInputForSegwit
-      ? getTrustedInputBIP143
-      : getTrustedInput;
+    useBip143 && !useTrustedInputForSegwit ? getTrustedInputBIP143 : getTrustedInput;
   const outputScript = Buffer.from(outputScriptHex, "hex");
   notify(0, 0);
-
   // first pass on inputs to get trusted inputs
   for (const input of inputs) {
     if (!resuming) {
-      const trustedInput = await getTrustedInputCall(
-        transport,
-        input[1],
-        input[0],
-        additionals
-      );
+      const trustedInput = await getTrustedInputCall(transport, input[1], input[0], additionals);
       log("hw", "got trustedInput=" + trustedInput);
       const sequence = Buffer.alloc(4);
       sequence.writeUInt32LE(
-        input.length >= 4 && typeof input[3] === "number"
-          ? input[3]
-          : DEFAULT_SEQUENCE,
-        0
+        input.length >= 4 && typeof input[3] === "number" ? input[3] : DEFAULT_SEQUENCE,
+        0,
       );
       trustedInputs.push({
         trustedInput: true,
@@ -186,31 +173,32 @@ export async function createTransaction(
 
     if (expiryHeight && !isDecred) {
       targetTransaction.nVersionGroupId = Buffer.from(
-        sapling ? [0x85, 0x20, 0x2f, 0x89] : [0x70, 0x82, 0xc4, 0x03]
+        // nVersionGroupId is 0x26A7270A for zcash from https://z.cash/upgrade/nu5/
+        isZcash
+          ? [0x0a, 0x27, 0xa7, 0x26]
+          : sapling
+          ? [0x85, 0x20, 0x2f, 0x89]
+          : [0x70, 0x82, 0xc4, 0x03],
       );
       targetTransaction.nExpiryHeight = expiryHeight;
       // For sapling : valueBalance (8), nShieldedSpend (1), nShieldedOutput (1), nJoinSplit (1)
       // Overwinter : use nJoinSplit (1)
       targetTransaction.extraData = Buffer.from(
-        sapling
-          ? [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
-          : [0x00]
+        sapling ? [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00] : [0x00],
       );
     } else if (isDecred) {
       targetTransaction.nExpiryHeight = expiryHeight;
     }
   }
 
-  targetTransaction.inputs = inputs.map((input) => {
+  targetTransaction.inputs = inputs.map((input, idx) => {
     const sequence = Buffer.alloc(4);
     sequence.writeUInt32LE(
-      input.length >= 4 && typeof input[3] === "number"
-        ? input[3]
-        : DEFAULT_SEQUENCE,
-      0
+      input.length >= 4 && typeof input[3] === "number" ? input[3] : DEFAULT_SEQUENCE,
+      0,
     );
     return {
-      script: nullScript,
+      script: isZcash ? regularOutputs[idx].script : nullScript,
       prevout: nullPrevout,
       sequence,
     };
@@ -233,9 +221,7 @@ export async function createTransaction(
     }
 
     for (let i = 0; i < result.length; i++) {
-      publicKeys.push(
-        compressPublicKey(Buffer.from(result[i].publicKey, "hex"))
-      );
+      publicKeys.push(compressPublicKey(Buffer.from(result[i].publicKey, "hex")));
     }
   }
 
@@ -243,7 +229,7 @@ export async function createTransaction(
     targetTransaction.timestamp = Buffer.alloc(4);
     targetTransaction.timestamp.writeUInt32LE(
       Math.floor(initialTimestamp + (Date.now() - startTime) / 1000),
-      0
+      0,
     );
   }
 
@@ -259,7 +245,7 @@ export async function createTransaction(
       true,
       !!expiryHeight,
       additionals,
-      useTrustedInputForSegwit
+      useTrustedInputForSegwit,
     );
 
     if (!resuming && changePath) {
@@ -303,7 +289,7 @@ export async function createTransaction(
       useBip143,
       !!expiryHeight && !isDecred,
       additionals,
-      useTrustedInputForSegwit
+      useTrustedInputForSegwit,
     );
 
     if (!useBip143) {
@@ -325,7 +311,7 @@ export async function createTransaction(
       lockTime,
       sigHashType,
       expiryHeight,
-      additionals
+      additionals,
     );
     notify(1, i + 1);
     signatures.push(signature);
@@ -361,21 +347,11 @@ export async function createTransaction(
     }
 
     const offset = useBip143 && !useTrustedInputForSegwit ? 0 : 4;
-    targetTransaction.inputs[i].prevout = trustedInputs[i].value.slice(
-      offset,
-      offset + 0x24
-    );
+    targetTransaction.inputs[i].prevout = trustedInputs[i].value.slice(offset, offset + 0x24);
   }
-
-  const lockTimeBuffer = Buffer.alloc(4);
-  lockTimeBuffer.writeUInt32LE(lockTime, 0);
+  targetTransaction.locktime = lockTimeBuffer;
   let result = Buffer.concat([
-    serializeTransaction(
-      targetTransaction,
-      false,
-      targetTransaction.timestamp,
-      additionals
-    ),
+    serializeTransaction(targetTransaction, false, targetTransaction.timestamp, additionals),
     outputScript,
   ]);
 
@@ -396,20 +372,17 @@ export async function createTransaction(
     result = Buffer.concat([result, witness]);
   }
 
-  // FIXME: In ZEC or KMD sapling lockTime is serialized before expiryHeight.
-  // expiryHeight is used only in overwinter/sapling so I moved lockTimeBuffer here
-  // and it should not break other coins because expiryHeight is false for them.
-  // Don't know about Decred though.
-  result = Buffer.concat([result, lockTimeBuffer]);
-
-  if (expiryHeight) {
-    result = Buffer.concat([
-      result,
-      targetTransaction.nExpiryHeight || Buffer.alloc(0),
-      targetTransaction.extraData || Buffer.alloc(0),
-    ]);
+  // from to https://zips.z.cash/zip-0225, zcash is different with other coins, the lock_time and nExpiryHeight fields are before the inputs and outputs
+  if (!isZcash) {
+    result = Buffer.concat([result, lockTimeBuffer]);
+    if (expiryHeight) {
+      result = Buffer.concat([
+        result,
+        targetTransaction.nExpiryHeight || Buffer.alloc(0),
+        targetTransaction.extraData || Buffer.alloc(0),
+      ]);
+    }
   }
-
   if (isDecred) {
     let decredWitness = Buffer.from([targetTransaction.inputs.length]);
     inputs.forEach((input, inputIndex) => {
@@ -424,6 +397,8 @@ export async function createTransaction(
     });
     result = Buffer.concat([result, decredWitness]);
   }
-
+  if (isZcash) {
+    result = Buffer.concat([result, Buffer.from([0x00, 0x00, 0x00])]);
+  }
   return result.toString("hex");
 }

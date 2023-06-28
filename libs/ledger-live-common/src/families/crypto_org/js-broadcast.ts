@@ -1,4 +1,4 @@
-import type { Operation, SignedOperation, Account } from "../../types";
+import type { Operation, SignedOperation, Account } from "@ledgerhq/types-live";
 import { patchOperationWithHash } from "../../operation";
 import { broadcastTransaction } from "./api";
 import { CryptoOrgErrorBroadcasting } from "./errors";
@@ -17,14 +17,11 @@ const broadcast = async ({
   account: Account;
   signedOperation: SignedOperation;
 }): Promise<Operation> => {
-  const broadcastResponse = await broadcastTransaction(
-    signature,
-    account.currency.id
-  );
+  const broadcastResponse = await broadcastTransaction(signature, account.currency.id);
 
   if (isBroadcastTxFailure(broadcastResponse)) {
     throw new CryptoOrgErrorBroadcasting(
-      `broadcasting failed with error code ${broadcastResponse.code}`
+      `broadcasting failed with error code ${broadcastResponse.code}`,
     );
   }
 

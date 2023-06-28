@@ -1,67 +1,64 @@
 import type { DeviceAction } from "../../bot/types";
 import type { Transaction } from "./types";
-import { deviceActionFlow } from "../../bot/specs";
-import { formatCurrencyUnit } from "../../currencies";
+import { deviceActionFlow, formatDeviceAmount, SpeculosButton } from "../../bot/specs";
 
-const acceptTransaction: DeviceAction<Transaction, any> = deviceActionFlow({
+export const acceptTransaction: DeviceAction<Transaction, any> = deviceActionFlow({
   steps: [
     {
       title: "To",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       expectedValue: ({ transaction }) => transaction.recipient,
     },
     {
       title: "From",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       expectedValue: ({ account }) => account.freshAddress,
     },
     {
       title: "Nonce",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       expectedValue: ({ transaction }) => transaction.nonce.toString(),
     },
     {
       title: "Value",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       expectedValue: ({ account, status }) =>
-        formatCurrencyUnit(account.unit, status.amount, {
-          disableRounding: true,
+        formatDeviceAmount(account.currency, status.amount, {
+          hideCode: true,
           showAllDigits: true,
         }),
     },
     {
       title: "Gas Limit",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       expectedValue: ({ transaction }) => transaction.gasLimit.toFixed(),
     },
     {
       title: "Gas Premium",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       expectedValue: ({ account, transaction }) =>
-        formatCurrencyUnit(account.unit, transaction.gasPremium, {
-          disableRounding: true,
+        formatDeviceAmount(account.currency, transaction.gasPremium, {
+          hideCode: true,
           showAllDigits: true,
         }),
     },
     {
       title: "Gas Fee Cap",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       expectedValue: ({ account, transaction }) =>
-        formatCurrencyUnit(account.unit, transaction.gasFeeCap, {
-          disableRounding: true,
+        formatDeviceAmount(account.currency, transaction.gasFeeCap, {
+          hideCode: true,
           showAllDigits: true,
         }),
     },
     {
       title: "Method",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       expectedValue: () => "Transfer",
     },
     {
       title: "APPROVE",
-      button: "LRlr",
+      button: SpeculosButton.BOTH,
     },
   ],
 });
-
-export default { acceptTransaction };

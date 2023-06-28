@@ -1,11 +1,4 @@
-import React, {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Trans } from "react-i18next";
 import {
   Animated,
@@ -13,14 +6,17 @@ import {
   TouchableOpacity,
   PanResponder,
   FlatList,
+  StyleProp,
+  ViewStyle,
 } from "react-native";
-import { useNavigation, useTheme } from "@react-navigation/native";
-import { listTokenTypesForCryptoCurrency } from "@ledgerhq/live-common/lib/currencies";
-import { Account } from "@ledgerhq/live-common/lib/types";
-import { FlexBoxProps } from "@ledgerhq/native-ui/components/Layout/Flex";
+import { useNavigation } from "@react-navigation/native";
+import { listTokenTypesForCryptoCurrency } from "@ledgerhq/live-common/currencies/index";
+import { Account } from "@ledgerhq/types-live";
+import { FlexBoxProps } from "@ledgerhq/native-ui/components/Layout/Flex/index";
 import { Flex, Text } from "@ledgerhq/native-ui";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 
+import { StackNavigationProp } from "@react-navigation/stack";
 import { ScreenName } from "../const";
 import { track } from "../analytics";
 import AccountCard from "./AccountCard";
@@ -29,6 +25,8 @@ import swipedAccountSubject from "../screens/AddAccounts/swipedAccountSubject";
 import Button from "./Button";
 import TouchHintCircle from "./TouchHintCircle";
 import Touchable from "./Touchable";
+import { AccountSettingsNavigatorParamList } from "./RootNavigator/types/AccountSettingsNavigator";
+import { AddAccountsNavigatorParamList } from "./RootNavigator/types/AddAccountsNavigator";
 
 const selectAllHitSlop = {
   top: 16,
@@ -47,7 +45,7 @@ type Props = FlexBoxProps & {
   forceSelected?: boolean;
   emptyState?: ReactNode;
   header: ReactNode;
-  style?: any;
+  style?: StyleProp<ViewStyle>;
   index: number;
   showHint: boolean;
   onAccountNameChange?: (name: string, changedAccount: Account) => void;
@@ -70,8 +68,10 @@ const SelectableAccountsList = ({
   useFullBalance,
   ...props
 }: Props) => {
-  const { colors } = useTheme();
-  const navigation = useNavigation();
+  const navigation =
+    useNavigation<
+      StackNavigationProp<AccountSettingsNavigatorParamList | AddAccountsNavigatorParamList>
+    >();
 
   const onSelectAll = useCallback(() => {
     track("SelectAllAccounts");
@@ -109,11 +109,10 @@ const SelectableAccountsList = ({
             isSelected={forceSelected || selectedIds.indexOf(item.id) > -1}
             isDisabled={isDisabled}
             onPress={onPressAccount}
-            colors={colors}
             useFullBalance={useFullBalance}
           />
         )}
-        ListEmptyComponent={() => emptyState || null}
+        ListEmptyComponent={() => <>{emptyState || null}</>}
       />
     </Flex>
   );
@@ -127,9 +126,10 @@ type SelectableAccountProps = {
   showHint: boolean;
   rowIndex: number;
   listIndex: number;
-  navigation: any;
+  navigation: StackNavigationProp<
+    AccountSettingsNavigatorParamList | AddAccountsNavigatorParamList
+  >;
   onAccountNameChange?: (name: string, changedAccount: Account) => void;
-  colors: any;
   useFullBalance?: boolean;
 };
 
@@ -174,7 +174,7 @@ const SelectableAccount = ({
         onPanResponderGrant: () => {
           if (swipedAccountSubject) {
             setStopAnimation(true);
-            swipedAccountSubject.next({ rowIndex, listIndex });
+            swipedAccountSubject.next({ row: rowIndex, list: listIndex });
           }
         },
         onShouldBlockNativeResponder: () => false,
@@ -213,8 +213,8 @@ const SelectableAccount = ({
 
   const renderLeftActions = useCallback(
     (
-      progress: Animated.AnimatedInterpolation,
-      dragX: Animated.AnimatedInterpolation,
+      progress: Animated.AnimatedInterpolation<number>,
+      dragX: Animated.AnimatedInterpolation<number>,
     ) => {
       const translateX = dragX.interpolate({
         inputRange: [0, 1000],
@@ -222,17 +222,8 @@ const SelectableAccount = ({
       });
 
       return (
-        <Flex
-          width="auto"
-          flexDirection="row"
-          alignItems="center"
-          justifyContent="center"
-          ml={2}
-        >
-          <Animated.View
-            style={[{ transform: [{ translateX }] }]}
-            onLayout={setLayout}
-          >
+        <Flex width="auto" flexDirection="row" alignItems="center" justifyContent="center" ml={2}>
+          <Animated.View style={[{ transform: [{ translateX }] }]} onLayout={setLayout}>
             <Button
               event="EditAccountNameFromSlideAction"
               type="primary"
@@ -274,15 +265,9 @@ const SelectableAccount = ({
           AccountSubTitle={
             subAccountCount && !isDisabled ? (
               <Flex marginTop={2}>
-                <Text
-                  fontWeight="semiBold"
-                  variant="small"
-                  color="pillActiveForeground"
-                >
+                <Text fontWeight="semiBold" variant="small" color="pillActiveForeground">
                   <Trans
-                    i18nKey={`selectableAccountsList.${
-                      isToken ? "tokenCount" : "subaccountCount"
-                    }`}
+                    i18nKey={`selectableAccountsList.${isToken ? "tokenCount" : "subaccountCount"}`}
                     count={subAccountCount}
                     values={{ count: subAccountCount }}
                   />
@@ -329,21 +314,11 @@ type HeaderProps = {
   onUnselectAll?: () => void;
 };
 
-const Header = ({
-  text,
-  areAllSelected,
-  onSelectAll,
-  onUnselectAll,
-}: HeaderProps) => {
+const Header = ({ text, areAllSelected, onSelectAll, onUnselectAll }: HeaderProps) => {
   const shouldDisplaySelectAll = !!onSelectAll && !!onUnselectAll;
 
   return (
-    <Flex
-      paddingHorizontal={16}
-      flexDirection="row"
-      alignItems="center"
-      paddingBottom={8}
-    >
+    <Flex paddingX={16} flexDirection="row" alignItems="center" paddingBottom={8}>
       <Text
         fontWeight="semiBold"
         flexGrow={1}

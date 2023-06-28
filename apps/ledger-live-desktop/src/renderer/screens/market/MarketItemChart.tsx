@@ -1,14 +1,13 @@
 import React, { memo } from "react";
 import { useTheme } from "styled-components";
-import { SparklineSvgData } from "@ledgerhq/live-common/lib/market/types";
+import { SparklineSvgData } from "@ledgerhq/live-common/market/types";
 
 type Props = {
   sparklineIn7d: SparklineSvgData;
 };
 
 function SmallMarketItemChartComponent({ sparklineIn7d }: Props) {
-  // @ts-expect-error to update with next live-common update
-  const { path, viewBox, isPositive } = sparklineIn7d;
+  const { path, viewBox } = sparklineIn7d;
 
   const { colors } = useTheme();
   const color = colors.neutral.c80;

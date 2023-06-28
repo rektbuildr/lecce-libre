@@ -22,7 +22,7 @@ There is a good chance that we will reject feature based PRs based on the fact t
 4. Make your changes.
 5. If you’ve fixed a bug or added code that should be tested, add tests!
 6. If needed, wait for the translations to be provided by the third party service.
-7. Add an entry to the changelog (`pnpm changelog`).
+7. Add an entry to the changelog (`pnpm changeset`).
 8. Make sure that the code passes linter and type checks (`pnpm lint:fix` and `pnpm typecheck`).
 9. Make sure the code passes unit and end to end tests (`pnpm test`).
 10. Cleanup your branch - unless it contains merge commits (perform atomic commits, squash tiny commits…).
@@ -39,7 +39,6 @@ Depending on the purpose every git branch should be prefixed.
 - `feat/` when adding a new feature to the application or library
 - `bugfix/` when fixing an existing bug
 - `support/` for any other changes (refactor, tests, improvements, CI…)
-- `hotfix/` is reserved when making a critical fix outside of the traditional release flow
 
 #### Changelogs
 
@@ -47,13 +46,9 @@ We use [**changesets**](https://github.com/changesets/changesets) to handle the 
 
 #### Commit message
 
-_No specific rules at this point in time (this may change in the future though), use common sense and well known good practices._
+We use the standard [**Conventional Commits**](https://www.conventionalcommits.org/) specification and enforce it using [**commitlint**](https://commitlint.js.org/).
 
-- Keep your commit message short.
-- Your message should describe clearly the change.
-- You may use a prefix / scope to label the change.
-
-Following the [Conventional Commits](https://www.conventionalcommits.org/) specification is not mandatory but if you do it will be appreciated.
+You can use the `pnpm commit` prompt to ensure that your commit messages are valid, as well as the `pnpm commitlint --from <target branch>` command to check that every commit on your current branch are valid.
 
 #### Rebase & Merge strategies
 
@@ -79,7 +74,7 @@ For instance:
 
 - Github actions will trigger depending on which part of the codebase is impacted.
 - Your PR must pass the required CI actions.
-- Your PR must include a changelog (`pnpm changelog`).
+- Your PR must include a changelog (`pnpm changeset`).
 
 ### Translations
 
@@ -91,3 +86,7 @@ You can find these files at the following locations:
 
 - Ledger Live Desktop: `apps/ledger-live-desktop/static/i18n/en/app.json`
 - Ledger Live Mobile: `apps/ledger-live-mobile/src/locales/en/common.json`
+
+### Developer Portal
+
+Ledger provides the tools and resources you need to build on top of our platform. They are accessible in the [Ledger Developer Portal](https://developers.ledger.com/).

@@ -1,5 +1,5 @@
 // @flow
-import { CryptoCurrency } from "../types";
+import { CryptoCurrency } from "@ledgerhq/types-cryptoassets";
 
 export type MarketCoin = {
   id: string;
@@ -61,7 +61,7 @@ export type CurrencyData = {
   atl: number;
   atlDate: Date;
   sparklineIn7d: SparklineSvgData;
-  chartData: Record<string, number[]>;
+  chartData: Record<string, [number, number][]>;
 };
 
 export type SingleCoinState = {
@@ -89,6 +89,6 @@ export type MarketDataApi = {
   listPaginated: (params: MarketListRequestParams) => Promise<CurrencyData[]>;
   supportedCounterCurrencies: () => Promise<string[]>;
   currencyChartData: (
-    params: MarketCurrencyChartDataRequestParams
-  ) => Promise<{ [range: string]: number[] }>;
+    params: MarketCurrencyChartDataRequestParams,
+  ) => Promise<{ [range: string]: number[][] }>;
 };

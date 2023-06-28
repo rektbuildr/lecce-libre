@@ -1,12 +1,12 @@
 import React, { useCallback } from "react";
 import { Icons, Link as BaseLink } from "@ledgerhq/native-ui";
-import { LinkProps } from "@ledgerhq/native-ui/components/cta/Link";
+import { LinkProps } from "@ledgerhq/native-ui/components/cta/Link/index";
 import { track } from "../analytics";
 
 type Props = {
   disabled?: boolean;
   event?: string;
-  eventProperties?: Object;
+  eventProperties?: Record<string, unknown>;
   Icon?: React.ComponentType<{ color: string; size: number }>;
   /** deprecated, use `iconPosition` instead */
   iconFirst?: boolean;

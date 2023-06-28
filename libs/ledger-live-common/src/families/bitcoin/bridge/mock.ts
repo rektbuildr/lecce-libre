@@ -4,11 +4,13 @@ import {
   RecipientRequired,
   InvalidAddress,
   FeeTooHigh,
+  AmountRequired,
+  DustLimit,
 } from "@ledgerhq/errors";
 import type { Transaction } from "../types";
-import type { AccountBridge, CurrencyBridge } from "../../../types";
-import { getFeeItems } from "../../../api/FeesBitcoin";
+import { getFeeItems } from "../api";
 import {
+  makeAccountBridgeReceive,
   scanAccounts,
   signOperation,
   broadcast,
@@ -16,11 +18,14 @@ import {
   isInvalidRecipient,
 } from "../../../bridge/mockHelpers";
 import { getMainAccount } from "../../../account";
-import { makeAccountBridgeReceive } from "../../../bridge/mockHelpers";
+import type { Account, AccountBridge, CurrencyBridge } from "@ledgerhq/types-live";
+import cryptoFactory from "../wallet-btc/crypto/factory";
+import { Currency } from "../wallet-btc";
+import { computeDustAmount } from "../wallet-btc/utils";
+
 const receive = makeAccountBridgeReceive();
 
-const defaultGetFees = (a, t: any) =>
-  (t.feePerByte || new BigNumber(0)).times(250);
+const defaultGetFees = (a, t: any) => (t.feePerByte || new BigNumber(0)).times(250);
 
 const createTransaction = (): Transaction => ({
   family: "bitcoin",
@@ -32,21 +37,18 @@ const createTransaction = (): Transaction => ({
   rbf: false,
   utxoStrategy: {
     strategy: 0,
-    pickUnconfirmedRBF: false,
     excludeUTXOs: [],
   },
 });
 
-const updateTransaction = (t, patch) => ({ ...t, ...patch });
+const updateTransaction = (t, patch): any => ({ ...t, ...patch });
 
-const estimateMaxSpendable = ({ account, parentAccount, transaction }) => {
+const estimateMaxSpendable = ({ account, parentAccount, transaction }): Promise<BigNumber> => {
   const mainAccount = getMainAccount(account, parentAccount);
   const estimatedFees = transaction
     ? defaultGetFees(mainAccount, transaction)
     : new BigNumber(5000);
-  return Promise.resolve(
-    BigNumber.max(0, account.balance.minus(estimatedFees))
-  );
+  return Promise.resolve(BigNumber.max(0, account.balance.minus(estimatedFees)));
 };
 
 const getTransactionStatus = (account, t) => {
@@ -54,20 +56,29 @@ const getTransactionStatus = (account, t) => {
   const warnings: { [key: string]: any } = {};
   const useAllAmount = !!t.useAllAmount;
   const estimatedFees = defaultGetFees(account, t);
-  const totalSpent = useAllAmount
-    ? account.balance
-    : new BigNumber(t.amount).plus(estimatedFees);
-  const amount = useAllAmount
-    ? account.balance.minus(estimatedFees)
-    : new BigNumber(t.amount);
+  const totalSpent = useAllAmount ? account.balance : new BigNumber(t.amount).plus(estimatedFees);
+  const amount = useAllAmount ? account.balance.minus(estimatedFees) : new BigNumber(t.amount);
+
+  if (!errors.amount && !amount.gt(0)) {
+    errors.amount = useAllAmount ? new NotEnoughBalance() : new AmountRequired();
+  }
 
   if (amount.gt(0) && estimatedFees.times(10).gt(amount)) {
     warnings.feeTooHigh = new FeeTooHigh();
   }
 
   // Fill up transaction errors...
-  if (totalSpent.gt(account.balance)) {
+  if (!errors.amount && totalSpent.gt(account.balance)) {
     errors.amount = new NotEnoughBalance();
+  }
+
+  if (t.feePerByte) {
+    const txSize = Math.ceil(estimatedFees.toNumber() / t.feePerByte.toNumber());
+    const crypto = cryptoFactory(account.currency.id as Currency);
+
+    if (amount.gt(0) && amount.lt(computeDustAmount(crypto, txSize))) {
+      errors.dustLimit = new DustLimit();
+    }
   }
 
   // Fill up recipient errors...
@@ -88,12 +99,15 @@ const getTransactionStatus = (account, t) => {
   });
 };
 
-const prepareTransaction = async (a, t): Promise<Transaction> => {
+const prepareTransaction = async (
+  account: Account,
+  transaction: Transaction,
+): Promise<Transaction> => {
   // TODO it needs to set the fee if not in t as well
-  if (!t.networkInfo) {
-    const feeItems = await getFeeItems(a.currency);
+  if (!transaction.networkInfo) {
+    const feeItems = await getFeeItems(account.currency);
     return {
-      ...t,
+      ...transaction,
       networkInfo: {
         family: "bitcoin",
         feeItems,
@@ -101,7 +115,7 @@ const prepareTransaction = async (a, t): Promise<Transaction> => {
     };
   }
 
-  return t;
+  return transaction;
 };
 
 const accountBridge: AccountBridge<Transaction> = {

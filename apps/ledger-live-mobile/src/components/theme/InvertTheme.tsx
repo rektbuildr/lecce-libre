@@ -1,6 +1,5 @@
-import React, { useMemo } from "react";
-import { ThemeProvider, useTheme } from "styled-components/native";
-import { defaultTheme, palettes } from "@ledgerhq/native-ui/styles";
+import React from "react";
+import { useTheme } from "styled-components/native";
 import StyleProvider from "../../StyleProvider";
 
 export default function InvertTheme({
@@ -11,7 +10,5 @@ export default function InvertTheme({
   const { theme } = useTheme();
   const revertTheme = theme === "light" ? "dark" : "light";
 
-  return (
-    <StyleProvider selectedPalette={revertTheme}>{children}</StyleProvider>
-  );
+  return <StyleProvider selectedPalette={revertTheme}>{children}</StyleProvider>;
 }

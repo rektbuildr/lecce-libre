@@ -1,13 +1,39 @@
 import React from "react";
-import { boolean, text } from "@storybook/addon-knobs";
 
 import Tag from "../../../src/components/tags/Tag";
-import { storiesOf } from "../storiesOf";
+import { Icons } from "../../../src/assets";
 
-const TagSample = () => (
-  <Tag active={boolean("active", false)} uppercase={boolean("uppercase", true)}>
-    {text("children", "Label")}
+export default {
+  title: "Tag/Tag",
+  component: Tag,
+};
+
+export const TagSample = (args: typeof TagSampleArgs) => (
+  <Tag
+    type={args.type}
+    size={args.size}
+    Icon={args.icon ? Icons.CircledCheckSolidMedium : undefined}
+    uppercase={args.uppercase}
+  >
+    {args.children}
   </Tag>
 );
-
-storiesOf((story) => story("Tag", module).add("Tag", TagSample));
+TagSample.storyName = "Tag";
+const TagSampleArgs = {
+  type: "shade" as const,
+  size: "small" as const,
+  icon: false,
+  uppercase: false,
+  children: "Label",
+};
+TagSample.args = TagSampleArgs;
+TagSample.argTypes = {
+  type: {
+    options: ["color", "shade", "warning"],
+    control: { type: "select" },
+  },
+  size: {
+    options: ["small", "medium"],
+    control: { type: "select" },
+  },
+};

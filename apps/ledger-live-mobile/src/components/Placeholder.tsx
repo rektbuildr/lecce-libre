@@ -1,20 +1,16 @@
-// @flow
-
 import React, { memo } from "react";
 import { Flex } from "@ledgerhq/native-ui";
+import { StyleProp, ViewStyle } from "react-native";
 
 type Props = {
   width?: number;
   containerHeight?: number;
-  style?: any;
+  style?: StyleProp<ViewStyle>;
 };
 
 function Placeholder({ width, containerHeight, style }: Props) {
   return (
-    <Flex
-      justifyContent="center"
-      {...(containerHeight ? { height: containerHeight } : {})}
-    >
+    <Flex justifyContent="center" {...(containerHeight ? { height: containerHeight } : {})}>
       <Flex
         height={8}
         borderRadius={4}

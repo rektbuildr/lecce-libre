@@ -1,5 +1,5 @@
 import React, { memo, useCallback } from "react";
-import { getEnv, setEnvUnsafe } from "@ledgerhq/live-common/lib/env";
+import { getEnv, setEnvUnsafe } from "@ledgerhq/live-common/env";
 import SettingsRow from "../../../components/SettingsRow";
 import Track from "../../../analytics/Track";
 import { withReboot } from "../../../context/Reboot";
@@ -25,15 +25,12 @@ function MockModeRow({ reboot }: Props) {
       title="Mock mode"
       desc="Toggle Mock mode for testing, relaunch to refresh"
     >
-      <Track
-        event={isMock ? "EnableReadOnlyMode" : "DisableReadOnlyMode"}
-        onUpdate
-      />
+      <Track event={isMock ? "EnableReadOnlyMode" : "DisableReadOnlyMode"} onUpdate />
       <Switch value={!!isMock} onValueChange={setReadOnlyModeAndReset} />
     </SettingsRow>
   );
 }
 
-const m: React.ComponentType<{}> = withReboot(MockModeRow);
+const m = withReboot(MockModeRow);
 
-export default memo<Props>(m);
+export default memo(m);

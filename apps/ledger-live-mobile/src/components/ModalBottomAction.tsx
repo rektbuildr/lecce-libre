@@ -1,34 +1,21 @@
-/* @flow */
 import React, { Component } from "react";
 import { Flex, Text } from "@ledgerhq/native-ui";
 
 export default class ModalBottomAction extends Component<{
-  icon?: any;
-  title?: any;
+  icon?: React.ReactNode;
+  title?: React.ReactNode;
   uppercase?: boolean;
-  description?: any;
-  footer: any;
+  description?: React.ReactNode;
+  footer: React.ReactNode;
   shouldWrapDesc?: boolean;
 }> {
   render() {
-    const {
-      icon,
-      title,
-      uppercase,
-      description,
-      footer,
-      shouldWrapDesc = true,
-    } = this.props;
+    const { icon, title, uppercase, description, footer, shouldWrapDesc = true } = this.props;
     return (
       <Flex alignItems="center">
         {icon && <Flex mb={24}>{icon}</Flex>}
         {title ? (
-          <Text
-            mb={6}
-            uppercase={uppercase !== false}
-            fontWeight="semiBold"
-            variant="h3"
-          >
+          <Text mb={6} uppercase={uppercase !== false} fontWeight="semiBold" variant="h3">
             {title}
           </Text>
         ) : null}

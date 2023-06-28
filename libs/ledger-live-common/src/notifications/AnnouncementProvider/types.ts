@@ -1,6 +1,6 @@
 import type { DeviceModelId } from "@ledgerhq/devices";
-import type { DeviceModelInfo } from "../../types/manager";
 export type AnnouncementDeviceModelId = Array<DeviceModelId | "no_nano">;
+import { DeviceModelInfo } from "@ledgerhq/types-live";
 export type AnnouncementDeviceFilter = {
   modelIds?: AnnouncementDeviceModelId;
   versions?: string[];
@@ -55,7 +55,7 @@ export type AnnouncementsUserSettings = {
   language: string;
   currencies: string[];
   getDate: () => Date;
-  lastSeenDevice?: DeviceModelInfo;
+  lastSeenDevice?: DeviceModelInfo | null;
   platform?: string;
   appVersion?: string;
 };

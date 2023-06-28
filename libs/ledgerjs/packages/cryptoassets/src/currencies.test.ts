@@ -1,13 +1,6 @@
-import {
-  listFiatCurrencies,
-  getFiatCurrencyByTicker,
-  hasFiatCurrencyTicker,
-} from "./fiats";
-import {
-  listTokens,
-  findTokenById,
-  findTokenByAddressInCurrency,
-} from "./tokens";
+import type { CryptoCurrency } from "@ledgerhq/types-cryptoassets";
+import { listFiatCurrencies, getFiatCurrencyByTicker, hasFiatCurrencyTicker } from "./fiats";
+import { listTokens, findTokenByAddressInCurrency } from "./tokens";
 import {
   listCryptoCurrencies,
   hasCryptoCurrencyId,
@@ -18,8 +11,8 @@ import {
   findCryptoCurrencyByTicker,
   findCryptoCurrencyByKeyword,
   registerCryptoCurrency,
+  cryptocurrenciesById,
 } from "./currencies";
-import { CryptoCurrency } from "./types";
 
 test("can get currency by coin type", () => {
   expect(getCryptoCurrencyById("bitcoin")).toMatchObject({
@@ -37,23 +30,66 @@ test("can get currency by coin type", () => {
   expect(() => getCryptoCurrencyById("_")).toThrow();
 });
 
-test("can find currency", () => {
+// Unique list in case of dup in the currency list
+const currencies = Array.from(new Set(Object.values(cryptocurrenciesById)));
+const duplicatedTickers: Set<string> = new Set();
+currencies.reduce((acc, curr) => {
+  if (acc.includes(curr.ticker)) {
+    duplicatedTickers.add(curr.ticker);
+  }
+  acc.push(curr.ticker);
+  return acc;
+}, [] as string[]);
+
+currencies.forEach(c => {
+  test(`should find ${c.name} by id`, () => {
+    expect(findCryptoCurrencyById(c.id)).toEqual(c);
+  });
+
+  test(`should find ${c.name} by ticker`, () => {
+    try {
+      expect(findCryptoCurrencyByTicker(c.ticker)).toEqual(c);
+    } catch (e) {
+      // Should throw only if the ticker is not duplicated or if it's not a testnet (see conditions in `cryptocurrenciesByTicker`)
+      if (!duplicatedTickers.has(c.ticker) && !c.isTestnetFor) {
+        throw e;
+      }
+    }
+  });
+
+  test(`should find ${c.name} by scheme`, () => {
+    expect(findCryptoCurrencyByScheme(c.scheme)).toEqual(c);
+  });
+
+  c.keywords?.forEach(k => {
+    test(`should find ${c.name} with keyword ${k}`, () => {
+      expect(findCryptoCurrencyByKeyword(k)).toEqual(c);
+    });
+  });
+});
+
+test("[LEGACY TEST] can find currency", () => {
   const bitcoinMatch = {
     id: "bitcoin",
     name: "Bitcoin",
   };
-  expect(findCryptoCurrency((c) => c.name === "Bitcoin")).toMatchObject(
-    bitcoinMatch
-  );
+  const ethereumMatch = {
+    id: "ethereum",
+    name: "Ethereum",
+  };
+
+  expect(findCryptoCurrency(c => c.name === "Bitcoin")).toMatchObject(bitcoinMatch);
   expect(findCryptoCurrencyById("bitcoin")).toMatchObject(bitcoinMatch);
-  expect(findCryptoCurrencyByKeyword("btc")).toMatchObject(bitcoinMatch);
-  expect(findCryptoCurrencyByKeyword("btc")).toMatchObject(bitcoinMatch);
   expect(findCryptoCurrencyByKeyword("btc")).toMatchObject(bitcoinMatch);
   expect(findCryptoCurrencyByTicker("BTC")).toMatchObject(bitcoinMatch);
   expect(findCryptoCurrencyByScheme("bitcoin")).toMatchObject(bitcoinMatch);
+
+  expect(findCryptoCurrencyById("ethereum")).toMatchObject(ethereumMatch);
+  expect(findCryptoCurrencyByKeyword("eth")).toMatchObject(ethereumMatch);
+  expect(findCryptoCurrencyByTicker("ETH")).toMatchObject(ethereumMatch);
+  expect(findCryptoCurrencyByScheme("ethereum")).toMatchObject(ethereumMatch);
+
   expect(findCryptoCurrencyById("_")).toBe(undefined);
-  expect(findCryptoCurrencyByKeyword("_")).toBe(undefined);
-  expect(findCryptoCurrencyByKeyword("_")).toBe(undefined);
   expect(findCryptoCurrencyByKeyword("_")).toBe(undefined);
   expect(findCryptoCurrencyByTicker("_")).toBe(undefined);
   expect(findCryptoCurrencyByScheme("_")).toBe(undefined);
@@ -63,7 +99,7 @@ test("there are some dev cryptocurrencies", () => {
   const all = listCryptoCurrencies(true);
   const prod = listCryptoCurrencies();
   expect(all).not.toBe(prod);
-  expect(all.filter((a) => !a.isTestnetFor)).toMatchObject(prod);
+  expect(all.filter(a => !a.isTestnetFor)).toMatchObject(prod);
   expect(all.length).toBeGreaterThan(prod.length);
 });
 
@@ -71,7 +107,7 @@ test("there are some terminated cryptocurrencies", () => {
   const all = listCryptoCurrencies(false, true);
   const supported = listCryptoCurrencies();
   expect(all).not.toBe(supported);
-  expect(all.filter((a) => !a.terminated)).toMatchObject(supported);
+  expect(all.filter(a => !a.terminated)).toMatchObject(supported);
   expect(all.length).toBeGreaterThan(supported.length);
 });
 
@@ -83,9 +119,7 @@ test("all cryptocurrencies match (by reference) the one you get by id", () => {
 
 test("there is no testnet or terminated coin by default", () => {
   expect(listCryptoCurrencies(false, false)).toBe(listCryptoCurrencies());
-  expect(listCryptoCurrencies(true, true).length).toBeGreaterThan(
-    listCryptoCurrencies().length
-  );
+  expect(listCryptoCurrencies(true, true).length).toBeGreaterThan(listCryptoCurrencies().length);
 
   for (const c of listCryptoCurrencies()) {
     expect(!c.terminated).toBe(true);
@@ -146,51 +180,46 @@ test("tokens are correct", () => {
     expect(typeof unit.name).toBe("string");
     expect(unit.magnitude).toBeGreaterThan(-1);
     expect(typeof unit.magnitude).toBe("number");
-
-    if (token.compoundFor) {
-      const t = findTokenById(token.compoundFor);
-      expect(typeof t).toBe("object");
-    }
   }
 });
 
 test("findTokenByAddressInCurrency", () => {
   expect(
-    findTokenByAddressInCurrency(
-      "0x111111111117dC0aa78b770fA6A738034120C302",
-      "bsc"
-    )
+    findTokenByAddressInCurrency("0x111111111117dC0aa78b770fA6A738034120C302", "bsc"),
   ).toMatchObject({
     id: "bsc/bep20/1inch_token",
   });
   expect(
-    findTokenByAddressInCurrency(
-      "0x111111111117dC0aa78b770fA6A738034120C302",
-      "ethereum"
-    )
+    findTokenByAddressInCurrency("0x111111111117dC0aa78b770fA6A738034120C302", "ethereum"),
   ).toMatchObject({
     id: "ethereum/erc20/1inch_token",
   });
   expect(findTokenByAddressInCurrency("0x0", "bsc")).toBe(undefined);
-  expect(
-    findTokenByAddressInCurrency(
-      "0x111111111117dC0aa78b770fA6A738034120C302",
-      "tron"
-    )
-  ).toBe(undefined);
+  expect(findTokenByAddressInCurrency("0x111111111117dC0aa78b770fA6A738034120C302", "tron")).toBe(
+    undefined,
+  );
 });
 
 test("fiats list is sorted by ticker", () => {
   expect(
     listFiatCurrencies()
-      .map((fiat) => fiat.ticker)
-      .join(",")
+      .map(fiat => fiat.ticker)
+      .join(","),
   ).toEqual(
     listFiatCurrencies()
-      .map((fiat) => fiat.ticker)
+      .map(fiat => fiat.ticker)
       .sort((a, b) => (a > b ? 1 : -1))
-      .join(",")
+      .join(","),
   );
+});
+
+test("testnet currencies must also set disableCountervalue to true", () => {
+  expect(
+    listCryptoCurrencies(true)
+      .filter(c => c.isTestnetFor)
+      .filter(c => !c.disableCountervalue)
+      .map(c => c.id),
+  ).toEqual([]);
 });
 
 test("can get fiat by coin type", () => {
@@ -207,18 +236,27 @@ test("can get fiat by coin type", () => {
 });
 
 test("all USDT are countervalue enabled", () => {
-  const tokens = listTokens().filter(
-    (t) => t.ticker === "USDT" && !t.parentCurrency.isTestnetFor
-  );
-  expect(tokens.map((t) => t.id).sort()).toMatchSnapshot();
-  expect(tokens.every((t) => t.disableCountervalue === false)).toBe(true);
+  const tokens = listTokens().filter(t => t.ticker === "USDT" && !t.parentCurrency.isTestnetFor);
+  expect(tokens.map(t => t.id).sort()).toMatchSnapshot();
+  expect(tokens.every(t => t.disableCountervalue === false)).toBe(true);
+});
+
+test("Ethereum family convention: all ethereum testnet coins must derivate on the same cointype as the testnet it's for (e.g. ethereum ropsten is on 60)", () => {
+  expect(
+    listCryptoCurrencies()
+      .filter(
+        e =>
+          e.family === "ethereum" && // ethereum family
+          e.isTestnetFor && // is a testnet coin
+          e.coinType !== getCryptoCurrencyById(e.isTestnetFor).coinType, // it must use same coinType as the mainnet coin
+      )
+      .map(e => e.id), // to get a nice error if it fails
+  ).toEqual([]);
 });
 
 test("can register a new coin externally", () => {
   const coinId = "mycoin";
-  expect(() => getCryptoCurrencyById("mycoin")).toThrow(
-    `currency with id "${coinId}" not found`
-  );
+  expect(() => getCryptoCurrencyById("mycoin")).toThrow(`currency with id "${coinId}" not found`);
   const mycoin = {
     type: "CryptoCurrency",
     id: coinId,
@@ -226,7 +264,6 @@ test("can register a new coin externally", () => {
     name: "MyCoin",
     managerAppName: "MyCoin",
     ticker: "MYC",
-    countervalueTicker: "MYC",
     scheme: "mycoin",
     color: "#ff0000",
     family: "mycoin",
@@ -250,6 +287,6 @@ test("can register a new coin externally", () => {
       },
     ],
   };
-  registerCryptoCurrency(coinId, mycoin as CryptoCurrency);
+  registerCryptoCurrency(mycoin as CryptoCurrency);
   expect(getCryptoCurrencyById(coinId)).toEqual(mycoin);
 });

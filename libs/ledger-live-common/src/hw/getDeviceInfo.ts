@@ -1,24 +1,20 @@
 /* eslint-disable no-bitwise */
-import {
-  DeviceOnDashboardExpected,
-  TransportStatusError,
-} from "@ledgerhq/errors";
+import { DeviceOnDashboardExpected, TransportStatusError } from "@ledgerhq/errors";
 import { log } from "@ledgerhq/logs";
 import Transport from "@ledgerhq/hw-transport";
 import getVersion from "./getVersion";
+import isDevFirmware from "./isDevFirmware";
 import getAppAndVersion from "./getAppAndVersion";
-import type { DeviceInfo } from "../types/manager";
 import { PROVIDERS } from "../manager/provider";
 import { isDashboardName } from "./isDashboardName";
 import { DeviceNotOnboarded } from "../errors";
+import type { DeviceInfo } from "@ledgerhq/types-live";
 const ManagerAllowedFlag = 0x08;
 const PinValidatedFlag = 0x80;
-export default async function getDeviceInfo(
-  transport: Transport
-): Promise<DeviceInfo> {
+export default async function getDeviceInfo(transport: Transport): Promise<DeviceInfo> {
   const probablyOnDashboard = await getAppAndVersion(transport)
     .then(({ name }) => isDashboardName(name))
-    .catch((e) => {
+    .catch(e => {
       if (e instanceof TransportStatusError) {
         // @ts-expect-error typescript not checking agains the instanceof
         if (e.statusCode === 0x6e00) {
@@ -38,10 +34,10 @@ export default async function getDeviceInfo(
     throw new DeviceOnDashboardExpected();
   }
 
-  const res = await getVersion(transport).catch((e) => {
+  const res = await getVersion(transport).catch(e => {
     if (e instanceof TransportStatusError) {
       // @ts-expect-error typescript not checking agains the instanceof
-      if (e.statusCode === 0x6d06) {
+      if (e.statusCode === 0x6d06 || e.statusCode === 0x6d07) {
         throw new DeviceNotOnboarded();
       }
     }
@@ -58,6 +54,9 @@ export default async function getDeviceInfo(
     mcuVersion,
     mcuTargetId,
     flags,
+    bootloaderVersion,
+    hardwareVersion,
+    languageId,
   } = res;
   const isOSU = rawVersion.includes("-osu");
   const version = rawVersion.replace("-osu", "");
@@ -82,8 +81,11 @@ export default async function getDeviceInfo(
       version +
       " mcu@" +
       mcuVersion +
-      (isOSU ? " (osu)" : isBootloader ? " (bootloader)" : "")
+      (isOSU ? " (osu)" : isBootloader ? " (bootloader)" : ""),
   );
+
+  const hasDevFirmware = isDevFirmware(seVersion);
+
   return {
     version,
     mcuVersion,
@@ -92,6 +94,7 @@ export default async function getDeviceInfo(
     majMin,
     providerName: providerName || null,
     targetId,
+    hasDevFirmware,
     seTargetId,
     mcuTargetId,
     isOSU,
@@ -100,5 +103,8 @@ export default async function getDeviceInfo(
     managerAllowed,
     pinValidated,
     onboarded,
+    bootloaderVersion,
+    hardwareVersion,
+    languageId,
   };
 }

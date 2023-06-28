@@ -1,16 +1,6 @@
 import { BigNumber } from "bignumber.js";
-import type {
-  Exchange,
-  ExchangeRaw,
-  ExchangeRate,
-  ExchangeRateRaw,
-} from "./types";
-import {
-  fromAccountLikeRaw,
-  fromAccountRaw,
-  toAccountLikeRaw,
-  toAccountRaw,
-} from "../../account";
+import type { Exchange, ExchangeRaw, ExchangeRate, ExchangeRateRaw } from "./types";
+import { fromAccountLikeRaw, fromAccountRaw, toAccountLikeRaw, toAccountRaw } from "../../account";
 import { deserializeError, serializeError } from "@ledgerhq/errors";
 
 export const fromExchangeRaw = (exchangeRaw: ExchangeRaw): Exchange => {
@@ -31,21 +21,16 @@ export const fromExchangeRaw = (exchangeRaw: ExchangeRaw): Exchange => {
 };
 
 export const toExchangeRaw = (exchange: Exchange): ExchangeRaw => {
-  const { fromAccount, fromParentAccount, toAccount, toParentAccount } =
-    exchange;
+  const { fromAccount, fromParentAccount, toAccount, toParentAccount } = exchange;
   return {
     fromAccount: toAccountLikeRaw(fromAccount),
-    fromParentAccount: fromParentAccount
-      ? toAccountRaw(fromParentAccount)
-      : null,
+    fromParentAccount: fromParentAccount ? toAccountRaw(fromParentAccount) : null,
     toAccount: toAccountLikeRaw(toAccount),
     toParentAccount: toParentAccount ? toAccountRaw(toParentAccount) : null,
   };
 };
 
-export const toExchangeRateRaw = (
-  exchangeRate: ExchangeRate
-): ExchangeRateRaw => {
+export const toExchangeRateRaw = (exchangeRate: ExchangeRate): ExchangeRateRaw => {
   const {
     rate,
     magnitudeAwareRate,
@@ -53,10 +38,16 @@ export const toExchangeRateRaw = (
     toAmount,
     rateId,
     provider,
+    providerType,
     providerURL,
     tradeMethod,
     error,
   } = exchangeRate;
+
+  if (!rate) {
+    throw new Error("rate is required");
+  }
+
   return {
     rate: rate.toString(),
     magnitudeAwareRate: magnitudeAwareRate.toString(),
@@ -64,15 +55,14 @@ export const toExchangeRateRaw = (
     toAmount: toAmount.toString(),
     rateId,
     provider,
+    providerType,
     providerURL,
     tradeMethod,
-    error: JSON.stringify(serializeError(error)) || "{}",
+    error: error ? JSON.stringify(serializeError(error)) : undefined,
   };
 };
 
-export const fromExchangeRateRaw = (
-  exchangeRateRaw: ExchangeRateRaw
-): ExchangeRate => {
+export const fromExchangeRateRaw = (exchangeRateRaw: ExchangeRateRaw): ExchangeRate => {
   const {
     rate,
     magnitudeAwareRate,
@@ -80,6 +70,7 @@ export const fromExchangeRateRaw = (
     toAmount,
     rateId,
     provider,
+    providerType,
     providerURL,
     tradeMethod,
     error,
@@ -87,12 +78,11 @@ export const fromExchangeRateRaw = (
   return {
     rate: new BigNumber(rate),
     magnitudeAwareRate: new BigNumber(magnitudeAwareRate),
-    payoutNetworkFees: payoutNetworkFees
-      ? new BigNumber(payoutNetworkFees)
-      : undefined,
+    payoutNetworkFees: payoutNetworkFees ? new BigNumber(payoutNetworkFees) : undefined,
     toAmount: new BigNumber(toAmount),
     rateId,
     provider,
+    providerType,
     providerURL,
     tradeMethod,
     error: error ? deserializeError(JSON.parse(error)) : undefined,

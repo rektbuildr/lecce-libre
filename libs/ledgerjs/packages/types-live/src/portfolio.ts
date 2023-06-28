@@ -1,16 +1,12 @@
-import type { BigNumber } from "bignumber.js";
-import type { AccountLike, AccountLikeArray } from "./account";
-import type {
-  CryptoCurrency,
-  TokenCurrency,
-} from "@ledgerhq/types-cryptoassets";
+import type { AccountLike, AccountLikeArray, GranularityId } from "./account";
+import type { CryptoCurrency, TokenCurrency } from "@ledgerhq/types-cryptoassets";
 
 /**
  *
  */
 export type BalanceHistoryData = {
   date: Date;
-  value: BigNumber;
+  value: number;
 };
 /**
  *
@@ -24,19 +20,17 @@ export type BalanceHistoryRaw = Array<[string, string]>;
 /**
  *
  */
-export type BalanceHistoryWithCountervalue = Array<{
-  date: Date;
-  value: BigNumber;
-  countervalue: BigNumber;
-}>;
+export type BalanceHistoryWithCountervalue = (BalanceHistoryData & {
+  countervalue: number | null | undefined;
+})[];
 
 /**
  *
  */
 export type ValueChange = {
-  percentage: BigNumber | null | undefined;
+  percentage: number | null | undefined;
   // value from 0 to 1. not defined if not meaningful
-  value: BigNumber; // delta of change
+  value: number; // delta of change
 };
 
 /**
@@ -45,8 +39,8 @@ export type ValueChange = {
 export type AccountPortfolio = {
   history: BalanceHistoryWithCountervalue;
   countervalueAvailable: boolean;
-  countervalueReceiveSum: BigNumber;
-  countervalueSendSum: BigNumber;
+  countervalueReceiveSum: number;
+  countervalueSendSum: number;
   cryptoChange: ValueChange;
   // how much the account changes. value is in the account currency
   countervalueChange: ValueChange; // calculates the ROI. value in the countervalue unit.
@@ -61,6 +55,7 @@ export type CurrencyPortfolio = {
   histories: BalanceHistoryWithCountervalue[];
   accounts: AccountLikeArray;
   cryptoChange: ValueChange;
+  range: PortfolioRange;
   // how much the account changes. value is in the account currency
   countervalueChange: ValueChange; // calculates the ROI. value in the countervalue unit.
 };
@@ -76,8 +71,8 @@ export type Portfolio = {
   accounts: AccountLike[];
   range: PortfolioRange;
   histories: BalanceHistoryWithCountervalue[];
-  countervalueReceiveSum: BigNumber;
-  countervalueSendSum: BigNumber;
+  countervalueReceiveSum: number;
+  countervalueSendSum: number;
   countervalueChange: ValueChange; // calculates the ROI. value in the countervalue unit.
 };
 
@@ -85,17 +80,24 @@ export type Portfolio = {
  *
  */
 export type PortfolioRangeConfig = {
-  count: number;
-  granularityId: "HOUR" | "DAY" | "WEEK";
-  // only supported here atm
+  count?: number;
+  granularityId: GranularityId;
   startOf: (arg0: Date) => Date;
-  increment: number;
+  increment: number; // FIXME it should be a Date=>Date
 };
 
 /**
  *
  */
-export type PortfolioRange = "year" | "month" | "week" | "day";
+export type PortfolioRange = "all" | "year" | "month" | "week" | "day";
+
+export type DistributionItem = {
+  currency: CryptoCurrency | TokenCurrency;
+  distribution: number; // % of the total (normalized in 0-1)
+  accounts: AccountLike[];
+  amount: number;
+  countervalue?: number; // countervalue of the amount that was calculated based of the rate provided
+};
 
 /**
  *
@@ -104,15 +106,9 @@ export type AssetsDistribution = {
   // false if no distribution can be done (sum is zero)
   isAvailable: boolean;
   // a sorted list of assets with data
-  list: Array<{
-    currency: CryptoCurrency | TokenCurrency;
-    distribution: number;
-    // % of the total (normalized in 0-1)
-    amount: BigNumber;
-    countervalue: BigNumber; // countervalue of the amount that was calculated based of the rate provided
-  }>;
+  list: DistributionItem[];
   // number of accounts to show first (before the see all)
   showFirst: number;
   // sum of all countervalues
-  sum: BigNumber;
+  sum: number;
 };

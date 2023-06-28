@@ -1,63 +1,61 @@
 import type { DeviceAction } from "../../bot/types";
 import type { Transaction } from "./types";
-import { deviceActionFlow } from "../../bot/specs";
+import { deviceActionFlow, SpeculosButton } from "../../bot/specs";
 
-const acceptTransaction: DeviceAction<Transaction, any> = deviceActionFlow({
+export const acceptTransaction: DeviceAction<Transaction, any> = deviceActionFlow({
   steps: [
     {
       title: "Review",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
     },
     {
       title: "Chain ID",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       // TODO: add a expectedValue fn
     },
     {
       title: "Account",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       // TODO: add a expectedValue fn
     },
     {
       title: "Sequence",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       // TODO: add a expectedValue fn
     },
     {
       title: "Type",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       // TODO: add a expectedValue fn
     },
     {
       title: "Amount",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       // TODO: add a expectedValue fn
     },
     {
       title: "From",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       // TODO: add a expectedValue fn
     },
     {
       title: "Fee",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       // TODO: add a expectedValue fn
     },
     {
       title: "Gas",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       // TODO: add a expectedValue fn
     },
     {
       title: "To",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       expectedValue: ({ transaction }) => transaction.recipient,
     },
     {
       title: "Approve",
-      button: "LRlr",
+      button: SpeculosButton.BOTH,
     },
   ],
 });
-
-export default { acceptTransaction };

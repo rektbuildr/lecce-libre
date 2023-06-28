@@ -2,19 +2,19 @@ import fs from "fs";
 import invariant from "invariant";
 import { from, of, forkJoin } from "rxjs";
 import { map, reduce, first, catchError } from "rxjs/operators";
-import { setEnv } from "@ledgerhq/live-common/lib/env";
-import { getCryptoCurrencyById } from "@ledgerhq/live-common/lib/currencies";
+import { setEnv } from "@ledgerhq/live-common/env";
+import { getCryptoCurrencyById } from "@ledgerhq/live-common/currencies/index";
 import {
   AccountDescriptor,
   scanDescriptors,
-} from "@ledgerhq/live-common/lib/families/bitcoin/descriptor";
+} from "@ledgerhq/live-common/families/bitcoin/descriptor";
 import {
   parseSatStackConfig,
   stringifySatStackConfig,
   editSatStackConfig,
   checkRPCNodeConfig,
   validateRPCNodeConfig,
-} from "@ledgerhq/live-common/lib/families/bitcoin/satstack";
+} from "@ledgerhq/live-common/families/bitcoin/satstack";
 import { deviceOpt } from "../scan";
 import { jsonFromFile } from "../stream";
 const bitcoin = getCryptoCurrencyById("bitcoin");
@@ -24,9 +24,7 @@ function requiredNodeConfig(nodeConfig) {
   const errors = validateRPCNodeConfig(nodeConfig);
 
   if (errors.length) {
-    throw new Error(
-      errors.map((e) => e.field + ": " + e.error.message).join(", ")
-    );
+    throw new Error(errors.map(e => e.field + ": " + e.error.message).join(", "));
   }
 
   return nodeConfig;
@@ -98,12 +96,12 @@ export default {
       : jsonFromFile(lss, true).pipe(
           map(parseSatStackConfig),
           first(),
-          catchError(() => of(null))
+          catchError(() => of(null)),
         );
     const maybeDescriptorsO = noDevice
       ? of([])
       : scanDescriptors(device || "", bitcoin).pipe(
-          reduce((acc, item) => acc.concat(item), [] as AccountDescriptor[])
+          reduce((acc, item) => acc.concat(item), [] as AccountDescriptor[]),
         );
     const maybeNodeConfigOverride = rpcHOST
       ? requiredNodeConfig({
@@ -120,20 +118,17 @@ export default {
         ? from(checkRPCNodeConfig(maybeNodeConfigOverride))
         : of(null),
     }).pipe(
-      map((a) => {
+      map(a => {
         const { initialConfig, descriptors } = a;
         const patch = {
           node: requiredNodeConfig(
-            maybeNodeConfigOverride ||
-              (initialConfig ? initialConfig.node : null)
+            maybeNodeConfigOverride || (initialConfig ? initialConfig.node : null),
           ),
-          accounts: descriptors.map((descriptor) => ({
+          accounts: descriptors.map(descriptor => ({
             descriptor,
           })),
         };
-        const config = initialConfig
-          ? editSatStackConfig(initialConfig, patch)
-          : patch;
+        const config = initialConfig ? editSatStackConfig(initialConfig, patch) : patch;
         const str = stringifySatStackConfig(config);
 
         if (lss && !noSave) {
@@ -142,7 +137,7 @@ export default {
         }
 
         return str;
-      })
+      }),
     );
   },
 };

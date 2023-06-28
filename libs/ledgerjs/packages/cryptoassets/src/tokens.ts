@@ -1,12 +1,14 @@
-import type { TokenCurrency, CryptoCurrency } from "./types";
+import type { CryptoCurrency, TokenCurrency } from "@ledgerhq/types-cryptoassets";
 import { getCryptoCurrencyById } from "./currencies";
-import erc20tokens from "../data/erc20";
-import trc10tokens from "../data/trc10";
-import trc20tokens from "../data/trc20";
-import bep20tokens from "../data/bep20";
-import polygonTokens from "../data/polygon-erc20";
-import asatokens from "../data/asa";
-import esdttokens from "../data/esdt";
+import asatokens, { AlgorandASAToken } from "./data/asa";
+import bep20tokens, { BEP20Token } from "./data/bep20";
+import cardanoNativeTokens, { CardanoNativeToken } from "./data/cardanoNative";
+import erc20tokens, { ERC20Token } from "./data/erc20";
+import esdttokens, { ElrondESDTToken } from "./data/esdt";
+import polygonTokens, { PolygonERC20Token } from "./data/polygon-erc20";
+import stellarTokens, { StellarToken } from "./data/stellar";
+import trc10tokens, { TRC10Token } from "./data/trc10";
+import trc20tokens, { TRC20Token } from "./data/trc20";
 //import spltokens from "../data/spl";
 const emptyArray = [];
 const tokensArray: TokenCurrency[] = [];
@@ -17,6 +19,7 @@ const tokensById: Record<string, TokenCurrency> = {};
 const tokensByTicker: Record<string, TokenCurrency> = {};
 const tokensByAddress: Record<string, TokenCurrency> = {};
 const tokensByCurrencyAddress: Record<string, TokenCurrency> = {};
+const tokenListHashes = new Set();
 addTokens(erc20tokens.map(convertERC20));
 addTokens(polygonTokens.map(convertERC20));
 addTokens(trc10tokens.map(convertTRONTokens("trc10")));
@@ -24,6 +27,8 @@ addTokens(trc20tokens.map(convertTRONTokens("trc20")));
 addTokens(bep20tokens.map(convertBEP20));
 addTokens(asatokens.map(convertAlgorandASATokens));
 addTokens(esdttokens.map(convertElrondESDTTokens));
+addTokens(cardanoNativeTokens.map(convertCardanoNativeTokens));
+addTokens(stellarTokens.map(convertStellarTokens));
 //addTokens(spltokens.map(convertSplTokens));
 type TokensListOptions = {
   withDelisted: boolean;
@@ -31,13 +36,40 @@ type TokensListOptions = {
 const defaultTokenListOptions: TokensListOptions = {
   withDelisted: false,
 };
+export function createTokenHash(token: TokenCurrency): string {
+  return token
+    ? `${token.id}${token.contractAddress}${token.delisted}${token.disableCountervalue}${token.ticker}${token.ledgerSignature}`
+    : "";
+}
+
+/**
+ * Only for jest purpose, clean object to be empty
+ * @param obj
+ */
+const __clearObject = (obj: Record<string, TokenCurrency | TokenCurrency[]>): void => {
+  for (const key in obj) {
+    delete obj[key];
+  }
+};
+/**
+ * Only for jest purpose, clear all the init list
+ */
+export function __clearAllLists(): void {
+  tokensArray.length = 0;
+  tokensArrayWithDelisted.length = 0;
+  __clearObject(tokensByCryptoCurrency);
+  __clearObject(tokensByCryptoCurrencyWithDelisted);
+  __clearObject(tokensById);
+  __clearObject(tokensByTicker);
+  __clearObject(tokensByAddress);
+  __clearObject(tokensByCurrencyAddress);
+  tokenListHashes.clear();
+}
 
 /**
  *
  */
-export function listTokens(
-  options?: Partial<TokensListOptions>
-): TokenCurrency[] {
+export function listTokens(options?: Partial<TokensListOptions>): TokenCurrency[] {
   const { withDelisted } = { ...defaultTokenListOptions, ...options };
   return withDelisted ? tokensArrayWithDelisted : tokensArray;
 }
@@ -47,7 +79,7 @@ export function listTokens(
  */
 export function listTokensForCryptoCurrency(
   currency: CryptoCurrency,
-  options?: Partial<TokensListOptions>
+  options?: Partial<TokensListOptions>,
 ): TokenCurrency[] {
   const { withDelisted } = { ...defaultTokenListOptions, ...options };
 
@@ -61,9 +93,7 @@ export function listTokensForCryptoCurrency(
 /**
  *
  */
-export function listTokenTypesForCryptoCurrency(
-  currency: CryptoCurrency
-): string[] {
+export function listTokenTypesForCryptoCurrency(currency: CryptoCurrency): string[] {
   return listTokensForCryptoCurrency(currency).reduce<string[]>((acc, cur) => {
     const tokenType = cur.tokenType;
 
@@ -78,9 +108,7 @@ export function listTokenTypesForCryptoCurrency(
 /**
  *
  */
-export function findTokenByTicker(
-  ticker: string
-): TokenCurrency | null | undefined {
+export function findTokenByTicker(ticker: string): TokenCurrency | null | undefined {
   return tokensByTicker[ticker];
 }
 
@@ -92,21 +120,17 @@ export function findTokenById(id: string): TokenCurrency | null | undefined {
 }
 
 let deprecatedDisplayed = false;
-export function findTokenByAddress(
-  address: string
-): TokenCurrency | null | undefined {
+export function findTokenByAddress(address: string): TokenCurrency | null | undefined {
   if (!deprecatedDisplayed) {
     deprecatedDisplayed = true;
-    console.warn(
-      "findTokenByAddress is deprecated. use findTokenByAddressInCurrency"
-    );
+    console.warn("findTokenByAddress is deprecated. use findTokenByAddressInCurrency");
   }
   return tokensByAddress[address.toLowerCase()];
 }
 
 export function findTokenByAddressInCurrency(
   address: string,
-  currencyId: string
+  currencyId: string,
 ): TokenCurrency | null | undefined {
   return tokensByCurrencyAddress[currencyId + ":" + address.toLowerCase()];
 }
@@ -129,39 +153,65 @@ export function getTokenById(id: string): TokenCurrency {
   return currency;
 }
 
-/**
- * if a given token account is a token that can be used in compound, give the associated compound token (cToken)
- * @param {*} token
- */
-export function findCompoundToken(
-  token: TokenCurrency
-): TokenCurrency | null | undefined {
-  // TODO can be optimized by generating a direct map
-  return listTokensForCryptoCurrency(token.parentCurrency, {
-    withDelisted: true,
-  }).find((t) => t.compoundFor === token.id);
-}
-
 function comparePriority(a: TokenCurrency, b: TokenCurrency) {
   return Number(!!b.disableCountervalue) - Number(!!a.disableCountervalue);
 }
 
-function addTokens(list: TokenCurrency[]) {
-  list.forEach((token) => {
-    if (!token.delisted) tokensArray.push(token);
-    tokensArrayWithDelisted.push(token);
-    tokensById[token.id] = token;
+function removeTokenFromArray(array: TokenCurrency[], tokenId: string) {
+  if (array && array.length > 0) {
+    const index = array.findIndex(currentToken => currentToken && currentToken.id === tokenId);
+    if (index === -1) return array;
+    return array.splice(index, 1);
+  }
+}
 
-    if (
-      !tokensByTicker[token.ticker] ||
-      comparePriority(token, tokensByTicker[token.ticker]) > 0
-    ) {
-      tokensByTicker[token.ticker] = token;
+function removeTokenFromRecord(record: Record<string, TokenCurrency>, key: string) {
+  tokenListHashes.delete(record[key]);
+  delete record[key];
+}
+
+/**
+ * Delete previous token entry to all array
+ * @param token
+ */
+function removeTokenFromAllLists(token: TokenCurrency) {
+  const { id, contractAddress, parentCurrency, ticker } = token;
+  const lowCaseContract = contractAddress.toLowerCase();
+
+  removeTokenFromRecord(tokensById, id);
+  removeTokenFromRecord(tokensByCurrencyAddress, parentCurrency.id + ":" + lowCaseContract);
+  removeTokenFromRecord(tokensByAddress, lowCaseContract);
+  removeTokenFromRecord(tokensByTicker, ticker);
+  removeTokenFromArray(tokensArray, id);
+  removeTokenFromArray(tokensArrayWithDelisted, id);
+  removeTokenFromArray(tokensByCryptoCurrency[parentCurrency.id], id);
+  removeTokenFromArray(tokensByCryptoCurrencyWithDelisted[parentCurrency.id], id);
+}
+
+export function addTokens(list: TokenCurrency[]): void {
+  list.forEach(token => {
+    if (!token) return;
+    const tokenHash = createTokenHash(token);
+    if (tokenListHashes.has(tokenHash)) return;
+
+    /**
+     * We clean all the reference of an existing token, if an hash doesn't  match.
+     * Like this we can update any change from a already added token coming from Dynamic CAL
+     * and maintain it up to date without having to release a new version of LLD or LLM
+     */
+    const { id, contractAddress, parentCurrency, delisted, ticker } = token;
+    if (tokensById[id]) removeTokenFromAllLists(token);
+    const lowCaseContract = contractAddress.toLowerCase();
+
+    if (!delisted) tokensArray.push(token);
+    tokensArrayWithDelisted.push(token);
+    tokensById[id] = token;
+
+    if (!tokensByTicker[ticker] || comparePriority(token, tokensByTicker[ticker]) > 0) {
+      tokensByTicker[ticker] = token;
     }
 
-    const lowCaseContract = token.contractAddress.toLowerCase();
     tokensByAddress[lowCaseContract] = token;
-    const { parentCurrency } = token;
     tokensByCurrencyAddress[parentCurrency.id + ":" + lowCaseContract] = token;
 
     if (!(parentCurrency.id in tokensByCryptoCurrency)) {
@@ -172,12 +222,14 @@ function addTokens(list: TokenCurrency[]) {
       tokensByCryptoCurrencyWithDelisted[parentCurrency.id] = [];
     }
 
-    if (!token.delisted) tokensByCryptoCurrency[parentCurrency.id].push(token);
+    if (!delisted) tokensByCryptoCurrency[parentCurrency.id].push(token);
     tokensByCryptoCurrencyWithDelisted[parentCurrency.id].push(token);
+
+    tokenListHashes.add(tokenHash);
   });
 }
 
-function convertERC20([
+export function convertERC20([
   parentCurrencyId,
   token,
   ticker,
@@ -187,9 +239,7 @@ function convertERC20([
   contractAddress,
   disableCountervalue,
   delisted,
-  countervalueTicker,
-  compoundFor,
-]): TokenCurrency {
+]: ERC20Token | PolygonERC20Token): TokenCurrency {
   const parentCurrency = getCryptoCurrencyById(parentCurrencyId);
   return {
     type: "TokenCurrency",
@@ -202,10 +252,6 @@ function convertERC20([
     ticker,
     delisted,
     disableCountervalue: !!parentCurrency.isTestnetFor || !!disableCountervalue,
-    countervalueTicker,
-    compoundFor: compoundFor
-      ? parentCurrencyId + "/erc20/" + compoundFor
-      : undefined,
     units: [
       {
         name,
@@ -226,8 +272,7 @@ function convertBEP20([
   contractAddress,
   disableCountervalue,
   delisted,
-  countervalueTicker,
-]): TokenCurrency {
+]: BEP20Token): TokenCurrency {
   const parentCurrency = getCryptoCurrencyById(parentCurrencyId);
   return {
     type: "TokenCurrency",
@@ -240,7 +285,6 @@ function convertBEP20([
     ticker,
     delisted,
     disableCountervalue: !!parentCurrency.isTestnetFor || !!disableCountervalue,
-    countervalueTicker,
     units: [
       {
         name,
@@ -258,7 +302,7 @@ function convertAlgorandASATokens([
   contractAddress,
   precision,
   enableCountervalues,
-]): TokenCurrency {
+]: AlgorandASAToken): TokenCurrency {
   return {
     type: "TokenCurrency",
     id: `algorand/asa/${id}`,
@@ -288,7 +332,7 @@ function convertTRONTokens(type: "trc10" | "trc20") {
     delisted,
     ledgerSignature,
     enableCountervalues,
-  ]): TokenCurrency => ({
+  ]: TRC10Token | TRC20Token): TokenCurrency => ({
     type: "TokenCurrency",
     id: `tron/${type}/${id}`,
     contractAddress,
@@ -315,9 +359,9 @@ function convertElrondESDTTokens([
   decimals,
   signature,
   name,
-]): TokenCurrency {
-  const ELROND_ESDT_CONTRACT =
-    "erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzllls8a5w6u";
+  disableCountervalue,
+]: ElrondESDTToken): TokenCurrency {
+  const ELROND_ESDT_CONTRACT = "erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzllls8a5w6u";
 
   return {
     type: "TokenCurrency",
@@ -326,12 +370,13 @@ function convertElrondESDTTokens([
     ledgerSignature: signature,
     parentCurrency: getCryptoCurrencyById("elrond"),
     tokenType: "esdt",
+    disableCountervalue,
     name,
     ticker,
     units: [
       {
         name,
-        code: ticker,
+        code: name,
         magnitude: decimals,
       },
     ],
@@ -367,6 +412,66 @@ function convertSplTokens([
         name,
         code: symbol,
         magnitude: decimals,
+      },
+    ],
+  };
+}
+
+function convertCardanoNativeTokens([
+  parentCurrencyId,
+  policyId,
+  assetName,
+  name,
+  ticker,
+  decimals,
+  delisted,
+  disableCountervalue,
+]: CardanoNativeToken): TokenCurrency {
+  const assetId = policyId + assetName;
+  return {
+    type: "TokenCurrency",
+    id: `${parentCurrencyId}/native/${assetId}`,
+    // Tracking and accounting of native tokens is natively supported by cardano ledger.
+    // As there's no contract for native tokens, using unique assetId in place of contractAddress
+    contractAddress: assetId,
+    parentCurrency: getCryptoCurrencyById(parentCurrencyId),
+    tokenType: "native",
+    name,
+    ticker,
+    delisted,
+    disableCountervalue,
+    units: [
+      {
+        name,
+        code: ticker,
+        magnitude: decimals,
+      },
+    ],
+  };
+}
+
+function convertStellarTokens([
+  assetCode,
+  assetIssuer,
+  assetType,
+  name,
+  precision,
+  enableCountervalues,
+]: StellarToken): TokenCurrency {
+  return {
+    type: "TokenCurrency",
+    id: `stellar/asset/${assetCode}:${assetIssuer}`,
+    contractAddress: assetIssuer,
+    parentCurrency: getCryptoCurrencyById("stellar"),
+    tokenType: assetType,
+    name,
+    ticker: assetCode,
+    disableCountervalue: !enableCountervalues,
+    units: [
+      {
+        name,
+        code: assetCode,
+        magnitude: precision,
       },
     ],
   };

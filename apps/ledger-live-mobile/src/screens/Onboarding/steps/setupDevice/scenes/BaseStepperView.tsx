@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { StyleSheet } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { RenderTransitionProps } from "@ledgerhq/native-ui/components/Navigation/FlowStepper";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { RenderTransitionProps } from "@ledgerhq/native-ui/components/Navigation/FlowStepper/index";
 import {
   Flex,
   FlowStepper,
@@ -13,33 +13,27 @@ import {
 
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
-import { DeviceNames } from "../../../types";
+import { DeviceModelId } from "@ledgerhq/devices";
 import Button from "../../../../../components/PreventDoubleClickButton";
 
 const transitionDuration = 500;
 
-const Scene = ({ children }: { children: React.ReactNode }) => (
-  <Flex flex={1}>{children}</Flex>
-);
+const Scene = ({ children }: { children: React.ReactNode }) => <Flex flex={1}>{children}</Flex>;
 
 export type Metadata = {
   id: string;
-  illustration: JSX.Element;
+  illustration: JSX.Element | null;
   drawer: null | { route: string; screen: string };
 };
 
 const InfoButton = ({ target }: { target: Metadata["drawer"] }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<{ [key: string]: object | undefined }>>();
 
   if (target)
     return (
       <Button
-        Icon={Icons.InfoRegular}
-        onPress={() =>
-          // TODO: FIX @react-navigation/native using Typescript
-          // @ts-ignore next-line
-          navigation.navigate(target.route, { screen: target.screen })
-        }
+        Icon={Icons.InfoMedium}
+        onPress={() => navigation.navigate(target.route, { screen: target.screen })}
       />
     );
 
@@ -70,11 +64,12 @@ const ImageHeader = ({
       width="100%"
       height={48}
     >
-      <Button Icon={Icons.ArrowLeftMedium} onPress={onBack} />
+      <Button Icon={() => <Icons.ArrowLeftMedium size={24} />} onPress={onBack} />
       {metadata.length <= 1 ? null : (
         <SlideIndicator
           slidesLength={metadata.length}
           activeIndex={activeIndex}
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
           onChange={() => {}}
         />
       )}
@@ -102,6 +97,18 @@ const renderTransitionSlide = ({
   </Transitions.Slide>
 );
 
+type StepProp =
+  | { success: boolean }
+  | { onNext: () => void }
+  | { deviceModelId: DeviceModelId }
+  | { onNext: () => void; deviceModelId: DeviceModelId };
+
+export type Step = {
+  (props: StepProp): JSX.Element;
+  id: string;
+  Next: (props: StepProp) => JSX.Element;
+};
+
 export function BaseStepperView({
   onNext,
   steps,
@@ -110,10 +117,10 @@ export function BaseStepperView({
   params,
 }: {
   onNext: () => void;
-  steps: any[];
+  steps: Step[];
   metadata: Metadata[];
-  deviceModelId: DeviceNames;
-  params: any;
+  deviceModelId?: DeviceModelId;
+  params?: object;
 }) {
   const [index, setIndex] = React.useState(0);
   const navigation = useNavigation();
@@ -144,26 +151,14 @@ export function BaseStepperView({
         {steps.map((Children, i) => (
           <Scene key={Children.id + i}>
             <ScrollListContainer contentContainerStyle={{ padding: 16 }}>
-              <Flex
-                mb={30}
-                mx={8}
-                justifyContent="center"
-                alignItems="flex-start"
-              >
+              <Flex mb={30} mx={8} justifyContent="center" alignItems="flex-start">
                 {metadata[i]?.illustration}
               </Flex>
-              <Children
-                onNext={nextPage}
-                deviceModelId={deviceModelId}
-                {...params}
-              />
+              <Children onNext={nextPage} deviceModelId={deviceModelId} {...params} />
             </ScrollListContainer>
             {Children.Next ? (
               <Flex p={6}>
-                <Children.Next
-                  onNext={nextPage}
-                  deviceModelId={deviceModelId}
-                />
+                <Children.Next onNext={nextPage} deviceModelId={deviceModelId} />
               </Flex>
             ) : null}
           </Scene>

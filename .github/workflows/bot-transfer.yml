@@ -1,4 +1,5 @@
 name: "Bot Transfer"
+run-name: Transfer from bot ${{inputs.origin}} to ${{inputs.recipient}} (${{inputs.currencies}} 100%/${{inputs.split}})
 on:
   workflow_dispatch:
     inputs:
@@ -8,67 +9,58 @@ on:
       recipient:
         description: "index of the seed to receive the funds (e.g. 4)"
         required: true
+      split:
+        description: "split the amount of the origin by this number. For instance 2 will send half of the amount, 3 will send 1/3rd of the amount, etc."
+        required: false
+      concurrency:
+        description: "number of concurrent transfers to run"
+        required: false
+      currencies:
+        description: "a comma separated list of currencies to transfer. If not specified, all currencies will be transferred."
+        required: false
 
 jobs:
-  start-runner:
-    name: "start ec2 instance (Linux)"
-    if: ${{ always() }}
-    uses: ledgerhq/actions/.github/workflows/start-linux-runner.yml@main
-    secrets:
-      CI_BOT_TOKEN: ${{ secrets.CI_BOT_TOKEN }}
-
-  stop-runner:
-    name: "stop ec2 instance (Linux)"
-    needs: [start-runner, run-bot]
-    uses: ledgerhq/actions/.github/workflows/stop-linux-runner.yml@main
-    if: ${{ always() }}
-    with:
-      label: ${{ needs.start-runner.outputs.label }}
-      ec2-instance-id: ${{ needs.start-runner.outputs.ec2-instance-id }}
-    secrets:
-      CI_BOT_TOKEN: ${{ secrets.CI_BOT_TOKEN }}
-
   run-bot:
-    runs-on: ${{ needs.start-runner.outputs.label }}
-    needs: [start-runner]
+    runs-on: [ledger-live-medium-linux]
     steps:
-      - name: prepare runner
-        run: |
-          sudo growpart /dev/nvme0n1 1
-          sudo resize2fs /dev/nvme0n1p1
+      - name: generate token
+        id: generate-token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.GH_BOT_APP_ID }}
+          private_key: ${{ secrets.GH_BOT_PRIVATE_KEY }}
       - uses: actions/checkout@v3
       - name: Retrieving coin apps
         uses: actions/checkout@v3
         with:
+          ref: generated/ledger-live-bot
           repository: LedgerHQ/coin-apps
-          token: ${{ secrets.GH_PAT }}
+          token: ${{ steps.generate-token.outputs.token }}
           path: coin-apps
-      - uses: pnpm/action-setup@v2.0.1
-        with:
-          version: latest
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16.x
-          cache: pnpm
-          cache-dependency-path: "**/pnpm-lock.yaml"
+      - name: Setup the toolchain
+        uses: ./tools/actions/composites/setup-toolchain
       - name: pull docker image
         run: docker pull ghcr.io/ledgerhq/speculos
       - name: install and build
         run: |
-          pnpm i --filter="live-cli..." --filter="ledger-live" --frozen-lockfile
+          pnpm i --filter="live-cli..." --filter="ledger-live"
           pnpm build:cli
-          cd libs/ledger-live-common/cli
+          cd apps/cli
           npm link
       - name: bot transfer
         env:
-          SEED: ${{ secrets[format('SEED{0}', github.event.inputs.origin)] }}
-          SEED_RECIPIENT: ${{ secrets[format('SEED{0}', github.event.inputs.recipient)] }}
+          NODE_OPTIONS: "--max-old-space-size=7168"
+          CONCURRENCY: ${{ github.event.inputs.concurrency }}
+          ONLY_CURRENCIES: ${{ github.event.inputs.currencies }}
+          SEED: ${{ secrets[format('SEED{0}', inputs.origin)] }}
+          SEED_RECIPIENT: ${{ secrets[format('SEED{0}', inputs.recipient)] }}
           VERBOSE_FILE: bot-transfer.txt
+          FUNDS_SPLIT: ${{ github.event.inputs.split }}
         run: COINAPPS=$PWD/coin-apps ledger-live botTransfer
-        timeout-minutes: 120
+        timeout-minutes: 200
       - name: upload logs
         if: failure() || success()
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
           name: bot-transfer.txt
           path: bot-transfer.txt

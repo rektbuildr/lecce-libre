@@ -1,37 +1,26 @@
-/* eslint-disable import/no-unresolved */
-// @flow
-
 import React, { useMemo } from "react";
-import { useSelector } from "react-redux";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useTheme } from "styled-components/native";
-import { NavigatorName, ScreenName } from "../../const";
-// $FlowFixMe
-// $FlowFixMe
-// $FlowFixMe
-import Portfolio from "../../screens/Portfolio";
-import ReadOnlyPortfolio from "../../screens/Portfolio/ReadOnly";
+import { NavigatorName } from "../../const";
 import AccountsNavigator from "./AccountsNavigator";
 import { getStackNavigatorConfig } from "../../navigation/navigatorConfig";
-import { readOnlyModeEnabledSelector } from "../../reducers/settings";
+import WalletTabNavigator from "./WalletTabNavigator";
+import { PortfolioNavigatorStackParamList } from "./types/PortfolioNavigator";
+
+const Stack = createStackNavigator<PortfolioNavigatorStackParamList>();
 
 export default function PortfolioNavigator() {
   const { colors } = useTheme();
-  const stackNavigationConfig = useMemo(
-    () => getStackNavigatorConfig(colors, true),
-    [colors],
-  );
-  const readOnlyModeEnabled = useSelector(readOnlyModeEnabledSelector);
+  const stackNavigationConfig = useMemo(() => getStackNavigatorConfig(colors, true), [colors]);
 
   return (
     <Stack.Navigator
       screenOptions={stackNavigationConfig}
-      initialRouteName={ScreenName.Portfolio}
-      backBehavior={"initialRoute"}
+      initialRouteName={NavigatorName.WalletTab}
     >
       <Stack.Screen
-        name={ScreenName.Portfolio}
-        component={readOnlyModeEnabled ? ReadOnlyPortfolio : Portfolio}
+        name={NavigatorName.WalletTab}
+        component={WalletTabNavigator}
         options={{
           headerShown: false,
         }}
@@ -44,5 +33,3 @@ export default function PortfolioNavigator() {
     </Stack.Navigator>
   );
 }
-
-const Stack = createStackNavigator();

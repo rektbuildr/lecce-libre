@@ -1,8 +1,7 @@
-/* eslint-disable import/no-unresolved */
 import React, { memo } from "react";
 import styled from "styled-components/native";
 import { Flex, Text } from "@ledgerhq/native-ui";
-import { CurrencyData } from "@ledgerhq/live-common/lib/market/types";
+import { CurrencyData } from "@ledgerhq/live-common/market/types";
 import { Image } from "react-native";
 import { TFunction } from "i18next";
 import CircleCurrencyIcon from "../../components/CircleCurrencyIcon";
@@ -38,8 +37,14 @@ function MarketRowItem({ item, index, counterCurrency, locale, t }: Props) {
     marketcapRank,
     price,
     priceChangePercentage,
+    ticker,
   } = item;
 
+  let loc = locale;
+  // TEMPORARY : quick win to transform arabic to english
+  if (locale === "ar") {
+    loc = "en";
+  }
   return (
     <Flex
       height={72}
@@ -59,31 +64,21 @@ function MarketRowItem({ item, index, counterCurrency, locale, t }: Props) {
       ) : (
         image && (
           <IconContainer>
-            <Image
-              source={{ uri: image }}
-              style={{ width: 30, height: 30 }}
-              resizeMode="contain"
-            />
+            <Image source={{ uri: image }} style={{ width: 30, height: 30 }} resizeMode="contain" />
           </IconContainer>
         )
       )}
-      <Flex
-        mx="4"
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="flex-start"
-        flex={1}
-      >
+      <Flex mx="4" flexDirection="column" justifyContent="center" alignItems="flex-start" flex={1}>
         <Text variant="large" fontWeight="semiBold" numberOfLines={1}>
-          {name}
+          {`${name} (${ticker.toLocaleUpperCase()})`}
         </Text>
         <Flex flexDirection="row" alignItems="center">
           <Text
             variant="small"
             bg="neutral.c40"
-            height="20px"
-            lineHeight="20px"
-            px="3"
+            height="15px"
+            lineHeight="15px"
+            px="4px"
             mr="3"
             borderRadius={4}
             overflow="hidden"
@@ -91,29 +86,25 @@ function MarketRowItem({ item, index, counterCurrency, locale, t }: Props) {
           >
             {marketcapRank || "-"}
           </Text>
-          <Text variant="body" color="neutral.c80" fontWeight="semiBold">
+          <Text variant="body" color="neutral.c70" fontWeight="semiBold">
             {marketcap && marketcap > 0
               ? counterValueFormatter({
                   value: marketcap,
                   shorten: true,
                   currency: counterCurrency,
-                  locale,
+                  locale: loc,
                   t,
                 })
               : "-"}
           </Text>
         </Flex>
       </Flex>
-      <Flex
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="flex-end"
-      >
+      <Flex flexDirection="column" justifyContent="center" alignItems="flex-end">
         <Text variant="large" fontWeight="semiBold">
           {counterValueFormatter({
             value: price,
             currency: counterCurrency,
-            locale,
+            locale: loc,
             t,
           })}
         </Text>

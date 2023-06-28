@@ -45,16 +45,13 @@ class Decred extends Base {
     const decodeBase58 = Decred.bs58check.decode(address, Decred._blake256x2);
     const prefix = address.toLocaleUpperCase().substring(0, 2);
     if (prefix === "DC") {
-      return bjs.payments.p2sh({ hash: decodeBase58.slice(2) })
-        .output as Buffer;
+      return bjs.payments.p2sh({ hash: decodeBase58.slice(2) }).output as Buffer;
     } else if (prefix === "DE" || prefix === "DS") {
-      return bjs.payments.p2pkh({ hash: decodeBase58.slice(2) })
-        .output as Buffer;
+      return bjs.payments.p2pkh({ hash: decodeBase58.slice(2) }).output as Buffer;
     }
     throw new InvalidAddress();
   }
 
-  // eslint-disable-next-line class-methods-use-this
   validateAddress(address: string): boolean {
     if (address.length < 25 || address.length > 36) {
       return false;
@@ -72,7 +69,7 @@ class Decred extends Base {
     derivationMode: string,
     xpub: string,
     account: number,
-    index: number
+    index: number,
   ): Promise<string> {
     let buffer: Buffer;
     try {
@@ -85,8 +82,7 @@ class Decred extends Base {
     const chainCode = buffer.slice(13, 45);
     const X = buffer.slice(45, 78);
     const hd = new BIP32(X, chainCode, this.network, depth, i);
-    const publicKey = (await (await hd.derive(account)).derive(index))
-      .publicKey;
+    const publicKey = (await (await hd.derive(account)).derive(index)).publicKey;
     return Decred.getAddressFromPk(publicKey);
   }
 }

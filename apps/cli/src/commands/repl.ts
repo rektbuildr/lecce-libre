@@ -1,5 +1,5 @@
 import { map, concatMap } from "rxjs/operators";
-import { withDevice } from "@ledgerhq/live-common/lib/hw/deviceAccess";
+import { withDevice } from "@ledgerhq/live-common/hw/deviceAccess";
 import { deviceOpt } from "../scan";
 import { apdusFromFile } from "../stream";
 export default {
@@ -15,7 +15,7 @@ export default {
     },
   ],
   job: ({ device, file }: { device: string; file: string }) =>
-    withDevice(device || "")((t) =>
-      apdusFromFile(file || "-").pipe(concatMap((apdu) => t.exchange(apdu)))
-    ).pipe(map((res) => res.toString("hex"))),
+    withDevice(device || "")(t =>
+      apdusFromFile(file || "-").pipe(concatMap(apdu => t.exchange(apdu))),
+    ).pipe(map(res => res.toString("hex"))),
 };

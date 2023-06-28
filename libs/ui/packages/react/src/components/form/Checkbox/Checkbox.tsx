@@ -1,11 +1,11 @@
 import React from "react";
 import styled from "styled-components";
 import Text from "../../asorted/Text";
-import CheckAloneRegular from "@ledgerhq/icons-ui/react/CheckAloneRegular";
+import CheckAloneMedium from "@ledgerhq/icons-ui/react/CheckAloneMedium";
 import { renderToStaticMarkup } from "react-dom/server";
 
 const Icon = () =>
-  React.cloneElement(CheckAloneRegular({ size: 13, color: "white" }), {
+  React.cloneElement(CheckAloneMedium({ size: 13, color: "currentColor" }), {
     // the xmlns attribute is required to properly display the checkbox
     xmlns: "http://www.w3.org/2000/svg",
   });
@@ -14,13 +14,13 @@ const CheckMarkIcon = encodeURIComponent(renderToStaticMarkup(<Icon />));
 const Input = styled.input`
   background-color: transparent;
 
-  border-radius: ${(p) => `${p.theme.radii[1]}px`};
+  border-radius: ${p => `${p.theme.radii[1]}px`};
   position: relative;
 
-  min-width: ${(p) => p.theme.space[7]}px;
-  height: ${(p) => p.theme.space[7]}px;
+  min-width: ${p => p.theme.space[7]}px;
+  height: ${p => p.theme.space[7]}px;
   appearance: none;
-  border: 1px solid ${(props) => props.theme.colors.neutral.c90};
+  border: 1px solid ${props => props.theme.colors.neutral.c90};
   box-shadow: none;
 
   &:checked {
@@ -30,9 +30,10 @@ const Input = styled.input`
 
   &:checked::after {
     content: " ";
-    width: ${(p) => p.theme.space[7]}px;
-    height: ${(p) => p.theme.space[7]}px;
+    width: ${p => p.theme.space[7]}px;
+    height: ${p => p.theme.space[7]}px;
     display: inline-block;
+    color: ${props => props.theme.colors.neutral.c00};
 
     background-image: url("data:image/svg+xml,${CheckMarkIcon}");
     background-position: center;
@@ -46,7 +47,7 @@ const Input = styled.input`
 `;
 
 const Label = styled(Text).attrs({ type: "body", fontWeight: "500" })`
-  color: ${(props) => props.theme.colors.neutral.c80};
+  color: ${props => props.theme.colors.neutral.c80};
 
   /* Version when the input is checked */
   ${Input}:checked + & {
@@ -60,27 +61,27 @@ const Label = styled(Text).attrs({ type: "body", fontWeight: "500" })`
 
 const Container = styled.div`
   --ll-checkbox-color: unset;
-  color: var(--ll-checkbox-color, ${(props) => props.theme.colors.primary.c90});
+  color: var(--ll-checkbox-color, ${props => props.theme.colors.primary.c90});
 
   display: inline-flex;
-  column-gap: ${(p) => p.theme.space[5]}px;
+  column-gap: ${p => p.theme.space[5]}px;
   align-items: center;
   cursor: pointer;
 
   &[data-variant="default"] {
-    --ll-checkbox-color: ${(props) => props.theme.colors.primary.c90};
+    --ll-checkbox-color: ${props => props.theme.colors.primary.c90};
   }
 
   &[data-variant="success"] {
-    --ll-checkbox-color: ${(props) => props.theme.colors.success.c100};
+    --ll-checkbox-color: ${props => props.theme.colors.success.c50};
   }
 
   &[data-variant="error"] {
-    --ll-checkbox-color: ${(props) => props.theme.colors.error.c100};
+    --ll-checkbox-color: ${props => props.theme.colors.error.c50};
   }
 
   &[data-disabled="true"] {
-    --ll-checkbox-color: ${(props) => props.theme.colors.neutral.c80};
+    --ll-checkbox-color: ${props => props.theme.colors.neutral.c80};
     cursor: unset;
   }
 `;
@@ -91,7 +92,7 @@ export type CheckboxProps = {
   variant?: "default" | "success" | "error";
   label?: React.ReactNode;
   name: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (value: boolean) => void;
 };
 
 const Checkbox = ({
@@ -102,15 +103,8 @@ const Checkbox = ({
   name,
   onChange,
 }: CheckboxProps): JSX.Element => (
-  <Container data-variant={variant} data-disabled={isDisabled}>
-    <Input
-      type="checkbox"
-      name={name}
-      id={name}
-      checked={isChecked}
-      disabled={isDisabled}
-      onChange={onChange}
-    />
+  <Container data-variant={variant} data-disabled={isDisabled} onClick={() => onChange(!isChecked)}>
+    <Input type="checkbox" name={name} id={name} checked={isChecked} disabled={isDisabled} />
     {label ? (
       <Label as="label" htmlFor={name}>
         {label}

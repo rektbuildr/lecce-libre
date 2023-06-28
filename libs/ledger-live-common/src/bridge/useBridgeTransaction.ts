@@ -1,28 +1,26 @@
 import { BigNumber } from "bignumber.js";
 import { useEffect, useReducer, useCallback, useRef } from "react";
 import { log } from "@ledgerhq/logs";
-import type {
-  Transaction,
-  TransactionStatus,
-  Account,
-  AccountLike,
-} from "../types";
 import { getAccountBridge } from ".";
 import { getMainAccount } from "../account";
 import { delay } from "../promise";
-export type State = {
+import type { Account, AccountBridge, AccountLike } from "@ledgerhq/types-live";
+import type { Transaction, TransactionStatus } from "../generated/types";
+
+export type State<T extends Transaction = Transaction> = {
   account: AccountLike | null | undefined;
   parentAccount: Account | null | undefined;
-  transaction: Transaction | null | undefined;
+  transaction: T | null | undefined;
   status: TransactionStatus;
-  statusOnTransaction: Transaction | null | undefined;
+  statusOnTransaction: T | null | undefined;
   errorAccount: Error | null | undefined;
   errorStatus: Error | null | undefined;
 };
-export type Result = {
-  transaction: Transaction | null | undefined;
-  setTransaction: (arg0: Transaction) => void;
-  updateTransaction: (updater: (arg0: Transaction) => Transaction) => void;
+
+export type Result<T extends Transaction = Transaction> = {
+  transaction: T | null | undefined;
+  setTransaction: (arg0: T) => void;
+  updateTransaction: (updater: (arg0: T) => T) => void;
   account: AccountLike | null | undefined;
   parentAccount: Account | null | undefined;
   setAccount: (arg0: AccountLike, arg1: Account | null | undefined) => void;
@@ -30,7 +28,41 @@ export type Result = {
   bridgeError: Error | null | undefined;
   bridgePending: boolean;
 };
-const initial: State = {
+
+type Actions<T extends Transaction = Transaction> =
+  | {
+      type: "setAccount";
+      account: AccountLike;
+      parentAccount: Account | null | undefined;
+    }
+  | {
+      type: "setTransaction";
+      transaction: T;
+    }
+  | {
+      type: "updateTransaction";
+      updater: (transaction: T) => T;
+    }
+  | {
+      type: "onStatus";
+      status: TransactionStatus;
+      transaction: T;
+    }
+  | {
+      type: "onStatusError";
+      error: Error;
+    }
+  | {
+      type: "setTransaction";
+      transaction: T;
+    };
+
+type Reducer<T extends Transaction = Transaction> = (
+  state: State<T>,
+  action: Actions<T>,
+) => State<T>;
+
+const initial: State<Transaction> = {
   account: null,
   parentAccount: null,
   transaction: null,
@@ -47,15 +79,18 @@ const initial: State = {
 };
 
 const makeInit =
-  (optionalInit: (() => Partial<State>) | null | undefined) => (): State => {
-    let s = initial;
+  <T extends Transaction = Transaction>(
+    optionalInit: (() => Partial<State<T>>) | null | undefined,
+  ) =>
+  (): State<T> => {
+    let s = initial as State<T>;
 
     if (optionalInit) {
       const patch = optionalInit();
       const { account, parentAccount, transaction } = patch;
 
       if (account) {
-        s = reducer(s, {
+        s = (reducer as Reducer<T>)(s, {
           type: "setAccount",
           account,
           parentAccount,
@@ -63,7 +98,7 @@ const makeInit =
       }
 
       if (transaction) {
-        s = reducer(s, {
+        s = (reducer as Reducer<T>)(s, {
           type: "setTransaction",
           transaction,
         });
@@ -73,27 +108,28 @@ const makeInit =
     return s;
   };
 
-const reducer = (s: State, a): State => {
-  switch (a.type) {
+const reducer = <T extends Transaction = Transaction>(
+  state: State<T>,
+  action: Actions<T>,
+): State<T> => {
+  switch (action.type) {
     case "setAccount": {
-      const { account, parentAccount } = a;
+      const { account, parentAccount } = action;
 
       try {
         const mainAccount = getMainAccount(account, parentAccount);
-        const bridge = getAccountBridge(account, parentAccount);
+        const bridge = getAccountBridge(account, parentAccount) as AccountBridge<T>;
         const subAccountId = account.type !== "Account" && account.id;
         let t = bridge.createTransaction(mainAccount);
-
         if (
-          s.transaction &&
           // @ts-expect-error transaction.mode is not available on all union types. type guard is required
-          s.transaction.mode &&
+          state.transaction?.mode &&
           // @ts-expect-error transaction.mode is not available on all union types. type guard is required
-          s.transaction.mode !== t.mode
+          state.transaction.mode !== t.mode
         ) {
           t = bridge.updateTransaction(t, {
             // @ts-expect-error transaction.mode is not available on all union types. type guard is required
-            mode: s.transaction.mode,
+            mode: state.transaction.mode,
           });
         }
 
@@ -101,21 +137,31 @@ const reducer = (s: State, a): State => {
           t = { ...t, subAccountId };
         }
 
-        return { ...initial, account, parentAccount, transaction: t };
+        return {
+          ...initial,
+          account,
+          parentAccount,
+          transaction: t,
+        } as State<T>;
       } catch (e: any) {
-        return { ...initial, account, parentAccount, errorAccount: e };
+        return {
+          ...initial,
+          account,
+          parentAccount,
+          errorAccount: e,
+        } as State<T>;
       }
     }
 
     case "setTransaction":
-      if (s.transaction === a.transaction) return s;
-      return { ...s, transaction: a.transaction };
+      if (state.transaction === action.transaction) return state;
+      return { ...state, transaction: action.transaction };
 
     case "updateTransaction": {
-      if (!s.transaction) return s;
-      const transaction = a.updater(s.transaction);
-      if (s.transaction === transaction) return s;
-      return { ...s, transaction };
+      if (!state.transaction) return state;
+      const transaction = action.updater(state.transaction);
+      if (state.transaction === transaction) return state;
+      return { ...state, transaction };
     }
 
     case "onStatus":
@@ -123,19 +169,19 @@ const reducer = (s: State, a): State => {
       //   return s;
       // }
       return {
-        ...s,
+        ...state,
         errorStatus: null,
-        transaction: a.transaction,
-        status: a.status,
-        statusOnTransaction: a.transaction,
+        transaction: action.transaction,
+        status: action.status,
+        statusOnTransaction: action.transaction,
       };
 
     case "onStatusError":
-      if (a.error === s.errorStatus) return s;
-      return { ...s, errorStatus: a.error };
+      if (action.error === state.errorStatus) return state;
+      return { ...state, errorStatus: action.error };
 
     default:
-      return s;
+      return state;
   }
 };
 
@@ -143,21 +189,13 @@ const INITIAL_ERROR_RETRY_DELAY = 1000;
 const ERROR_RETRY_DELAY_MULTIPLIER = 1.5;
 const DEBOUNCE_STATUS_DELAY = 300;
 
-const useBridgeTransaction = (
-  optionalInit?: (() => Partial<State>) | null | undefined
-): Result => {
+const useBridgeTransaction = <T extends Transaction = Transaction>(
+  optionalInit?: (() => Partial<State<T>>) | null | undefined,
+): Result<T> => {
   const [
-    {
-      account,
-      parentAccount,
-      transaction,
-      status,
-      statusOnTransaction,
-      errorAccount,
-      errorStatus,
-    },
+    { account, parentAccount, transaction, status, statusOnTransaction, errorAccount, errorStatus },
     dispatch, // $FlowFixMe for ledger-live-mobile older react/flow version
-  ] = useReducer(reducer, undefined, makeInit(optionalInit));
+  ] = useReducer(reducer as Reducer<T>, undefined, makeInit<T>(optionalInit));
   const setAccount = useCallback(
     (account, parentAccount) =>
       dispatch({
@@ -165,23 +203,23 @@ const useBridgeTransaction = (
         account,
         parentAccount,
       }),
-    [dispatch]
+    [dispatch],
   );
   const setTransaction = useCallback(
-    (transaction) =>
+    transaction =>
       dispatch({
         type: "setTransaction",
         transaction,
       }),
-    [dispatch]
+    [dispatch],
   );
   const updateTransaction = useCallback(
-    (updater) =>
+    updater =>
       dispatch({
         type: "updateTransaction",
         updater,
       }),
-    [dispatch]
+    [dispatch],
   );
   const mainAccount = account ? getMainAccount(account, parentAccount) : null;
   const errorDelay = useRef(INITIAL_ERROR_RETRY_DELAY);
@@ -199,24 +237,16 @@ const useBridgeTransaction = (
     if (mainAccount && transaction) {
       // We don't debounce first status refresh, but any subsequent to avoid multiple calls
       // First call is immediate
-      const debounce = statusIsPending.current
-        ? delay(DEBOUNCE_STATUS_DELAY)
-        : null;
+      const debounce = statusIsPending.current ? delay(DEBOUNCE_STATUS_DELAY) : null;
       statusIsPending.current = true; // consider pending until status is resolved (error or success)
 
       Promise.resolve(debounce)
         .then(() => getAccountBridge(mainAccount, null))
-        .then(async (bridge) => {
+        .then(async bridge => {
           if (ignore) return;
-          const preparedTransaction = await bridge.prepareTransaction(
-            mainAccount,
-            transaction
-          );
+          const preparedTransaction = await bridge.prepareTransaction(mainAccount, transaction);
           if (ignore) return;
-          const status = await bridge.getTransactionStatus(
-            mainAccount,
-            preparedTransaction
-          );
+          const status = await bridge.getTransactionStatus(mainAccount, preparedTransaction);
           if (ignore) return;
           return {
             preparedTransaction,
@@ -224,7 +254,7 @@ const useBridgeTransaction = (
           };
         })
         .then(
-          (result) => {
+          result => {
             if (ignore || !result) return;
             const { preparedTransaction, status } = result;
             errorDelay.current = INITIAL_ERROR_RETRY_DELAY; // reset delay
@@ -237,17 +267,14 @@ const useBridgeTransaction = (
               transaction: preparedTransaction,
             });
           },
-          (e) => {
+          e => {
             if (ignore) return;
             statusIsPending.current = false;
             dispatch({
               type: "onStatusError",
               error: e,
             });
-            log(
-              "useBridgeTransaction",
-              "prepareTransaction failed " + String(e)
-            );
+            log("useBridgeTransaction", "prepareTransaction failed " + String(e));
             // After X seconds of hanging in this error case, we try again
             log("useBridgeTransaction", "retrying prepareTransaction...");
             errorTimeout = setTimeout(() => {
@@ -255,7 +282,7 @@ const useBridgeTransaction = (
               errorDelay.current *= ERROR_RETRY_DELAY_MULTIPLIER; // increase delay
 
               // $FlowFixMe
-              const transactionCopy: Transaction = {
+              const transactionCopy = {
                 ...transaction,
               };
               dispatch({
@@ -263,7 +290,7 @@ const useBridgeTransaction = (
                 transaction: transactionCopy,
               }); // $FlowFixMe (mobile)
             }, errorDelay.current);
-          }
+          },
         );
     }
 

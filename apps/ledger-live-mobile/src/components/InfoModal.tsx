@@ -3,29 +3,36 @@ import { StyleSheet, View } from "react-native";
 import { Trans } from "react-i18next";
 
 import { useTheme } from "styled-components/native";
-import { Icons, IconBox, Flex, Button } from "@ledgerhq/native-ui";
-import BottomModal from "./BottomModal";
+import { Icons, IconBox, Flex } from "@ledgerhq/native-ui";
+import type { Props as IconBoxProps } from "@ledgerhq/native-ui/components/Icon/IconBox";
+import QueuedDrawer from "./QueuedDrawer";
 import LText from "./LText";
 import IconArrowRight from "../icons/ArrowRight";
-import type { Props as ModalProps } from "./BottomModal";
+import type { Props as ModalProps } from "./QueuedDrawer";
+import Button, { WrappedButtonProps } from "./wrappedUi/Button";
+import { Merge } from "../types/helpers";
 
 type BulletItem = {
   key: string;
   val: React.ReactNode;
 };
 
-type InfoModalProps = ModalProps & {
-  id?: string;
-  title?: React.ReactNode;
-  desc?: React.ReactNode;
-  bullets?: BulletItem[];
-  Icon?: React.ReactNode;
-  withCancel?: boolean;
-  onContinue?: () => void;
-  children?: React.ReactNode;
-  confirmLabel?: React.ReactNode;
-  confirmProps?: any;
-};
+type InfoModalProps = Merge<
+  Omit<ModalProps, "isRequestingToBeOpened">,
+  {
+    isOpened: boolean;
+    id?: string;
+    title?: React.ReactNode;
+    desc?: React.ReactNode;
+    bullets?: BulletItem[];
+    Icon?: IconBoxProps["Icon"];
+    withCancel?: boolean;
+    onContinue?: () => void;
+    children?: React.ReactNode;
+    confirmLabel?: React.ReactNode;
+    confirmProps?: WrappedButtonProps;
+  }
+>;
 
 const InfoModal = ({
   isOpened,
@@ -43,9 +50,8 @@ const InfoModal = ({
   style,
   containerStyle,
 }: InfoModalProps) => (
-  <BottomModal
-    id={id}
-    isOpened={isOpened}
+  <QueuedDrawer
+    isRequestingToBeOpened={isOpened}
     onClose={onClose}
     style={[styles.modal, style || {}]}
   >
@@ -69,24 +75,14 @@ const InfoModal = ({
           ))}
         </View>
       ) : null}
-      <View
-        style={[
-          !title && !desc && !bullets ? styles.childrenContainer : null,
-          containerStyle,
-        ]}
-      >
+      <View style={[!title && !desc && !bullets ? styles.childrenContainer : null, containerStyle]}>
         {children}
       </View>
     </Flex>
 
     <Flex pt={6}>
       {withCancel ? (
-        <Button
-          event={(id || "") + "InfoModalClose"}
-          type={undefined}
-          onPress={onClose}
-          mt={7}
-        >
+        <Button event={(id || "") + "InfoModalClose"} type={undefined} onPress={onClose} mt={7}>
           <Trans i18nKey="common.cancel" />
         </Button>
       ) : null}
@@ -100,10 +96,10 @@ const InfoModal = ({
         {confirmLabel || <Trans i18nKey="common.gotit" />}
       </Button>
     </Flex>
-  </BottomModal>
+  </QueuedDrawer>
 );
 
-function BulletLine({ children }: { children: any }) {
+function BulletLine({ children }: { children?: React.ReactNode }) {
   const { colors } = useTheme();
   return (
     <View style={styles.bulletLine}>

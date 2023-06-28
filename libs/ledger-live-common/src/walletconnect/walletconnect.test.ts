@@ -5,12 +5,9 @@ import { getAccountBridge } from "../bridge";
 import { parseCallRequest } from "./index";
 import type { WCPayloadTransaction } from "./index";
 import { getCryptoCurrencyById, setSupportedCurrencies } from "../currencies";
-import type { Account } from "../types/account";
 import { emptyHistoryCache } from "../account";
 import { setEnv } from "../env";
-import { setPlatformVersion } from "../platform/version";
-
-setPlatformVersion("0.0.1");
+import type { Account } from "@ledgerhq/types-live";
 
 describe("walletconnect", () => {
   const account: Account = {
@@ -21,7 +18,7 @@ describe("walletconnect", () => {
     currency: getCryptoCurrencyById("ethereum"),
     seedIdentifier: "",
     index: 0,
-    freshAddress: "",
+    freshAddress: "0xCA220B75b7aF206bFCc67E2EcE06E2e144FA294a",
     freshAddresses: [],
     name: "test",
     starred: false,
@@ -51,9 +48,10 @@ describe("walletconnect", () => {
         method: "pouet",
         params: [],
         id: "pouet",
-      })
+      }),
     ).rejects.toThrow("wrong payload");
   });
+
   test("should parse personal_sign payloads", async () => {
     expect(
       await parseCallRequest(account, {
@@ -63,7 +61,7 @@ describe("walletconnect", () => {
           "0x4d7920656d61696c206973206a6f686e40646f652e636f6d202d2031353337383336323036313031",
           "0xCA220B75b7aF206bFCc67E2EcE06E2e144FA294a",
         ],
-      })
+      }),
     ).toMatchObject({
       data: {
         currency: getCryptoCurrencyById("ethereum"),
@@ -73,8 +71,7 @@ describe("walletconnect", () => {
           "0x4d7920656d61696c206973206a6f686e40646f652e636f6d202d2031353337383336323036313031",
         path: "44'/60'/0'/0/0",
         hashes: {
-          stringHash:
-            "0x4a15deb26c7084592efc4a5e5dbadfa43ea596391461421145705a1f86494ddd",
+          stringHash: "0x4a15deb26c7084592efc4a5e5dbadfa43ea596391461421145705a1f86494ddd",
         },
       },
       type: "message",
@@ -91,19 +88,16 @@ describe("walletconnect", () => {
           "0xe44F9E113Fbd671Bf697d5a1cf1716E1a8c3F35b",
           "0xbfe79ce1b9258204beff46707c50b88a11e02feda203f7f269ab3cf0520fa62f",
         ],
-      } as any)
+      } as any),
     ).toMatchObject({
       data: {
         currency: getCryptoCurrencyById("ethereum"),
         derivationMode: "",
-        message:
-          "0xbfe79ce1b9258204beff46707c50b88a11e02feda203f7f269ab3cf0520fa62f",
-        rawMessage:
-          "0xbfe79ce1b9258204beff46707c50b88a11e02feda203f7f269ab3cf0520fa62f",
+        message: "0xbfe79ce1b9258204beff46707c50b88a11e02feda203f7f269ab3cf0520fa62f",
+        rawMessage: "0xbfe79ce1b9258204beff46707c50b88a11e02feda203f7f269ab3cf0520fa62f",
         path: "44'/60'/0'/0/0",
         hashes: {
-          stringHash:
-            "0x8e7d1635f8457e4ee06862eedde10b668d6e746962af6ba54807fb99493fc5cb",
+          stringHash: "0x8e7d1635f8457e4ee06862eedde10b668d6e746962af6ba54807fb99493fc5cb",
         },
       },
       type: "message",
@@ -118,7 +112,7 @@ describe("walletconnect", () => {
         id: "1606135178131543",
         method: "eth_signTypedData",
         params: ["0xCA220B75b7aF206bFCc67E2EcE06E2e144FA294a", raw],
-      })
+      }),
     ).toMatchObject({
       data: {
         currency: getCryptoCurrencyById("ethereum"),
@@ -126,15 +120,14 @@ describe("walletconnect", () => {
         message: JSON.parse(raw),
         path: "44'/60'/0'/0/0",
         hashes: {
-          domainHash:
-            "0x4ffaf9cb7df9fe0016d5ea8358cb61ec61875d98a856982d216015abbf371227",
-          messageHash:
-            "0x401419776f57f5162dd05a3072f5941868ac4decfa789e501598997c48a43488",
+          domainHash: "0x4ffaf9cb7df9fe0016d5ea8358cb61ec61875d98a856982d216015abbf371227",
+          messageHash: "0x401419776f57f5162dd05a3072f5941868ac4decfa789e501598997c48a43488",
         },
       },
       type: "message",
     });
   });
+
   test("should parse eth_sendTransaction payloads", async () => {
     const raw: WCPayloadTransaction = {
       data: "0x",
@@ -149,26 +142,25 @@ describe("walletconnect", () => {
     let transaction = bridge.createTransaction(account);
     transaction = bridge.updateTransaction(transaction, {
       data: Buffer.from(raw.data.slice(2), "hex"),
-      // $FlowFixMe
       amount: new BigNumber(raw.value as string, 16),
       recipient: raw.to,
-      // $FlowFixMe
       gasPrice: new BigNumber(raw.gasPrice as string, 16),
       nonce: raw.nonce,
     });
     transaction = bridge.updateTransaction(transaction, {
-      // $FlowFixMe
       userGasLimit: new BigNumber(raw.gas as string, 16),
     });
     transaction = await bridge.prepareTransaction(account, transaction);
     delete transaction.networkInfo;
     delete transaction.gasPrice;
+    delete transaction.maxPriorityFeePerGas;
+    delete transaction.maxFeePerGas;
     expect(
       await parseCallRequest(account, {
         id: "1606135657415541",
         method: "eth_sendTransaction",
         params: [raw],
-      })
+      }),
     ).toMatchObject({
       data: transaction,
       method: "send",
@@ -189,26 +181,25 @@ describe("walletconnect", () => {
     let transaction = bridge.createTransaction(account);
     transaction = bridge.updateTransaction(transaction, {
       data: Buffer.from(raw.data.slice(2), "hex"),
-      // $FlowFixMe
       amount: new BigNumber(raw.value as string, 16),
       recipient: eip55.encode(raw.to as string),
-      // $FlowFixMe
       gasPrice: new BigNumber(raw.gasPrice as string, 16),
       nonce: raw.nonce,
     });
     transaction = bridge.updateTransaction(transaction, {
-      // $FlowFixMe
       userGasLimit: new BigNumber(raw.gas as string, 16),
     });
     transaction = await bridge.prepareTransaction(account, transaction);
     delete transaction.networkInfo;
     delete transaction.gasPrice;
+    delete transaction.maxPriorityFeePerGas;
+    delete transaction.maxFeePerGas;
     expect(
       await parseCallRequest(account, {
         id: "1606135657415541",
         method: "eth_sendTransaction",
         params: [raw],
-      })
+      }),
     ).toMatchObject({
       data: transaction,
       method: "send",

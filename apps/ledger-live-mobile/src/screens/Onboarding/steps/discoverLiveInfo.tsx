@@ -1,14 +1,7 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState, useMemo, useContext } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Flex,
-  Carousel,
-  Text,
-  Button,
-  StoriesIndicator,
-  Box,
-} from "@ledgerhq/native-ui";
-import { useNavigation } from "@react-navigation/native";
+import { Flex, Carousel, Text, Button, StoriesIndicator, Box } from "@ledgerhq/native-ui";
+import { useNavigation, useFocusEffect, CompositeNavigationProp } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled, { useTheme } from "styled-components/native";
 import { useDispatch } from "react-redux";
@@ -16,7 +9,16 @@ import Svg, { Defs, LinearGradient, Rect, Stop } from "react-native-svg";
 import { Image, ImageProps } from "react-native";
 import { completeOnboarding, setReadOnlyMode } from "../../../actions/settings";
 
-import { NavigatorName } from "../../../const";
+import { NavigatorName, ScreenName } from "../../../const";
+import { screen, track } from "../../../analytics";
+
+import { AnalyticsContext } from "../../../analytics/AnalyticsContext";
+import {
+  RootNavigationComposite,
+  StackNavigatorNavigation,
+} from "../../../components/RootNavigator/types/helpers";
+import { OnboardingNavigatorParamList } from "../../../components/RootNavigator/types/OnboardingNavigator";
+import { BaseOnboardingNavigatorParamList } from "../../../components/RootNavigator/types/BaseOnboardingNavigator";
 
 const slidesImages = [
   require("../../../../assets/images/onboarding/stories/slide1.png"),
@@ -30,37 +32,66 @@ const StyledSafeAreaView = styled(SafeAreaView)`
   background-color: ${p => p.theme.colors.background.main};
 `;
 
+type NavigationProp = CompositeNavigationProp<
+  StackNavigatorNavigation<OnboardingNavigatorParamList, ScreenName.OnboardingLanguage>,
+  RootNavigationComposite<StackNavigatorNavigation<BaseOnboardingNavigatorParamList>>
+>;
+
 const Item = ({
   title,
   imageProps,
   displayNavigationButtons = false,
+  currentIndex,
 }: {
   title: string;
   imageProps: ImageProps;
   displayNavigationButtons?: boolean;
+  currentIndex?: number;
 }) => {
   const dispatch = useDispatch();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
   const { colors } = useTheme();
   const { t } = useTranslation();
 
+  const screenName = useMemo(() => `Reborn Story Step ${currentIndex}`, [currentIndex]);
+
+  const onClick = useCallback(
+    (value: string) => {
+      track("button_clicked", {
+        button: value,
+        screen: screenName,
+      });
+    },
+    [screenName],
+  );
+
   const buyLedger = useCallback(() => {
-    // TODO: FIX @react-navigation/native using Typescript
-    // @ts-ignore next-line
-    navigation.navigate(NavigatorName.BuyDevice);
-  }, [navigation]);
+    onClick("Buy a Ledger");
+    navigation.navigate(NavigatorName.BuyDevice, {
+      screen: undefined,
+    } as never);
+  }, [navigation, onClick]);
 
   const exploreLedger = useCallback(() => {
     dispatch(completeOnboarding());
     dispatch(setReadOnlyMode(true));
+    onClick("Explore without a device");
 
-    // Fixme: Navigate to read only page ?
-    // TODO: FIX @react-navigation/native using Typescript
-    // @ts-ignore next-line
-    navigation.navigate(NavigatorName.Base, {
-      screen: NavigatorName.Main,
+    navigation.reset({
+      index: 0,
+      routes: [{ name: NavigatorName.Base } as never],
     });
-  }, [dispatch, navigation]);
+  }, [dispatch, navigation, onClick]);
+
+  const pressExplore = useCallback(() => {
+    exploreLedger();
+    onClick("Explore without a device");
+  }, [exploreLedger, onClick]);
+
+  const pressBuy = useCallback(() => {
+    buyLedger();
+    onClick("Buy a Ledger");
+  }, [buyLedger, onClick]);
 
   return (
     <Flex flex={1} backgroundColor={`background.main`}>
@@ -75,47 +106,23 @@ const Item = ({
             gradientUnits="userSpaceOnUse"
           >
             <Stop offset="0%" stopOpacity={1} stopColor={colors.neutral.c00} />
-            <Stop
-              offset="100%"
-              stopOpacity={0}
-              stopColor={colors.neutral.c00}
-            />
+            <Stop offset="100%" stopOpacity={0} stopColor={colors.neutral.c00} />
           </LinearGradient>
         </Defs>
         <Rect x="0" y="0" width="100%" height="100%" fill="url(#myGradient)" />
       </Svg>
-      <Text
-        variant="h4"
-        style={{ fontSize: 40, lineHeight: 40 }}
-        mx={7}
-        mt={3}
-        mb={10}
-      >
+      <Text variant="h4" style={{ fontSize: 40, lineHeight: 45 }} mx={7} mt={3} mb={10}>
         {title}
       </Text>
-      <Box
-        flex={1}
-        alignItems={"center"}
-        justifyContent={"flex-end"}
-        overflow={"hidden"}
-      >
-        <Image
-          resizeMode={"cover"}
-          style={{ flex: 1, width: "100%" }}
-          {...imageProps}
-        />
+      <Box flex={1} alignItems={"center"} justifyContent={"flex-end"} overflow={"hidden"}>
+        <Image resizeMode={"cover"} style={{ flex: 1, width: "100%" }} {...imageProps} />
       </Box>
       {displayNavigationButtons && (
         <Box position={"absolute"} bottom={0} width={"100%"} px={6} pb={10}>
-          <Button onPress={exploreLedger} type={"main"} mb={6} size="large">
+          <Button onPress={pressExplore} type={"main"} mb={6}>
             {t("onboarding.discoverLive.exploreWithoutADevice")}
           </Button>
-          <Button
-            onPress={buyLedger}
-            type={"shade"}
-            outline={true}
-            size="large"
-          >
+          <Button onPress={pressBuy} type={"shade"} outline={true}>
             {t("onboarding.discoverLive.buyALedgerNow")}
           </Button>
         </Box>
@@ -126,6 +133,33 @@ const Item = ({
 
 function DiscoverLiveInfo() {
   const { t } = useTranslation();
+  const [currentIndex, setCurrentIndex] = useState(1);
+  const { source, setSource, setScreen } = useContext(AnalyticsContext);
+
+  useFocusEffect(
+    useCallback(() => {
+      setScreen && setScreen(`Reborn Story Step ${currentIndex}`);
+
+      return () => {
+        setSource(`Reborn Story Step ${currentIndex}`);
+      };
+    }, [setScreen, currentIndex, setSource]),
+  );
+
+  const onChange = useCallback(
+    (index: number, skipped: boolean) => {
+      setCurrentIndex(index + 1);
+      screen("Onboarding", `Reborn Story Step ${index + 1}`, {
+        skipped,
+        flow: "Onboarding No Device",
+        source,
+      });
+    },
+    [source],
+  );
+
+  const autoChange = useCallback((index: number) => onChange(index, false), [onChange]);
+  const manualChange = useCallback((index: number) => onChange(index, true), [onChange]);
 
   return (
     <StyledSafeAreaView>
@@ -143,6 +177,8 @@ function DiscoverLiveInfo() {
         }}
         scrollViewProps={{ scrollEnabled: false }}
         maxDurationOfTap={700}
+        onAutoChange={autoChange}
+        onManualChange={manualChange}
       >
         {slidesImages.map((image, index) => (
           <Item
@@ -152,6 +188,7 @@ function DiscoverLiveInfo() {
               source: image,
             }}
             displayNavigationButtons={slidesImages.length - 1 === index}
+            currentIndex={currentIndex}
           />
         ))}
       </Carousel>

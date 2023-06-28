@@ -1,14 +1,9 @@
-import { Account, Address, Operation } from "../../../../types";
-import {
-  getCryptoCurrencyById,
-  parseCurrencyUnit,
-} from "../../../../currencies";
+import { Account, Address, Operation } from "@ledgerhq/types-live";
+import { log } from "@ledgerhq/logs";
+import { getCryptoCurrencyById, parseCurrencyUnit } from "../../../../currencies";
 import { BigNumber } from "bignumber.js";
-import { BroadcastTransactionRequest, TransactionResponse } from "./types";
-import {
-  GetAccountShape,
-  GetAccountShapeArg0,
-} from "../../../../bridge/jsHelpers";
+import { BroadcastTransactionRequest, TransactionResponse, TxStatus } from "./types";
+import { GetAccountShape, AccountShapeInfo } from "../../../../bridge/jsHelpers";
 import { fetchBalances, fetchBlockHeight, fetchTxs } from "./api";
 import { encodeAccountId } from "../../../../account";
 import { encodeOperationId } from "../../../../operation";
@@ -23,9 +18,7 @@ type TxsById = {
 
 export const getUnit = () => getCryptoCurrencyById("filecoin").units[0];
 
-export const processTxs = (
-  txs: TransactionResponse[]
-): TransactionResponse[] => {
+export const processTxs = (txs: TransactionResponse[]): TransactionResponse[] => {
   const txsById = txs.reduce((result: TxsById, currentTx) => {
     const { hash, type } = currentTx;
     const txById = result[hash] || {};
@@ -40,7 +33,17 @@ export const processTxs = (
   for (const txId in txsById) {
     const { Fee: feeTx, Send: sendTx } = txsById[txId];
 
-    if (feeTx) sendTx.fee = feeTx.amount.toString();
+    if (!sendTx) {
+      if (feeTx) {
+        log("warn", `feeTx [${feeTx.hash}] found without a sendTx linked to it.`);
+      }
+
+      continue;
+    }
+
+    if (feeTx) {
+      sendTx.fee = feeTx.amount;
+    }
 
     processedTxs.push(sendTx);
   }
@@ -49,16 +52,17 @@ export const processTxs = (
 };
 
 export const mapTxToOps =
-  (accountId, { address }: GetAccountShapeArg0) =>
+  (accountId, { address }: AccountShapeInfo) =>
   (tx: TransactionResponse): Operation[] => {
-    const { to, from, hash, timestamp, amount, fee } = tx;
+    const { to, from, hash, timestamp, amount, fee, status } = tx;
     const ops: Operation[] = [];
     const date = new Date(timestamp * 1000);
     const value = parseCurrencyUnit(getUnit(), amount.toString());
+    const feeToUse = parseCurrencyUnit(getUnit(), (fee || 0).toString());
 
     const isSending = address === from;
     const isReceiving = address === to;
-    const feeToUse = new BigNumber(fee || 0);
+    const hasFailed = status !== TxStatus.Ok;
 
     if (isSending) {
       ops.push({
@@ -74,6 +78,7 @@ export const mapTxToOps =
         recipients: [to],
         date,
         extra: {},
+        hasFailed,
       });
     }
 
@@ -91,6 +96,7 @@ export const mapTxToOps =
         recipients: [to],
         date,
         extra: {},
+        hasFailed,
       });
     }
 
@@ -104,18 +110,10 @@ export const getAddress = (a: Account): Address =>
 
 export const getTxToBroadcast = (
   operation: Operation,
-  signature: string
+  signature: string,
 ): BroadcastTransactionRequest => {
-  const { extra, senders, recipients, value } = operation;
-  const {
-    gasLimit,
-    gasFeeCap,
-    gasPremium,
-    method,
-    version,
-    nonce,
-    signatureType,
-  } = extra;
+  const { extra, senders, recipients, value, fee } = operation;
+  const { gasLimit, gasFeeCap, gasPremium, method, version, nonce, signatureType } = extra;
 
   return {
     message: {
@@ -128,7 +126,7 @@ export const getTxToBroadcast = (
       gaslimit: gasLimit.toNumber(),
       gaspremium: gasPremium.toString(),
       gasfeecap: gasFeeCap.toString(),
-      value: value.toFixed(),
+      value: value.minus(fee).toFixed(),
     },
     signature: {
       type: signatureType,
@@ -137,7 +135,7 @@ export const getTxToBroadcast = (
   };
 };
 
-export const getAccountShape: GetAccountShape = async (info) => {
+export const getAccountShape: GetAccountShape = async info => {
   const { address, currency, derivationMode } = info;
 
   const accountId = encodeAccountId({

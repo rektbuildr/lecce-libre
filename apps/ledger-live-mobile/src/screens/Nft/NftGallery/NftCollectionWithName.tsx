@@ -1,13 +1,13 @@
 import React, { useCallback, useState, memo } from "react";
-import { useNftCollectionMetadata } from "@ledgerhq/live-common/lib/nft";
+import type { ViewProps } from "react-native";
+import { useNftCollectionMetadata } from "@ledgerhq/live-common/nft/index";
 import { FlatList, View, SafeAreaView, StyleSheet } from "react-native";
-import {
-  ProtoNFT,
-  NFTMetadata,
-  Account,
-} from "@ledgerhq/live-common/lib/types";
+import { Account, ProtoNFT, NFTMetadata, NFTMetadataResponse } from "@ledgerhq/types-live";
 import { OthersMedium } from "@ledgerhq/native-ui/assets/icons";
-import { NFTResource } from "@ledgerhq/live-common/lib/nft/NftMetadataProvider/types";
+import {
+  NFTResource,
+  NFTResourceLoaded,
+} from "@ledgerhq/live-common/nft/NftMetadataProvider/types";
 import NftCard from "../../../components/Nft/NftCard";
 import Touchable from "../../../components/Touchable";
 import Skeleton from "../../../components/Skeleton";
@@ -31,35 +31,21 @@ const NftCollectionWithNameList = ({
 }: {
   account: Account;
   collection: ProtoNFT[];
-  contentContainerStyle?: Object;
+  contentContainerStyle?: ViewProps["style"];
   status: NFTResource["status"];
-  metadata?: NFTMetadata;
+  metadata?: NFTMetadata | null;
 }) => {
   const nft = collection?.[0] || {};
   const [isCollectionMenuOpen, setIsCollectionMenuOpen] = useState(false);
 
-  const onOpenCollectionMenu = useCallback(
-    () => setIsCollectionMenuOpen(true),
-    [],
-  );
-  const onCloseCollectionMenu = useCallback(
-    () => setIsCollectionMenuOpen(false),
-    [],
-  );
+  const onOpenCollectionMenu = useCallback(() => setIsCollectionMenuOpen(true), []);
+  const onCloseCollectionMenu = useCallback(() => setIsCollectionMenuOpen(false), []);
 
   return (
     <SafeAreaView style={contentContainerStyle}>
       <View style={styles.title}>
-        <Skeleton
-          style={styles.tokenNameSkeleton}
-          loading={status === "loading"}
-        >
-          <LText
-            numberOfOfLines={2}
-            ellipsizeMode="tail"
-            semiBold
-            style={styles.tokenName}
-          >
+        <Skeleton style={styles.tokenNameSkeleton} loading={status === "loading"}>
+          <LText numberOfLines={2} ellipsizeMode="tail" semiBold style={styles.tokenName}>
             {metadata?.tokenName || nft?.contract}
           </LText>
         </Skeleton>
@@ -90,20 +76,16 @@ const NftCollectionWithNameMemo = memo(NftCollectionWithNameList);
 // the rerender of all Nft Collections whenever the NFT cache changes (whenever a new NFT is loaded)
 type Props = {
   collection: ProtoNFT[];
-  contentContainerStyle?: Object;
+  contentContainerStyle?: ViewProps["style"];
   account: Account;
 };
 
-const NftCollectionWithName = ({
-  collection,
-  contentContainerStyle,
-  account,
-}: Props) => {
+const NftCollectionWithName = ({ collection, contentContainerStyle, account }: Props) => {
   const nft: ProtoNFT | null = collection[0];
   const { status, metadata } = useNftCollectionMetadata(
     nft?.contract,
     nft?.currencyId,
-  );
+  ) as NFTResourceLoaded;
 
   return (
     <NftCollectionWithNameMemo
@@ -111,7 +93,7 @@ const NftCollectionWithName = ({
       contentContainerStyle={contentContainerStyle}
       account={account}
       status={status}
-      metadata={metadata}
+      metadata={metadata as NFTMetadataResponse["result"]}
     />
   );
 };

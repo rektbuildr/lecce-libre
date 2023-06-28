@@ -1,9 +1,11 @@
 import React, { useCallback, useMemo, memo } from "react";
-import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { useDispatch } from "react-redux";
+import { DeviceModelId } from "@ledgerhq/devices";
+import { useFeature } from "@ledgerhq/live-common/featureFlags/index";
+import { useStartPostOnboardingCallback } from "@ledgerhq/live-common/postOnboarding/hooks/index";
 import { NavigatorName, ScreenName } from "../../../const";
-import { DeviceNames } from "../types";
 import BaseStepperView, { PairNew, ConnectNano } from "./setupDevice/scenes";
 import { TrackScreen } from "../../../analytics";
 import SeedWarning from "../shared/SeedWarning";
@@ -12,6 +14,15 @@ import Illustration from "../../../images/illustration/Illustration";
 import StepLottieAnimation from "./setupDevice/scenes/StepLottieAnimation";
 import { completeOnboarding } from "../../../actions/settings";
 import { useNavigationInterceptor } from "../onboardingContext";
+import useNotifications from "../../../logic/notifications";
+import {
+  RootComposite,
+  StackNavigatorNavigation,
+  StackNavigatorProps,
+} from "../../../components/RootNavigator/types/helpers";
+import { OnboardingNavigatorParamList } from "../../../components/RootNavigator/types/OnboardingNavigator";
+import { BaseOnboardingNavigatorParamList } from "../../../components/RootNavigator/types/BaseOnboardingNavigator";
+import { Step } from "./setupDevice/scenes/BaseStepperView";
 
 const images = {
   light: {
@@ -24,32 +35,28 @@ const images = {
 
 type Metadata = {
   id: string;
-  illustration: JSX.Element;
+  illustration: JSX.Element | null;
   drawer: null | { route: string; screen: string };
 };
 
-const scenes = [PairNew, ConnectNano];
+type NavigationProps = RootComposite<
+  StackNavigatorProps<OnboardingNavigatorParamList, ScreenName.OnboardingPairNew>
+>;
+
+const scenes = [PairNew, ConnectNano] as Step[];
 
 function OnboardingStepPairNew() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProps["navigation"]>();
   const { theme } = useTheme();
-  const route = useRoute<
-    RouteProp<
-      {
-        params: {
-          deviceModelId: DeviceNames;
-          next: any;
-          showSeedWarning: boolean;
-        };
-      },
-      "params"
-    >
-  >();
+  const route = useRoute<NavigationProps["route"]>();
 
   const dispatch = useDispatch();
+  const { triggerJustFinishedOnboardingNewDevicePushNotificationModal } = useNotifications();
   const { resetCurrentStep } = useNavigationInterceptor();
 
-  const { deviceModelId, showSeedWarning } = route.params;
+  const { deviceModelId, showSeedWarning, next, isProtectFlow } = route.params;
+
+  const newDeviceSelectionFeatureFlag = useFeature("llmNewDeviceSelection");
 
   const metadata: Array<Metadata> = useMemo(
     () => [
@@ -69,43 +76,70 @@ function OnboardingStepPairNew() {
       },
       {
         id: ConnectNano.id,
-        illustration: (
+        illustration: newDeviceSelectionFeatureFlag?.enabled ? null : (
           <StepLottieAnimation
             stepId="pinCode"
             deviceModelId={deviceModelId}
             theme={theme === "dark" ? "dark" : "light"}
           />
         ),
-        drawer: {
-          route: ScreenName.OnboardingBluetoothInformation,
-          screen: ScreenName.OnboardingBluetoothInformation,
-        },
+        drawer: isProtectFlow
+          ? {
+              route: ScreenName.OnboardingProtectionConnectionInformation,
+              screen: ScreenName.OnboardingProtectionConnectionInformation,
+            }
+          : {
+              route: ScreenName.OnboardingBluetoothInformation,
+              screen: ScreenName.OnboardingBluetoothInformation,
+            },
       },
     ],
-    [deviceModelId, theme],
+    [newDeviceSelectionFeatureFlag?.enabled, deviceModelId, theme, isProtectFlow],
   );
 
+  const startPostOnboarding = useStartPostOnboardingCallback();
+
   const onFinish = useCallback(() => {
+    if (next && deviceModelId) {
+      // only used for protect for now
+      navigation.navigate(next, {
+        deviceModelId,
+      });
+      return;
+    }
     dispatch(completeOnboarding());
     resetCurrentStep();
 
-    const parentNav = navigation.getParent();
+    const parentNav =
+      navigation.getParent<
+        StackNavigatorNavigation<BaseOnboardingNavigatorParamList, NavigatorName.Onboarding>
+      >();
     if (parentNav) {
       parentNav.popToTop();
     }
 
-    navigation.replace(NavigatorName.Base, {
-      screen: NavigatorName.Main,
+    startPostOnboarding({
+      deviceModelId: deviceModelId as DeviceModelId,
+      resetNavigationStack: true,
+      fallbackIfNoAction: () =>
+        navigation.replace(NavigatorName.Base, {
+          screen: NavigatorName.Main,
+        }),
     });
-  }, [dispatch, navigation, resetCurrentStep]);
+
+    triggerJustFinishedOnboardingNewDevicePushNotificationModal();
+  }, [
+    dispatch,
+    resetCurrentStep,
+    navigation,
+    startPostOnboarding,
+    deviceModelId,
+    triggerJustFinishedOnboardingNewDevicePushNotificationModal,
+    next,
+  ]);
 
   const nextPage = useCallback(() => {
     onFinish();
-    // TODO: FIX @react-navigation/native using Typescript
-    // @ts-ignore next-line
-    // navigation.navigate(ScreenName.OnboardingFinish, {
-    //  ...route.params,
-    // });
   }, [onFinish]);
 
   return (
@@ -117,7 +151,7 @@ function OnboardingStepPairNew() {
         metadata={metadata}
         deviceModelId={deviceModelId}
       />
-      {showSeedWarning ? <SeedWarning deviceModelId={deviceModelId} /> : null}
+      {showSeedWarning && deviceModelId ? <SeedWarning deviceModelId={deviceModelId} /> : null}
     </>
   );
 }

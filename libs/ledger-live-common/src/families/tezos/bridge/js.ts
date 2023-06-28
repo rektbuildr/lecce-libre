@@ -1,10 +1,6 @@
 // @flow
 import { BigNumber } from "bignumber.js";
-import {
-  TezosToolkit,
-  DEFAULT_FEE,
-  DEFAULT_STORAGE_LIMIT,
-} from "@taquito/taquito";
+import { TezosToolkit, DEFAULT_FEE, DEFAULT_STORAGE_LIMIT } from "@taquito/taquito";
 import { DerivationType } from "@taquito/ledger-signer";
 import { compressPublicKey } from "@taquito/ledger-signer/dist/lib/utils";
 import { b58cencode, prefix, Prefix } from "@taquito/utils";
@@ -20,20 +16,10 @@ import {
   InvalidAddress,
 } from "@ledgerhq/errors";
 import { validateAddress, ValidationResult } from "@taquito/utils";
-import type {
-  CurrencyBridge,
-  AccountBridge,
-  Account,
-  TransactionStatus,
-  AccountLike,
-} from "../../../types";
-import {
-  makeSync,
-  makeScanAccounts,
-  makeAccountBridgeReceive,
-} from "../../../bridge/jsHelpers";
+import type { CurrencyBridge, AccountBridge, Account, AccountLike } from "@ledgerhq/types-live";
+import { makeSync, makeScanAccounts, makeAccountBridgeReceive } from "../../../bridge/jsHelpers";
 import { getMainAccount } from "../../../account";
-import type { Transaction } from "../types";
+import type { TezosAccount, Transaction, TransactionStatus } from "../types";
 import { getAccountShape } from "../synchronisation";
 import { fetchAllBakers, hydrateBakers, isAccountDelegating } from "../bakers";
 import { getEnv } from "../../../env";
@@ -42,9 +28,10 @@ import { patchOperationWithHash } from "../../../operation";
 import { log } from "@ledgerhq/logs";
 import { InvalidAddressBecauseAlreadyDelegated } from "../../../errors";
 import api from "../api/tzkt";
+import { assignFromAccountRaw, assignToAccountRaw } from "../serialization";
 
 const validateRecipient = (currency, recipient) => {
-  let recipientError = null;
+  let recipientError: Error | null = null;
   const recipientWarning = null;
   if (!recipient) {
     recipientError = new RecipientRequired("");
@@ -77,8 +64,8 @@ const createTransaction: () => Transaction = () => ({
 const updateTransaction = (t, patch) => ({ ...t, ...patch });
 
 const getTransactionStatus = async (
-  account: Account,
-  t: Transaction
+  account: TezosAccount,
+  t: Transaction,
 ): Promise<TransactionStatus> => {
   const errors: {
     recipient?: Error;
@@ -100,7 +87,7 @@ const getTransactionStatus = async (
     } else {
       const { recipientError, recipientWarning } = await validateRecipient(
         account.currency,
-        t.recipient
+        t.recipient,
       );
       if (recipientError) {
         errors.recipient = recipientError;
@@ -141,7 +128,10 @@ const getTransactionStatus = async (
     log("taquitoerror", String(t.taquitoError));
 
     // remap taquito errors
-    if (t.taquitoError.endsWith("balance_too_low")) {
+    if (
+      t.taquitoError.endsWith("balance_too_low") ||
+      t.taquitoError.endsWith("subtraction_underflow")
+    ) {
       if (t.mode === "send") {
         resetTotalSpent = true;
         errors.amount = new NotEnoughBalance();
@@ -180,16 +170,14 @@ const getTransactionStatus = async (
     warnings,
     estimatedFees,
     amount: t.amount,
-    totalSpent: resetTotalSpent
-      ? new BigNumber(0)
-      : t.amount.plus(estimatedFees),
+    totalSpent: resetTotalSpent ? new BigNumber(0) : t.amount.plus(estimatedFees),
   };
   return Promise.resolve(result);
 };
 
 const prepareTransaction = async (
-  account: Account,
-  transaction: Transaction
+  account: TezosAccount,
+  transaction: Transaction,
 ): Promise<Transaction> => {
   const { tezosResources } = account;
   if (!tezosResources) throw new Error("tezosResources is missing");
@@ -203,21 +191,15 @@ const prepareTransaction = async (
     if (!transaction.recipient) {
       return Promise.resolve(transaction);
     }
-    const { recipientError } = await validateRecipient(
-      account.currency,
-      transaction.recipient
-    );
+    const { recipientError } = await validateRecipient(account.currency, transaction.recipient);
     if (recipientError) {
       return Promise.resolve(transaction);
     }
   }
 
   const encodedPubKey = b58cencode(
-    compressPublicKey(
-      Buffer.from(account.xpub || "", "hex"),
-      DerivationType.ED25519
-    ),
-    prefix[Prefix.EDPK]
+    compressPublicKey(Buffer.from(account.xpub || "", "hex"), DerivationType.ED25519),
+    prefix[Prefix.EDPK],
   );
 
   const tezos = new TezosToolkit(getEnv("API_TEZOS_NODE"));
@@ -278,7 +260,7 @@ const prepareTransaction = async (
       const incr = increasedFee(gasBuffer, Number(out.opSize));
       t.fees = new BigNumber(out.suggestedFeeMutez + incr);
       t.gasLimit = new BigNumber(out.gasLimit + gasBuffer);
-      t.amount = new BigNumber(maxAmount - incr);
+      t.amount = maxAmount - incr > 0 ? new BigNumber(maxAmount - incr) : new BigNumber(0);
     } else {
       t.fees = new BigNumber(out.suggestedFeeMutez);
       t.gasLimit = new BigNumber(out.gasLimit);
@@ -297,11 +279,9 @@ const prepareTransaction = async (
       log("taquito-error", "taquito got error " + t.taquitoError);
     } else if ("status" in e) {
       // in case of http 400, log & ignore (more case to handle)
-      log(
-        "taquito-network-error",
-        String((e as { message: string }).message || ""),
-        { transaction: t }
-      );
+      log("taquito-network-error", String((e as unknown as { message: string }).message || ""), {
+        transaction: t,
+      });
       throw e;
     } else {
       throw e;
@@ -323,10 +303,7 @@ const prepareTransaction = async (
   return t;
 };
 
-function bnEq(
-  a: BigNumber | null | undefined,
-  b: BigNumber | null | undefined
-): boolean {
+function bnEq(a: BigNumber | null | undefined, b: BigNumber | null | undefined): boolean {
   return !a && !b ? true : !a || !b ? false : a.eq(b);
 }
 
@@ -339,7 +316,7 @@ const estimateMaxSpendable = async ({
   parentAccount: Account | undefined;
   transaction: Transaction;
 }): Promise<BigNumber> => {
-  const mainAccount = getMainAccount(account, parentAccount);
+  const mainAccount = getMainAccount(account, parentAccount) as TezosAccount;
   const t = await prepareTransaction(mainAccount, {
     ...createTransaction(),
     ...transaction,
@@ -363,7 +340,7 @@ const scanAccounts = makeScanAccounts({ getAccountShape });
 
 const sync = makeSync({ getAccountShape });
 
-const getPreloadStrategy = (_currency) => ({
+const getPreloadStrategy = _currency => ({
   preloadMaxAge: 30 * 1000,
 });
 
@@ -396,6 +373,8 @@ const accountBridge: AccountBridge<Transaction> = {
   receive,
   signOperation,
   broadcast,
+  assignToAccountRaw,
+  assignFromAccountRaw,
 };
 
 export default { currencyBridge, accountBridge };

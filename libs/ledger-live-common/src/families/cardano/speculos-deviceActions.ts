@@ -1,54 +1,57 @@
 import type { DeviceAction } from "../../bot/types";
 import type { Transaction } from "./types";
-import { formatCurrencyUnit } from "../../currencies";
-import { deviceActionFlow } from "../../bot/specs";
-import { Unit } from "@ledgerhq/cryptoassets";
-import BigNumber from "bignumber.js";
+import { deviceActionFlow, formatDeviceAmount, SpeculosButton } from "../../bot/specs";
 
-function expectedValue(unit: Unit, value: BigNumber) {
-  return formatCurrencyUnit(unit, value, {
-    showCode: true,
-    disableRounding: true,
-    showAllDigits: true,
-  });
-}
-
-const acceptTransaction: DeviceAction<Transaction, any> = deviceActionFlow({
+export const acceptTransaction: DeviceAction<Transaction, any> = deviceActionFlow({
   steps: [
     {
       title: "Start new",
     },
     {
       title: "ordinary transaction?",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
     },
     {
       title: "Auxiliary data hash",
-      button: "LRlr",
+      button: SpeculosButton.BOTH,
     },
     {
       title: "Send to address",
-      button: "LRlr",
+      button: SpeculosButton.BOTH,
       ignoreAssertionFailure: true,
       expectedValue: ({ transaction }) => transaction.recipient,
     },
     {
       title: "Send",
-      button: "LRlr",
+      button: SpeculosButton.BOTH,
       ignoreAssertionFailure: true,
-      expectedValue: ({ account, status }) =>
-        expectedValue(account.unit, status.amount),
+      expectedValue: ({ account, status }) => formatDeviceAmount(account.currency, status.amount),
+    },
+    {
+      title: "Asset fingerprint",
+      button: SpeculosButton.BOTH,
+    },
+    {
+      title: "Token amount",
+      button: SpeculosButton.BOTH,
+    },
+    {
+      title: "Confirm",
+    },
+    {
+      title: "output?",
+      button: SpeculosButton.RIGHT,
     },
     {
       title: "Transaction fee",
-      button: "LRlr",
+      button: SpeculosButton.BOTH,
       ignoreAssertionFailure: true,
       expectedValue: ({ account, status }) =>
-        expectedValue(account.unit, status.estimatedFees),
+        formatDeviceAmount(account.currency, status.estimatedFees),
     },
     {
       title: "Transaction TTL",
-      button: "LRlr",
+      button: SpeculosButton.BOTH,
     },
     {
       title: "...",
@@ -58,9 +61,7 @@ const acceptTransaction: DeviceAction<Transaction, any> = deviceActionFlow({
     },
     {
       title: "transaction?",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
     },
   ],
 });
-
-export default { acceptTransaction };

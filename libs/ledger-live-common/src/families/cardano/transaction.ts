@@ -1,20 +1,22 @@
 import type { Transaction, TransactionRaw } from "./types";
 import { BigNumber } from "bignumber.js";
 import {
+  formatTransactionStatusCommon as formatTransactionStatus,
   fromTransactionCommonRaw,
+  fromTransactionStatusRawCommon as fromTransactionStatusRaw,
   toTransactionCommonRaw,
-} from "../../transaction/common";
-import type { Account } from "../../types";
+  toTransactionStatusRawCommon as toTransactionStatusRaw,
+} from "@ledgerhq/coin-framework/transaction/common";
 import { getAccountUnit } from "../../account";
 import { formatCurrencyUnit } from "../../currencies";
+import type { Account } from "@ledgerhq/types-live";
 
 export const formatTransaction = (
   { mode, amount, recipient, useAllAmount, subAccountId }: Transaction,
-  mainAccount: Account
+  mainAccount: Account,
 ): string => {
   const account =
-    (subAccountId &&
-      (mainAccount.subAccounts || []).find((a) => a.id === subAccountId)) ||
+    (subAccountId && (mainAccount.subAccounts || []).find(a => a.id === subAccountId)) ||
     mainAccount;
   return `
   ${mode.toUpperCase()} ${
@@ -52,4 +54,11 @@ export const toTransactionRaw = (t: Transaction): TransactionRaw => {
   };
 };
 
-export default { formatTransaction, fromTransactionRaw, toTransactionRaw };
+export default {
+  formatTransaction,
+  fromTransactionRaw,
+  toTransactionRaw,
+  fromTransactionStatusRaw,
+  toTransactionStatusRaw,
+  formatTransactionStatus,
+};

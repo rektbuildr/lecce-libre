@@ -1,7 +1,6 @@
 import cashaddr from "cashaddrjs";
 import { Currency, isValidAddress } from "./wallet-btc";
 import { RecipientRequired, InvalidAddress } from "@ledgerhq/errors";
-import type { Account, CryptoCurrency, CryptoCurrencyIds } from "./../../types";
 import type {
   BitcoinOutput,
   BitcoinResources,
@@ -9,13 +8,18 @@ import type {
   NetworkInfo,
   UtxoStrategy,
 } from "./types";
+import { $Shape } from "utility-types";
+import type { TX, Input as WalletInput, Output as WalletOutput } from "./wallet-btc";
+import { BigNumber } from "bignumber.js";
+import { encodeOperationId } from "../../operation";
+import type { CryptoCurrency, CryptoCurrencyId } from "@ledgerhq/types-cryptoassets";
+import type { Account, Operation, OperationType } from "@ledgerhq/types-live";
 
 // correspond ~ to min relay fees but determined empirically for a tx to be accepted by network
 const minFees = {
   bitcoin: 1000,
   bitcoin_gold: 1000,
   pivx: 2000,
-  stakenet: 1000,
   stealthcoin: 2000,
   qtum: 4000,
   stratis: 2000,
@@ -23,13 +27,10 @@ const minFees = {
   viacoin: 2000,
   peercoin: 2000,
 };
-export const getMinRelayFee = (currency: CryptoCurrency): number =>
-  minFees[currency.id] || 0;
-export const inferFeePerByte = (t: Transaction, networkInfo: NetworkInfo) => {
+export const getMinRelayFee = (currency: CryptoCurrency): number => minFees[currency.id] || 0;
+export const inferFeePerByte = (t: Transaction, networkInfo: NetworkInfo): BigNumber => {
   if (t.feesStrategy) {
-    const speed = networkInfo.feeItems.items.find(
-      (item) => t.feesStrategy === item.speed
-    );
+    const speed = networkInfo.feeItems.items.find(item => t.feesStrategy === item.speed);
 
     if (!speed) {
       return networkInfo.feeItems.defaultFeePerByte;
@@ -60,7 +61,7 @@ export const isValidRecipient = async (params: {
     return Promise.reject(
       new InvalidAddress("", {
         currencyName: params.currency.name,
-      })
+      }),
     );
   }
   return Promise.resolve(null);
@@ -68,31 +69,21 @@ export const isValidRecipient = async (params: {
 type UTXOStatus =
   | {
       excluded: true;
-      reason: "pickUnconfirmedRBF" | "pickPendingNonRBF" | "userExclusion";
+      reason: "pickPendingUtxo" | "userExclusion";
     }
   | {
       excluded: false;
     };
-export const getUTXOStatus = (
-  utxo: BitcoinOutput,
-  utxoStrategy: UtxoStrategy
-): UTXOStatus => {
-  if (!utxoStrategy.pickUnconfirmedRBF && utxo.rbf && !utxo.blockHeight) {
+export const getUTXOStatus = (utxo: BitcoinOutput, utxoStrategy: UtxoStrategy): UTXOStatus => {
+  if (!utxo.blockHeight && !utxo.isChange) {
+    // exclude pending and not change utxo
     return {
       excluded: true,
-      reason: "pickUnconfirmedRBF",
-    };
-  }
-  if (!utxo.rbf && !utxo.blockHeight) {
-    return {
-      excluded: true,
-      reason: "pickPendingNonRBF",
+      reason: "pickPendingUtxo",
     };
   }
   if (
-    utxoStrategy.excludeUTXOs.some(
-      (u) => u.hash === utxo.hash && u.outputIndex === utxo.outputIndex
-    )
+    utxoStrategy.excludeUTXOs.some(u => u.hash === utxo.hash && u.outputIndex === utxo.outputIndex)
   ) {
     return {
       excluded: true,
@@ -124,21 +115,15 @@ type CoinLogic = {
   getAdditionals?: (arg0: { transaction: Transaction }) => string[];
   asExplicitTransactionRecipient?: (arg0: string) => string;
   onScreenTransactionRecipient?: (arg0: string) => string;
-  postBuildBitcoinResources?: (
-    arg0: Account,
-    arg1?: BitcoinResources
-  ) => BitcoinResources;
+  postBuildBitcoinResources?: (arg0: Account, arg1?: BitcoinResources) => BitcoinResources;
   syncReplaceAddress?: (addr: string) => string;
   injectGetAddressParams?: (arg0: Account) => any;
 };
 
-export const bchToCashaddrAddressWithoutPrefix = (recipient) =>
+export const bchToCashaddrAddressWithoutPrefix = (recipient): string =>
   recipient ? recipient.substring(recipient.indexOf(":") + 1) : recipient;
 
-export const perCoinLogic: Record<
-  CryptoCurrencyIds,
-  CoinLogic | null | undefined
-> = {
+export const perCoinLogic: Partial<Record<CryptoCurrencyId, CoinLogic>> = {
   zencash: {
     hasExtraData: true, // FIXME (legacy) investigate why we need this here and drop
   },
@@ -175,9 +160,156 @@ export const perCoinLogic: Record<
       const prefix = "bitcoincash:";
       return str.startsWith(prefix) ? str.slice(prefix.length) : str;
     },
-    syncReplaceAddress: (addr) => bchToCashaddrAddressWithoutPrefix(addr),
+    syncReplaceAddress: addr => bchToCashaddrAddressWithoutPrefix(addr),
     injectGetAddressParams: () => ({
       forceFormat: "cashaddr",
     }),
   },
+};
+
+export const mapTxToOperations = (
+  tx: TX,
+  currencyId: string,
+  accountId: string,
+  accountAddresses: Set<string>,
+  changeAddresses: Set<string>,
+): $Shape<Operation[]> => {
+  const operations: Operation[] = [];
+  const txId = tx.id;
+  const fee = new BigNumber(tx.fees ?? 0);
+  const blockHeight = tx.block?.height;
+  const blockHash = tx.block?.hash;
+  const date = new Date(tx.block?.time || tx.received_at);
+  const senders = new Set<string>();
+  const recipients: string[] = [];
+  let type: OperationType = "OUT";
+  let value = new BigNumber(0);
+  const hasFailed = false;
+  const accountInputs: WalletInput[] = [];
+  const accountOutputs: WalletOutput[] = [];
+  const syncReplaceAddress = perCoinLogic[currencyId]?.syncReplaceAddress;
+
+  for (const input of tx.inputs) {
+    if (input.address) {
+      senders.add(syncReplaceAddress ? syncReplaceAddress(input.address) : input.address);
+
+      if (input.value) {
+        if (accountAddresses.has(input.address)) {
+          // This address is part of the account
+          value = value.plus(input.value);
+          accountInputs.push(input);
+        }
+      }
+    }
+  }
+
+  // All inputs of a same transaction have the same sequence
+  const transactionSequenceNumber =
+    (accountInputs.length > 0 && accountInputs[0].sequence) || undefined;
+
+  const hasSpentNothing = value.eq(0);
+
+  // Change output is always the last one
+  const changeOutputIndex =
+    tx.outputs.length === 0
+      ? 0
+      : tx.outputs.map(o => o.output_index).reduce((p, c) => (p > c ? p : c));
+
+  for (const output of tx.outputs) {
+    if (output.address) {
+      if (!accountAddresses.has(output.address)) {
+        // The output doesn't belong to this account
+        if (
+          accountInputs.length > 0 && // It's a SEND operation
+          (tx.outputs.length === 1 || // The transaction has only 1 output
+            output.output_index < changeOutputIndex) // The output isn't the change output
+        ) {
+          recipients.push(syncReplaceAddress ? syncReplaceAddress(output.address) : output.address);
+        }
+      } else {
+        // The output belongs to this account
+        accountOutputs.push(output);
+
+        if (!changeAddresses.has(output.address)) {
+          // The output isn't a change output of this account
+          recipients.push(syncReplaceAddress ? syncReplaceAddress(output.address) : output.address);
+        } else {
+          // The output is a change output of this account,
+          // we count it as a recipient only in some special cases
+          if (
+            (recipients.length === 0 && output.output_index >= changeOutputIndex) ||
+            hasSpentNothing
+          ) {
+            recipients.push(
+              syncReplaceAddress ? syncReplaceAddress(output.address) : output.address,
+            );
+          }
+        }
+      }
+    }
+  }
+
+  if (accountInputs.length > 0) {
+    // It's a SEND operation
+    for (const output of accountOutputs) {
+      if (changeAddresses.has(output.address)) {
+        value = value.minus(output.value);
+      }
+    }
+
+    type = "OUT";
+    operations.push({
+      id: encodeOperationId(accountId, txId, type),
+      hash: txId,
+      type,
+      value,
+      fee,
+      senders: Array.from(senders),
+      recipients,
+      blockHeight,
+      blockHash,
+      transactionSequenceNumber,
+      accountId,
+      date,
+      hasFailed,
+      extra: {},
+    });
+  }
+
+  if (accountOutputs.length > 0) {
+    // It's a RECEIVE operation
+    const filterChangeAddresses = !!accountInputs.length;
+    let accountOutputCount = 0;
+    let finalAmount = new BigNumber(0);
+
+    for (const output of accountOutputs) {
+      if (!filterChangeAddresses || !changeAddresses.has(output.address)) {
+        finalAmount = finalAmount.plus(output.value);
+        accountOutputCount += 1;
+      }
+    }
+
+    if (accountOutputCount > 0) {
+      value = finalAmount;
+      type = "IN";
+      operations.push({
+        id: encodeOperationId(accountId, txId, type),
+        hash: txId,
+        type,
+        value,
+        fee,
+        senders: Array.from(senders),
+        recipients,
+        blockHeight,
+        blockHash,
+        transactionSequenceNumber,
+        accountId,
+        date,
+        hasFailed,
+        extra: {},
+      });
+    }
+  }
+
+  return operations;
 };

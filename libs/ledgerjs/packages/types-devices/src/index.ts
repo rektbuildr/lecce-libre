@@ -6,6 +6,7 @@ export enum DeviceModelId {
   nanoS = "nanoS",
   nanoSP = "nanoSP",
   nanoX = "nanoX",
+  stax = "stax",
 }
 /**
  * a DeviceModel contains all the information of a specific Ledger hardware wallet model.
@@ -25,6 +26,25 @@ export interface DeviceModel {
     writeCmdUuid: string;
     notifyUuid: string;
   }[];
+}
+
+/**
+ *
+ */
+export enum ChargingModes {
+  NONE = 0x00,
+  USB = 0x01,
+  QI = 0x02,
+}
+
+/**
+ * Series of flags to represent the health status of the Ledger hardware wallet battery.
+ */
+export interface BatteryStatusFlags {
+  charging: ChargingModes;
+  issueCharging: boolean;
+  issueTemperature: boolean;
+  issueBattery: boolean;
 }
 
 /**
@@ -87,7 +107,7 @@ export interface Transport {
     p1: number,
     p2: number,
     data?: Buffer,
-    statusList?: Array<number>
+    statusList?: Array<number>,
   ) => Promise<Buffer>;
 
   /**
@@ -113,20 +133,18 @@ export interface Transport {
    */
   setExchangeUnresponsiveTimeout: (unresponsiveTimeout: number) => void;
 
-  exchangeAtomicImpl: (
-    f: () => Promise<Buffer | void>
-  ) => Promise<Buffer | void>;
+  exchangeAtomicImpl: (f: () => Promise<Buffer | void>) => Promise<Buffer | void>;
 
   decorateAppAPIMethods: (
     self: Record<string, any>,
     methods: Array<string>,
-    scrambleKey: string
+    scrambleKey: string,
   ) => void;
 
   decorateAppAPIMethod: <R, A extends any[]>(
     methodName: string,
     f: (...args: A) => Promise<R>,
     ctx: any,
-    scrambleKey: string
+    scrambleKey: string,
   ) => (...args: A) => Promise<R>;
 }

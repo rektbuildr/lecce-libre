@@ -1,9 +1,8 @@
-/* eslint-disable import/no-unresolved */
 import React, { useMemo } from "react";
 import styled from "styled-components/native";
 import { Flex, Text } from "@ledgerhq/native-ui";
 import { useTranslation } from "react-i18next";
-import { CurrencyData } from "@ledgerhq/live-common/lib/market/types";
+import { CurrencyData } from "@ledgerhq/live-common/market/types";
 import { useLocale } from "../../../context/Locale";
 import { counterValueFormatter } from "../utils";
 import DeltaVariation from "../DeltaVariation";
@@ -49,13 +48,7 @@ const StatValue = styled(Flex).attrs({
   alignItems: "flex-end",
 })``;
 
-const StatRow = ({
-  label,
-  children,
-}: {
-  label: string;
-  children?: React.ReactNode;
-}) => (
+const StatRow = ({ label, children }: { label: string; children?: React.ReactNode }) => (
   <StatRowContainer>
     <Label>{label}</Label>
     <StatValue>{children}</StatValue>
@@ -72,13 +65,18 @@ export default function MarketStats({
   const { t } = useTranslation();
   const { locale } = useLocale();
 
+  let loc = locale;
+  // TEMPORARY : quick win to transform arabic to english
+  if (locale === "ar") {
+    loc = "en";
+  }
+
   const {
     marketcap,
     marketcapRank,
     totalVolume,
     high24h,
     low24h,
-    marketCapChangePercentage24h,
     circulatingSupply,
     totalSupply,
     maxSupply,
@@ -111,7 +109,7 @@ export default function MarketStats({
           {counterValueFormatter({
             currency: counterCurrency,
             value: price,
-            locale,
+            locale: loc,
             t,
           })}
         </TextLabel>
@@ -129,7 +127,7 @@ export default function MarketStats({
           {counterValueFormatter({
             currency: counterCurrency,
             value: totalVolume,
-            locale,
+            locale: loc,
             t,
           })}
         </TextLabel>
@@ -139,14 +137,14 @@ export default function MarketStats({
           {counterValueFormatter({
             currency: counterCurrency,
             value: low24h,
-            locale,
+            locale: loc,
             t,
           })}{" "}
           /{" "}
           {counterValueFormatter({
             currency: counterCurrency,
             value: high24h,
-            locale,
+            locale: loc,
             t,
           })}
         </TextLabel>
@@ -156,7 +154,7 @@ export default function MarketStats({
           {counterValueFormatter({
             currency: counterCurrency,
             value: ath,
-            locale,
+            locale: loc,
             t,
           })}{" "}
         </TextLabel>
@@ -167,7 +165,7 @@ export default function MarketStats({
           {counterValueFormatter({
             currency: counterCurrency,
             value: atl,
-            locale,
+            locale: loc,
             t,
           })}{" "}
         </TextLabel>
@@ -176,23 +174,19 @@ export default function MarketStats({
       <Separator />
       <Title>{t("market.marketList.marketCap")}</Title>
       <StatRow label={t("market.marketList.marketCap")}>
-        <TextLabel>
-          {counterValueFormatter({
-            currency: counterCurrency,
-            value: marketcap,
-            locale,
-            t,
-          })}
-        </TextLabel>
+        {typeof marketcap === "number" ? (
+          <TextLabel>
+            {counterValueFormatter({
+              currency: counterCurrency,
+              value: marketcap,
+              locale: loc,
+              t,
+            })}
+          </TextLabel>
+        ) : null}
       </StatRow>
       <StatRow label={t("market.detailsPage.marketCapRank")}>
-        <TextLabel
-          bg="neutral.c40"
-          px={2}
-          py={1}
-          overflow="hidden"
-          borderRadius={4}
-        >
+        <TextLabel bg="neutral.c40" px={2} py={1} overflow="hidden" borderRadius={4}>
           {marketcapRank}
         </TextLabel>
       </StatRow>
@@ -202,7 +196,7 @@ export default function MarketStats({
         <TextLabel>
           {counterValueFormatter({
             value: circulatingSupply,
-            locale,
+            locale: loc,
             t,
           })}
         </TextLabel>
@@ -211,7 +205,7 @@ export default function MarketStats({
         <TextLabel>
           {counterValueFormatter({
             value: totalSupply,
-            locale,
+            locale: loc,
             t,
           })}
         </TextLabel>
@@ -220,7 +214,7 @@ export default function MarketStats({
         <TextLabel>
           {counterValueFormatter({
             value: maxSupply,
-            locale,
+            locale: loc,
             t,
           })}
         </TextLabel>

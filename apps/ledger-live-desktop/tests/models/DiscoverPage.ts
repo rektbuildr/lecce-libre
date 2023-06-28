@@ -1,113 +1,115 @@
 import { Page, Locator } from "@playwright/test";
+import { WebviewTag } from "../../src/renderer/components/Web3AppWebview/types";
+import { waitFor } from "../utils/waitFor";
 
 export class DiscoverPage {
   readonly page: Page;
+  readonly discoverTitle: Locator;
   readonly discoverMenuButton: Locator;
   readonly testAppCatalogItem: Locator;
-  readonly liveAppDisclaimerContinueButton: Locator;
+  readonly disclaimerTitle: Locator;
   readonly disclaimerText: Locator;
+  readonly liveAppTitle: Locator;
+  readonly liveAppLoadingSpinner: Locator;
   readonly getAllAccountsButton: Locator;
   readonly requestAccountButton: Locator;
-  readonly modal: Locator;
+  readonly selectAssetTitle: Locator;
+  readonly selectAssetSearchBar: Locator;
   readonly selectAccountTitle: Locator;
-  readonly selectAccountDropdown: Locator;
+  readonly selectBtcAsset: Locator;
   readonly selectBtcAccount: Locator;
-  readonly modalContinueButton: Locator;
-  readonly sidebar: Locator;
   readonly disclaimerCheckbox: Locator;
+  readonly signNetworkWarning: Locator;
+  readonly signContinueButton: Locator;
+  readonly confirmText: Locator;
+  readonly webview: Locator;
 
   constructor(page: Page) {
     this.page = page;
+    this.webview = page.locator("webview");
     this.discoverMenuButton = page.locator("data-test-id=drawer-catalog-button");
-    this.testAppCatalogItem = page.locator("#platform-catalog-app-playwright-test-live-app");
-    this.liveAppDisclaimerContinueButton = page.locator("button:has-text('Continue')");
+    this.discoverTitle = page.locator("data-test-id=discover-title");
+    this.testAppCatalogItem = page.locator("#platform-catalog-app-dummy-live-app");
+    this.disclaimerTitle = page.locator("data-test-id=live-app-disclaimer-drawer-title");
     this.disclaimerText = page.locator("text=External Application");
+    this.liveAppTitle = page.locator("data-test-id=live-app-title");
+    this.liveAppLoadingSpinner = page.locator("data-test-id=live-app-loading-spinner");
     this.getAllAccountsButton = page.locator("data-test-id=get-all-accounts-button"); // TODO: make this into its own model
     this.requestAccountButton = page.locator("data-test-id=request-single-account-button");
-    this.modal = page.locator("data-test-id=modal-container");
-    this.selectAccountTitle = page.locator("text=Choose a crypto asset)");
-
-    // FIXME: the bellow select dropdown at src/renderer/components/SelectAccountAndCurrency.js
-    //        is tricky to grab a hold of (subtree intercepts pointer events), need to find a
-    //        way of grabbing these custom elements
-    this.selectAccountDropdown = page.locator("//*[@data-test-id='select-account-dropdown']/div");
-    this.selectBtcAccount = page.locator("text=Bitcoin (BTC)");
-    this.modalContinueButton = page.locator("button:has-text('Continue')");
-    this.disclaimerCheckbox = page.locator("#dismiss-disclaimer");
-  }
-
-  async navigateToCatalog() {
-    await this.discoverMenuButton.click();
+    this.selectAssetTitle = page.locator("data-test-id=select-asset-drawer-title");
+    this.selectAssetSearchBar = page.locator("data-test-id=select-asset-drawer-search-input");
+    this.selectAccountTitle = page.locator("data-test-id=select-account-drawer-title");
+    this.selectBtcAsset = page.locator("text=Bitcoin").first();
+    this.selectBtcAccount = page.locator("text=Bitcoin 1 (legacy)").first();
+    this.disclaimerCheckbox = page.locator("data-test-id=dismiss-disclaimer");
+    this.signNetworkWarning = page.locator("text=Network fees are above 10% of the amount").first();
+    this.signContinueButton = page.locator("text=Continue");
+    this.confirmText = page.locator(
+      "text=Please confirm the operation on your device to finalize it",
+    );
   }
 
   async openTestApp() {
     await this.testAppCatalogItem.click();
+    await this.disclaimerTitle.waitFor({ state: "visible" });
   }
 
-  async waitForDisclaimerToBeVisible() {
-    // Waits for rest of the app to be opaque, meaning the sidebar has loaded
-    await this.page.waitForFunction(() => {
-      const sideDrawer = document.querySelector(".sidedrawer");
-      let sideDrawerStyles;
-      if (sideDrawer) {
-        sideDrawerStyles = window.getComputedStyle(sideDrawer);
-        return sideDrawerStyles.getPropertyValue("opacity") === "1";
-      }
-    });
-
-    // Not really necessary for test but forces the drawer to be visible for the screenshot
-    await this.disclaimerCheckbox.click();
+  async getLiveAppTitle() {
+    return await this.liveAppTitle.textContent();
   }
 
-  async waitForDisclaimerToBeHidden() {
-    await this.disclaimerText.waitFor({ state: "hidden" });
-  }
-
-  async acceptLiveAppDisclaimer() {
-    await this.liveAppDisclaimerContinueButton.click();
-  }
-
-  async waitForSelectAccountModalToBeVisible() {
-    await this.modal.waitFor({ state: "visible" });
-
-    await this.page.waitForFunction(() => {
-      const modal = document.querySelector("[data-test-id=modal-container]");
-      let modalStyles;
-      if (modal) {
-        modalStyles = window.getComputedStyle(modal);
-        return modalStyles.getPropertyValue("opacity") === "1";
-      }
-    });
-
-    await this.modal.click(); // hack to force the modal to be visible for the subsequent screenshot check
+  async getLiveAppDappURL() {
+    try {
+      const src = await this.webview.getAttribute("src");
+      const url = new URL(src ?? "");
+      const { dappUrl }: { dappUrl: string | null } = JSON.parse(
+        url.searchParams.get("params") ?? "",
+      );
+      return dappUrl;
+    } catch (e) {
+      return null;
+    }
   }
 
   async getAccountsList() {
     await this.clickWebviewElement("[data-test-id=get-all-accounts-button]");
   }
 
-  async requestAccount() {
+  async requestAsset() {
     await this.clickWebviewElement("[data-test-id=request-single-account-button]");
-    await this.waitForSelectAccountModalToBeVisible();
+    await this.selectAssetTitle.isVisible();
+    await this.selectAssetSearchBar.isEnabled();
   }
 
-  async openAccountDropdown() {
-    // FIXME - this isn't working without force. 'subtree intercepts pointer events' error
-    await this.selectAccountDropdown.click({ force: true });
+  async selectAsset() {
+    await this.selectBtcAsset.click();
   }
 
   async selectAccount() {
+    await this.selectAccountTitle.isVisible();
     // TODO: make this dynamic with passed in variable
-    await this.selectBtcAccount.click({ force: true });
-  }
-
-  async exitModal() {
-    // TODO: use modal.ts model
-    await this.modalContinueButton.click({ force: true });
+    await this.selectBtcAccount.click();
   }
 
   async verifyAddress() {
-    await this.clickWebviewElement("[data-test-id=verify-address-button]]");
+    await this.clickWebviewElement("[data-test-id=verify-address-button]");
+  }
+
+  async listCurrencies() {
+    await this.clickWebviewElement("[data-test-id=list-currencies-button]");
+  }
+
+  async signTransaction() {
+    await this.clickWebviewElement("[data-test-id=sign-transaction-button]");
+    await this.signNetworkWarning.waitFor({ state: "visible" });
+  }
+
+  async continueToSignTransaction() {
+    await this.signContinueButton.click({ force: true });
+  }
+
+  async waitForConfirmationScreenToBeDisplayed() {
+    await this.confirmText.waitFor({ state: "visible" });
   }
 
   async clickWebviewElement(elementName: string) {
@@ -121,23 +123,40 @@ export class DiscoverPage {
     `,
       );
     }, elementName);
-
-    await this.letLiveAppLoad();
   }
 
-  async letLiveAppLoad() {
-    /* 
-      This is cheeky. Basically it's pausing execution for 1 second.
-      The main reason is that it is tricky to wait for internal elements in the iframe
-      and the without a short pause after each Live App action the screenshots are very 
-      flaky. Adding a 1 second wait is not good practice but it will fix flakiness and it
-      should only be used in this cicumstance (hence the name 'letLiveAppLoad'). When 
-      waiting for elements in LLD we should always do proper waits. 
-    */
-    return new Promise(function(resolve) {
-      setTimeout(resolve, 1000);
-    });
+  async waitForCorrectTextInWebview(textToCheck: string) {
+    return waitFor(() => this.textIsPresent(textToCheck));
   }
 
-  // TODO: mocked device events for test
+  async textIsPresent(textToCheck: string) {
+    const result: boolean = await this.page.evaluate(textToCheck => {
+      const webview = document.querySelector("webview");
+      return (webview as any)
+        .executeJavaScript(
+          `(function() {
+        return document.querySelector('*').innerHTML;
+      })();
+    `,
+        )
+        .then((text: string) => {
+          return text.includes(textToCheck);
+        });
+    }, textToCheck);
+
+    return result;
+  }
+
+  send(request: Record<string, unknown>) {
+    const sendFunction = `
+      (function() {
+        return window.ledger.e2e.walletApi.send('${JSON.stringify(request)}');
+      })()
+    `;
+
+    return this.page.evaluate(functionToExecute => {
+      const webview = document.querySelector("webview") as WebviewTag;
+      return webview.executeJavaScript(functionToExecute);
+    }, sendFunction);
+  }
 }

@@ -1,38 +1,40 @@
 import type { BigNumber } from "bignumber.js";
-import type { Unit } from "../../types";
+import { EIP712Message } from "@ledgerhq/hw-app-eth/lib/modules/EIP712/EIP712.types";
+import type { Unit } from "@ledgerhq/types-cryptoassets";
+import type { TransactionMode, ModeModule } from "./modules";
+import type { Range, RangeRaw } from "../../range";
 import type {
   TransactionCommon,
   TransactionCommonRaw,
-} from "../../types/transaction";
-import type { TransactionMode, ModeModule } from "./modules";
-import type { Range, RangeRaw } from "../../range";
-import type { CryptoCurrency } from "../../types";
-import type { DerivationMode } from "../../derivation";
+  TransactionStatusCommon,
+  TransactionStatusCommonRaw,
+} from "@ledgerhq/types-live";
+import type { MessageData } from "../../hw/signMessage/types";
 
-export type EthereumGasLimitRequest = {
-  from?: string;
-  to?: string;
-  value?: string;
-  data?: string;
-  gas?: string;
-  gasPrice?: string;
-  amplifier: string;
-};
 export type NetworkInfo = {
   family: "ethereum";
-  gasPrice: Range;
+  gasPrice?: Range;
+  nextBaseFeePerGas?: BigNumber;
+  maxPriorityFeePerGas?: Range;
 };
+
 export type NetworkInfoRaw = {
   family: "ethereum";
-  gasPrice: RangeRaw;
+  gasPrice?: RangeRaw;
+  nextBaseFeePerGas?: string;
+  maxPriorityFeePerGas?: RangeRaw;
 };
+
 export type { TransactionMode, ModeModule };
+
 export type Transaction = TransactionCommon & {
   family: "ethereum";
   mode: TransactionMode;
   nonce?: number;
   data?: Buffer;
-  gasPrice: BigNumber | null | undefined;
+  gasPrice?: BigNumber | null | undefined;
+  maxFeePerGas?: BigNumber | null | undefined;
+  maxPriorityFeePerGas?: BigNumber | null | undefined;
   userGasLimit: BigNumber | null | undefined;
   estimatedGasLimit: BigNumber | null | undefined;
   feeCustomUnit: Unit | null | undefined;
@@ -41,14 +43,17 @@ export type Transaction = TransactionCommon & {
   collection?: string;
   collectionName?: string;
   tokenIds?: string[];
-  quantities?: BigNumber[];
+  quantities?: Array<BigNumber | null>;
 };
+
 export type TransactionRaw = TransactionCommonRaw & {
   family: "ethereum";
   mode: TransactionMode;
   nonce?: number;
   data?: string;
-  gasPrice: string | null | undefined;
+  gasPrice?: string | null | undefined;
+  maxFeePerGas?: string | null | undefined;
+  maxPriorityFeePerGas?: string | null | undefined;
   userGasLimit: string | null | undefined;
   estimatedGasLimit: string | null | undefined;
   feeCustomUnit: Unit | null | undefined;
@@ -59,36 +64,16 @@ export type TransactionRaw = TransactionCommonRaw & {
   collectionName?: string;
   quantities?: string[];
 };
-export type TypedMessage = {
-  types: {
-    EIP712Domain: [
-      {
-        type: string;
-        name: string;
-      }
-    ];
-    [key: string]: [
-      {
-        type: string;
-        name: string;
-      }
-    ];
-  };
-  primaryType: string;
-  domain: any;
-  message: any;
+
+export type TypedMessageData = Omit<MessageData, "message"> & {
+  message: EIP712Message;
   hashes: {
+    stringHash: string;
     domainHash: string;
     messageHash: string;
   };
 };
-export type TypedMessageData = {
-  currency: CryptoCurrency;
-  path: string;
-  verify?: boolean;
-  derivationMode: DerivationMode;
-  message: TypedMessage;
-  hashes: {
-    stringHash: string;
-  };
-};
+
+export type TransactionStatus = TransactionStatusCommon;
+
+export type TransactionStatusRaw = TransactionStatusCommonRaw;

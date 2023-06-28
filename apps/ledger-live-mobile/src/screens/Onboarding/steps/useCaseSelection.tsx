@@ -1,174 +1,178 @@
-import React, { useCallback, useMemo } from "react";
-import { Platform, SectionList } from "react-native";
+import React, { useCallback, useState } from "react";
+import { Linking } from "react-native";
 import { useTranslation } from "react-i18next";
-import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
-import { Flex, Text } from "@ledgerhq/native-ui";
-import Illustration from "../../../images/illustration/Illustration";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { Box, Flex, Icons, Text } from "@ledgerhq/native-ui";
+import { useFeature } from "@ledgerhq/live-common/featureFlags/index";
+import { DeviceModelId, getDeviceModel } from "@ledgerhq/devices";
+import { useTheme } from "styled-components/native";
+import { useDispatch } from "react-redux";
 import { TrackScreen } from "../../../analytics";
 import { ScreenName } from "../../../const";
 import OnboardingView from "../OnboardingView";
-import DiscoverCard from "../../Discover/DiscoverCard";
+import { StackNavigatorProps } from "../../../components/RootNavigator/types/helpers";
+import { OnboardingNavigatorParamList } from "../../../components/RootNavigator/types/OnboardingNavigator";
+import Button from "../../../components/Button";
+import QueuedDrawer from "../../../components/QueuedDrawer";
+import { SelectionCard } from "./SelectionCard";
+import { setOnboardingType } from "../../../actions/settings";
+import { OnboardingType } from "../../../reducers/types";
 
-// @TODO Replace
-const images = {
-  light: {
-    pairNew: require("../../../images/illustration/Light/_ConnectYourNano.png"),
-    setupNano: require("../../../images/illustration/Light/_NewNano.png"),
-    restoreRecoveryPhrase: require("../../../images/illustration/Light/_RestoreRecoveryPhrase.png"),
-    syncCrypto: require("../../../images/illustration/Light/_SyncCrypto.png"),
-  },
-  dark: {
-    pairNew: require("../../../images/illustration/Dark/_ConnectYourNano.png"),
-    setupNano: require("../../../images/illustration/Dark/_NewNano.png"),
-    restoreRecoveryPhrase: require("../../../images/illustration/Dark/_RestoreRecoveryPhrase.png"),
-    syncCrypto: require("../../../images/illustration/Dark/_SyncCrypto.png"),
-  },
-};
-
-type CurrentRouteType = RouteProp<
-  { params: { deviceModelId: string } },
-  "params"
+type NavigationProps = StackNavigatorProps<
+  OnboardingNavigatorParamList,
+  ScreenName.OnboardingUseCase
 >;
 
 const OnboardingStepUseCaseSelection = () => {
   const { t } = useTranslation();
-  const route = useRoute<CurrentRouteType>();
-  const navigation = useNavigation();
+  const route = useRoute<NavigationProps["route"]>();
+  const navigation = useNavigation<NavigationProps["navigation"]>();
+  const { colors } = useTheme();
+  const dispatch = useDispatch();
+  const [isProtectDrawerOpen, setIsProtectDrawerOpen] = useState(false);
+
+  const servicesConfig = useFeature("protectServicesMobile");
 
   const deviceModelId = route?.params?.deviceModelId;
+  const getProductName = (modelId: DeviceModelId) =>
+    getDeviceModel(modelId)?.productName.replace("Ledger", "").trimStart() || modelId;
 
-  const navigateTo = useCallback(
-    (screen: string, params?: any) => {
-      // @ts-expect-error issue in navigation types
-      navigation.navigate(screen, {
-        ...route.params,
-        ...params,
-      });
-    },
-    [navigation, route.params],
-  );
+  const onCloseProtectDrawer = useCallback(() => {
+    setIsProtectDrawerOpen(false);
+  }, []);
 
-  const useCases = useMemo(
-    () =>
-      Platform.OS === "ios" && deviceModelId !== "nanoX"
-        ? [
-            {
-              title: t("onboarding.stepUseCase.recovery"),
-              data: [
-                {
-                  onPress: () =>
-                    navigateTo(ScreenName.OnboardingImportAccounts, {
-                      showRecoveryWarning: true,
-                    }),
-                  Image: (
-                    <Illustration
-                      size={130}
-                      darkSource={images.dark.syncCrypto}
-                      lightSource={images.light.syncCrypto}
-                    />
-                  ),
-                  title: t("onboarding.stepUseCase.desktopSync.subTitle"),
-                  labelBadge: t("onboarding.stepUseCase.firstUse.label"),
-                  event: "Onboarding - Setup Import Accounts",
-                },
-              ],
-            },
-          ]
-        : [
-            {
-              title: t("onboarding.stepUseCase.firstUse.title"),
-              data: [
-                {
-                  onPress: () =>
-                    navigateTo(ScreenName.OnboardingModalSetupNewDevice),
-                  Image: (
-                    <Illustration
-                      size={130}
-                      darkSource={images.dark.setupNano}
-                      lightSource={images.light.setupNano}
-                    />
-                  ),
-                  title: t("onboarding.stepUseCase.firstUse.subTitle"),
-                  labelBadge: t("onboarding.stepUseCase.firstUse.label"),
-                  event: "Onboarding - Setup new",
-                },
-              ],
-            },
-            {
-              title: t("onboarding.stepUseCase.devicePairing.title"),
-              data: [
-                {
-                  onPress: () =>
-                    navigateTo(ScreenName.OnboardingPairNew, {
-                      showSeedWarning: true,
-                    }),
-                  Image: (
-                    <Illustration
-                      size={130}
-                      darkSource={images.dark.pairNew}
-                      lightSource={images.light.pairNew}
-                    />
-                  ),
-                  title: t("onboarding.stepUseCase.devicePairing.subTitle"),
-                  event: "Onboarding - Connect",
-                },
-                {
-                  onPress: () =>
-                    navigateTo(ScreenName.OnboardingRecoveryPhrase, {
-                      showSeedWarning: true,
-                    }),
-                  Image: (
-                    <Illustration
-                      size={130}
-                      darkSource={images.dark.restoreRecoveryPhrase}
-                      lightSource={images.light.restoreRecoveryPhrase}
-                    />
-                  ),
-                  labelBadge: t("onboarding.stepUseCase.firstUse.label"),
-                  title: t("onboarding.stepUseCase.restoreDevice.subTitle"),
-                  event: "Onboarding - Restore",
-                },
-                {
-                  onPress: () =>
-                    navigateTo(ScreenName.OnboardingImportAccounts),
-                  Image: (
-                    <Illustration
-                      size={130}
-                      darkSource={images.dark.syncCrypto}
-                      lightSource={images.light.syncCrypto}
-                    />
-                  ),
-                  title: t("onboarding.stepUseCase.desktopSync.subTitle"),
-                  event: "Onboarding - Setup Import Accounts",
-                },
-              ],
-            },
-          ],
-    [deviceModelId, navigateTo, t],
-  );
+  const onBuyNanoX = useCallback(() => {
+    Linking.openURL("https://shop.ledger.com/pages/ledger-nano-x");
+  }, []);
+
+  const onDiscoverBenefits = useCallback(() => {
+    Linking.openURL("http://ledger.com");
+  }, []);
+
+  const onPressNew = useCallback(() => {
+    dispatch(setOnboardingType(OnboardingType.setupNew));
+    navigation.navigate(ScreenName.OnboardingModalSetupNewDevice, {
+      deviceModelId,
+    });
+  }, [deviceModelId, dispatch, navigation]);
+
+  const onPressRecoveryPhrase = useCallback(() => {
+    dispatch(setOnboardingType(OnboardingType.restore));
+    navigation.navigate(ScreenName.OnboardingRecoveryPhrase, {
+      deviceModelId,
+      showSeedWarning: true,
+    });
+  }, [dispatch, navigation, deviceModelId]);
+
+  const onPressProtect = useCallback(() => {
+    if (deviceModelId === "nanoX") {
+      const deeplink = servicesConfig?.params.deeplink;
+
+      if (deeplink !== null) {
+        Linking.openURL(deeplink);
+      } else {
+        navigation.navigate(ScreenName.OnboardingPairNew, {
+          deviceModelId,
+          next: ScreenName.OnboardingProtectFlow,
+          isProtectFlow: true,
+        });
+      }
+    } else {
+      setIsProtectDrawerOpen(true);
+    }
+  }, [deviceModelId, navigation, servicesConfig?.params.deeplink]);
 
   return (
     <OnboardingView hasBackButton>
-      <SectionList
-        sections={useCases}
-        renderSectionHeader={({ section }) => (
-          <Text variant="h2" uppercase>
-            {t(section.title)}
-          </Text>
-        )}
-        renderItem={({ item }) => (
-          <DiscoverCard
-            cardProps={{ mx: 0 }}
-            titleProps={{ variant: "body", fontSize: 16 }}
-            {...item}
-          />
-        )}
-        SectionSeparatorComponent={({ leadingItem }) => (
-          <Flex mt={leadingItem ? "9" : "8"} />
-        )}
-        stickySectionHeadersEnabled={false}
+      <TrackScreen category="Onboarding" name="setup new options" />
+      <Text variant="h4" fontWeight="semiBold" mb={7}>
+        {t("onboarding.stepUseCase.firstUse.section", {
+          model: getProductName(deviceModelId),
+        })}
+      </Text>
+
+      <SelectionCard
+        title={t("onboarding.stepUseCase.firstUse.title")}
+        subTitle={t("onboarding.stepUseCase.firstUse.subTitle")}
+        event="button_clicked"
+        eventProperties={{
+          button: "Create a new wallet",
+        }}
+        testID={`Onboarding UseCase - Selection|New Wallet`}
+        onPress={onPressNew}
+        Icon={<Icons.PlusMedium color={colors.primary.c80} size={14} />}
       />
-      <TrackScreen category="Onboarding" name="UseCase" />
+
+      <Box mt={6}>
+        <SelectionCard
+          title={t("onboarding.stepUseCase.restoreDevice.title")}
+          subTitle={t("onboarding.stepUseCase.restoreDevice.subTitle")}
+          event="button_clicked"
+          eventProperties={{
+            button: "Restore with your secret phrase",
+          }}
+          testID={`Onboarding UseCase - Selection|Recovery phrase`}
+          onPress={onPressRecoveryPhrase}
+          Icon={<Icons.ListMedium color={colors.primary.c80} size={14} />}
+        />
+      </Box>
+
+      {servicesConfig?.enabled && (
+        <Box mt={6}>
+          <SelectionCard
+            title={t("onboarding.stepUseCase.protect.title")}
+            subTitle={t("onboarding.stepUseCase.protect.subTitle")}
+            event="button_clicked"
+            eventProperties={{
+              button: "Restore with ledger recover",
+            }}
+            testID={`Onboarding UseCase - Selection|Ledger Recover`}
+            onPress={onPressProtect}
+            Icon={<Icons.ShieldMedium color={colors.primary.c80} size={14} />}
+          />
+        </Box>
+      )}
+
+      <QueuedDrawer isRequestingToBeOpened={isProtectDrawerOpen} onClose={onCloseProtectDrawer}>
+        <Flex>
+          <Text variant="h4" textAlign="center" mb={6}>
+            {t("onboarding.stepUseCase.protect.drawer.title")}
+          </Text>
+          <Text variant="body" textAlign="center" color="neutral.c80" mb={8}>
+            {t("onboarding.stepUseCase.protect.drawer.desc")}
+          </Text>
+
+          <Button
+            type="main"
+            outline={false}
+            iconPosition="right"
+            iconName="ExternalLink"
+            onPress={onBuyNanoX}
+            mb={6}
+            event="button_clicked"
+            eventProperties={{
+              button: "Get a Ledger Nano X",
+              drawer: "Protect is available only on Nano X",
+            }}
+          >
+            {t("onboarding.stepUseCase.protect.drawer.buyNanoX")}
+          </Button>
+          <Button
+            type="default"
+            outline={false}
+            iconPosition="right"
+            iconName="ExternalLink"
+            onPress={onDiscoverBenefits}
+            event="link_clicked"
+            eventProperties={{
+              link: "Discover the benefits",
+              drawer: "Protect is available only on Nano X",
+            }}
+          >
+            {t("onboarding.stepUseCase.protect.drawer.discoverBenefits")}
+          </Button>
+        </Flex>
+      </QueuedDrawer>
     </OnboardingView>
   );
 };

@@ -1,10 +1,12 @@
 import React, { memo, useState, useCallback } from "react";
 import { TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
-import { Flex, Text, BottomDrawer, Icon as IconUI } from "@ledgerhq/native-ui";
+import { Flex, Text, Icon as IconUI } from "@ledgerhq/native-ui";
+import { IconType } from "@ledgerhq/native-ui/components/Icon/type";
+import QueuedDrawer from "../../components/QueuedDrawer";
 
-export const Badge = styled(Flex).attrs({
-  bg: "neutral.c30",
+export const Badge = styled(Flex).attrs((p: { bg?: string }) => ({
+  bg: p.bg ?? "neutral.c30",
   flexDirection: "row",
   mx: "6px",
   px: 4,
@@ -12,10 +14,9 @@ export const Badge = styled(Flex).attrs({
   justifyContent: " center",
   alignItems: "center",
   height: 32,
-})`
+}))`
   border-radius: 32px;
 `;
-Badge.mx = 6;
 
 const CheckIconContainer = styled(Flex).attrs({
   bg: "primary.c80",
@@ -30,29 +31,21 @@ const CheckIconContainer = styled(Flex).attrs({
 
 type Option = {
   label: string;
-  value: any;
-  requestParam: any;
+  value: unknown;
+  requestParam: unknown;
 };
 
 type Props = {
   label: string;
   valueLabel: string;
-  value: any;
-  Icon?: any;
+  value: unknown;
+  Icon?: IconType;
   options: Option[];
   disabled?: boolean;
-  onChange: (value: any) => void;
+  onChange: (_: unknown) => void;
 };
 
-function SortBadge({
-  label,
-  valueLabel,
-  value,
-  Icon,
-  options,
-  disabled,
-  onChange,
-}: Props) {
+function SortBadge({ label, valueLabel, value, Icon, options, disabled, onChange }: Props) {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
 
   const openDrawer = useCallback(() => setIsDrawerOpen(true), []);
@@ -76,44 +69,38 @@ function SortBadge({
           ) : null}
         </Badge>
       </TouchableOpacity>
-      <BottomDrawer isOpen={isDrawerOpen} onClose={closeDrawer} title={label}>
-        {options.map(
-          ({ label, value: optValue, requestParam }: Option, index) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() => {
-                onChange(requestParam);
-                closeDrawer();
-              }}
+      <QueuedDrawer isRequestingToBeOpened={isDrawerOpen} onClose={closeDrawer} title={label}>
+        {options.map(({ label, value: optValue, requestParam }: Option, index) => (
+          <TouchableOpacity
+            key={index}
+            onPress={() => {
+              onChange(requestParam);
+              closeDrawer();
+            }}
+          >
+            <Flex
+              flexDirection="row"
+              justifyContent="space-between"
+              alignItems="center"
+              height="48px"
+              my={2}
             >
-              <Flex
-                flexDirection="row"
-                justifyContent="space-between"
-                alignItems="center"
-                height="48px"
-                my={2}
+              <Text
+                variant="body"
+                fontWeight="semiBold"
+                color={value === optValue ? "primary.c80" : "neutral.c100"}
               >
-                <Text
-                  variant="body"
-                  fontWeight="semiBold"
-                  color={value === optValue ? "primary.c80" : "neutral.c100"}
-                >
-                  {label}
-                </Text>
-                {value === optValue ? (
-                  <CheckIconContainer>
-                    <IconUI
-                      name="CheckAlone"
-                      size={12}
-                      color="background.main"
-                    />
-                  </CheckIconContainer>
-                ) : null}
-              </Flex>
-            </TouchableOpacity>
-          ),
-        )}
-      </BottomDrawer>
+                {label}
+              </Text>
+              {value === optValue ? (
+                <CheckIconContainer>
+                  <IconUI name="CheckAlone" size={12} color="background.main" />
+                </CheckIconContainer>
+              ) : null}
+            </Flex>
+          </TouchableOpacity>
+        ))}
+      </QueuedDrawer>
     </>
   );
 }

@@ -1,21 +1,26 @@
 import React from "react";
 import Video, { OnLoadData, VideoProperties } from "react-native-video";
-import { View, StyleSheet, Animated } from "react-native";
-import { TpRegular } from "@ledgerhq/native-ui/assets/icons";
-import { withTheme } from "../../colors";
+import { View, StyleSheet, Animated, StyleProp, ViewStyle } from "react-native";
+import { ResizeMode } from "react-native-fast-image";
+import { Theme, withTheme } from "../../colors";
 import Skeleton from "../Skeleton";
+import NftImage from "./NftImage";
 
 type Props = {
-  style?: Object;
+  style?: StyleProp<ViewStyle>;
   status: string;
   src: string;
-  resizeMode?: VideoProperties["resizeMode"];
-  colors: any;
-  useFallback: boolean;
-  setUseFallback: (_useFallback: boolean) => void;
+  srcFallback: string;
+  resizeMode?: VideoProperties["resizeMode"] & ResizeMode;
+  colors: Theme["colors"];
+  children?: React.ReactNode | null;
 };
 
 class NftVideo extends React.PureComponent<Props> {
+  state = {
+    isPosterMode: false,
+  };
+
   opacityAnim = new Animated.Value(0);
 
   startAnimation = () => {
@@ -26,34 +31,20 @@ class NftVideo extends React.PureComponent<Props> {
     }).start();
   };
 
-  onLoad = (onLoadEvent: OnLoadData) => {
-    if (!onLoadEvent?.duration) {
-      this.props.setUseFallback(true);
-    }
+  onError = () => {
+    this.setState({ isPosterMode: true });
+    this.startAnimation();
   };
 
-  onError = () => {
-    this.props.setUseFallback(true);
+  onLoad = (onLoadEvent: OnLoadData) => {
+    if (!onLoadEvent?.duration) {
+      this.onError();
+    }
   };
 
   render() {
-    const {
-      style,
-      status,
-      src,
-      colors,
-      resizeMode = "cover",
-      setUseFallback,
-    } = this.props;
-
-    const noData = status === "nodata";
-    const metadataError = status === "error";
-    const noSource = status === "loaded" && !src;
-
-    if (noData || metadataError || noSource) {
-      setUseFallback(true);
-      return null;
-    }
+    const { style, src, colors, resizeMode = "cover", srcFallback, children } = this.props;
+    const { isPosterMode } = this.state;
 
     return (
       <View style={[style, styles.root]}>
@@ -66,25 +57,30 @@ class NftVideo extends React.PureComponent<Props> {
             },
           ]}
         >
-          <Video
-            style={[
-              styles.image,
-              {
-                backgroundColor: colors.white,
-              },
-            ]}
-            resizeMode={resizeMode}
-            source={{
-              uri: src,
-            }}
-            onLoad={this.onLoad}
-            onReadyForDisplay={this.startAnimation}
-            onError={this.onError}
-            repeat={true}
-            controls={true}
-            paused={true}
-          />
+          {isPosterMode ? (
+            <NftImage {...this.props} status="loaded" src={srcFallback} />
+          ) : (
+            <Video
+              style={[
+                styles.image,
+                {
+                  backgroundColor: colors.white,
+                },
+              ]}
+              resizeMode={resizeMode}
+              source={{
+                uri: src,
+              }}
+              onLoad={this.onLoad}
+              onReadyForDisplay={this.startAnimation}
+              onError={this.onError}
+              repeat={true}
+              controls={true}
+              paused={true}
+            />
+          )}
         </Animated.View>
+        {children}
       </View>
     );
   }

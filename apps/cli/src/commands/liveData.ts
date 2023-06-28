@@ -3,8 +3,8 @@ import { reduce, mergeMap } from "rxjs/operators";
 import fs from "fs";
 import { scan, scanCommonOpts } from "../scan";
 import type { ScanCommonOpts } from "../scan";
-import { toAccountRaw } from "@ledgerhq/live-common/lib/account/serialization";
-import { Account } from "@ledgerhq/live-common/lib/types";
+import { toAccountRaw } from "@ledgerhq/live-common/account/serialization";
+import { Account } from "@ledgerhq/types-live";
 export default {
   description: "utility for Ledger Live app.json file",
   args: [
@@ -27,14 +27,11 @@ export default {
       Partial<{
         appjson: string;
         add: boolean;
-      }>
+      }>,
   ) =>
     scan(opts).pipe(
-      reduce<Account, Account[]>(
-        (accounts, account) => accounts.concat(account),
-        []
-      ),
-      mergeMap((accounts) => {
+      reduce<Account, Account[]>((accounts, account) => accounts.concat(account), []),
+      mergeMap(accounts => {
         const appjsondata = opts.appjson
           ? JSON.parse(fs.readFileSync(opts.appjson, "utf-8"))
           : {
@@ -44,15 +41,13 @@ export default {
             };
 
         if (typeof appjsondata.data.accounts === "string") {
-          return throwError(
-            new Error("encrypted ledger live data is not supported")
-          );
+          return throwError(new Error("encrypted ledger live data is not supported"));
         }
 
-        const existingIds = appjsondata.data.accounts.map((a) => a.data.id);
+        const existingIds = appjsondata.data.accounts.map(a => a.data.id);
         const append = accounts
-          .filter((a) => !existingIds.includes(a.id))
-          .map((account) => ({
+          .filter(a => !existingIds.includes(a.id))
+          .map(account => ({
             data: toAccountRaw(account),
             version: 1,
           }));
@@ -64,6 +59,6 @@ export default {
         } else {
           return of(JSON.stringify(appjsondata));
         }
-      })
+      }),
     ),
 };

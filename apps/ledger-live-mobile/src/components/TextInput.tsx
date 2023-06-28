@@ -1,7 +1,7 @@
 import React from "react";
 import { Platform, TextInput as NativeTextInput } from "react-native";
 import { BaseInput } from "@ledgerhq/native-ui";
-import { InputProps } from "@ledgerhq/native-ui/components/Form/Input/BaseInput";
+import { InputProps } from "@ledgerhq/native-ui/components/Form/Input/BaseInput/index";
 
 export interface Props extends InputProps {
   withSuggestions?: boolean;
@@ -9,7 +9,7 @@ export interface Props extends InputProps {
 
 function TextInput(
   { withSuggestions, ...props }: Props,
-  ref: React.ForwardedRef<NativeTextInput>,
+  ref?: React.ForwardedRef<NativeTextInput>,
 ) {
   const flags: Partial<InputProps> = {};
 

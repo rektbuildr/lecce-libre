@@ -1,238 +1,213 @@
-import React, { Component } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
-import { useIsFocused } from "@react-navigation/native";
-import { useDispatch } from "react-redux";
+import { useIsFocused, useNavigation, useRoute } from "@react-navigation/native";
 import { Trans } from "react-i18next";
-import manager from "@ledgerhq/live-common/lib/manager";
-import { disconnect } from "@ledgerhq/live-common/lib/hw";
-import { Device } from "@ledgerhq/live-common/lib/hw/actions/types";
+import { Device } from "@ledgerhq/live-common/hw/actions/types";
+import { BluetoothRequired } from "@ledgerhq/errors";
 
-import connectManager from "@ledgerhq/live-common/lib/hw/connectManager";
-import { createAction } from "@ledgerhq/live-common/lib/hw/actions/manager";
-import { Text } from "@ledgerhq/native-ui";
-import { removeKnownDevice } from "../../actions/ble";
+import connectManager from "@ledgerhq/live-common/hw/connectManager";
+import { createAction, Result } from "@ledgerhq/live-common/hw/actions/manager";
+import { useFeature } from "@ledgerhq/live-common/featureFlags/index";
+import { Flex, Text } from "@ledgerhq/native-ui";
+
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScreenName } from "../../const";
-import { ManagerTab } from "./Manager";
+import SelectDevice2, { SetHeaderOptionsRequest } from "../../components/SelectDevice2";
 import SelectDevice from "../../components/SelectDevice";
+import RemoveDeviceMenu from "../../components/SelectDevice2/RemoveDeviceMenu";
 import TrackScreen from "../../analytics/TrackScreen";
-// @FlowFixMe
 import { track } from "../../analytics";
-import Button from "../../components/Button";
-// @FlowFixMe
-import type { DeviceLike } from "../../reducers/ble";
-import Trash from "../../icons/Trash";
-import BottomModal from "../../components/BottomModal";
-import ModalBottomAction from "../../components/ModalBottomAction";
 import NavigationScrollView from "../../components/NavigationScrollView";
 import DeviceActionModal from "../../components/DeviceActionModal";
-import Illustration from "../../images/illustration/Illustration";
+import {
+  BaseComposite,
+  ReactNavigationHeaderOptions,
+  StackNavigatorProps,
+} from "../../components/RootNavigator/types/helpers";
+import { ManagerNavigatorStackParamList } from "../../components/RootNavigator/types/ManagerNavigator";
+import ServicesWidget from "../../components/ServicesWidget";
 
-const darkImg = require("../../images/illustration/Dark/_079.png");
-const lightImg = require("../../images/illustration/Light/_079.png");
+import { TAB_BAR_SAFE_HEIGHT } from "../../components/TabBar/shared";
+
+import { useExperimental } from "../../experimental";
+import { HEIGHT as ExperimentalHeaderHeight } from "../Settings/Experimental/ExperimentalHeader";
 
 const action = createAction(connectManager);
 
-const RemoveDeviceModal = ({
-  onHideMenu,
-  remove,
-  open,
-  deviceName,
-}: {
-  onHideMenu: () => void;
-  remove: () => Promise<void>;
-  open: boolean;
-  deviceName: string;
-}) => (
-  <BottomModal id="DeviceItemModal" isOpened={open} onClose={onHideMenu}>
-    <ModalBottomAction
-      icon={
-        <Illustration size={100} darkSource={darkImg} lightSource={lightImg} />
-      }
-      title={deviceName}
-      uppercase={false}
-      footer={
-        <Button
-          event="HardResetModalAction"
-          type="alert"
-          IconLeft={Trash}
-          title={<Trans i18nKey="common.forgetDevice" />}
-          onPress={remove}
-        />
-      }
-    />
-  </BottomModal>
-);
+type NavigationProps = BaseComposite<
+  StackNavigatorProps<ManagerNavigatorStackParamList, ScreenName.Manager>
+>;
 
-type RouteParams = {
-  searchQuery?: string;
-  tab?: ManagerTab;
-  installApp?: string;
-  firmwareUpdate?: boolean;
-  device?: Device;
-  appsToRestore?: string[];
-};
+type Props = NavigationProps;
 
-type Props = {
-  navigation: any;
-  knownDevices: DeviceLike[];
-  route: {
-    params: RouteParams;
-    name: string;
-  };
+// Defines here some of the header options for this screen to be able to reset back to them.
+export const managerHeaderOptions: ReactNavigationHeaderOptions = {
+  headerShown: false,
 };
 
 type ChooseDeviceProps = Props & {
   isFocused: boolean;
-  removeKnownDevice: (d: string) => void;
 };
 
-class ChooseDevice extends Component<
-  ChooseDeviceProps,
-  {
-    showMenu: boolean;
-    device?: Device;
-    result?: Object;
-  }
-> {
-  state = {
-    showMenu: false,
-    device: undefined,
-    result: undefined,
-  };
+const ChooseDevice: React.FC<ChooseDeviceProps> = ({ isFocused }) => {
+  const [device, setDevice] = useState<Device | null>();
 
-  chosenDevice: Device;
+  const [chosenDevice, setChosenDevice] = useState<Device | null>();
+  const [showMenu, setShowMenu] = useState<boolean>(false);
+  const [isHeaderOverridden, setIsHeaderOverridden] = useState<boolean>(false);
 
-  onShowMenu = (device: Device) => {
-    this.chosenDevice = device;
-    this.setState({ showMenu: true });
-  };
+  const navigation = useNavigation<NavigationProps["navigation"]>();
+  const { params } = useRoute<NavigationProps["route"]>();
 
-  onHideMenu = () => {
-    this.setState({ showMenu: false });
-  };
+  const isExperimental = useExperimental();
+  const newDeviceSelectionFeatureFlag = useFeature("llmNewDeviceSelection");
 
-  onSelectDevice = (device?: Device) => {
+  const onSelectDevice = (device?: Device) => {
     if (device)
       track("ManagerDeviceEntered", {
         modelId: device.modelId,
       });
-    this.setState({ device });
+    setDevice(device);
   };
 
-  onSelect = (result: Object) => {
-    this.setState({ device: undefined, result });
-    const {
-      route: { params = {} },
-    } = this.props;
-    result?.result &&
-      this.props.navigation.navigate(ScreenName.ManagerMain, {
+  const onShowMenu = (device: Device) => {
+    setChosenDevice(device);
+    setShowMenu(true);
+  };
+
+  const onHideMenu = () => setShowMenu(false);
+
+  const onSelect = (result: Result) => {
+    setDevice(undefined);
+
+    if (result && "result" in result) {
+      // FIXME: nullable stuff not taken into account here?
+      // @ts-expect-error Result has nullable fields
+      navigation.navigate(ScreenName.ManagerMain, {
         ...result,
         ...params,
-        searchQuery: params.searchQuery || params.installApp,
+        searchQuery: params?.searchQuery || params?.installApp,
       });
-  };
-
-  onModalHide = () => {
-    this.setState({ device: undefined });
-  };
-
-  onStepEntered = (i: number, meta: Object) => {
-    if (i === 2) {
-      // we also preload as much info as possible in case of a MCU
-      manager.getLatestFirmwareForDevice(meta.deviceInfo).then(
-        () => {},
-        () => {},
-      );
     }
   };
 
-  remove = async () => {
-    const { removeKnownDevice } = this.props;
-    removeKnownDevice(this.chosenDevice.deviceId);
-    await disconnect(this.chosenDevice.deviceId).catch(() => {});
-    this.onHideMenu();
+  const onModalHide = () => {
+    setDevice(undefined);
   };
 
-  componentDidMount() {
-    this.setState(state => ({ ...state, device: this.props.route.params.device }));
-  }
+  const onError = (error: Error) => {
+    // Both the old (SelectDevice) and new (SelectDevice2) device selection components handle the bluetooth requirements with a hook + bottom drawer.
+    // By setting back the device to `undefined` it gives back the responsibilities to those select components to check for the bluetooth requirements
+    // and avoids a duplicated error drawers/messages.
+    // The only drawback: the user has to select again their device once the bluetooth requirements are respected.
+    if (error instanceof BluetoothRequired) {
+      setDevice(undefined);
+    }
+  };
 
-  render() {
-    const {
-      isFocused,
-      route: { params = {} },
-    } = this.props;
-    const { showMenu, device } = this.state;
+  useEffect(() => {
+    setDevice(params?.device);
+  }, [params]);
 
-    if (!isFocused) return null;
+  const requestToSetHeaderOptions = useCallback(
+    (request: SetHeaderOptionsRequest) => {
+      if (request.type === "set") {
+        navigation.setOptions({
+          headerShown: true,
+          headerLeft: request.options.headerLeft,
+          headerRight: request.options.headerRight,
+          title: "",
+        });
+        setIsHeaderOverridden(true);
+      } else {
+        // Sets back the header to its initial values set for this screen
+        navigation.setOptions({
+          headerLeft: () => null,
+          headerRight: () => null,
+          ...managerHeaderOptions,
+        });
+        setIsHeaderOverridden(false);
+      }
+    },
+    [navigation],
+  );
 
-    return (
-      <NavigationScrollView
-        style={[styles.root]}
-        contentContainerStyle={styles.scrollContainer}
-      >
-        <TrackScreen category="Manager" name="ChooseDevice" />
-        <Text fontWeight="semiBold" variant="h3">
-          <Trans i18nKey="manager.connect" />
-        </Text>
-        <SelectDevice
-          usbOnly={params?.firmwareUpdate}
-          autoSelectOnAdd
-          onSelect={this.onSelectDevice}
-          onStepEntered={this.onStepEntered}
-          onBluetoothDeviceAction={this.onShowMenu}
-        />
-        <DeviceActionModal
-          onClose={() => this.onSelectDevice()}
-          device={device}
-          onResult={this.onSelect}
-          onModalHide={this.onModalHide}
-          action={action}
-          request={null}
-        />
+  const insets = useSafeAreaInsets();
 
-        {this.chosenDevice && (
-          <RemoveDeviceModal
-            onHideMenu={this.onHideMenu}
-            open={showMenu}
-            remove={this.remove}
-            deviceName={this.chosenDevice.deviceName || ""}
+  if (!isFocused) return null;
+
+  return (
+    <Flex
+      /**
+       * NB: not using SafeAreaView because it flickers during navigation
+       * https://github.com/th3rdwave/react-native-safe-area-context/issues/219
+       */
+      flex={1}
+      pt={insets.top + (isExperimental ? ExperimentalHeaderHeight : 0)}
+    >
+      <TrackScreen category="Manager" name="ChooseDevice" />
+      {!isHeaderOverridden ? (
+        <Flex px={16} mb={8}>
+          <Text mt={3} fontWeight="semiBold" variant="h4" testID="manager-title">
+            <Trans i18nKey="manager.title" />
+          </Text>
+        </Flex>
+      ) : null}
+
+      {newDeviceSelectionFeatureFlag?.enabled ? (
+        <Flex flex={1} px={16} pb={insets.bottom + TAB_BAR_SAFE_HEIGHT}>
+          <SelectDevice2
+            onSelect={onSelectDevice}
+            stopBleScanning={!!device}
+            displayServicesWidget
+            requestToSetHeaderOptions={requestToSetHeaderOptions}
+            withMyLedgerTracking
           />
-        )}
-      </NavigationScrollView>
-    );
-  }
-}
+        </Flex>
+      ) : (
+        <NavigationScrollView
+          style={{ paddingBottom: insets.bottom + TAB_BAR_SAFE_HEIGHT }}
+          contentContainerStyle={styles.scrollContainer}
+        >
+          <SelectDevice
+            usbOnly={params?.firmwareUpdate}
+            autoSelectOnAdd
+            onSelect={onSelectDevice}
+            onBluetoothDeviceAction={onShowMenu}
+          />
+          {chosenDevice ? (
+            <RemoveDeviceMenu
+              open={showMenu}
+              device={chosenDevice as Device}
+              onHideMenu={onHideMenu}
+            />
+          ) : null}
+          <ServicesWidget />
+        </NavigationScrollView>
+      )}
+      <DeviceActionModal
+        onClose={() => onSelectDevice()}
+        device={device}
+        onResult={onSelect}
+        onModalHide={onModalHide}
+        action={action}
+        request={null}
+        onError={onError}
+      />
+    </Flex>
+  );
+};
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-  },
   scrollContainer: {
     paddingHorizontal: 16,
-  },
-  title: {
-    lineHeight: 27,
-    fontSize: 18,
-    marginVertical: 24,
-  },
-  footerContainer: {
-    flexDirection: "row",
-  },
-  buttonContainer: {
-    flex: 1,
+    flexGrow: 1,
+    justifyContent: "space-between",
   },
 });
 
 export default function Screen(props: Props) {
   const isFocused = useIsFocused();
-  const dispatch = useDispatch();
 
-  return (
-    <ChooseDevice
-      {...props}
-      isFocused={isFocused}
-      removeKnownDevice={(...args) => dispatch(removeKnownDevice(...args))}
-    />
-  );
+  return <ChooseDevice {...props} isFocused={isFocused} />;
 }

@@ -1,13 +1,13 @@
 import type { BigNumber } from "bignumber.js";
-import type {
-  Account as WalletAccount,
-  SerializedAccount as WalletAccountRaw,
-} from "./wallet-btc";
-
-import type {
+import type { Account as WalletAccount, SerializedAccount as WalletAccountRaw } from "./wallet-btc";
+import {
+  Account,
+  AccountRaw,
   TransactionCommon,
   TransactionCommonRaw,
-} from "../../types/transaction";
+  TransactionStatusCommon,
+  TransactionStatusCommonRaw,
+} from "@ledgerhq/types-live";
 
 export type BitcoinInput = {
   address: string | null | undefined;
@@ -15,12 +15,14 @@ export type BitcoinInput = {
   previousTxHash: string | null | undefined;
   previousOutputIndex: number;
 };
+
 export type BitcoinInputRaw = [
   string | null | undefined,
   string | null | undefined,
   string | null | undefined,
-  number
+  number,
 ];
+
 export type BitcoinOutput = {
   hash: string;
   outputIndex: number;
@@ -30,6 +32,7 @@ export type BitcoinOutput = {
   rbf: boolean;
   isChange: boolean;
 };
+
 export type BitcoinOutputRaw = [
   string,
   number,
@@ -37,12 +40,14 @@ export type BitcoinOutputRaw = [
   string | null | undefined,
   string,
   number, // rbf 0/1 for compression
-  number
+  number,
 ];
+
 export type BitcoinResources = {
   utxos: BitcoinOutput[];
   walletAccount?: WalletAccount;
 };
+
 export type BitcoinResourcesRaw = {
   utxos: BitcoinOutputRaw[];
   walletAccount?: WalletAccountRaw;
@@ -123,26 +128,48 @@ export const bitcoinPickingStrategy = {
   MERGE_OUTPUTS: 2,
 };
 export type BitcoinPickingStrategy =
-  typeof bitcoinPickingStrategy[keyof typeof bitcoinPickingStrategy];
+  (typeof bitcoinPickingStrategy)[keyof typeof bitcoinPickingStrategy];
+
 export type UtxoStrategy = {
   strategy: BitcoinPickingStrategy;
-  pickUnconfirmedRBF: boolean;
   excludeUTXOs: Array<{
     hash: string;
     outputIndex: number;
   }>;
 };
+
 export type Transaction = TransactionCommon & {
   family: "bitcoin";
   utxoStrategy: UtxoStrategy;
   rbf: boolean;
   feePerByte: BigNumber | null | undefined;
   networkInfo: NetworkInfo | null | undefined;
+  opReturnData?: Buffer;
 };
+
 export type TransactionRaw = TransactionCommonRaw & {
   family: "bitcoin";
   utxoStrategy: UtxoStrategy;
   rbf: boolean;
   feePerByte: string | null | undefined;
   networkInfo: NetworkInfoRaw | null | undefined;
+  opReturnData?: Buffer;
+};
+
+export type TransactionStatus = TransactionStatusCommon & {
+  txInputs?: BitcoinInput[];
+  txOutputs?: BitcoinOutput[];
+  opReturnData?: string;
+};
+
+export type TransactionStatusRaw = TransactionStatusCommonRaw & {
+  txInputs?: BitcoinInputRaw[];
+  txOutputs?: BitcoinOutputRaw[];
+  opReturnData?: string;
+};
+
+export type BitcoinAccount = Account & { bitcoinResources: BitcoinResources };
+
+export type BitcoinAccountRaw = AccountRaw & {
+  bitcoinResources: BitcoinResourcesRaw;
 };

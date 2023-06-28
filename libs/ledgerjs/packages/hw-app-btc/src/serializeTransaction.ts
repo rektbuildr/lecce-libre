@@ -11,7 +11,7 @@ export function serializeTransactionOutputs({ outputs }: Transaction): Buffer {
 
   if (typeof outputs !== "undefined") {
     outputBuffer = Buffer.concat([outputBuffer, createVarint(outputs.length)]);
-    outputs.forEach((output) => {
+    outputs.forEach(output => {
       outputBuffer = Buffer.concat([
         outputBuffer,
         output.amount,
@@ -27,14 +27,14 @@ export function serializeTransaction(
   transaction: Transaction,
   skipWitness: boolean,
   timestamp?: Buffer,
-  additionals: string[] = []
+  additionals: string[] = [],
 ) {
   const isDecred = additionals.includes("decred");
+  const isZcash = additionals.includes("zcash");
   const isBech32 = additionals.includes("bech32");
   let inputBuffer = Buffer.alloc(0);
-  const useWitness =
-    typeof transaction["witness"] != "undefined" && !skipWitness;
-  transaction.inputs.forEach((input) => {
+  const useWitness = typeof transaction["witness"] != "undefined" && !skipWitness;
+  transaction.inputs.forEach(input => {
     inputBuffer =
       isDecred || isBech32
         ? Buffer.concat([
@@ -53,10 +53,7 @@ export function serializeTransaction(
   });
   let outputBuffer = serializeTransactionOutputs(transaction);
 
-  if (
-    typeof transaction.outputs !== "undefined" &&
-    typeof transaction.locktime !== "undefined"
-  ) {
+  if (typeof transaction.outputs !== "undefined" && typeof transaction.locktime !== "undefined") {
     outputBuffer = Buffer.concat([
       outputBuffer,
       (useWitness && transaction.witness) || Buffer.alloc(0),
@@ -65,7 +62,20 @@ export function serializeTransaction(
       transaction.extraData || Buffer.alloc(0),
     ]);
   }
-
+  // from to https://zips.z.cash/zip-0225, zcash is different with other coins, the lock_time and nExpiryHeight fields are before the inputs and outputs
+  if (isZcash) {
+    return Buffer.concat([
+      transaction.version,
+      transaction.nVersionGroupId || Buffer.alloc(0),
+      Buffer.from([0xb4, 0xd0, 0xd6, 0xc2]), // Zcash Consensus Branch ID: 0xC2D6D0B4 refer to https://z.cash/upgrade/nu5/
+      transaction.locktime || Buffer.from([0x00, 0x00, 0x00, 0x00]),
+      transaction.nExpiryHeight || Buffer.from([0x00, 0x00, 0x00, 0x00]),
+      useWitness ? Buffer.from("0001", "hex") : Buffer.alloc(0),
+      createVarint(transaction.inputs.length),
+      inputBuffer,
+      outputBuffer,
+    ]);
+  }
   return Buffer.concat([
     transaction.version,
     timestamp ? timestamp : Buffer.alloc(0),

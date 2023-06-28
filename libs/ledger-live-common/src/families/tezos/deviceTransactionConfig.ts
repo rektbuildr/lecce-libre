@@ -1,5 +1,5 @@
-import type { AccountLike, Account, TransactionStatus } from "../../types";
-import type { Transaction } from "./types";
+import type { AccountLike, Account } from "@ledgerhq/types-live";
+import type { Transaction, TransactionStatus } from "./types";
 import type { DeviceTransactionField } from "../../transaction";
 import { getMainAccount } from "../../account";
 export type ExtraDeviceTransactionField =
@@ -24,10 +24,7 @@ function getDeviceTransactionConfig({
   status: TransactionStatus;
 }): Array<DeviceTransactionField> {
   const mainAccount = getMainAccount(account, parentAccount);
-  const source =
-    account.type === "ChildAccount"
-      ? account.address
-      : mainAccount.freshAddress;
+  const source = account.type === "ChildAccount" ? account.address : mainAccount.freshAddress;
   const isDelegateOperation = mode === "delegate";
   const fields: Array<DeviceTransactionField> = [
     {
@@ -47,7 +44,7 @@ function getDeviceTransactionConfig({
         type: "address",
         label: "Delegate",
         address: recipient,
-      }
+      },
     );
   }
 

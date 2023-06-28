@@ -8,12 +8,6 @@ const StyledSVG = styled(Svg)`
   width: 100%;
 `;
 
-type StopType = {
-  offset: string;
-  stopOpacity: number;
-  stopColor: string;
-};
-
 type Props = {
   height: number;
   opacity: number;
@@ -34,14 +28,7 @@ const BackgroundGradient = ({ height, opacity, stops }: Props) => (
         {stops}
       </LinearGradient>
     </Defs>
-    <Rect
-      x="0"
-      y="0"
-      width="100%"
-      height="100%"
-      opacity={opacity}
-      fill="url(#myGradient)"
-    />
+    <Rect x="0" y="0" width="100%" height="100%" opacity={opacity} fill="url(#myGradient)" />
   </StyledSVG>
 );
 

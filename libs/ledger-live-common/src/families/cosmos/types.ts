@@ -1,9 +1,14 @@
 import type { BigNumber } from "bignumber.js";
-import type {
+import {
+  Account,
+  AccountRaw,
+  Operation,
+  OperationRaw,
   TransactionCommon,
   TransactionCommonRaw,
-} from "../../types/transaction";
-import type { Operation, OperationRaw } from "../../types/operation";
+  TransactionStatusCommon,
+  TransactionStatusCommonRaw,
+} from "@ledgerhq/types-live";
 
 export type CosmosDelegationStatus =
   | "bonded" //  in the active set that generates rewards
@@ -27,6 +32,28 @@ export type CosmosUnbonding = {
   amount: BigNumber;
   completionDate: Date;
 };
+
+export type CosmosTx = {
+  code: number;
+  codespace: string;
+  data: string;
+  events: CosmosMessage[];
+  gas_used: string;
+  gas_wanted: string;
+  height: string;
+  info: string;
+  logs: any[];
+  raw_log: string;
+  timestamp: string;
+  tx: { "@type": string; body: any; auth_info: any; signatures: any[] };
+  txhash: string;
+};
+
+export type CosmosMessage = {
+  type: string;
+  attributes: { key: string; value: string; index?: boolean }[];
+};
+
 export type CosmosResources = {
   delegations: CosmosDelegation[];
   redelegations: CosmosRedelegation[];
@@ -73,19 +100,6 @@ export type CosmosValidatorItem = {
   estimatedYearlyRewardsRate: number; // value from 0.0 to 1.0 (normalized percentage)
   tokens: number;
 };
-export type CosmosRewardsState = {
-  targetBondedRatio: number;
-  communityPoolCommission: number;
-  assumedTimePerBlock: number;
-  inflationRateChange: number;
-  inflationMaxRate: number;
-  inflationMinRate: number;
-  actualBondedRatio: number;
-  averageTimePerBlock: number;
-  totalSupply: number;
-  averageDailyFees: number;
-  currentValueInflation: number;
-};
 // by convention preload would return a Promise of CosmosPreloadData
 export type CosmosPreloadData = {
   validators: CosmosValidatorItem[];
@@ -97,14 +111,25 @@ export type CosmosOperationMode =
   | "redelegate"
   | "claimReward"
   | "claimRewardCompound";
-export type NetworkInfo = {
-  family: "cosmos";
+
+export type CosmosLikeNetworkInfo = {
+  family: string;
   fees: BigNumber;
 };
-export type NetworkInfoRaw = {
-  family: "cosmos";
+
+export type CosmosLikeNetworkInfoRaw = {
+  family: string;
   fees: string;
 };
+
+export type NetworkInfo = CosmosLikeNetworkInfo & {
+  family: "cosmos";
+};
+
+export type NetworkInfoRaw = CosmosLikeNetworkInfoRaw & {
+  family: "cosmos";
+};
+
 export type CosmosOperation = Operation & {
   extra: CosmosExtraTxInfo;
 };
@@ -113,38 +138,55 @@ export type CosmosOperationRaw = OperationRaw & {
 };
 export type CosmosExtraTxInfo = {
   validators?: CosmosDelegationInfo[];
-  cosmosSourceValidator?: string | null | undefined;
+  sourceValidator?: string | null | undefined;
   validator?: CosmosDelegationInfo;
+  autoClaimedRewards?: string | null | undefined; // this is experimental to better represent auto claimed rewards
 };
 
 export type CosmosDelegationInfo = {
   address: string;
   amount: BigNumber;
 };
+
 export type CosmosDelegationInfoRaw = {
   address: string;
   amount: string;
 };
 
-export type Transaction = TransactionCommon & {
-  family: "cosmos";
+export type CosmosClaimedRewardInfo = {
+  amount: BigNumber;
+};
+
+export type CosmosLikeTransaction = TransactionCommon & {
+  family: string;
   mode: CosmosOperationMode;
-  networkInfo: NetworkInfo | null | undefined;
+  networkInfo: CosmosLikeNetworkInfo | null | undefined;
   fees: BigNumber | null | undefined;
   gas: BigNumber | null | undefined;
   memo: string | null | undefined;
   validators: CosmosDelegationInfo[];
-  cosmosSourceValidator: string | null | undefined;
+  sourceValidator: string | null | undefined;
 };
-export type TransactionRaw = TransactionCommonRaw & {
+
+export type Transaction = CosmosLikeTransaction & {
   family: "cosmos";
+  networkInfo: NetworkInfo | null | undefined;
+};
+
+export type CosmosLikeTransactionRaw = TransactionCommonRaw & {
+  family: string;
   mode: CosmosOperationMode;
-  networkInfo: NetworkInfoRaw | null | undefined;
+  networkInfo: CosmosLikeNetworkInfoRaw | null | undefined;
   fees: string | null | undefined;
   gas: string | null | undefined;
   memo: string | null | undefined;
   validators: CosmosDelegationInfoRaw[];
-  cosmosSourceValidator: string | null | undefined;
+  sourceValidator: string | null | undefined;
+};
+
+export type TransactionRaw = CosmosLikeTransactionRaw & {
+  family: "cosmos";
+  networkInfo: NetworkInfoRaw | null | undefined;
 };
 
 export type StatusErrorMap = {
@@ -157,14 +199,6 @@ export type StatusErrorMap = {
   unbonding?: Error;
   claimReward?: Error;
   feeTooHigh?: Error;
-};
-
-export type TransactionStatus = {
-  errors: StatusErrorMap;
-  warnings: StatusErrorMap;
-  estimatedFees: BigNumber;
-  amount: BigNumber;
-  totalSpent: BigNumber;
 };
 
 export type CosmosMappedDelegation = CosmosDelegation & {
@@ -191,5 +225,35 @@ export type CosmosMappedValidator = {
   validator: CosmosValidatorItem;
 };
 export type CosmosSearchFilter = (
-  query: string
+  query: string,
 ) => (delegation: CosmosMappedDelegation | CosmosMappedValidator) => boolean;
+export type CosmosAccount = Account & { cosmosResources: CosmosResources };
+export type CosmosAccountRaw = AccountRaw & {
+  cosmosResources: CosmosResourcesRaw;
+};
+export type TransactionStatus = TransactionStatusCommon;
+
+export type TransactionStatusRaw = TransactionStatusCommonRaw;
+
+export type CosmosTotalSupply = {
+  denom: string;
+  amount: string;
+};
+
+export type CosmosPool = {
+  not_bonded_tokens: string;
+  bonded_tokens: string;
+};
+
+export type CosmosDistributionParams = {
+  community_tax: string;
+  base_proposer_reward: string;
+  bonus_proposer_reward: string;
+  withdraw_addr_enabled: boolean;
+};
+
+export type CosmosCurrencyConfig = {
+  lcd: string;
+  minGasPrice: number;
+  ledgerValidator?: string;
+};

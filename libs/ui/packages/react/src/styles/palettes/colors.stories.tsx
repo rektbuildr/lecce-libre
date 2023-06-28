@@ -9,7 +9,7 @@ export default { title: "Particles" };
 const ColorArea = styled.div<{ type: keyof ColorPalette; shade: string }>`
   width: 200px;
   aspect-ratio: 1;
-  background-color: ${(p) => {
+  background-color: ${p => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore next-line
     return p.theme.colors[p.type][p.shade];
@@ -48,7 +48,7 @@ const { type: _, ...palette } = palettes.light;
 
 export const Colors = (): JSX.Element => (
   <Flex flexDirection="column" rowGap="2rem">
-    {Object.entries(palette).map(([type, shades]: [string, Array<string>]) => (
+    {Object.entries(palette).map(([type, shades]) => (
       <Flex flexDirection="column" rowGap="1rem">
         <Text variant="h2" textTransform="uppercase">
           {type}

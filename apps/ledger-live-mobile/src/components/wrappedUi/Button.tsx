@@ -1,24 +1,19 @@
 import React, { useCallback } from "react";
-import { ButtonProps } from "@ledgerhq/native-ui/components/cta/Button";
+import { ButtonProps } from "@ledgerhq/native-ui/components/cta/Button/index";
 import { Button as UiButton } from "@ledgerhq/native-ui";
 import { track } from "../../analytics";
 
 export type WrappedButtonProps = ButtonProps & {
   event?: string;
-  eventProperties?: Object;
+  eventProperties?: unknown;
 };
 
-export function Button({
-  onPress,
-  event,
-  eventProperties,
-  ...othersProps
-}: WrappedButtonProps) {
+function Button({ onPress, event, eventProperties, ...othersProps }: WrappedButtonProps) {
   const onPressHandler = useCallback(
     async pressEvent => {
       if (!onPress) return;
       if (event) {
-        track(event, eventProperties);
+        track(event, eventProperties as Record<string, unknown>);
       }
       onPress(pressEvent);
     },

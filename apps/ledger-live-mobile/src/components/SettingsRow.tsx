@@ -1,24 +1,32 @@
 import React, { ReactNode } from "react";
 import { StyleProp, TextStyle, ViewStyle } from "react-native";
-import { Box, Checkbox, Flex, Text } from "@ledgerhq/native-ui";
-import {
-  ChevronRightMedium,
-  InfoMedium,
-} from "@ledgerhq/native-ui/assets/icons";
+import { Box, Checkbox, Flex, Text, Tag } from "@ledgerhq/native-ui";
+import { ChevronRightMedium, InfoMedium } from "@ledgerhq/native-ui/assets/icons";
 import styled from "styled-components/native";
 import Touchable from "./Touchable";
 
-const StyledTouchableRow = styled(Touchable)<{ compact?: boolean }>`
-  background-color: ${p => p.theme.colors.palette.background.main};
+const StyledTouchableRow = styled(Touchable)<{
+  compact?: boolean;
+  hasBorderTop?: boolean;
+}>`
+  background-color: ${p => p.theme.colors.background.main};
   padding: ${p => p.theme.space[p.compact ? 6 : 7]}px ${p => p.theme.space[6]}px;
   flex-direction: row;
   align-items: center;
-  border-bottom-color: ${p => p.theme.colors.palette.neutral.c40};
+  border-bottom-color: ${p => p.theme.colors.neutral.c40};
   border-bottom-width: ${p => (p.compact ? 0 : 1)}px;
+  ${p =>
+    p.hasBorderTop
+      ? `
+    border-top-color: ${p.theme.colors.neutral.c40};
+    border-top-width: ${p.compact ? 0 : 1}px;
+  `
+      : ``}
 `;
 
 export default function SettingsRow({
   onPress,
+  onLongPress,
   onHelpPress,
   title,
   titleStyle,
@@ -35,8 +43,12 @@ export default function SettingsRow({
   event,
   eventProperties,
   compact,
+  label,
+  testID,
+  hasBorderTop,
 }: {
   onPress?: () => void;
+  onLongPress?: () => void;
   onHelpPress?: () => void;
   title: ReactNode;
   subtitle?: string;
@@ -46,35 +58,27 @@ export default function SettingsRow({
   desc?: ReactNode;
   selected?: boolean;
   arrowRight?: boolean;
-  iconLeft?: any;
+  iconLeft?: React.ReactNode;
   centeredIcon?: boolean;
   children?: ReactNode;
   noTextDesc?: boolean;
   event?: string;
-  eventProperties?: Object;
+  eventProperties?: Record<string, unknown>;
   compact?: boolean;
+  label?: string;
+  hasBorderTop?: boolean;
+  testID?: string;
 }) {
   let title$ = (
-    <Flex
-      flexDirection={"row"}
-      alignItems={"center"}
-      style={titleContainerStyle}
-    >
-      <Text
-        variant={"large"}
-        fontWeight={"semiBold"}
-        color={"neutral.c100"}
-        style={[titleStyle]}
-      >
-        {title}
-      </Text>
+    <Flex flexDirection={"row"} alignItems={"center"} style={titleContainerStyle}>
+      <Flex flexDirection={"row"} alignItems={"center"}>
+        <Text variant={"large"} fontWeight={"semiBold"} color={"neutral.c100"} style={[titleStyle]}>
+          {title}
+        </Text>
+        {label ? <Tag ml={3}>{label}</Tag> : null}
+      </Flex>
       {subtitle && (
-        <Text
-          variant={"body"}
-          fontWeight={"medium"}
-          color={"neutral.c70"}
-          ml={3}
-        >
+        <Text variant={"body"} fontWeight={"medium"} color={"neutral.c70"} ml={3}>
           {subtitle}
         </Text>
       )}
@@ -93,15 +97,18 @@ export default function SettingsRow({
   return (
     <StyledTouchableRow
       onPress={onPress}
+      onLongPress={onLongPress}
       event={event}
       eventProperties={eventProperties}
       style={style}
       compact={compact}
+      hasBorderTop={hasBorderTop}
+      testID={testID}
     >
       {iconLeft && (
-        <Box paddingRight={6} justifyContent={centeredIcon && "center"}>
+        <Flex paddingRight={6} justifyContent={centeredIcon ? "center" : undefined}>
           {iconLeft}
-        </Box>
+        </Flex>
       )}
       <Box flexShrink={1} paddingRight={6} marginRight={"auto"}>
         {title$}

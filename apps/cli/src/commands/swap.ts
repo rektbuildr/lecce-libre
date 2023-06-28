@@ -4,30 +4,25 @@ import {
   accountWithMandatoryTokens,
   getAccountCurrency,
   getMainAccount,
-} from "@ledgerhq/live-common/lib/account";
+} from "@ledgerhq/live-common/account/index";
 import { getAbandonSeedAddress, findTokenById } from "@ledgerhq/cryptoassets";
 import { from } from "rxjs";
 import { BigNumber } from "bignumber.js";
 import commandLineArgs from "command-line-args";
-import { delay } from "@ledgerhq/live-common/lib/promise";
+import { delay } from "@ledgerhq/live-common/promise";
 import { scan, scanCommonOpts } from "../scan";
 import type { ScanCommonOpts } from "../scan";
 import type {
   Exchange,
   ExchangeRate,
   InitSwapResult,
-} from "@ledgerhq/live-common/lib/exchange/swap/types";
-import { initSwap } from "@ledgerhq/live-common/lib/exchange/swap";
-import { getExchangeRates } from "@ledgerhq/live-common/lib/exchange/swap";
-import { getAccountBridge } from "@ledgerhq/live-common/lib/bridge";
-import { getAccountUnit } from "@ledgerhq/live-common/lib/account";
-import { formatCurrencyUnit } from "@ledgerhq/live-common/lib/currencies";
+} from "@ledgerhq/live-common/exchange/swap/types";
+import { initSwap, getExchangeRates } from "@ledgerhq/live-common/exchange/swap/index";
+import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
+import { getAccountUnit } from "@ledgerhq/live-common/account/index";
+import { formatCurrencyUnit } from "@ledgerhq/live-common/currencies/index";
 import invariant from "invariant";
-import {
-  Account,
-  SignedOperation,
-  SubAccount,
-} from "@ledgerhq/live-common/lib/types";
+import { Account, SignedOperation, SubAccount } from "@ledgerhq/types-live";
 type SwapJobOpts = ScanCommonOpts & {
   amount: string;
   useAllAmount: boolean;
@@ -39,23 +34,10 @@ type SwapJobOpts = ScanCommonOpts & {
 };
 
 const exec = async (opts: SwapJobOpts) => {
-  const {
-    amount,
-    useAllAmount,
-    tokenId,
-    useFloat,
-    wyreUserId = "",
-    deviceId = "",
-  } = opts;
-  invariant(
-    amount || useAllAmount,
-    `✖ amount in satoshis is needed or --useAllAmount `
-  );
+  const { amount, useAllAmount, tokenId, useFloat, wyreUserId = "", deviceId = "" } = opts;
+  invariant(amount || useAllAmount, `✖ amount in satoshis is needed or --useAllAmount `);
   invariant(opts._unknown, `✖ second account information is missing`);
-  invariant(
-    !wyreUserId || wyreUserId.length === 14,
-    "Provider wyre user id is not valid"
-  );
+  invariant(!wyreUserId || wyreUserId.length === 14, "Provider wyre user id is not valid");
 
   //Remove suffix from arguments before passing them to sync.
   const secondAccountOpts = commandLineArgs(
@@ -70,15 +52,13 @@ const exec = async (opts: SwapJobOpts) => {
     ],
     {
       argv: opts._unknown.map((a, i) => (i % 2 ? a : a.replace("_2", ""))),
-    }
+    },
   ) as ScanCommonOpts & { tokenId: string };
 
   console.log("• Open the source currency app");
   await delay(8000);
   let fromParentAccount: Account | null = null;
-  let fromAccount: Account | SubAccount | undefined = await scan(opts)
-    .pipe(take(1))
-    .toPromise();
+  let fromAccount: Account | SubAccount | undefined = await scan(opts).pipe(take(1)).toPromise();
   invariant(fromAccount, `✖ No account found, is the right currency app open?`);
   if (!fromAccount) {
     throw new Error(`✖ No account found, is the right currency app open?`);
@@ -89,19 +69,15 @@ const exec = async (opts: SwapJobOpts) => {
     const token = findTokenById(tokenId);
     invariant(token, `✖ No token currency found with id ${tokenId}`);
     if (!token) throw new Error(`✖ No token currency found with id ${tokenId}`);
-    const subAccounts =
-      accountWithMandatoryTokens(fromAccount, [token]).subAccounts || [];
-    const subAccount = subAccounts.find((t) => {
+    const subAccounts = accountWithMandatoryTokens(fromAccount, [token]).subAccounts || [];
+    const subAccount = subAccounts.find(t => {
       const currency = getAccountCurrency(t);
       return tokenId === currency.id;
     });
     // We have a token account, keep track of both now;
     fromParentAccount = fromAccount;
     fromAccount = subAccount;
-    invariant(
-      fromAccount,
-      `✖ No account found, is the right currency app open?`
-    );
+    invariant(fromAccount, `✖ No account found, is the right currency app open?`);
     if (!fromAccount) {
       throw new Error(`✖ No account found, is the right currency app open?`);
     }
@@ -112,34 +88,25 @@ const exec = async (opts: SwapJobOpts) => {
   }
 
   console.log("\t:id:\t\t", fromAccount.id);
-  const formattedAmount = formatCurrencyUnit(
-    getAccountUnit(fromAccount),
-    fromAccount.balance,
-    {
-      disableRounding: true,
-      alwaysShowSign: false,
-      showCode: true,
-    }
-  );
+  const formattedAmount = formatCurrencyUnit(getAccountUnit(fromAccount), fromAccount.balance, {
+    disableRounding: true,
+    alwaysShowSign: false,
+    showCode: true,
+  });
 
   if (fromAccount.type !== "ChildAccount") {
     console.log(
       "\t:balance:\t",
       fromAccount.spendableBalance.toString(),
-      ` [ ${formattedAmount} ]`
+      ` [ ${formattedAmount} ]`,
     );
   }
 
-  invariant(
-    fromAccount.balance.gte(new BigNumber(amount)),
-    `✖ Not enough balance`
-  );
+  invariant(fromAccount.balance.gte(new BigNumber(amount)), `✖ Not enough balance`);
   console.log("• Open the destination currency app");
   await delay(8000);
   let toParentAccount: Account | null = null;
-  let toAccount: Account | SubAccount | undefined = await scan(
-    secondAccountOpts
-  )
+  let toAccount: Account | SubAccount | undefined = await scan(secondAccountOpts)
     .pipe(take(1))
     .toPromise();
   invariant(toAccount, `✖ No account found`);
@@ -152,9 +119,8 @@ const exec = async (opts: SwapJobOpts) => {
     if (!token) {
       throw new Error(`✖ No token currency found with id ${tokenId2}`);
     }
-    const subAccounts =
-      accountWithMandatoryTokens(toAccount, [token]).subAccounts || [];
-    const subAccount = subAccounts.find((t) => {
+    const subAccounts = accountWithMandatoryTokens(toAccount, [token]).subAccounts || [];
+    const subAccount = subAccounts.find(t => {
       const currency = getAccountCurrency(t);
       return tokenId2 === currency.id;
     });
@@ -173,12 +139,10 @@ const exec = async (opts: SwapJobOpts) => {
 
   console.log("\t:id:\t\t", toAccount.id);
   const bridge = getAccountBridge(fromAccount, fromParentAccount);
-  let transaction = bridge.createTransaction(
-    getMainAccount(fromAccount, fromParentAccount)
-  );
+  let transaction = bridge.createTransaction(getMainAccount(fromAccount, fromParentAccount));
   transaction = bridge.updateTransaction(transaction, {
     recipient: getAbandonSeedAddress(
-      getAccountCurrency(getMainAccount(fromAccount, fromParentAccount)).id
+      getAccountCurrency(getMainAccount(fromAccount, fromParentAccount)).id,
     ),
     subAccountId: fromParentAccount ? fromAccount.id : undefined,
   });
@@ -200,7 +164,7 @@ const exec = async (opts: SwapJobOpts) => {
 
   transaction = await bridge.prepareTransaction(
     getMainAccount(fromAccount, fromParentAccount),
-    transaction
+    transaction,
   );
   const exchange: Exchange = {
     fromAccount,
@@ -209,15 +173,11 @@ const exec = async (opts: SwapJobOpts) => {
     toParentAccount,
   };
 
-  const exchangeRates = await getExchangeRates(
-    exchange,
-    transaction,
-    wyreUserId
-  );
+  const exchangeRates = await getExchangeRates(exchange, transaction, wyreUserId);
 
   console.log({ exchangeRates });
 
-  const exchangeRate = exchangeRates.find((er) => {
+  const exchangeRate = exchangeRates.find(er => {
     if (
       er.tradeMethod === (useFloat ? "float" : "fixed") &&
       (!wyreUserId || er.provider === "wyre")
@@ -228,10 +188,7 @@ const exec = async (opts: SwapJobOpts) => {
   });
 
   invariant(exchangeRate, `✖ No valid rate available`);
-  console.log(
-    `Using first ${useFloat ? "float" : "fixed"} rate:\n`,
-    exchangeRate
-  );
+  console.log(`Using first ${useFloat ? "float" : "fixed"} rate:\n`, exchangeRate);
   console.log({
     transaction,
     amount: transaction.amount.toString(),
@@ -270,7 +227,7 @@ const exec = async (opts: SwapJobOpts) => {
         if (e.type === "init-swap-result") {
           return e.initSwapResult;
         }
-      })
+      }),
     )
     .toPromise();
   transaction = (initSwapResult as InitSwapResult).transaction;
@@ -284,13 +241,13 @@ const exec = async (opts: SwapJobOpts) => {
       transaction,
     })
     .pipe(
-      tap((e) => console.log(e)),
+      tap(e => console.log(e)),
       first((e: any) => e.type === "signed"),
       map((e: any) => {
         if (e.type === "signed") {
           return e.signedOperation;
         }
-      })
+      }),
     )
     .toPromise();
   console.log("Broadcasting");
@@ -304,8 +261,7 @@ const exec = async (opts: SwapJobOpts) => {
 };
 
 export default {
-  description:
-    "Perform an arbitrary swap between two currencies on the same seed",
+  description: "Perform an arbitrary swap between two currencies on the same seed",
   args: [
     {
       name: "mock",

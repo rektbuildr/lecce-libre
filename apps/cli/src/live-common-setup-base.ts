@@ -1,12 +1,13 @@
 /* eslint-disable no-console */
 import winston from "winston";
-import { EnvName, setEnvUnsafe } from "@ledgerhq/live-common/lib/env";
-import simple from "@ledgerhq/live-common/lib/logs/simple";
+import { EnvName, setEnv, setEnvUnsafe } from "@ledgerhq/live-common/env";
+import simple from "@ledgerhq/live-common/logs/simple";
 import { listen } from "@ledgerhq/logs";
-import { setSupportedCurrencies } from "@ledgerhq/live-common/lib/currencies";
-import { setPlatformVersion } from "@ledgerhq/live-common/lib/platform/version";
+import { setSupportedCurrencies } from "@ledgerhq/live-common/currencies/index";
+import { setWalletAPIVersion } from "@ledgerhq/live-common/wallet-api/version";
+import { WALLET_API_VERSION } from "@ledgerhq/live-common/wallet-api/constants";
 
-setPlatformVersion("0.0.1");
+setWalletAPIVersion(WALLET_API_VERSION);
 
 setSupportedCurrencies([
   "bitcoin",
@@ -29,6 +30,7 @@ setSupportedCurrencies([
   "decred",
   "digibyte",
   "algorand",
+  "avalanche_c_chain",
   "qtum",
   "bitcoin_gold",
   "komodo",
@@ -37,16 +39,41 @@ setSupportedCurrencies([
   "vertcoin",
   "peercoin",
   "viacoin",
-  "stakenet",
   "bitcoin_testnet",
   "ethereum_ropsten",
   "ethereum_goerli",
-  "cosmos_testnet",
   "crypto_org",
   "crypto_org_croeseid",
   "celo",
   "hedera",
   "cardano",
+  "solana",
+  "osmosis",
+  "fantom",
+  "moonbeam",
+  "cronos",
+  "songbird",
+  "flare",
+  "near",
+  "optimism",
+  "optimism_goerli",
+  "arbitrum",
+  "arbitrum_goerli",
+  "rsk",
+  "bittorrent",
+  "kava_evm",
+  "evmos_evm",
+  "energy_web",
+  "astar",
+  "metis",
+  "boba",
+  "moonriver",
+  "velas_evm",
+  "syscoin",
+  "axelar",
+  "onomy",
+  "persistence",
+  "quicksilver",
 ]);
 
 for (const k in process.env) setEnvUnsafe(k as EnvName, process.env[k]);
@@ -60,9 +87,12 @@ const { format } = winston;
 const { combine, json } = format;
 const winstonFormatJSON = json();
 const winstonFormatConsole = combine(
-  format(({ type: _type, id: _id, date: _date, ...rest }) => rest)(),
+  format(({ type, message, id: _id, date: _date, ...rest }) => ({
+    ...rest,
+    message: `${type}: ${message}`,
+  }))(),
   format.colorize(),
-  simple()
+  simple(),
 );
 const levels = {
   error: 0,
@@ -81,7 +111,7 @@ if (VERBOSE_FILE) {
       format: winstonFormatJSON,
       filename: VERBOSE_FILE,
       level,
-    })
+    }),
   );
 }
 
@@ -92,7 +122,7 @@ if (VERBOSE && VERBOSE !== "json") {
       // FIXME: this option is not recognzed by winston API
       // colorize: true,
       level,
-    })
+    }),
   );
 } else {
   logger.add(
@@ -100,20 +130,15 @@ if (VERBOSE && VERBOSE !== "json") {
       format: winstonFormatJSON,
       silent: !VERBOSE,
       level,
-    })
+    }),
   );
 }
 
-listen((log) => {
+listen(log => {
   const { type } = log;
   let level = "info";
 
-  if (
-    type === "apdu" ||
-    type === "hw" ||
-    type === "speculos" ||
-    type.includes("debug")
-  ) {
+  if (type === "apdu" || type === "hw" || type === "speculos" || type.includes("debug")) {
     level = "debug";
   } else if (type.includes("warn")) {
     level = "warn";
@@ -127,3 +152,6 @@ listen((log) => {
   // @ts-ignore
   logger.log(level, log);
 });
+
+const value = "cli/0.0.0";
+setEnv("LEDGER_CLIENT_VERSION", value);

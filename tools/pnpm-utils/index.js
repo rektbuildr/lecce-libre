@@ -34,7 +34,7 @@ function addDependencies(
 
       Object.entries(dependencies).forEach(([dep, depVersion]) => {
         const devVersion = pkg?.devDependencies?.[dep];
-        const version = (matchDevVersion && devVersion) ?? depVersion ?? "*";
+        const version = (matchDevVersion && devVersion) || depVersion || "*";
         const depKey = `${dep}@${version}`;
 
         if (visitedDeps.has(depKey)) return;
@@ -92,7 +92,16 @@ function removeDependencies(
           );
           delete pkg[kind][dependency];
         }
-        if (pkg.peerDependenciesMeta && kind === "peerDependencies") {
+        if (
+          pkg.peerDependenciesMeta &&
+          kind === "peerDependencies" &&
+          pkg.peerDependenciesMeta[dependency]
+        ) {
+          console.log(
+            `${bold("[-]", 31)} ${field(dependency)} | ${field(
+              key
+            )} (peerDependenciesMeta)`
+          );
           delete pkg.peerDependenciesMeta[dependency];
         }
       });

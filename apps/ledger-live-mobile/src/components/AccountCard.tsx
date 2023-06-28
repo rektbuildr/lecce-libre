@@ -1,25 +1,21 @@
 import React, { ReactNode } from "react";
-import {
-  getAccountName,
-  getAccountSpendableBalance,
-} from "@ledgerhq/live-common/lib/account";
-import {
-  getAccountCurrency,
-  getAccountUnit,
-} from "@ledgerhq/live-common/lib/account/helpers";
-import { getTagDerivationMode } from "@ledgerhq/live-common/lib/derivation";
-import { Account, CryptoCurrency } from "@ledgerhq/live-common/lib/types";
+import { getAccountSpendableBalance } from "@ledgerhq/live-common/account/index";
+import { getAccountCurrency, getAccountUnit } from "@ledgerhq/live-common/account/helpers";
+import { DerivationMode, getTagDerivationMode } from "@ledgerhq/coin-framework/derivation";
+import { AccountLike, Account } from "@ledgerhq/types-live";
 import { Flex, Tag, Text } from "@ledgerhq/native-ui";
 import { useTheme } from "styled-components/native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
+import { ViewStyle, StyleProp } from "react-native";
 import Card, { Props as CardProps } from "./Card";
 import CurrencyIcon from "./CurrencyIcon";
 import CurrencyUnitValue from "./CurrencyUnitValue";
 
 export type Props = CardProps & {
-  account: Account;
-  style?: any;
+  account?: AccountLike | null;
+  parentAccount?: Account;
+  style?: StyleProp<ViewStyle>;
   disabled?: boolean;
   useFullBalance?: boolean;
   AccountSubTitle?: ReactNode;
@@ -28,6 +24,7 @@ export type Props = CardProps & {
 const AccountCard = ({
   onPress,
   account,
+  parentAccount,
   style,
   disabled,
   useFullBalance,
@@ -35,12 +32,15 @@ const AccountCard = ({
   ...props
 }: Props) => {
   const { colors } = useTheme();
+  if (!account) return null;
   const currency = getAccountCurrency(account);
   const unit = getAccountUnit(account);
   const tag =
-    account.derivationMode !== undefined &&
-    account.derivationMode !== null &&
-    getTagDerivationMode(currency as CryptoCurrency, account.derivationMode);
+    account.type === "Account" &&
+    account?.derivationMode !== undefined &&
+    account?.derivationMode !== null &&
+    currency.type === "CryptoCurrency" &&
+    getTagDerivationMode(currency, account.derivationMode as DerivationMode);
 
   return (
     <TouchableOpacity disabled={disabled} onPress={onPress}>
@@ -54,17 +54,12 @@ const AccountCard = ({
       >
         <CurrencyIcon
           currency={currency}
-          color={disabled ? colors.neutral.c40 : undefined}
+          disabled={disabled}
+          color={colors.constant.white}
           size={32}
           circle
         />
-        <Flex
-          flexGrow={1}
-          flexShrink={1}
-          marginLeft={3}
-          flexDirection="row"
-          alignItems="center"
-        >
+        <Flex flexGrow={1} flexShrink={1} marginLeft={3} flexDirection="row" alignItems="center">
           <Flex minWidth={20} flexShrink={1}>
             <Text
               variant="paragraph"
@@ -73,7 +68,11 @@ const AccountCard = ({
               color={disabled ? "neutral.c50" : "neutral.c100"}
               flexShrink={1}
             >
-              {getAccountName(account)}
+              {account.type === "TokenAccount"
+                ? parentAccount
+                  ? `${parentAccount!.name} (${currency.ticker})`
+                  : currency.ticker
+                : account.name}
             </Text>
             {AccountSubTitle}
           </Flex>
@@ -84,11 +83,7 @@ const AccountCard = ({
             <CurrencyUnitValue
               showCode
               unit={unit}
-              value={
-                useFullBalance
-                  ? account.balance
-                  : getAccountSpendableBalance(account)
-              }
+              value={useFullBalance ? account.balance : getAccountSpendableBalance(account)}
             />
           </Text>
         </Flex>

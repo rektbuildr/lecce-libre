@@ -1,4 +1,4 @@
-import { keyframes, css, DefaultTheme } from "styled-components";
+import { keyframes, css, Font } from "styled-components";
 import { palettes, ColorPalette } from "@ledgerhq/ui-shared";
 
 export type screensBreakpoints = "sm" | "md" | "lg" | "xl" | "xxl";
@@ -11,19 +11,23 @@ export const breakpoints = {
   xxl: "1536px",
 } as Record<screensBreakpoints, string>;
 
-/* space indexes:
-  0, 1, 2, 3, 4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21
- */
 export const space = [
+  /* space indexes:
+  0, 1, 2, 3, 4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21 */
   0, 2, 4, 8, 10, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 64, 68, 72, 76,
 ];
 
 export type TextVariants =
   | "h1"
+  | "h1Inter"
   | "h2"
+  | "h2Inter"
   | "h3"
+  | "h3Inter"
   | "h4"
+  | "h4Inter"
   | "h5"
+  | "h5Inter"
   | "large"
   | "largeLineHeight"
   | "body"
@@ -61,6 +65,11 @@ fontSizes.largeLineHeight = fontSizes.large;
 fontSizes.bodyLineHeight = fontSizes.body;
 fontSizes.paragraphLineHeight = fontSizes.paragraph;
 fontSizes.subtitle = fontSizes.extraSmall;
+fontSizes.h1Inter = fontSizes.h1;
+fontSizes.h2Inter = fontSizes.h2;
+fontSizes.h3Inter = fontSizes.h3;
+fontSizes.h4Inter = fontSizes.h4;
+fontSizes.h5Inter = fontSizes.h5;
 
 const fontWeights = {
   extraLight: "100",
@@ -191,7 +200,7 @@ const overflow = {
     overflow-x: scroll;
     will-change: transform;
     &:hover {
-      --track-color: ${(p) => p.theme.colors.neutral.c30};
+      --track-color: ${p => p.theme.colors.neutral.c30};
     }
   `,
   y: css`
@@ -199,7 +208,7 @@ const overflow = {
     overflow-y: scroll;
     will-change: transform;
     &:hover {
-      --track-color: ${(p) => p.theme.colors.neutral.c30};
+      --track-color: ${p => p.theme.colors.neutral.c30};
     }
   `,
   yAuto: css`
@@ -207,68 +216,62 @@ const overflow = {
     overflow-y: auto;
     will-change: transform;
     &:hover {
-      --track-color: ${(p) => p.theme.colors.neutral.c30};
+      --track-color: ${p => p.theme.colors.neutral.c30};
     }
   `,
   xy: css`
     overflow: scroll;
     will-change: transform;
     &:hover {
-      --track-color: ${(p) => p.theme.colors.neutral.c30};
+      --track-color: ${p => p.theme.colors.neutral.c30};
     }
   `,
   trackSize: 12,
 };
 
-declare module "styled-components" {
-  export interface Font {
-    weight: number;
-    style: string;
-  }
-  export interface DefaultTheme {
-    theme: string;
-    animations: typeof animations;
-    transition: typeof transition;
-    overflow: typeof overflow;
-    sizes: {
-      topBarHeight: number;
-      sideBarWidth: number;
-      drawer: {
-        side: {
-          big: {
-            width: number;
-          };
-          small: {
-            width: number;
-          };
+interface DefaultTheme {
+  theme: "dark" | "light";
+  animations: typeof animations;
+  transition: typeof transition;
+  overflow: typeof overflow;
+  sizes: {
+    topBarHeight: number;
+    sideBarWidth: number;
+    drawer: {
+      side: {
+        big: {
+          width: number;
         };
-        popin: {
-          min: {
-            height: number;
-            width: number;
-          };
-          max: {
-            height: number;
-            width: number;
-          };
+        small: {
+          width: number;
+        };
+      };
+      popin: {
+        min: {
+          height: number;
+          width: number;
+        };
+        max: {
+          height: number;
+          width: number;
         };
       };
     };
-    radii: number[];
-    fontFamilies: Record<string, Record<string, Font>>;
-    fontSizes: number[];
-    space: number[];
-    shadows: string[];
-    colors: ColorPalette & {
-      /**
-       * @deprecated Do not use the .palette prefix anymore!
-       */
-      palette: ColorPalette;
-    };
-    fontWeights: Record<string, string>;
-    breakpoints: Record<screensBreakpoints, string>;
-    zIndexes: number[];
-  }
+  };
+  radii: number[];
+  fontFamilies: Record<string, Record<string, Font>>;
+  fontSizes: number[];
+  space: number[];
+  shadows: string[];
+  colors: ColorPalette & {
+    /**
+     * @deprecated Do not use the .palette prefix anymore!
+     */
+    palette: ColorPalette;
+  };
+  fontWeights: Record<string, string>;
+  breakpoints: Record<screensBreakpoints, string>;
+  zIndexes: number[];
 }
 
 const theme: DefaultTheme = {

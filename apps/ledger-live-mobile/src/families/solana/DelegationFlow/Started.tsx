@@ -3,20 +3,19 @@ import { useTheme } from "@react-navigation/native";
 import React, { useCallback } from "react";
 import { Trans } from "react-i18next";
 import { Linking, StyleSheet, View } from "react-native";
-import SafeAreaView from "react-native-safe-area-view";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { TrackScreen } from "../../../analytics";
 import BulletList, { BulletGreenCheck } from "../../../components/BulletList";
 import Button from "../../../components/Button";
 import ExternalLink from "../../../components/ExternalLink";
 import NavigationScrollView from "../../../components/NavigationScrollView";
+import { StackNavigatorProps } from "../../../components/RootNavigator/types/helpers";
 import { urls } from "../../../config/urls";
 import { ScreenName } from "../../../const";
 import IlluStaking from "../../tezos/IlluStaking";
+import { SolanaDelegationFlowParamList } from "./types";
 
-type Props = {
-  navigation: any;
-  route: { params: any };
-};
+type Props = StackNavigatorProps<SolanaDelegationFlowParamList, ScreenName.SolanaDelegationStarted>;
 
 export default function DelegationStarted({ navigation, route }: Props) {
   const { colors } = useTheme();
@@ -27,25 +26,19 @@ export default function DelegationStarted({ navigation, route }: Props) {
   }, [navigation, route.params]);
 
   const howDelegationWorks = useCallback(() => {
-    Linking.openURL(urls.delegation);
+    Linking.openURL(urls.solana.stakingPage);
   }, []);
 
   return (
-    <SafeAreaView
-      style={[styles.root, { backgroundColor: colors.background }]}
-      forceInset={{ bottom: "always" }}
-    >
-      <NavigationScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContainer}
-      >
+    <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
+      <NavigationScrollView style={styles.scroll} contentContainerStyle={styles.scrollContainer}>
         <TrackScreen category="DelegationFlow" name="Started" />
         <IlluStaking />
         <Text fontWeight="semiBold" style={styles.title}>
           <Trans i18nKey="delegation.started.title" />
         </Text>
         <Text style={styles.description}>
-          <Trans i18nKey="delegation.started.description" />
+          <Trans i18nKey="solana.delegation.started.description" />
         </Text>
         <BulletList
           Bullet={BulletGreenCheck}

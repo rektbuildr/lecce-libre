@@ -1,5 +1,5 @@
-import type { AccountLike, Account, TransactionStatus } from "../../types";
-import type { Transaction } from "./types";
+import type { AccountLike, Account } from "@ledgerhq/types-live";
+import type { Transaction, TransactionStatus } from "./types";
 import type { DeviceTransactionField } from "../../transaction";
 import { getMainAccount } from "../../account";
 import { getAccountUnit } from "../../account";
@@ -111,14 +111,10 @@ function getDeviceTransactionConfig({
       fields.push({
         type: "text",
         label: "Amount",
-        value: formatCurrencyUnit(
-          getAccountUnit(account),
-          validators[0].amount,
-          {
-            showCode: true,
-            disableRounding: true,
-          }
-        ),
+        value: formatCurrencyUnit(getAccountUnit(account), validators[0].amount, {
+          showCode: true,
+          disableRounding: true,
+        }),
       });
       fields.push({
         type: "cosmos.validatorName",
@@ -135,14 +131,10 @@ function getDeviceTransactionConfig({
       fields.push({
         type: "text",
         label: "Amount",
-        value: formatCurrencyUnit(
-          getAccountUnit(account),
-          validators[0].amount,
-          {
-            showCode: true,
-            disableRounding: true,
-          }
-        ),
+        value: formatCurrencyUnit(getAccountUnit(account), validators[0].amount, {
+          showCode: true,
+          disableRounding: true,
+        }),
       });
       fields.push({
         type: "cosmos.validatorName",

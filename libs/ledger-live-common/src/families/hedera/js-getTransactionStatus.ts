@@ -6,13 +6,13 @@ import {
   RecipientRequired,
 } from "@ledgerhq/errors";
 import { AccountId } from "@hashgraph/sdk";
-import type { Transaction } from "./types";
-import type { Account, TransactionStatus } from "../../types";
-import { calculateAmount, estimatedFees } from "./utils";
+import type { Transaction, TransactionStatus } from "./types";
+import type { Account } from "@ledgerhq/types-live";
+import { calculateAmount, getEstimatedFees } from "./utils";
 
 export default async function getTransactionStatus(
   account: Account,
-  transaction: Transaction
+  transaction: Transaction,
 ): Promise<TransactionStatus> {
   const errors: Record<string, Error> = {};
 
@@ -42,6 +42,8 @@ export default async function getTransactionStatus(
   } else if (account.balance.isLessThan(totalSpent)) {
     errors.amount = new NotEnoughBalance("");
   }
+
+  const estimatedFees = await getEstimatedFees();
 
   return {
     amount,

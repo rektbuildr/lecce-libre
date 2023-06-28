@@ -1,54 +1,7 @@
 import type { BigNumber } from "bignumber.js";
-import type { Operation, OperationRaw } from "./operation";
 import type { Unit } from "@ledgerhq/types-cryptoassets";
-
-/**
- *
- */
-export type BitcoinInput = {
-  address: string | null | undefined;
-  value: BigNumber | null | undefined;
-  previousTxHash: string | null | undefined;
-  previousOutputIndex: number;
-};
-
-/**
- *
- */
-export type BitcoinInputRaw = [
-  string | null | undefined,
-  string | null | undefined,
-  string | null | undefined,
-  number
-];
-
-/**
- *
- */
-export type BitcoinOutput = {
-  hash: string;
-  outputIndex: number;
-  blockHeight: number | null | undefined;
-  address: string | null | undefined;
-  path: string | null | undefined; // DEPRECATED - used only by legacy libcore implementation
-  value: BigNumber;
-  rbf: boolean;
-  isChange: boolean;
-};
-
-/**
- *
- */
-export type BitcoinOutputRaw = [
-  string,
-  number,
-  number | null | undefined,
-  string | null | undefined,
-  string | null | undefined,
-  string,
-  number, // rbf 0/1 for compression
-  number
-];
+import type { DomainServiceResolution } from "./domain";
+import type { Operation, OperationRaw } from "./operation";
 
 /**
  *
@@ -126,6 +79,7 @@ export type SignOperationEventRaw =
 export type TransactionCommon = {
   amount: BigNumber;
   recipient: string;
+  recipientDomain?: DomainServiceResolution;
   useAllAmount?: boolean;
   subAccountId?: string | null | undefined;
   feesStrategy?: "slow" | "medium" | "fast" | "custom" | null;
@@ -137,6 +91,7 @@ export type TransactionCommon = {
 export type TransactionCommonRaw = {
   amount: string;
   recipient: string;
+  recipientDomain?: DomainServiceResolution;
   useAllAmount?: boolean;
   subAccountId?: string | null | undefined;
   feesStrategy?: "slow" | "medium" | "fast" | "custom" | null;
@@ -150,13 +105,23 @@ export type TransactionCommonRaw = {
 export type FeeStrategy = {
   amount: BigNumber;
   displayedAmount?: BigNumber;
+  txParameters?: FeeStrategyTxParameters;
   label: string;
   unit?: Unit;
+  disabled?: boolean;
+  extra?: Record<string, BigNumber>;
+  // ^ can be used to add values necessary to transaction construction (e.g. maxFeePerGas/maxPriorityFeePerGas for EIP-1559)
 };
+
+export type FeeStrategyTxParameters = {
+  maxBaseFeePerGas?: BigNumber;
+  maxPriorityFeePerGas?: BigNumber;
+};
+
 /**
  * TransactionStatus is a view of Transaction with general info to be used on the UI and status info.
  */
-export type TransactionStatus = {
+export type TransactionStatusCommon = {
   // potential error for each (user) field of the transaction
   errors: Record<string, Error>;
   // potential warning for each (user) field for a transaction
@@ -169,13 +134,11 @@ export type TransactionStatus = {
   totalSpent: BigNumber;
   // should the recipient be non editable
   recipientIsReadOnly?: boolean;
-  txInputs?: BitcoinInput[];
-  txOutputs?: BitcoinOutput[];
 };
 /**
  *
  */
-export type TransactionStatusRaw = {
+export type TransactionStatusCommonRaw = {
   errors: Record<string, string>;
   warnings: Record<string, string>;
   estimatedFees: string;
@@ -183,6 +146,4 @@ export type TransactionStatusRaw = {
   totalSpent: string;
   useAllAmount?: boolean;
   recipientIsReadOnly?: boolean;
-  txInputs?: BitcoinInputRaw[];
-  txOutputs?: BitcoinOutputRaw[];
 };

@@ -1,16 +1,11 @@
 import React, { useCallback, useMemo, useState } from "react";
-import {
-  Flex,
-  FlowStepper,
-  Text,
-  Button,
-  Transitions,
-} from "@ledgerhq/native-ui";
+import { Flex, FlowStepper, Text, Button, Transitions } from "@ledgerhq/native-ui";
 import { useTranslation } from "react-i18next";
-import { RenderTransitionProps } from "@ledgerhq/native-ui/components/Navigation/FlowStepper";
+import { RenderTransitionProps } from "@ledgerhq/native-ui/components/Navigation/FlowStepper/index";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { StackScreenProps } from "@react-navigation/stack";
 import { TrackScreen } from "../../analytics";
 import { ScreenName } from "../../const";
 
@@ -19,6 +14,8 @@ import quizImage2 from "../../images/illustration/Light/_021.png";
 import quizImage3 from "../../images/illustration/Light/_060.png";
 
 import OnboardingQuizItem from "./OnboardingQuizItem";
+import { OnboardingNavigatorParamList } from "../../components/RootNavigator/types/OnboardingNavigator";
+import { StackNavigatorProps } from "../../components/RootNavigator/types/helpers";
 
 const transitionStyles = [StyleSheet.absoluteFill, { flex: 1 }];
 
@@ -39,21 +36,19 @@ const renderTransitionSlide = ({
   </Transitions.Slide>
 );
 
+type NavigationProp = StackScreenProps<OnboardingNavigatorParamList>;
+
 const Header = ({ step }: { step: number }) => {
   const { t } = useTranslation();
-  const navigation = useNavigation();
-  const route = useRoute();
+  const navigation = useNavigation<NavigationProp["navigation"]>();
+  const route = useRoute<NavigationProp["route"]>();
 
   const onBack = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
 
   return (
-    <Flex
-      justifyContent="space-between"
-      alignItems="center"
-      flexDirection="row"
-    >
+    <Flex justifyContent="space-between" alignItems="center" flexDirection="row">
       <Button iconName="ArrowLeft" size="large" onPress={onBack} />
       <Flex justifyContent="center" alignItems="center">
         <Text variant="small">
@@ -68,8 +63,7 @@ const Header = ({ step }: { step: number }) => {
         iconName="Close"
         size="large"
         onPress={() => {
-          // TODO: FIX @react-navigation/native using Typescript
-          // @ts-ignore next-line
+          // @ts-expect-error Complicated to type this properly
           navigation.navigate(ScreenName.OnboardingPairNew, {
             ...route.params,
           });
@@ -79,21 +73,12 @@ const Header = ({ step }: { step: number }) => {
   );
 };
 
-function OnboardingQuiz({ navigation }: { navigation: any }) {
+type Props = StackNavigatorProps<OnboardingNavigatorParamList, ScreenName.OnboardingQuiz>;
+
+function OnboardingQuiz({ navigation, route }: Props) {
   const { t } = useTranslation();
   const [index, setIndex] = useState(0);
   const [bg, setBg] = useState("constant.purple");
-
-  const route = useRoute<
-    RouteProp<
-      {
-        params: {
-          deviceModelId: string;
-        };
-      },
-      "params"
-    >
-  >();
 
   const [userAnswers, setAnswers] = useState(0);
 

@@ -1,4 +1,5 @@
-name: "[Test] Desktop App"
+name: "@Desktop • Test App"
+run-name: "@Desktop • Test App triggered by ${{ github.event_name == 'workflow_dispatch' && inputs.login || github.actor }} ${{ format('on ref {0}', github.ref_name) }}"
 
 on:
   push:
@@ -7,178 +8,310 @@ on:
       - develop
       - release
       - hotfix
-  pull_request:
   workflow_dispatch:
+    inputs:
+      ref:
+        description: the branch which triggered this workflow
+        required: false
+      login:
+        description: The GitHub username that triggered the workflow
+        required: true
+      base_ref:
+        description: The base branch to merge the head into when checking out the code
+        required: false
+      draft:
+        description: true if the PR is in draft
+        required: false
+        default: "false"
 
 concurrency:
+  # See: https://github.com/orgs/community/discussions/35341
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref_name != 'develop' }}
 
 jobs:
   typecheck:
     name: "Ledger Live Desktop TypeCheck"
     env:
       NODE_OPTIONS: "--max-old-space-size=7168"
-      INSTRUMENT_BUILD: true
       FORCE_COLOR: 3
-      # DEBUG: "pw:browser*"
-      # DEBUG_LOGS: 1
       CI_OS: ubuntu-latest
-
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: LedgerHQ/ledger-live/tools/actions/composites/checkout-merge@develop
         with:
-          ref: ${{ github.event.inputs.ref || github.ref }}
-      - uses: pnpm/action-setup@v2.1.0
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.ref_name || github.sha }}
+          base: ${{ inputs.base_ref }}
+      - uses: ./tools/actions/composites/setup-test-desktop
+        id: setup-test-desktop
         with:
-          version: latest
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          cache: pnpm
-          cache-dependency-path: "**/pnpm-lock.yaml"
-      - uses: actions/setup-python@v2
-        with:
-          python-version: "3.x"
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 2.7
-          bundler-cache: true
-      - name: Bump npm to latest
-        run: npm i -g npm@8.12.2
-      - name: TurboRepo local server
-        uses: felixmosh/turborepo-gh-artifacts@v1
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          server-token: "yolo"
-      - name: Install dependencies
-        run: pnpm i --filter="ledger-live-desktop..." --filter="ledger-live" --frozen-lockfile --unsafe-perm
-      - name: Build dependencies
-        run: pnpm build:lld:deps --api="http://127.0.0.1:9080" --token="yolo" --team="foo"
+          skip_builds: true
+          install_dotnet: true
       - name: Run code checkers
         run: pnpm desktop test:codecheck
 
-  test-desktop-app:
-    name: "Ledger Live Desktop Tests"
+  deadcodecheck:
+    name: "Desktop deadcode check"
     env:
       NODE_OPTIONS: "--max-old-space-size=7168"
-      INSTRUMENT_BUILD: true
       FORCE_COLOR: 3
-      CI_OS: ${{ matrix.os }}
+      CI_OS: ubuntu-latest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: LedgerHQ/ledger-live/tools/actions/composites/checkout-merge@develop
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.ref_name || github.sha }}
+          base: ${{ inputs.base_ref }}
+      - uses: ./tools/actions/composites/setup-test-desktop
+        id: setup-test-desktop
+        with:
+          skip_builds: true
+      - name: check for dead code
+        run: cd apps/ledger-live-desktop && npx unimported
+        shell: bash
+
+  unit-tests:
+    name: "Ledger Live Desktop Unit Tests"
+    env:
+      NODE_OPTIONS: "--max-old-space-size=7168"
+      FORCE_COLOR: 3
+      CI_OS: ubuntu-latest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: LedgerHQ/ledger-live/tools/actions/composites/checkout-merge@develop
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.ref_name || github.sha }}
+          base: ${{ inputs.base_ref }}
+      - uses: ./tools/actions/composites/setup-test-desktop
+        id: setup-test-desktop
+        with:
+          skip_builds: true
+      - name: Run unit tests
+        run: pnpm desktop test:jest
+
+  e2e-tests-windows:
+    name: "Live Desktop Tests (Windows)"
+    outputs:
+      status: ${{ steps.tests.outcome }}
+    env:
+      NODE_OPTIONS: "--max-old-space-size=7168"
+      FORCE_COLOR: 3
+      CI_OS: "windows-latest"
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
       # DEBUG: "pw:browser*"
       # DEBUG_LOGS: 1
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-latest
-          # - macos-latest
-          - windows-latest
-
-    runs-on: ${{ matrix.os }}
+    runs-on: [ledger-live-4xlarge-windows-2022]
     steps:
-      - name: format os name
-        id: os
-        uses: actions/github-script@v6
+      - uses: LedgerHQ/ledger-live/tools/actions/composites/checkout-merge@develop
         with:
-          result-encoding: string
-          script: |
-            if ("${{ matrix.os }}" === "ubuntu-latest") {
-              return "linux"
-            } else if ("${{ matrix.os }}" === "macos-latest") {
-              return "macos"
-            } else if ("${{ matrix.os }}" === "windows-latest") {
-              return "windows"
-            }
-      - uses: actions/checkout@v3
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.ref_name || github.sha }}
+          base: ${{ inputs.base_ref }}
+      - uses: actions/setup-dotnet@v2
         with:
-          ref: ${{ github.event.inputs.ref || github.ref }}
-      - uses: pnpm/action-setup@v2.1.0
+          dotnet-version: 2.1.816
+      - uses: ./tools/actions/composites/setup-test-desktop
+        id: setup-test-desktop
         with:
-          version: latest
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          cache: pnpm
-          cache-dependency-path: "**/pnpm-lock.yaml"
-      - uses: actions/setup-python@v2
-        with:
-          python-version: "3.x"
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 2.7
-          bundler-cache: true
-      - name: Bump npm to latest
-        run: npm i -g npm@8.12.2
-      - name: TurboRepo local server
-        uses: felixmosh/turborepo-gh-artifacts@v1
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          server-token: "yolo"
-      - name: Install dependencies
-        run: pnpm i --filter="ledger-live-desktop..." --filter="ledger-live" --frozen-lockfile --unsafe-perm
-      - name: Install playwright dependencies
-        run: npx @playwright/test install-deps
-      - name: Build dependencies
-        run: pnpm turbo run ledger-live-desktop#build:testing --api="http://127.0.0.1:9080" --token="yolo" --team="foo"
-      - name: Run unit tests [Linux]
-        if: matrix.os == 'ubuntu-latest'
-        run: pnpm desktop test:jest
-      - name: Run playwright tests [Linux => xvfb-run]
-        if: matrix.os == 'ubuntu-latest'
-        run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- pnpm desktop test:playwright
-        shell: bash
+          install_node_gyp: true
+          install_playwright: true
+          upgrade_npm: true
+          install_dotnet: true
       - name: Run playwright tests
-        if: matrix.os != 'ubuntu-latest'
-        run: pnpm desktop test:playwright
+        id: tests
+        run: |
+          if [[ "${{ inputs.draft }}" == true ]]; then
+            pnpm desktop test:playwright
+          else
+            pnpm desktop test:playwright
+          fi
         shell: bash
       - name: upload diffs to imgur
         if: always() && !cancelled()
-        uses: ledgerhq/ledger-live/tools/actions/upload-images@develop
+        uses: ./tools/actions/upload-images
         id: imgur
         with:
           path: apps/ledger-live-desktop/tests/artifacts/test-results
           workspace: ${{ github.workspace }}
-          os: ${{ steps.os.outputs.result }}
+          os: windows
       - name: upload ci suggested screenshots
         if: always() && !cancelled()
         uses: actions/upload-artifact@v3
         with:
           name: images
-          path: images-${{steps.os.outputs.result}}.json
+          path: images-windows.json
+      - name: upload network responses
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-network-responses
+          path: apps/ledger-live-desktop/tests/artifacts/networkResponses.log
       - name: Upload playwright test results [On Failure]
         uses: actions/upload-artifact@v3
         if: failure() && !cancelled()
         with:
-          name: ${{ format('playwright-results-{0}', matrix.os) }}
+          name: playwright-results-windows
           path: |
             apps/ledger-live-desktop/tests/artifacts/test-results
             apps/ledger-live-desktop/tests/artifacts/html-report
             apps/ledger-live-desktop/tests/artifacts/coverage
             apps/ledger-live-desktop/tests/artifacts/videos
+            apps/ledger-live-desktop/tests/artifacts/logs
+      - name: Upload Allure Report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: allure-results-windows
+          path: apps/ledger-live-desktop/allure-results
+
+  e2e-tests-linux:
+    name: "Live Desktop Tests (Linux)"
+    outputs:
+      status: ${{ steps.tests.outcome }}
+    env:
+      NODE_OPTIONS: "--max-old-space-size=7168"
+      INSTRUMENT_BUILD: true
+      FORCE_COLOR: 3
+      CI_OS: "ubuntu-latest"
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+      # DEBUG: "pw:browser*"
+      # DEBUG_LOGS: 1
+    runs-on: [ledger-live-4xlarge-linux]
+    steps:
+      - uses: LedgerHQ/ledger-live/tools/actions/composites/checkout-merge@develop
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.ref_name || github.sha }}
+          base: ${{ inputs.base_ref }}
+      - uses: ./tools/actions/composites/setup-test-desktop
+        id: setup-test-desktop
+        with:
+          skip_python: true
+          skip_ruby: true
+          install_playwright: true
+      - name: Run playwright tests [Linux => xvfb-run]
+        id: tests
+        run: |
+          if [[ "${{ inputs.draft }}" == true ]]; then
+            xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- pnpm desktop test:playwright
+          else
+            xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- pnpm desktop test:playwright
+          fi
+      - name: upload diffs to imgur
+        if: always() && !cancelled()
+        uses: ./tools/actions/upload-images
+        id: imgur
+        with:
+          path: apps/ledger-live-desktop/tests/artifacts/test-results
+          workspace: ${{ github.workspace }}
+          os: linux
+      - name: upload ci suggested screenshots
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@v3
+        with:
+          name: images
+          path: images-linux.json
+      - name: upload network responses
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-network-responses
+          path: apps/ledger-live-desktop/tests/artifacts/networkResponses.log
+      - name: Upload playwright test results [On Failure]
+        uses: actions/upload-artifact@v3
+        if: failure() && !cancelled()
+        with:
+          name: playwright-results-linux
+          path: |
+            apps/ledger-live-desktop/tests/artifacts/test-results
+            apps/ledger-live-desktop/tests/artifacts/html-report
+            apps/ledger-live-desktop/tests/artifacts/coverage
+            apps/ledger-live-desktop/tests/artifacts/videos
+            apps/ledger-live-desktop/tests/artifacts/logs
+      - name: Upload Allure Report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: allure-results-linux
+          path: apps/ledger-live-desktop/allure-results
+
+  e2e-tests-mac:
+    name: "Live Desktop Tests (macOS X)"
+    runs-on: [m1, ARM64]
+    outputs:
+      status: ${{ steps.tests.outcome }}
+    env:
+      NODE_OPTIONS: "--max-old-space-size=7168"
+      FORCE_COLOR: 3
+      CI_OS: "macos-latest"
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+      # DEBUG: "pw:browser*"
+      # DEBUG_LOGS: 1
+    steps:
+      - uses: LedgerHQ/ledger-live/tools/actions/composites/checkout-merge@develop
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.ref_name || github.sha }}
+          base: ${{ inputs.base_ref }}
+      - uses: ./tools/actions/composites/setup-test-desktop
+        id: setup-test-desktop
+        with:
+          skip_python: true
+          skip_ruby: true
+          install_playwright: true
+          pnpm_dest: ${{ runner.temp }}/setup-pnpm
+      - name: Run playwright tests
+        id: tests
+        run: |
+          if [[ "${{ inputs.draft }}" == true ]]; then
+            pnpm desktop test:playwright
+          else
+            pnpm desktop test:playwright
+          fi
+      - name: upload diffs to imgur
+        if: always() && !cancelled()
+        uses: ./tools/actions/upload-images
+        id: imgur
+        with:
+          path: apps/ledger-live-desktop/tests/artifacts/test-results
+          workspace: ${{ github.workspace }}
+          os: macos
+      - name: upload ci suggested screenshots
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@v3
+        with:
+          name: images
+          path: images-macos.json
+      - name: upload network responses
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos-network-responses
+          path: apps/ledger-live-desktop/tests/artifacts/networkResponses.log
+      - name: Upload playwright test results [On Failure]
+        uses: actions/upload-artifact@v3
+        if: failure() && !cancelled()
+        with:
+          name: playwright-results-macos
+          path: |
+            apps/ledger-live-desktop/tests/artifacts/test-results
+            apps/ledger-live-desktop/tests/artifacts/html-report
+            apps/ledger-live-desktop/tests/artifacts/coverage
+            apps/ledger-live-desktop/tests/artifacts/videos
+            apps/ledger-live-desktop/tests/artifacts/logs
+      - name: Upload Allure Report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: allure-results-macos
+          path: apps/ledger-live-desktop/allure-results
 
   report:
-    needs: [test-desktop-app]
+    needs: [typecheck, deadcodecheck, unit-tests, e2e-tests-linux, e2e-tests-windows, e2e-tests-mac]
     runs-on: ubuntu-latest
-    if: ${{ always()  && !cancelled() && github.event.pull_request != '' }}
+    if: always() && !cancelled() && github.event_name == 'workflow_dispatch'
     steps:
-      - uses: actions/checkout@v3
-      - name: check if comment already exists exists
-        uses: actions/github-script@v6
-        id: exists
+      - uses: LedgerHQ/ledger-live/tools/actions/composites/checkout-merge@develop
         with:
-          result-encoding: string
-          script: |
-            const comments = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-            });
-
-            const exists = comments.data.find(comment => comment.user.login === 'github-actions[bot]');
-
-            return exists?.id ?? 'false';
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.ref_name || github.sha }}
+          base: ${{ inputs.base_ref }}
       - name: download images artifacts
         uses: actions/download-artifact@v3
         with:
@@ -188,9 +321,7 @@ jobs:
         with:
           script: |
             const fs = require("fs");
-
-            const files = ["images-linux", "images-windows"];
-
+            const files = ["images-linux", "images-windows", "images-macos"];
             let result = {};
             for (const file of files) {
               try {
@@ -201,27 +332,188 @@ jobs:
                 console.log(err);
               }
             }
-
             fs.writeFileSync("./images.json", JSON.stringify(result, null, 2));
       - name: prepare comment with screenshots
         id: comment
-        uses: ledgerhq/ledger-live/tools/actions/prepare-comment-screenshots@develop
+        uses: ./tools/actions/prepare-comment-screenshots
         with:
           images: images.json
-      - name: edit comment
-        uses: actions/github-script@v6
-        if: ${{ steps.exists.outputs.result != 'false' }}
+          no-actor: true
+      - uses: actions/github-script@v6
+        name: prepare status
+        id: status
         with:
           script: |
-            await github.rest.issues.updateComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              comment_id: ${{ steps.exists.outputs.result }},
-              body: `${{ steps.comment.outputs.body }}`
+            const fs = require("fs");
+
+            const [ owner, repo ] = "${{ github.repository }}".split("/");
+
+            const jobs = await github.paginate(github.rest.actions.listJobsForWorkflowRunAttempt, {
+              owner,
+              repo,
+              run_id: "${{ github.run_id }}",
+              attempt_number: "${{ github.run_attempt }}",
             });
-      - name: create comment
-        if: ${{ steps.exists.outputs.result == 'false' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh pr comment ${{ github.event.number }} --body "${{ steps.comment.outputs.body }}"
+
+            const findJobUrl = os =>
+              jobs.find(job => job.name == `Live Desktop Tests (${os})`)?.html_url;
+
+            const keys = {
+              mac: {
+                symbol: "🍏",
+                name: "macOS",
+                jobUrl: findJobUrl("macOS X")
+              },
+              windows: {
+                symbol: "🪟",
+                name: "Windows",
+                jobUrl: findJobUrl("Windows")
+              },
+              linux: {
+                symbol: "🐧",
+                name: "Linux",
+                jobUrl: findJobUrl("Linux")
+              },
+            };
+
+            const typecheck = {
+              pass: ${{ needs.typecheck.result == 'success' }},
+              status: "${{ needs.typecheck.result }}",
+            };
+
+            const unitTests = {
+              pass: ${{ needs.unit-tests.result == 'success' }},
+              status: "${{ needs.unit-tests.result }}",
+            };
+
+            const deadcodecheck = {
+              pass: ${{ needs.deadcodecheck.result == 'success' }},
+            };
+
+            const report = {
+              mac: {
+                pass: ${{ needs.e2e-tests-mac.outputs.status == 'success' }},
+                status: "${{ needs.e2e-tests-mac.outputs.status }}",
+              },
+              linux: {
+                pass: ${{ needs.e2e-tests-linux.outputs.status == 'success' }},
+                status: "${{ needs.e2e-tests-linux.outputs.status }}",
+              },
+              windows: {
+                pass: ${{ needs.e2e-tests-windows.outputs.status == 'success' }},
+                status: "${{ needs.e2e-tests-windows.outputs.status }}",
+              },
+            };
+
+            let summary = `### TypeCheck
+
+            ${typecheck.pass ? "Typechecks are fine" : "Unfortunately typechecks did not pass"}
+              - ${typecheck.pass ? "✅" : "❌"} **Type checks** ended with status \`${typecheck.status}\`
+
+            ### Dead Code Check
+            ${deadcodecheck.pass ? "Dead code checks are fine" : "Unfortunately, dead code checks did not pass. Try \`npx unimported\` in apps/ledger-live-desktop"}
+              - ${deadcodecheck.pass ? "✅" : "❌"}
+
+            ### Unit Tests (Jest)
+            ${unitTests.pass ? "Unit tests are fine" : "Unit tests did not pass"}
+              - ${unitTests.pass ? "✅" : "❌"} **Unit tests** ended with status \`${unitTests.status}\`
+
+            ### Screenshot Tests (Playwright)
+            `
+
+            summary += `|`
+
+            const reportKeys = Object.keys(report);
+            const playwrightSuccess = Object.entries(report).every(([os, values]) => !!values.pass);
+
+            reportKeys.forEach((k) => {
+              summary += ` [${keys[k].symbol} ${keys[k].name}](${keys[k].jobUrl}) |`;
+            });
+
+            summary += `
+            |`;
+
+            for (let i = 0; i < reportKeys.length; i++) {
+              summary += ` :--: |`;
+            }
+
+            summary += `
+            |`;
+
+            Object.entries(report).forEach(([os, values]) => {
+              summary += ` ${values.pass ? "✅" : "❌"} (${values.status}) |`;
+            });
+
+            summary += `
+            ${{ steps.comment.outputs.body }}
+            `
+
+            const output = {
+              summary,
+              // actions: playwrightSuccess ? [] : [{
+              actions: [{
+                // 20 chars max
+                label: "Regen. Screenshots",
+                // 20 chars max
+                identifier: "regen_screenshots",
+                // 40 chars max
+                description: "Will regenerate playwright screenshots",
+              }],
+            };
+
+            fs.writeFileSync("summary.json", JSON.stringify(output), "utf-8");
+      - uses: actions/upload-artifact@v3
+        name: upload summary
+        with:
+          name: summary.json
+          path: ${{ github.workspace }}/summary.json
+
+  allure-report:
+    name: "Allure Reports Export on Server"
+    needs: [e2e-tests-windows, e2e-tests-linux, e2e-tests-mac]
+    runs-on: [ledger-live-medium-linux]
+    if: ${{ always() && !cancelled() && github.ref_name == 'develop' }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.ref_name || github.sha }}
+      - name: Download Allure Report - Windows
+        uses: actions/download-artifact@v3
+        with:
+          name: allure-results-windows
+          path: allure-results-windows
+      - name: Download Allure Report - MacOS
+        uses: actions/download-artifact@v3
+        with:
+          name: allure-results-macos
+          path: allure-results-macos
+      - name: Download Allure Report - Linux
+        uses: actions/download-artifact@v3
+        with:
+          name: allure-results-linux
+          path: allure-results-linux
+      - name: Send Results and Generate Allure Report - Windows
+        uses: ./tools/actions/composites/upload-allure-report
+        if: always()
+        with:
+          platform: windows
+          login: ${{ secrets.ALLURE_LOGIN }}
+          password: ${{ secrets.ALLURE_PASSWORD }}
+          path: allure-results-windows
+      - name: Send Results and Generate Allure Report - MacOS
+        uses: ./tools/actions/composites/upload-allure-report
+        if: always()
+        with:
+          platform: macos
+          login: ${{ secrets.ALLURE_LOGIN }}
+          password: ${{ secrets.ALLURE_PASSWORD }}
+          path: allure-results-macos
+      - name: Send Results and Generate Allure Report - Linux
+        uses: ./tools/actions/composites/upload-allure-report
+        if: always()
+        with:
+          platform: linux
+          login: ${{ secrets.ALLURE_LOGIN }}
+          password: ${{ secrets.ALLURE_PASSWORD }}
+          path: allure-results-linux

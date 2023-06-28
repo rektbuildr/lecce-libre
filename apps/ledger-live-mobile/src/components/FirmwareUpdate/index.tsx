@@ -2,33 +2,30 @@ import React, { useEffect, useCallback, useReducer } from "react";
 import { useTranslation } from "react-i18next";
 import { NativeModules } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { Device } from "@ledgerhq/live-common/lib/hw/actions/types";
+import { Device } from "@ledgerhq/live-common/hw/actions/types";
 import { Button, Icons } from "@ledgerhq/native-ui";
+import { DeviceInfo } from "@ledgerhq/types-live";
+import { BluetoothNotSupportedError } from "@ledgerhq/live-common/errors";
+import useLatestFirmware from "@ledgerhq/live-common/hooks/useLatestFirmware";
 import {
-  BackgroundEvent,
-  nextBackgroundEventSelector,
-} from "../../reducers/appstate";
-import {
-  clearBackgroundEvents,
-  dequeueBackgroundEvent,
-} from "../../actions/appstate";
-import BottomModal from "../BottomModal";
+  DisconnectedDevice,
+  DisconnectedDeviceDuringOperation,
+  WebsocketConnectionError,
+} from "@ledgerhq/errors";
+import { nextBackgroundEventSelector } from "../../reducers/appstate";
+import { clearBackgroundEvents, dequeueBackgroundEvent } from "../../actions/appstate";
+import QueuedDrawer from "../QueuedDrawer";
 import GenericErrorView from "../GenericErrorView";
-import { DeviceInfo } from "@ledgerhq/live-common/lib/types/manager";
-import useLatestFirmware from "../../hooks/useLatestFirmware";
 import ConfirmRecoveryStep from "./ConfirmRecoveryStep";
 import FlashMcuStep from "./FlashMcuStep";
 import FirmwareUpdatedStep from "./FirmwareUpdatedStep";
 import ConfirmPinStep from "./ConfirmPinStep";
 import ConfirmUpdateStep from "./ConfirmUpdateStep";
 import DownloadingUpdateStep from "./DownloadingUpdateStep";
+import DeviceLanguageStep from "./DeviceLanguageStep";
 import { track } from "../../analytics";
-import { BluetoothNotSupportedError } from "@ledgerhq/live-common/lib/errors";
-import {
-  DisconnectedDevice,
-  DisconnectedDeviceDuringOperation,
-  WebsocketConnectionError,
-} from "@ledgerhq/errors";
+import { FwUpdateForegroundEvent } from "./types";
+import { FwUpdateBackgroundEvent } from "../../reducers/types";
 
 type Props = {
   device: Device;
@@ -45,12 +42,15 @@ type FwUpdateStep =
   | "flashingMcu"
   | "confirmPin"
   | "confirmUpdate"
-  | "firmwareUpdated";
+  | "firmwareUpdated"
+  | "promptLanguageChange";
+
 type FwUpdateState = {
   step: FwUpdateStep;
   progress?: number;
   error?: Error;
   installing?: string | null;
+  updatedDeviceInfo?: DeviceInfo;
 };
 
 export default function FirmwareUpdate({
@@ -70,7 +70,7 @@ export default function FirmwareUpdate({
   const fwUpdateStateReducer = useCallback(
     (
       state: FwUpdateState,
-      event: BackgroundEvent | { type: "reset"; wired: boolean },
+      event: FwUpdateBackgroundEvent | FwUpdateForegroundEvent,
     ): FwUpdateState => {
       switch (event.type) {
         case "confirmPin":
@@ -97,6 +97,11 @@ export default function FirmwareUpdate({
             installing: event.installing,
           };
         case "firmwareUpdated":
+          return {
+            step: "promptLanguageChange",
+            updatedDeviceInfo: event.updatedDeviceInfo,
+          };
+        case "languagePromptDismissed":
           return { step: "firmwareUpdated" };
         case "error":
           return { step: "error", error: event.error };
@@ -104,9 +109,7 @@ export default function FirmwareUpdate({
           return {
             step: event.wired ? "confirmRecoveryBackup" : "error",
             progress: undefined,
-            error: event.wired
-              ? undefined
-              : new (BluetoothNotSupportedError as ErrorConstructor)(),
+            error: event.wired ? undefined : new (BluetoothNotSupportedError as ErrorConstructor)(),
             installing: undefined,
           };
         default:
@@ -119,26 +122,25 @@ export default function FirmwareUpdate({
   const [state, dispatchEvent] = useReducer(fwUpdateStateReducer, {
     step: device.wired ? "confirmRecoveryBackup" : "error",
     progress: undefined,
-    error: device.wired
-      ? undefined
-      : new (BluetoothNotSupportedError as ErrorConstructor)(),
+    error: device.wired ? undefined : new (BluetoothNotSupportedError as ErrorConstructor)(),
     installing: undefined,
   });
 
-  const { step, progress, error, installing } = state;
+  const { step, progress, error, installing, updatedDeviceInfo } = state;
 
   const onReset = useCallback(() => {
     dispatchEvent({ type: "reset", wired: device.wired });
     dispatch(clearBackgroundEvents());
     NativeModules.BackgroundRunner.stop();
-  }, [dispatch]);
+  }, [device.wired, dispatch]);
 
   // only allow closing of the modal when the update is not in an intermediate step
   const canClose =
     step === "confirmRecoveryBackup" ||
     step === "firmwareUpdated" ||
     step === "error" ||
-    step === "confirmPin";
+    step === "confirmPin" ||
+    step === "promptLanguageChange";
 
   const onTryClose = useCallback(
     (restoreApps: boolean) => {
@@ -146,7 +148,7 @@ export default function FirmwareUpdate({
         onClose(restoreApps);
       }
     },
-    [canClose],
+    [canClose, onClose],
   );
 
   const onCloseAndReinstall = useCallback(() => onTryClose(true), [onTryClose]);
@@ -169,7 +171,7 @@ export default function FirmwareUpdate({
     if (step === "error") {
       track("FirmwareUpdateError", error ?? null);
     }
-  }, [step]);
+  }, [error, step]);
 
   const launchUpdate = useCallback(() => {
     if (latestFirmware) {
@@ -180,15 +182,14 @@ export default function FirmwareUpdate({
       );
       dispatchEvent({ type: "downloadingUpdate", progress: 0 });
     }
-  }, [latestFirmware]);
+  }, [device.deviceId, latestFirmware, t]);
 
   const firmwareVersion = latestFirmware?.final?.name ?? "";
 
   return (
-    <BottomModal
-      id="DeviceActionModal"
+    <QueuedDrawer
       noCloseButton={!canClose}
-      isOpened={isOpen}
+      isRequestingToBeOpened={isOpen}
       onClose={onCloseSilently}
       onModalHide={onCloseSilently}
     >
@@ -200,43 +201,34 @@ export default function FirmwareUpdate({
           device={device}
         />
       )}
-      {step === "flashingMcu" && (
-        <FlashMcuStep progress={progress} installing={installing} />
+      {step === "flashingMcu" && <FlashMcuStep progress={progress} installing={installing} />}
+      {step === "promptLanguageChange" && (
+        <DeviceLanguageStep
+          dispatchEvent={dispatchEvent}
+          updatedDeviceInfo={updatedDeviceInfo}
+          oldDeviceInfo={deviceInfo}
+          device={device}
+        />
       )}
-      {step === "firmwareUpdated" && (
-        <FirmwareUpdatedStep onReinstallApps={onCloseAndReinstall} />
-      )}
+      {step === "firmwareUpdated" && <FirmwareUpdatedStep onReinstallApps={onCloseAndReinstall} />}
       {step === "error" && (
         <>
           <GenericErrorView
             error={error as Error}
             withDescription={
               error instanceof DisconnectedDevice ||
-              error instanceof DisconnectedDeviceDuringOperation
+              error! instanceof DisconnectedDeviceDuringOperation
             }
             hasExportLogButton={!(error instanceof BluetoothNotSupportedError)}
-            Icon={
-              error instanceof BluetoothNotSupportedError
-                ? Icons.UsbMedium
-                : undefined
-            }
-            iconColor={
-              error instanceof BluetoothNotSupportedError
-                ? "neutral.c100"
-                : undefined
-            }
+            Icon={error instanceof BluetoothNotSupportedError ? Icons.UsbMedium : undefined}
+            iconColor={error instanceof BluetoothNotSupportedError ? "neutral.c100" : undefined}
           />
           {!(
             error instanceof BluetoothNotSupportedError ||
-            error instanceof WebsocketConnectionError
+            error! instanceof WebsocketConnectionError
           ) &&
             hasAppsToRestore && (
-              <Button
-                type="main"
-                alignSelf="stretch"
-                mt={5}
-                onPress={onCloseAndReinstall}
-              >
+              <Button type="main" alignSelf="stretch" mt={5} onPress={onCloseAndReinstall}>
                 {t("FirmwareUpdate.reinstallApps")}
               </Button>
             )}
@@ -250,9 +242,7 @@ export default function FirmwareUpdate({
           latestFirmware={latestFirmware}
         />
       )}
-      {step === "downloadingUpdate" && (
-        <DownloadingUpdateStep progress={progress} />
-      )}
-    </BottomModal>
+      {step === "downloadingUpdate" && <DownloadingUpdateStep progress={progress} />}
+    </QueuedDrawer>
   );
 }

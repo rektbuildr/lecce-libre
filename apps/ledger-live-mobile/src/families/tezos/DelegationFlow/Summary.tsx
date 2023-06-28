@@ -1,27 +1,28 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { View, StyleSheet, Animated } from "react-native";
-import SafeAreaView from "react-native-safe-area-view";
+import { View, StyleSheet, Animated, TextStyle, StyleProp } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
-import { Trans } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import invariant from "invariant";
-import Icon from "react-native-vector-icons/dist/Feather";
-import { getAccountBridge } from "@ledgerhq/live-common/lib/bridge";
+import Icon from "react-native-vector-icons/Feather";
+import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
 import {
   getAccountCurrency,
   getAccountName,
   getAccountUnit,
   shortAddressPreview,
-} from "@ledgerhq/live-common/lib/account";
-import { getCurrencyColor } from "@ledgerhq/live-common/lib/currencies";
-import useBridgeTransaction from "@ledgerhq/live-common/lib/bridge/useBridgeTransaction";
+} from "@ledgerhq/live-common/account/index";
+import { getCurrencyColor } from "@ledgerhq/live-common/currencies/index";
+import type { Transaction as TezosTransaction } from "@ledgerhq/live-common/families/tezos/types";
+import useBridgeTransaction from "@ledgerhq/live-common/bridge/useBridgeTransaction";
 import {
   useDelegation,
   useBaker,
   useBakers,
   useRandomBaker,
-} from "@ledgerhq/live-common/lib/families/tezos/bakers";
-import whitelist from "@ledgerhq/live-common/lib/families/tezos/bakers.whitelist-default";
-import type { AccountLike } from "@ledgerhq/live-common/lib/types";
+} from "@ledgerhq/live-common/families/tezos/bakers";
+import whitelist from "@ledgerhq/live-common/families/tezos/bakers.whitelist-default";
+import type { AccountLike } from "@ledgerhq/types-live";
 import { useTheme } from "@react-navigation/native";
 import { Alert } from "@ledgerhq/native-ui";
 import { accountScreenSelector } from "../../../reducers/accounts";
@@ -37,33 +38,17 @@ import CurrencyUnitValue from "../../../components/CurrencyUnitValue";
 import Touchable from "../../../components/Touchable";
 import DelegatingContainer from "../DelegatingContainer";
 import BakerImage from "../BakerImage";
+import type { StackNavigatorProps } from "../../../components/RootNavigator/types/helpers";
+import type { TezosDelegationFlowParamList } from "./types";
 
-const forceInset = { bottom: "always" };
-
-type Props = {
-  navigation: any,
-  route: { params: RouteParams },
-};
-
-type RouteParams = {
-  mode?: "delegate" | "undelegate",
-  accountId: string,
-  parentId?: string,
-};
+type Props = StackNavigatorProps<TezosDelegationFlowParamList, ScreenName.DelegationSummary>;
 
 const AccountBalanceTag = ({ account }: { account: AccountLike }) => {
   const unit = getAccountUnit(account);
   const { colors } = useTheme();
   return (
-    <View
-      style={[styles.accountBalanceTag, { backgroundColor: colors.lightFog }]}
-    >
-      <LText
-        semiBold
-        numberOfLines={1}
-        style={styles.accountBalanceTagText}
-        color="smoke"
-      >
+    <View style={[styles.accountBalanceTag, { backgroundColor: colors.lightFog }]}>
+      <LText semiBold numberOfLines={1} style={styles.accountBalanceTagText} color="smoke">
         <CurrencyUnitValue showCode unit={unit} value={account.balance} />
       </LText>
     </View>
@@ -88,9 +73,9 @@ const Words = ({
   highlighted,
   style,
 }: {
-  children: React.ReactNode,
-  highlighted?: boolean,
-  style?: any,
+  children: React.ReactNode;
+  highlighted?: boolean;
+  style?: StyleProp<TextStyle>;
 }) => (
   <LText
     numberOfLines={1}
@@ -103,33 +88,15 @@ const Words = ({
   </LText>
 );
 
-const BakerSelection = ({
-  name,
-  readOnly,
-}: {
-  name: string,
-  readOnly?: boolean,
-}) => {
+const BakerSelection = ({ name, readOnly }: { name: string; readOnly?: boolean }) => {
   const { colors } = useTheme();
   return (
-    <View
-      style={[
-        styles.bakerSelection,
-        { backgroundColor: rgba(colors.live, 0.2) },
-      ]}
-    >
-      <LText
-        bold
-        numberOfLines={1}
-        style={styles.bakerSelectionText}
-        color="live"
-      >
+    <View style={[styles.bakerSelection, { backgroundColor: rgba(colors.live, 0.2) }]}>
+      <LText bold numberOfLines={1} style={styles.bakerSelectionText} color="live">
         {name}
       </LText>
       {readOnly ? null : (
-        <View
-          style={[styles.bakerSelectionIcon, { backgroundColor: colors.live }]}
-        >
+        <View style={[styles.bakerSelectionIcon, { backgroundColor: colors.live }]}>
           <Icon size={16} name="edit-2" color={colors.white} />
         </View>
       )}
@@ -140,19 +107,16 @@ const BakerSelection = ({
 export default function DelegationSummary({ navigation, route }: Props) {
   const { colors } = useTheme();
   const { account, parentAccount } = useSelector(accountScreenSelector(route));
+  const { t } = useTranslation();
   const bakers = useBakers(whitelist);
   const randomBaker = useRandomBaker(bakers);
 
-  const {
-    transaction,
-    setTransaction,
-    status,
-    bridgePending,
-    bridgeError,
-  } = useBridgeTransaction(() => ({
-    account,
-    parentAccount,
-  }));
+  const { transaction, setTransaction, status, bridgePending, bridgeError } = useBridgeTransaction(
+    () => ({
+      account,
+      parentAccount,
+    }),
+  );
 
   invariant(account, "account must be defined");
   invariant(transaction, "transaction must be defined");
@@ -164,7 +128,10 @@ export default function DelegationSummary({ navigation, route }: Props) {
     invariant(transaction.family === "tezos", "tezos tx");
 
     // make sure the mode is in sync (an account changes can reset it)
-    const patch: Object = {
+    const patch: {
+      mode: string;
+      recipient?: string;
+    } = {
       mode: route.params?.mode ?? "delegate",
     };
 
@@ -176,21 +143,10 @@ export default function DelegationSummary({ navigation, route }: Props) {
     // when changes, we set again
     if (patch.mode !== transaction.mode || "recipient" in patch) {
       setTransaction(
-        getAccountBridge(account, parentAccount).updateTransaction(
-          transaction,
-          patch,
-        ),
+        getAccountBridge(account, parentAccount).updateTransaction(transaction, patch),
       );
     }
-  }, [
-    account,
-    randomBaker,
-    navigation,
-    parentAccount,
-    setTransaction,
-    transaction,
-    route.params,
-  ]);
+  }, [account, randomBaker, navigation, parentAccount, setTransaction, transaction, route.params]);
 
   const [rotateAnim] = useState(() => new Animated.Value(0));
   useEffect(() => {
@@ -221,7 +177,7 @@ export default function DelegationSummary({ navigation, route }: Props) {
 
   const rotate = rotateAnim.interpolate({
     inputRange: [0, 1],
-    // $FlowFixMe
+
     outputRange: ["0deg", "30deg"],
   });
 
@@ -229,9 +185,10 @@ export default function DelegationSummary({ navigation, route }: Props) {
     rotateAnim.setValue(0);
     navigation.navigate(ScreenName.DelegationSelectValidator, {
       ...route.params,
-      transaction,
+      transaction: transaction as TezosTransaction,
+      status,
     });
-  }, [rotateAnim, navigation, transaction, route.params]);
+  }, [rotateAnim, navigation, route.params, transaction, status]);
 
   const delegation = useDelegation(account);
   const addr =
@@ -250,17 +207,13 @@ export default function DelegationSummary({ navigation, route }: Props) {
   const onContinue = useCallback(async () => {
     navigation.navigate(ScreenName.DelegationSelectDevice, {
       accountId: account.id,
-      parentId: parentAccount && parentAccount.id,
       transaction,
       status,
     });
-  }, [status, account, parentAccount, navigation, transaction]);
+  }, [status, account, navigation, transaction]);
 
   return (
-    <SafeAreaView
-      style={[styles.root, { backgroundColor: colors.background }]}
-      forceInset={forceInset}
-    >
+    <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
       <TrackScreen category="DelegationFlow" name="Summary" />
 
       <View style={styles.body}>
@@ -276,14 +229,8 @@ export default function DelegationSummary({ navigation, route }: Props) {
           }
           right={
             transaction.mode === "delegate" ? (
-              <Touchable
-                event="DelegationFlowSummaryChangeCircleBtn"
-                onPress={onChangeDelegator}
-              >
-                <Circle
-                  size={70}
-                  style={[styles.bakerCircle, { borderColor: colors.grey }]}
-                >
+              <Touchable event="DelegationFlowSummaryChangeCircleBtn" onPress={onChangeDelegator}>
+                <Circle size={70} style={[styles.bakerCircle, { borderColor: colors.grey }]}>
                   <Animated.View
                     style={{
                       transform: [
@@ -323,10 +270,7 @@ export default function DelegationSummary({ navigation, route }: Props) {
               <Words>
                 <Trans i18nKey="delegation.to" />
               </Words>
-              <Touchable
-                event="DelegationFlowSummaryChangeBtn"
-                onPress={onChangeDelegator}
-              >
+              <Touchable event="DelegationFlowSummaryChangeBtn" onPress={onChangeDelegator}>
                 <BakerSelection name={bakerName} />
               </Touchable>
             </Line>
@@ -368,14 +312,14 @@ export default function DelegationSummary({ navigation, route }: Props) {
       </View>
       <View style={styles.footer}>
         {transaction.mode === "undelegate" ? (
-          <Alert type="info" title={<Trans i18nKey="delegation.warnUndelegation" />} />
+          <Alert type="info" title={t("delegation.warnUndelegation")} />
         ) : (
-          <Alert type="info" title={<Trans i18nKey="delegation.warnDelegation" />} />
+          <Alert type="info" title={t("delegation.warnDelegation")} />
         )}
         <Button
           event="SummaryContinue"
           type="primary"
-          title={<Trans i18nKey="common.continue" />}
+          title={t("common.continue")}
           containerStyle={styles.continueButton}
           onPress={onContinue}
           disabled={bridgePending || !!bridgeError}

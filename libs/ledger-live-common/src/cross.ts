@@ -1,14 +1,14 @@
 // cross helps dealing with cross-project feature like export/import & cross project conversions
 import { BigNumber } from "bignumber.js";
 import compressjs from "@ledgerhq/compressjs";
-import type { Account, CryptoCurrencyIds } from "./types";
 import {
   runDerivationScheme,
   getDerivationScheme,
   asDerivationMode,
-} from "./derivation";
-import { decodeAccountId, emptyHistoryCache } from "./account";
+} from "@ledgerhq/coin-framework/derivation";
+import { decodeAccountId, emptyHistoryCache } from "@ledgerhq/coin-framework/account/index";
 import { getCryptoCurrencyById } from "./currencies";
+import type { Account, CryptoCurrencyIds } from "@ledgerhq/types-live";
 
 export type AccountData = {
   id: string;
@@ -29,7 +29,7 @@ export type CryptoSettings = {
 export type Settings = {
   counterValue?: string;
   currenciesSettings: Record<CryptoCurrencyIds, CryptoSettings>;
-  pairExchanges: Record<string, string>;
+  pairExchanges: Record<string, string | null | undefined>;
   blacklistedTokenIds?: string[];
   hideEmptyTokenAccounts?: boolean;
 };
@@ -56,12 +56,7 @@ export type Result = {
   meta: Meta;
 };
 
-export function encode({
-  accounts,
-  settings,
-  exporterName,
-  exporterVersion,
-}: DataIn): string {
+export function encode({ accounts, settings, exporterName, exporterVersion }: DataIn): string {
   return Buffer.from(
     compressjs.Bzip2.compressFile(
       Buffer.from(
@@ -72,9 +67,9 @@ export function encode({
           },
           accounts: accounts.map(accountToAccountData),
           settings,
-        })
-      )
-    )
+        }),
+      ),
+    ),
   ).toString("binary");
 }
 
@@ -104,16 +99,8 @@ const asResultAccount = (unsafe: Record<string, any>): AccountData => {
     throw new Error("invalid account data");
   }
 
-  const {
-    id,
-    currencyId,
-    freshAddress,
-    seedIdentifier,
-    derivationMode,
-    name,
-    index,
-    balance,
-  } = unsafe;
+  const { id, currencyId, freshAddress, seedIdentifier, derivationMode, name, index, balance } =
+    unsafe;
 
   if (typeof id !== "string") {
     throw new Error("invalid account.id");
@@ -246,9 +233,7 @@ const asResultSettings = (unsafe: Record<string, any>): Settings => {
 
 export function decode(bytes: string): Result {
   const unsafe: Record<string, any> = JSON.parse(
-    Buffer.from(
-      compressjs.Bzip2.decompressFile(Buffer.from(bytes, "binary"))
-    ).toString()
+    Buffer.from(compressjs.Bzip2.decompressFile(Buffer.from(bytes, "binary"))).toString(),
   );
 
   if (typeof unsafe !== "object" || !unsafe) {
@@ -329,7 +314,7 @@ export const accountDataToAccount = ({
       currency,
       {
         account: index,
-      }
+      },
     );
   }
 

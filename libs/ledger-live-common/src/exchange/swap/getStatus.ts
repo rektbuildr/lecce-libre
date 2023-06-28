@@ -1,20 +1,12 @@
-import network from "../../network";
-import { getSwapAPIBaseURL } from "./";
-import type { GetMultipleStatus, GetStatus } from "./types";
+import network from "@ledgerhq/live-network/network";
 import { getEnv } from "../../env";
+import { getSwapAPIBaseURL } from "./";
 import { mockGetStatus } from "./mock";
-import { SwapUnknownSwapId } from "../../errors";
-export const getStatus: GetStatus = async (status) => {
-  const updatedStatus = await getMultipleStatus([status]);
+import type { GetMultipleStatus } from "./types";
 
-  if (updatedStatus && updatedStatus.length) {
-    return updatedStatus[0];
-  }
+export const getMultipleStatus: GetMultipleStatus = async statusList => {
+  if (getEnv("MOCK") && !getEnv("PLAYWRIGHT_RUN")) return mockGetStatus(statusList);
 
-  throw new SwapUnknownSwapId(undefined, { ...status });
-};
-export const getMultipleStatus: GetMultipleStatus = async (statusList) => {
-  if (getEnv("MOCK")) return mockGetStatus(statusList);
   const res = await network({
     method: "POST",
     url: `${getSwapAPIBaseURL()}/swap/status`,
@@ -22,4 +14,3 @@ export const getMultipleStatus: GetMultipleStatus = async (statusList) => {
   });
   return res.data;
 };
-export default getStatus;

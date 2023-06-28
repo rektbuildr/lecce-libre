@@ -1,17 +1,6 @@
 import { BigNumber } from "bignumber.js";
-import {
-  NotEnoughBalance,
-  RecipientRequired,
-  InvalidAddress,
-  FeeTooHigh,
-} from "@ledgerhq/errors";
-import type { Account } from "../../../types";
-import type {
-  CosmosValidatorItem,
-  StatusErrorMap,
-  Transaction,
-} from "../types";
-import type { AccountBridge, CurrencyBridge } from "../../../types";
+import { NotEnoughBalance, RecipientRequired, InvalidAddress, FeeTooHigh } from "@ledgerhq/errors";
+import type { CosmosAccount, CosmosValidatorItem, StatusErrorMap, Transaction } from "../types";
 import {
   scanAccounts,
   signOperation,
@@ -19,17 +8,14 @@ import {
   sync,
   isInvalidRecipient,
 } from "../../../bridge/mockHelpers";
-import {
-  setCosmosPreloadData,
-  asSafeCosmosPreloadData,
-} from "../preloadedData";
+import { setCosmosPreloadData, asSafeCosmosPreloadData } from "../preloadedData";
 import { getMainAccount } from "../../../account";
 import mockPreloadedData from "../preloadedData.mock";
 import { makeAccountBridgeReceive } from "../../../bridge/mockHelpers";
+import type { Account, AccountBridge, CurrencyBridge } from "@ledgerhq/types-live";
 const receive = makeAccountBridgeReceive();
 
-const defaultGetFees = (a, t) =>
-  (t.fees || new BigNumber(0)).times(t.gas || new BigNumber(0));
+const defaultGetFees = (a, t) => (t.fees || new BigNumber(0)).times(t.gas || new BigNumber(0));
 
 const createTransaction = (): Transaction => ({
   family: "cosmos",
@@ -40,7 +26,7 @@ const createTransaction = (): Transaction => ({
   gas: null,
   memo: null,
   validators: [],
-  cosmosSourceValidator: null,
+  sourceValidator: null,
   networkInfo: null,
   useAllAmount: false,
 });
@@ -52,22 +38,16 @@ const estimateMaxSpendable = ({ account, parentAccount, transaction }) => {
   const estimatedFees = transaction
     ? defaultGetFees(mainAccount, transaction)
     : new BigNumber(5000);
-  return Promise.resolve(
-    BigNumber.max(0, account.balance.minus(estimatedFees))
-  );
+  return Promise.resolve(BigNumber.max(0, account.balance.minus(estimatedFees)));
 };
 
-const getTransactionStatus = (account, t) => {
+const getTransactionStatus = (account: Account, t: Transaction) => {
   const errors: StatusErrorMap = {};
   const warnings: StatusErrorMap = {};
   const useAllAmount = !!t.useAllAmount;
   const estimatedFees = defaultGetFees(account, t);
-  const totalSpent = useAllAmount
-    ? account.balance
-    : new BigNumber(t.amount).plus(estimatedFees);
-  const amount = useAllAmount
-    ? account.balance.minus(estimatedFees)
-    : new BigNumber(t.amount);
+  const totalSpent = useAllAmount ? account.balance : new BigNumber(t.amount).plus(estimatedFees);
+  const amount = useAllAmount ? account.balance.minus(estimatedFees) : new BigNumber(t.amount);
 
   if (amount.gt(0) && estimatedFees.times(10).gt(amount)) {
     warnings.feeTooHigh = new FeeTooHigh();
@@ -94,10 +74,7 @@ const getTransactionStatus = (account, t) => {
   });
 };
 
-const prepareTransaction = async (
-  a: Account,
-  t: Transaction
-): Promise<Transaction> => {
+const prepareTransaction = async (a: CosmosAccount, t: Transaction): Promise<Transaction> => {
   if (!t.networkInfo) {
     return {
       ...t,
@@ -127,11 +104,11 @@ const accountBridge: AccountBridge<Transaction> = {
 const currencyBridge: CurrencyBridge = {
   scanAccounts,
   preload: () => {
-    setCosmosPreloadData(mockPreloadedData);
+    setCosmosPreloadData("cosmos", mockPreloadedData);
     return Promise.resolve(mockPreloadedData);
   },
   hydrate: (data: { validators?: CosmosValidatorItem[] }) => {
-    setCosmosPreloadData(asSafeCosmosPreloadData(data));
+    setCosmosPreloadData("cosmos", asSafeCosmosPreloadData(data));
   },
 };
 export default {

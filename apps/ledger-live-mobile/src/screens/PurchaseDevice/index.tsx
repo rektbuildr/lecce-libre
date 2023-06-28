@@ -1,6 +1,6 @@
-import React, { memo, useCallback, useState } from "react";
+import React, { memo, useCallback, useState, useMemo } from "react";
 import { Flex, Icons } from "@ledgerhq/native-ui";
-import { useFeature } from "@ledgerhq/live-common/lib/featureFlags";
+import { useFeature } from "@ledgerhq/live-common/featureFlags/index";
 import { useNavigation } from "@react-navigation/native";
 import { WebViewMessageEvent } from "react-native-webview";
 import { useTranslation } from "react-i18next";
@@ -14,7 +14,6 @@ import DebugURLDrawer from "./DebugURLDrawer";
 import { PurchaseMessage } from "./types";
 import DebugMessageDrawer from "./DebugMessageDrawer";
 import WebViewScreen from "../../components/WebViewScreen";
-import { NavigatorName, ScreenName } from "../../const";
 import { completeOnboarding, setReadOnlyMode } from "../../actions/settings";
 import { urls } from "../../config/urls";
 
@@ -29,15 +28,21 @@ const PurchaseDevice = () => {
   const [isURLDrawerOpen, setURLDrawerOpen] = useState(false);
   const [isMessageDrawerOpen, setMessageDrawerOpen] = useState(false);
   const [url, setUrl] = useState(buyDeviceFromLive?.params?.url || defaultURL);
+  const urlWithParam = useMemo(() => {
+    const appTrackingParam = "apptracking=false";
+
+    if (!url || url.includes(appTrackingParam)) {
+      return url;
+    }
+    if (url.includes("?")) {
+      return url.concat(`&${appTrackingParam}`);
+    }
+    return url.concat(`?${appTrackingParam}`);
+  }, [url]);
   const [message, setMessage] = useState<PurchaseMessage | null>(null);
 
   const handleBack = useCallback(() => {
-    navigation.navigate(
-      NavigatorName.BuyDevice as never,
-      {
-        screen: ScreenName.GetDevice,
-      } as never,
-    );
+    navigation.goBack();
   }, [navigation]);
 
   const handleOpenDrawer = useCallback(() => {
@@ -51,8 +56,7 @@ const PurchaseDevice = () => {
       nanoSP: Config.ADJUST_BUY_NANOSP_EVENT_ID,
     };
     const id = data.value?.deviceId
-      ? // @ts-ignore issue in typing
-        ids[data.value.deviceId] || Config.ADJUST_BUY_GENERIC_EVENT_ID
+      ? ids[data.value.deviceId as keyof typeof ids] || Config.ADJUST_BUY_GENERIC_EVENT_ID
       : Config.ADJUST_BUY_GENERIC_EVENT_ID;
 
     if (!id) {
@@ -102,7 +106,7 @@ const PurchaseDevice = () => {
     <>
       <WebViewScreen
         screenName={t("purchaseDevice.pageTitle")}
-        uri={url}
+        uri={urlWithParam}
         onMessage={handleMessage}
         renderHeader={() => (
           <Flex
@@ -130,7 +134,7 @@ const PurchaseDevice = () => {
       {buyDeviceFromLive?.params?.debug && (
         <DebugURLDrawer
           isOpen={isURLDrawerOpen}
-          value={url}
+          value={urlWithParam}
           onClose={() => setURLDrawerOpen(false)}
           onChange={setUrl}
         />

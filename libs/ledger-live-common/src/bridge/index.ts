@@ -1,12 +1,13 @@
+import type { CryptoCurrency } from "@ledgerhq/types-cryptoassets";
 import type {
-  CryptoCurrency,
   Account,
+  AccountBridge,
   AccountLike,
   CurrencyBridge,
-  AccountBridge,
-  ScanAccountEventRaw,
   ScanAccountEvent,
-} from "../types";
+  ScanAccountEventRaw,
+  TransactionCommon,
+} from "@ledgerhq/types-live";
 import { fromAccountRaw, toAccountRaw } from "../account";
 import * as impl from "./impl";
 export type Proxy = {
@@ -14,25 +15,20 @@ export type Proxy = {
   getCurrencyBridge: typeof getCurrencyBridge;
 };
 let proxy: Proxy | null | undefined;
-export const setBridgeProxy = (p: Proxy | null | undefined) => {
+export const setBridgeProxy = (p: Proxy | null | undefined): void => {
   if (p && p.getAccountBridge === getAccountBridge) {
-    throw new Error(
-      "setBridgeProxy can't be called with same bridge functions!"
-    );
+    throw new Error("setBridgeProxy can't be called with same bridge functions!");
   }
 
   proxy = p;
 };
 export const getCurrencyBridge = (currency: CryptoCurrency): CurrencyBridge =>
   (proxy || impl).getCurrencyBridge(currency);
-export const getAccountBridge = (
+export const getAccountBridge = <T extends TransactionCommon = any>(
   account: AccountLike,
-  parentAccount?: Account | null | undefined
-): AccountBridge<any> =>
-  (proxy || impl).getAccountBridge(account, parentAccount);
-export function fromScanAccountEventRaw(
-  raw: ScanAccountEventRaw
-): ScanAccountEvent {
+  parentAccount?: Account | null | undefined,
+): AccountBridge<T> => (proxy || impl).getAccountBridge(account, parentAccount);
+export function fromScanAccountEventRaw(raw: ScanAccountEventRaw): ScanAccountEvent {
   switch (raw.type) {
     case "discovered":
       return {
@@ -44,9 +40,7 @@ export function fromScanAccountEventRaw(
       throw new Error("unsupported ScanAccountEvent " + raw.type);
   }
 }
-export function toScanAccountEventRaw(
-  e: ScanAccountEvent
-): ScanAccountEventRaw {
+export function toScanAccountEventRaw(e: ScanAccountEvent): ScanAccountEventRaw {
   switch (e.type) {
     case "discovered":
       return {

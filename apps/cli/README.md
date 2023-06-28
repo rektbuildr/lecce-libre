@@ -41,9 +41,10 @@ pnpm i
 ```
 
 ## Dev
+
 ```bash
 # launch a watch mode on the source files and recompiles on the fly
-pnpm dev:cli 
+pnpm dev:cli
 ```
 
 ## Run
@@ -62,16 +63,13 @@ pnpm build:cli
 
 # Documentation
 
-```
+`````
 Usage: ledger-live <command> ...
+
+Usage: ledger-live celoValidatorGroups
 
 Usage: ledger-live cosmosValidators
      --format <String>        : json | default
-
-Usage: ledger-live polkadotValidators
-     --format <String>        : json|csv|default
-     --status <String>        : The status of the validators to fetch (all|elected|waiting)
-     --validator <String>     : address of recipient validator that will receive the delegate
 
 Usage: ledger-live tezosListBakers
      --whitelist              : filter whitelist
@@ -80,6 +78,11 @@ Usage: ledger-live tezosListBakers
 Usage: ledger-live tronSuperRepresentative
      --max <Number>           : max number of super representatives to return
      --format <String>        : json | default
+
+Usage: ledger-live polkadotValidators
+     --format <String>        : json|csv|default
+     --status <String>        : The status of the validators to fetch (all|elected|waiting)
+     --validator <String>     : address of recipient validator that will receive the delegate
 
 Usage: ledger-live app        # Manage Ledger device's apps
  -d, --device <String>        : provide a specific HID path of a device
@@ -142,6 +145,10 @@ Usage: ledger-live broadcast  # Broadcast signed operation(s)
 
 Usage: ledger-live cleanSpeculos # clean all docker instance of speculos
 
+Usage: ledger-live confirmOp  # Quickly verify if an operation id exists with our explorers (by synchronising the parent account)
+     --id <String>            : operation id to search
+ -f, --format <json | text>   : how to display the data
+
 Usage: ledger-live countervalues # Get the balance history for accounts
  -c, --currency <String>      : ticker of a currency
  -C, --countervalue <String>  : ticker of a currency
@@ -164,6 +171,15 @@ Usage: ledger-live deviceAppVersion
  -d, --device <String>        : provide a specific HID path of a device
 
 Usage: ledger-live deviceInfo
+ -d, --device <String>        : provide a specific HID path of a device
+
+Usage: ledger-live deviceSDKFirmwareUpdate # Perform a firmware update
+ -d, --device <String>        : provide a specific HID path of a device
+     --to-my-own-risk         : this is a developer feature that allow to flash anything, we are not responsible of your actions, by flashing your device you might reset your seed or block your device
+     --osuVersion <String>    : (to your own risk) provide yourself an OSU version to flash the device with
+     --listOSUs               : list all available OSUs (for all devices, beta and prod versions)
+
+Usage: ledger-live deviceSDKGetDeviceInfo # Device SDK: get device info
  -d, --device <String>        : provide a specific HID path of a device
 
 Usage: ledger-live deviceVersion
@@ -210,8 +226,6 @@ Usage: ledger-live firmwareUpdate # Perform a firmware update
      --osuVersion <String>    : (to your own risk) provide yourself an OSU version to flash the device with
      --listOSUs               : list all available OSUs (for all devices, beta and prod versions)
 
-Usage: ledger-live generateAppJsonFromDataset # Extract accounts from test datasets and print a sample app.json usable for tests
-
 Usage: ledger-live generateTestScanAccounts # Generate a test for scan accounts (live-common dataset)
  -d, --device <String>        : provide a specific HID path of a device
      --xpub <String>          : use an xpub (alternatively to --device) [DEPRECATED: prefer use of id]
@@ -250,30 +264,34 @@ Usage: ledger-live generateTestTransaction # Generate a test for transaction (li
      --memo <String>          : set a memo
  -t, --token <String>         : use an token account children of the account
      --feePerByte <String>    : how much fee per byte
-     --pickUnconfirmedRBF     : also pick unconfirmed replaceable txs
  -E, --excludeUTXO <String>   : exclude utxo by their txhash@index (example: -E hash@3 -E hash@0)
      --rbf                    : enable replace-by-fee
      --bitcoin-pick-strategy <String>: utxo picking strategy, one of: DEEP_OUTPUTS_FIRST | OPTIMIZE_SIZE | MERGE_OUTPUTS
-     --cosmosSourceValidator <String>: for redelegate, add a source validator
+     --transactionIndex <String>: transaction index of a pending withdraw in case of withdraw mode
+     --sourceValidator <String>: for redelegate, add a source validator
      --cosmosValidator <String>: address of recipient validator that will receive the delegate
      --cosmosAmountValidator <String>: Amount that the validator will receive
      --tokenId <String>       : determine the tokenId of an NFT (related to the --colection)
      --gasPrice <String>      : how much gasPrice. default is 2gwei. (example format: 2gwei, 0.000001eth, in wei if no unit precised)
      --nonce <String>         : set a nonce for this transaction
      --data <String>          : set the transaction data to use for signing the ETH transaction
-     --validator <String>     : address of recipient validator that will receive the delegate
-     --era <String>           : Era of when to claim rewards
-     --rewardDestination <String>: Reward destination
      --fee <String>           : how much fee
      --tag <Number>           : ripple tag
+     --solanaValidator <String>: validator address to delegate to
+     --solanaStakeAccount <String>: stake account address to use in the transaction
      --memoType <String>      : stellar memo type
      --memoValue <String>     : stellar memo value
+     --assetIssuer <String>   : Asset issuer
+     --assetCode <String>     : Same as token
      --storageLimit <String>  : how much storageLimit. default is estimated with the recipient
      --subAccount <String>    : use a sub account instead of the parent by index
      --duration <String>      : duration in day
      --resource <String>      : reward ENERGY or BANDWIDTH
      --tronVoteAddress <String>: address of the super representative voting
      --tronVoteCount <String> : number of votes for the vote address
+     --validator <String>     : address of recipient validator that will receive the delegate
+     --era <String>           : Era of when to claim rewards
+     --rewardDestination <String>: Reward destination
 
 Usage: ledger-live genuineCheck # Perform a genuine check with Ledger's HSM
  -d, --device <String>        : provide a specific HID path of a device
@@ -284,6 +302,16 @@ Usage: ledger-live getAddress # Get an address with the device on specific deriv
      --path <String>          : HDD derivation path
      --derivationMode <String>: derivationMode to use
  -v, --verify                 : also ask verification on device
+
+Usage: ledger-live getBatteryStatus # Get the battery status of the current device
+ -c, --currency <String>      : Currency name or ticker. If not provided, it will be inferred from the device.
+ -d, --device <String>        : provide a specific HID path of a device
+     --p2 <String>            : What type of request to run (00-04)
+
+Usage: ledger-live getDeviceRunningMode # Get the mode (bootloader, main, locked-device, disconnected-or-locked-device) in which the device is
+ -r, --nbUnresponsiveRetry <Number>: Number of received CantOpenDevice errors while retrying before considering the device as maybe disconnected or cold-started-locked
+ -t, --unresponsiveTimeoutMs <Number>: Time in ms of the timeout before considering the device unresponsive
+ -d, --device <String>        : provide a specific HID path of a device
 
 Usage: ledger-live getTransactionStatus # Prepare a transaction and returns 'TransactionStatus' meta information
  -d, --device <String>        : provide a specific HID path of a device
@@ -310,31 +338,40 @@ Usage: ledger-live getTransactionStatus # Prepare a transaction and returns 'Tra
      --memo <String>          : set a memo
  -t, --token <String>         : use an token account children of the account
      --feePerByte <String>    : how much fee per byte
-     --pickUnconfirmedRBF     : also pick unconfirmed replaceable txs
  -E, --excludeUTXO <String>   : exclude utxo by their txhash@index (example: -E hash@3 -E hash@0)
      --rbf                    : enable replace-by-fee
      --bitcoin-pick-strategy <String>: utxo picking strategy, one of: DEEP_OUTPUTS_FIRST | OPTIMIZE_SIZE | MERGE_OUTPUTS
-     --cosmosSourceValidator <String>: for redelegate, add a source validator
+     --transactionIndex <String>: transaction index of a pending withdraw in case of withdraw mode
+     --sourceValidator <String>: for redelegate, add a source validator
      --cosmosValidator <String>: address of recipient validator that will receive the delegate
      --cosmosAmountValidator <String>: Amount that the validator will receive
      --tokenId <String>       : determine the tokenId of an NFT (related to the --colection)
      --gasPrice <String>      : how much gasPrice. default is 2gwei. (example format: 2gwei, 0.000001eth, in wei if no unit precised)
      --nonce <String>         : set a nonce for this transaction
      --data <String>          : set the transaction data to use for signing the ETH transaction
-     --validator <String>     : address of recipient validator that will receive the delegate
-     --era <String>           : Era of when to claim rewards
-     --rewardDestination <String>: Reward destination
      --fee <String>           : how much fee
      --tag <Number>           : ripple tag
+     --solanaValidator <String>: validator address to delegate to
+     --solanaStakeAccount <String>: stake account address to use in the transaction
      --memoType <String>      : stellar memo type
      --memoValue <String>     : stellar memo value
+     --assetIssuer <String>   : Asset issuer
+     --assetCode <String>     : Same as token
      --storageLimit <String>  : how much storageLimit. default is estimated with the recipient
      --subAccount <String>    : use a sub account instead of the parent by index
      --duration <String>      : duration in day
      --resource <String>      : reward ENERGY or BANDWIDTH
      --tronVoteAddress <String>: address of the super representative voting
      --tronVoteCount <String> : number of votes for the vote address
+     --validator <String>     : address of recipient validator that will receive the delegate
+     --era <String>           : Era of when to claim rewards
+     --rewardDestination <String>: Reward destination
  -f, --format <default | json>: how to display the data
+
+Usage: ledger-live i18n       # Test e2e functionality for device localization support
+ -d, --device <String>        : provide a specific HID path of a device
+ -i, --install <String>       : install a language pack by its id
+ -u, --uninstall <String>     : uninstall a language pack by its id
 
 Usage: ledger-live liveData   # utility for Ledger Live app.json file
  -d, --device <String>        : provide a specific HID path of a device
@@ -349,19 +386,6 @@ Usage: ledger-live liveData   # utility for Ledger Live app.json file
      --paginateOperations <Number>: if defined, will paginate operations
      --appjson <filename>     : path to a live desktop app.json
  -a, --add                    : add accounts to live data
-
-Usage: ledger-live makeCompoundSummary # Create a summary of compound operations (ETH)
- -d, --device <String>        : provide a specific HID path of a device
-     --xpub <String>          : use an xpub (alternatively to --device) [DEPRECATED: prefer use of id]
-     --id <String>            : restore an account id (or a partial version of an id) (alternatively to --device)
-     --file <filename>        : use a JSON account file or '-' for stdin (alternatively to --device)
-     --appjsonFile <filename> : use a desktop app.json (alternatively to --device)
- -c, --currency <String>      : Currency name or ticker. If not provided, it will be inferred from the device.
- -s, --scheme <String>        : if provided, filter the derivation path that are scanned by a given sceme. Providing '' empty string will only use the default standard derivation scheme.
- -i, --index <Number>         : select the account by index
- -l, --length <Number>        : set the number of accounts after the index. Defaults to 1 if index was provided, Infinity otherwise.
-     --paginateOperations <Number>: if defined, will paginate operations
- -f, --format <summary | default>: how to display the data
 
 Usage: ledger-live managerListApps # List apps that can be installed on the device
  -d, --device <String>        : provide a specific HID path of a device
@@ -451,30 +475,34 @@ Usage: ledger-live send       # Send crypto-assets
      --memo <String>          : set a memo
  -t, --token <String>         : use an token account children of the account
      --feePerByte <String>    : how much fee per byte
-     --pickUnconfirmedRBF     : also pick unconfirmed replaceable txs
  -E, --excludeUTXO <String>   : exclude utxo by their txhash@index (example: -E hash@3 -E hash@0)
      --rbf                    : enable replace-by-fee
      --bitcoin-pick-strategy <String>: utxo picking strategy, one of: DEEP_OUTPUTS_FIRST | OPTIMIZE_SIZE | MERGE_OUTPUTS
-     --cosmosSourceValidator <String>: for redelegate, add a source validator
+     --transactionIndex <String>: transaction index of a pending withdraw in case of withdraw mode
+     --sourceValidator <String>: for redelegate, add a source validator
      --cosmosValidator <String>: address of recipient validator that will receive the delegate
      --cosmosAmountValidator <String>: Amount that the validator will receive
      --tokenId <String>       : determine the tokenId of an NFT (related to the --colection)
      --gasPrice <String>      : how much gasPrice. default is 2gwei. (example format: 2gwei, 0.000001eth, in wei if no unit precised)
      --nonce <String>         : set a nonce for this transaction
      --data <String>          : set the transaction data to use for signing the ETH transaction
-     --validator <String>     : address of recipient validator that will receive the delegate
-     --era <String>           : Era of when to claim rewards
-     --rewardDestination <String>: Reward destination
      --fee <String>           : how much fee
      --tag <Number>           : ripple tag
+     --solanaValidator <String>: validator address to delegate to
+     --solanaStakeAccount <String>: stake account address to use in the transaction
      --memoType <String>      : stellar memo type
      --memoValue <String>     : stellar memo value
+     --assetIssuer <String>   : Asset issuer
+     --assetCode <String>     : Same as token
      --storageLimit <String>  : how much storageLimit. default is estimated with the recipient
      --subAccount <String>    : use a sub account instead of the parent by index
      --duration <String>      : duration in day
      --resource <String>      : reward ENERGY or BANDWIDTH
      --tronVoteAddress <String>: address of the super representative voting
      --tronVoteCount <String> : number of votes for the vote address
+     --validator <String>     : address of recipient validator that will receive the delegate
+     --era <String>           : Era of when to claim rewards
+     --rewardDestination <String>: Reward destination
      --ignore-errors          : when using multiple transactions, an error won't stop the flow
      --disable-broadcast      : do not broadcast the transaction
      --format <String>        : default | json | silent
@@ -482,10 +510,26 @@ Usage: ledger-live send       # Send crypto-assets
 Usage: ledger-live signMessage # Sign a message with the device on specific derivations (advanced)
  -c, --currency <String>      : Currency name or ticker. If not provided, it will be inferred from the device.
      --path <String>          : HDD derivation path
-     --derivationMode <String>: derivationMode to use
      --message <String>       : the message to sign
+     --rawMessage <String>    : raw message to sign (used by walletconnect)
+     --parser <String>        : parser used for the message. Default: String
 
 Usage: ledger-live speculosList # list apps available for speculos
+
+Usage: ledger-live staxFetchAndRestoreDemo # Conditionally backup, delete, and restore a custom image on Stax
+ -d, --device <String>        : provide a specific HID path of a device
+ -i, --fileInput <String>     : Text file containing the hex data of the image to load on Stax
+
+Usage: ledger-live staxFetchImage # Test functionality lock screen customization on Stax for fetching an image
+ -d, --device <String>        : provide a specific HID path of a device
+ -o, --fileOutput <String>    : Output file path in case you want to save Hex string image
+
+Usage: ledger-live staxFetchImageHash # Fetch the hash of the custom image
+ -d, --device <String>        : provide a specific HID path of a device
+
+Usage: ledger-live staxLoadImage # Test functionality lock screen customization on Stax for loading an image
+ -d, --device <String>        : provide a specific HID path of a device
+ -i, --fileInput <String>     : Text file containing the hex data of the image to load on Stax
 
 Usage: ledger-live swap       # Perform an arbitrary swap between two currencies on the same seed
  -m, --mock                   : Whether or not to use the real backend or a mocked version
@@ -517,6 +561,10 @@ Usage: ledger-live sync       # Synchronize accounts with blockchain
  -l, --length <Number>        : set the number of accounts after the index. Defaults to 1 if index was provided, Infinity otherwise.
      --paginateOperations <Number>: if defined, will paginate operations
  -f, --format <operationBalanceHistoryBackwards | operationBalanceHistory | json | head | default | basic | full | stats | significantTokenTickers>: how to display the data
+
+Usage: ledger-live synchronousOnboarding # track the onboarding status of your device
+ -p, --pollingPeriodMs <Number>: polling period in milliseconds
+ -d, --device <String>        : provide a specific HID path of a device
 
 Usage: ledger-live testDetectOpCollision # Detect operation collisions
  -d, --device <String>        : provide a specific HID path of a device
@@ -574,5 +622,4 @@ Usage: ledger-live walletconnect # Create a walletconnect session
                     :::::::-.`
                     ....``
 
-
-```
+`````

@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 import FormattedVal from "~/renderer/components/FormattedVal";
 import LoadingPlaceholder from "~/renderer/components/LoadingPlaceholder";
-import counterValueFormatter from "@ledgerhq/live-common/lib/market/utils/countervalueFormatter";
+import counterValueFormatter from "@ledgerhq/live-common/market/utils/countervalueFormatter";
 import FormattedDate from "~/renderer/components/FormattedDate";
 
 const Title = styled(Text).attrs({ variant: "h5", color: "neutral.c100", mb: 2 })`
@@ -96,20 +96,20 @@ function MarketInfo({
   locale,
 }: {
   marketcap?: number;
-  marketcapRank: number;
-  totalVolume: number;
-  high24h: number;
-  low24h: number;
-  price: number;
-  priceChangePercentage: number;
-  marketCapChangePercentage24h: number;
-  circulatingSupply: number;
-  totalSupply: number;
-  maxSupply: number;
-  ath: number;
-  athDate: Date;
-  atl: number;
-  atlDate: Date;
+  marketcapRank?: number;
+  totalVolume?: number;
+  high24h?: number;
+  low24h?: number;
+  price?: number;
+  priceChangePercentage?: number;
+  marketCapChangePercentage24h?: number;
+  circulatingSupply?: number;
+  totalSupply?: number;
+  maxSupply?: number;
+  ath?: number;
+  athDate?: Date;
+  atl?: number;
+  atlDate?: Date;
   counterCurrency: string;
   loading: boolean;
   locale: string;
@@ -258,4 +258,4 @@ function MarketInfo({
   );
 }
 
-export default memo<Props>(MarketInfo);
+export default memo(MarketInfo);

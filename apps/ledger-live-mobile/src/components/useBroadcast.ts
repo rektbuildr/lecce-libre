@@ -1,29 +1,18 @@
 import invariant from "invariant";
 import { useCallback } from "react";
 import { log } from "@ledgerhq/logs";
-import {
-  getMainAccount,
-  formatOperation,
-} from "@ledgerhq/live-common/lib/account";
-import type {
-  SignedOperation,
-  Operation,
-  AccountLike,
-  Account,
-} from "@ledgerhq/live-common/lib/types";
-import { getAccountBridge } from "@ledgerhq/live-common/lib/bridge";
-import { execAndWaitAtLeast } from "@ledgerhq/live-common/lib/promise";
-import { getEnv } from "@ledgerhq/live-common/lib/env";
+import { getMainAccount, formatOperation } from "@ledgerhq/live-common/account/index";
+import type { SignedOperation, Operation, AccountLike, Account } from "@ledgerhq/types-live";
+import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
+import { execAndWaitAtLeast } from "@ledgerhq/live-common/promise";
+import { getEnv } from "@ledgerhq/live-common/env";
 
 type SignTransactionArgs = {
-  account?: AccountLike | null,
-  parentAccount?: Account | null,
+  account?: AccountLike | null;
+  parentAccount?: Account | null;
 };
 
-export const useBroadcast = ({
-  account,
-  parentAccount,
-}: SignTransactionArgs) => {
+export const useBroadcast = ({ account, parentAccount }: SignTransactionArgs) => {
   const broadcast = useCallback(
     async (signedOperation: SignedOperation): Promise<Operation> => {
       invariant(account, "account not present");
@@ -41,9 +30,7 @@ export const useBroadcast = ({
         });
         log(
           "transaction-summary",
-          `✔️ broadcasted! optimistic operation: ${formatOperation(mainAccount)(
-            operation,
-          )}`,
+          `✔️ broadcasted! optimistic operation: ${formatOperation(mainAccount)(operation)}`,
         );
         return operation;
       });

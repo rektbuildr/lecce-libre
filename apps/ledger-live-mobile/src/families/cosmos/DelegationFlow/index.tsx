@@ -1,4 +1,4 @@
-import { CosmosValidatorItem } from "@ledgerhq/live-common/lib/families/cosmos/types";
+import { CosmosValidatorItem } from "@ledgerhq/live-common/families/cosmos/types";
 import { useTheme } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import React, { useMemo } from "react";
@@ -15,16 +15,14 @@ import SelectValidator from "./SelectValidator";
 import DelegationSummary from "./02-Summary";
 import DelegationValidationError from "./04-ValidationError";
 import DelegationValidationSuccess from "./04-ValidationSuccess";
+import type { CosmosDelegationFlowParamList } from "./types";
 
 const totalSteps = "3";
 
 function DelegationFlow() {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const stackNavigationConfig = useMemo(
-    () => getStackNavigatorConfig(colors, true),
-    [colors],
-  );
+  const stackNavigationConfig = useMemo(() => getStackNavigatorConfig(colors, true), [colors]);
   return (
     <Stack.Navigator
       screenOptions={{
@@ -36,9 +34,7 @@ function DelegationFlow() {
         name={ScreenName.CosmosDelegationStarted}
         component={DelegationStarted}
         options={{
-          headerTitle: () => (
-            <StepHeader title={t("delegation.started.title")} />
-          ),
+          headerTitle: () => <StepHeader title={t("delegation.started.title")} />,
         }}
       />
       <Stack.Screen
@@ -63,27 +59,18 @@ function DelegationFlow() {
         component={SelectValidator}
         options={{
           gestureEnabled: false,
-          headerTitle: () => (
-            <StepHeader title={t("delegation.selectValidatorTitle")} />
-          ),
+          headerTitle: () => <StepHeader title={t("delegation.selectValidatorTitle")} />,
         }}
       />
 
       <Stack.Screen
         name={ScreenName.CosmosDelegationAmount}
         component={DelegationAmount}
-        options={({
-          route,
-        }: {
-          route: { params: { validator: CosmosValidatorItem } };
-        }) => ({
-          headerRight: null,
+        options={({ route }: { route: { params: { validator: CosmosValidatorItem } } }) => ({
+          headerRight: undefined,
           headerTitle: () => (
             <StepHeader
-              title={
-                route.params.validator?.name ??
-                route.params.validator.validatorAddress
-              }
+              title={route.params.validator?.name ?? route.params.validator.validatorAddress}
               subtitle={t("cosmos.delegation.stepperHeader.amountSubTitle")}
             />
           ),
@@ -151,4 +138,4 @@ const options = {
 
 export { DelegationFlow as component, options };
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<CosmosDelegationFlowParamList>();

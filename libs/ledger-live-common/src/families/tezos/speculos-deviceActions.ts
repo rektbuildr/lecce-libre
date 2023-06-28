@@ -1,86 +1,76 @@
 // @flow
 import type { DeviceAction } from "../../bot/types";
 import type { Transaction } from "./types";
-import { formatCurrencyUnit } from "../../currencies";
-import { deviceActionFlow } from "../../bot/specs";
+import { deviceActionFlow, formatDeviceAmount, SpeculosButton } from "../../bot/specs";
 
-const acceptTransaction: DeviceAction<Transaction, any> = deviceActionFlow({
+export const acceptTransaction: DeviceAction<Transaction, any> = deviceActionFlow({
   steps: [
     {
       title: "Review",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
     },
     {
       title: "Withdraw",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
     },
     {
       title: "Custom Delegate",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
     },
     {
       // device sometimes know the text of a given delegator, we're not validating the actual text
       title: "Delegate",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
     },
     {
       title: "Delegate Name",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
     },
     {
       title: "Confirm",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       expectedValue: ({ transaction }) => {
         return transaction.mode === "send" ? "Transaction" : "Delegation";
       },
     },
     {
       title: "Amount",
-      button: "Rr",
-      expectedValue: ({ account, transaction }) => {
-        const amount = transaction.amount;
-        return formatCurrencyUnit(account.unit, amount, {
-          disableRounding: true,
-          joinFragmentsSeparator: " ",
-        }).replace(/\s/g, " ");
-      },
+      button: SpeculosButton.RIGHT,
+      expectedValue: ({ account, transaction }) =>
+        formatDeviceAmount(account.currency, transaction.amount, {
+          hideCode: true,
+        }),
     },
     {
       title: "Fee",
-      button: "Rr",
-      expectedValue: ({ account, status }) => {
-        const amount = status.estimatedFees;
-        return formatCurrencyUnit(account.currency.units[0], amount, {
-          disableRounding: true,
-          joinFragmentsSeparator: " ",
-        }).replace(/\s/g, " ");
-      },
+      button: SpeculosButton.RIGHT,
+      expectedValue: ({ account, status }) =>
+        formatDeviceAmount(account.currency, status.estimatedFees, {
+          hideCode: true,
+        }),
     },
     {
       title: "Source",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       expectedValue: ({ account }) => account.freshAddress,
     },
     {
       title: "Destination",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       expectedValue: ({ transaction }) => transaction.recipient,
     },
     {
       title: "Storage Limit",
-      button: "Rr",
-      expectedValue: ({ transaction }) =>
-        transaction.storageLimit?.toString() || "",
+      button: SpeculosButton.RIGHT,
+      expectedValue: ({ transaction }) => transaction.storageLimit?.toString() || "",
     },
     {
       title: "Reject",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
     },
     {
       title: "Accept",
-      button: "LRlr",
+      button: SpeculosButton.BOTH,
     },
   ],
 });
-
-export default { acceptTransaction };

@@ -22,18 +22,17 @@ On [this page](https://github.com/settings/organizations), you can see that you 
 - Generate and link a GPG key to your Github account and Git using this nice guide : https://gist.github.com/ankurk91/c4f0e23d76ef868b139f3c28bde057fc
 
 ### Cloning
+
 Clone the following Ledger Live repositories :
 
-`git clone https://github.com/LedgerHQ/ledger-live-mobile.git`
-`git clone https://github.com/LedgerHQ/ledger-live-desktop.git`
-`git clone https://github.com/LedgerHQ/ledger-live-common.git`
+`git clone https://github.com/LedgerHQ/ledger-live.git`
 
 > Small tip : You probably have Sentinel One on your computer. It is an antivirus that constantly scans all your files on your computer to ensure its security. However, it is not adapted to a development environment and will slow down your node package installations or builds enormously and thus kill your productivity. Contact me on Slack to have a solution to mitigate this problem :)
 
 ## Node.js
 
 You should install a Node version manager, because you will regularly need to switch between node versions with Live.
-Some recommand [NVM](https://github.com/nvm-sh/nvm#installing-and-updating), others recommand [N](https://github.com/tj/n#installation)
+Some recommend [NVM](https://github.com/nvm-sh/nvm#installing-and-updating), others recommend [N](https://github.com/tj/n#installation)
 
 You need to install [Yarn](https://classic.yarnpkg.com/en/), a node packet manager used by Live.
 `npm install --global yarn`
@@ -53,7 +52,7 @@ As an alternative, you can install [Webstorm](https://www.jetbrains.com/fr-fr/we
 
 ### Ubuntu/Debian requirements
 
-First, you need to install theses packages :
+First, you need to install these packages :
 
 - libudev and libusb to communicate with the devices on your system, in our case the Nano.
 -  ruby and ruby-dev to install Bundler.
@@ -103,7 +102,7 @@ We will install all the Android necessary dependencies to build Ledger Live Mobi
 
 In the top navigation bar, open the Tools->SDK Manager.
 In the *SDK Platforms* tab, be sure that at least one SDK is installed (Android 10 ? 11 ? As you wish).
-In the *SDK Tools* tab, be sure sure that these components are installed :
+In the *SDK Tools* tab, be sure that these components are installed :
 - Android SDK Build-Tools
 - NDK
 - CMake

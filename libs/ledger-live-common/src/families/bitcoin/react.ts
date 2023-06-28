@@ -1,12 +1,12 @@
+import type { Account, FeeStrategy } from "@ledgerhq/types-live";
 import type { NetworkInfo, Transaction } from "./types";
-import type { FeeStrategy, Account } from "../../types";
 export const useFeesStrategy = (a: Account, t: Transaction): FeeStrategy[] => {
   const networkInfo = t.networkInfo;
 
   if (!networkInfo) return [];
 
   const strategies = (networkInfo as NetworkInfo).feeItems.items
-    .map((feeItem) => {
+    .map(feeItem => {
       return {
         label: feeItem.speed,
         amount: feeItem.feePerByte,

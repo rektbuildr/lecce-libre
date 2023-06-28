@@ -1,12 +1,6 @@
 import React from "react";
 import { useTranslation, Trans } from "react-i18next";
-import {
-  Button,
-  Text,
-  List,
-  Icons,
-  ScrollListContainer,
-} from "@ledgerhq/native-ui";
+import { Button, Text, List, Icons, ScrollListContainer } from "@ledgerhq/native-ui";
 import { useNavigation } from "@react-navigation/native";
 
 const content = [
@@ -36,9 +30,8 @@ const OnboardingSetupRecoveryPhrase = () => {
         <List
           items={content.map(item => ({
             title: <Trans i18nKey={item} components={{ bold: <Bold /> }} />,
-            bullet: <Icons.CheckAloneMedium size={20} color="success.c100" />,
+            bullet: <Icons.CheckAloneMedium size={20} color="success.c50" />,
           }))}
-          itemSeparatorProps={{ mb: 7 }}
         />
       </ScrollListContainer>
       <Button type="main" m={6} size="large" onPress={navigation.goBack}>

@@ -8,7 +8,8 @@ import { spawn, exec } from "child_process";
 import { promises as fsp } from "fs";
 import { log } from "@ledgerhq/logs";
 import type { DeviceModelId } from "@ledgerhq/devices";
-import SpeculosTransport from "@ledgerhq/hw-transport-node-speculos";
+import SpeculosTransport from "@ledgerhq/hw-transport-node-speculos-http";
+import type { AppCandidate } from "@ledgerhq/coin-framework/bot/types";
 import { registerTransportModule } from "../hw";
 import { getEnv } from "../env";
 import { getDependencies } from "../apps/polyfill";
@@ -16,11 +17,28 @@ import { findCryptoCurrencyByKeyword } from "../currencies";
 import { formatAppCandidate } from "../bot/formatters";
 import { delay } from "../promise";
 import { mustUpgrade, shouldUpgrade } from "../apps";
-import type { AppCandidate } from "../bot/types";
 
-let idCounter = 0;
+let idCounter = getEnv("SPECULOS_PID_OFFSET");
 
 const data = {};
+
+const modelMap: Record<string, DeviceModelId> = {
+  nanos: <DeviceModelId>"nanoS",
+  "nanos+": <DeviceModelId>"nanoSP",
+  nanox: <DeviceModelId>"nanoX",
+  blue: <DeviceModelId>"blue",
+};
+const reverseModelMap = {};
+for (const k in modelMap) {
+  reverseModelMap[modelMap[k]] = k;
+}
+const modelMapPriority: Record<string, number> = {
+  nanos: 4,
+  "nanos+": 3,
+  nanox: 2,
+  blue: 1,
+};
+const defaultFirmware: Record<string, string> = {};
 
 export async function releaseSpeculosDevice(id: string) {
   log("speculos", "release " + id);
@@ -35,6 +53,23 @@ export function closeAllSpeculosDevices() {
   return Promise.all(Object.keys(data).map(releaseSpeculosDevice));
 }
 
+// to keep in sync from https://github.com/LedgerHQ/speculos/tree/master/speculos/cxlib
+const existingSdks = [
+  "nanos-cx-2.0.elf",
+  "nanos-cx-2.1.elf",
+  "nanosp-cx-1.0.3.elf",
+  "nanosp-cx-1.0.elf",
+  "nanox-cx-2.0.2.elf",
+  "nanox-cx-2.0.elf",
+];
+
+function inferSDK(firmware: string, model: string): string | undefined {
+  const begin = `${model.toLowerCase()}-cx-`;
+  if (existingSdks.includes(begin + firmware + ".elf")) return firmware;
+  const shortVersion = firmware.slice(0, 3);
+  if (existingSdks.includes(begin + shortVersion + ".elf")) return shortVersion;
+}
+
 export async function createSpeculosDevice(
   arg: {
     model: DeviceModelId;
@@ -46,26 +81,22 @@ export async function createSpeculosDevice(
     // Folder where we have app binaries
     coinapps: string;
   },
-  maxRetry = 3
+  maxRetry = 3,
 ): Promise<{
   transport: SpeculosTransport;
   id: string;
+  appPath: string;
 }> {
-  const { model, firmware, appName, appVersion, seed, coinapps, dependency } =
-    arg;
+  const { model, firmware, appName, appVersion, seed, coinapps, dependency } = arg;
   const speculosID = `speculosID-${++idCounter}`;
-  const apduPort = 40000 + idCounter;
-  const vncPort = 41000 + idCounter;
-  const buttonPort = 42000 + idCounter;
-  const automationPort = 43000 + idCounter;
+  const apiPort = 30000 + idCounter;
+  const vncPort = 35000 + idCounter;
 
-  // workaround until we have a clearer way to resolve sdk for a firmware.
-  const sdk =
-    model === "nanoX" ? "1.2" : model === "nanoS" ? firmware.slice(0, 3) : null;
+  const sdk = inferSDK(firmware, model);
 
-  const appPath = `./apps/${model.toLowerCase()}/${firmware}/${appName.replace(
+  const appPath = `./apps/${reverseModelMap[model]}/${firmware}/${appName.replace(
     / /g,
-    ""
+    "",
   )}/app_${appVersion}.elf`;
 
   const params = [
@@ -73,13 +104,9 @@ export async function createSpeculosDevice(
     "-v",
     `${coinapps}:/speculos/apps`,
     "-p",
-    `${apduPort}:40000`,
+    `${apiPort}:40000`,
     "-p",
     `${vncPort}:41000`,
-    "-p",
-    `${buttonPort}:42000`,
-    "-p",
-    `${automationPort}:43000`,
     "-e",
     `SPECULOS_APPNAME=${appName}:${appVersion}`,
     "--name",
@@ -91,7 +118,10 @@ export async function createSpeculosDevice(
     ...(dependency
       ? [
           "-l",
-          `${dependency}:${`./apps/${model.toLowerCase()}/${firmware}/${dependency}/app_${appVersion}.elf`}`,
+          `${dependency}:${`./apps/${reverseModelMap[model]}/${firmware}/${dependency.replace(
+            / /g,
+            "",
+          )}/app_${appVersion}.elf`}`,
         ]
       : []),
     ...(sdk ? ["--sdk", sdk] : []),
@@ -99,14 +129,10 @@ export async function createSpeculosDevice(
     "headless",
     "--vnc-password",
     "live",
-    "--apdu-port",
+    "--api-port",
     "40000",
     "--vnc-port",
     "41000",
-    "--button-port",
-    "42000",
-    "--automation-port",
-    "43000",
   ];
 
   log("speculos", `${speculosID}: spawning = ${params.join(" ")}`);
@@ -129,10 +155,7 @@ export async function createSpeculosDevice(
       delete data[speculosID];
       exec(`docker rm -f ${speculosID}`, (error, stdout, stderr) => {
         if (error) {
-          log(
-            "speculos-error",
-            `${speculosID} not destroyed ${error} ${stderr}`
-          );
+          log("speculos-error", `${speculosID} not destroyed ${error} ${stderr}`);
           reject(error);
         } else {
           log("speculos", `destroyed ${speculosID}`);
@@ -142,13 +165,13 @@ export async function createSpeculosDevice(
     });
   };
 
-  p.stdout.on("data", (data) => {
+  p.stdout.on("data", data => {
     if (data) {
       log("speculos-stdout", `${speculosID}: ${String(data).trim()}`);
     }
   });
   let latestStderr;
-  p.stderr.on("data", (data) => {
+  p.stderr.on("data", data => {
     if (!data) return;
     latestStderr = data;
 
@@ -160,9 +183,7 @@ export async function createSpeculosDevice(
       setTimeout(() => resolveReady(true), 500);
     } else if (data.includes("is already in use by container")) {
       rejectReady(
-        new Error(
-          "speculos already in use! Try `ledger-live cleanSpeculos` or check logs"
-        )
+        new Error("speculos already in use! Try `ledger-live cleanSpeculos` or check logs"),
       );
     } else if (data.includes("address already in use")) {
       if (maxRetry > 0) {
@@ -188,35 +209,20 @@ export async function createSpeculosDevice(
   }
 
   const transport = await SpeculosTransport.open({
-    apduPort,
-    buttonPort,
-    automationPort,
+    apiPort,
   });
   data[speculosID] = {
     process: p,
-    apduPort,
-    buttonPort,
-    automationPort,
+    apiPort,
     transport,
     destroy,
   };
   return {
     id: speculosID,
     transport,
+    appPath,
   };
 }
-
-const modelMap: Record<string, DeviceModelId> = {
-  nanos: <DeviceModelId>"nanoS",
-  nanox: <DeviceModelId>"nanoX",
-  blue: <DeviceModelId>"blue",
-};
-const modelMapPriority: Record<string, number> = {
-  nanos: 3,
-  nanox: 2,
-  blue: 1,
-};
-const defaultFirmware: Record<string, string> = {};
 
 function hackBadSemver(str) {
   const split = str.split(".");
@@ -234,18 +240,16 @@ function hackBadSemver(str) {
 export async function listAppCandidates(cwd: string): Promise<AppCandidate[]> {
   let candidates: AppCandidate[] = [];
   const models = <string[]>(await fsp.readdir(cwd))
-    .map((modelName) => [modelName, modelMapPriority[modelName.toLowerCase()]])
+    .map(modelName => [modelName, modelMapPriority[modelName.toLowerCase()]])
     .filter(([, priority]) => priority)
     .sort((a, b) => <number>b[1] - <number>a[1])
-    .map((a) => a[0]);
+    .map(a => a[0]);
 
   for (const modelName of models) {
     const model = modelMap[modelName.toLowerCase()];
     const p1 = path.join(cwd, modelName);
     const firmwares = await fsp.readdir(p1);
-    firmwares.sort((a, b) =>
-      semver.compare(hackBadSemver(a), hackBadSemver(b))
-    );
+    firmwares.sort((a, b) => semver.compare(hackBadSemver(a), hackBadSemver(b)));
     firmwares.reverse();
 
     for (const firmware of firmwares) {
@@ -261,11 +265,10 @@ export async function listAppCandidates(cwd: string): Promise<AppCandidate[]> {
           if (elf.startsWith("app_") && elf.endsWith(".elf")) {
             const p4 = path.join(p3, elf);
             const appVersion = elf.slice(4, elf.length - 4);
-
             if (
               semver.valid(appVersion) &&
-              !shouldUpgrade(model, appName, appVersion) &&
-              !mustUpgrade(model, appName, appVersion)
+              !shouldUpgrade(appName, appVersion) &&
+              !mustUpgrade(appName, appVersion)
             ) {
               c.push({
                 path: p4,
@@ -294,10 +297,7 @@ export type AppSearch = {
   appVersion?: string;
 };
 
-export function appCandidatesMatches(
-  appCandidate: AppCandidate,
-  search: AppSearch
-): boolean {
+export function appCandidatesMatches(appCandidate: AppCandidate, search: AppSearch): boolean {
   const searchFirmware = search.firmware || defaultFirmware[appCandidate.model];
   return !!(
     (!search.model || search.model === appCandidate.model) &&
@@ -306,28 +306,22 @@ export function appCandidatesMatches(
         appCandidate.appName.replace(/ /g, "").toLowerCase()) &&
     ((!searchFirmware && !appCandidate.firmware.includes("rc")) ||
       appCandidate.firmware === searchFirmware ||
-      (searchFirmware &&
-        semver.satisfies(
-          hackBadSemver(appCandidate.firmware),
-          searchFirmware
-        ))) &&
-    ((!search.appVersion &&
-      !appCandidate.appVersion.includes("prerelease") &&
-      !appCandidate.appVersion.includes("rc")) ||
-      (search.appVersion &&
-        semver.satisfies(appCandidate.appVersion, search.appVersion)))
+      (searchFirmware && semver.satisfies(hackBadSemver(appCandidate.firmware), searchFirmware))) &&
+    (appCandidate.appVersion === search.appVersion ||
+      (!search.appVersion && !appCandidate.appVersion.includes("-")) ||
+      (search.appVersion && semver.satisfies(appCandidate.appVersion, search.appVersion)))
   );
 }
 export const findAppCandidate = (
   appCandidates: AppCandidate[],
   search: AppSearch,
-  picker: (arg0: AppCandidate[]) => AppCandidate = sample
+  picker: (arg0: AppCandidate[]) => AppCandidate = sample,
 ): AppCandidate | null | undefined => {
-  let apps = appCandidates.filter((c) => appCandidatesMatches(c, search));
+  let apps = appCandidates.filter(c => appCandidatesMatches(c, search));
 
   if (!search.appVersion && apps.length > 0) {
     const appVersion = apps[0].appVersion;
-    apps = apps.filter((a) => a.appVersion === appVersion);
+    apps = apps.filter(a => a.appVersion === appVersion);
   }
 
   const app = picker(apps);
@@ -339,7 +333,7 @@ export const findAppCandidate = (
         " app candidates (out of " +
         appCandidates.length +
         "):\n" +
-        apps.map((a, i) => " [" + i + "] " + formatAppCandidate(a)).join("\n")
+        apps.map((a, i) => " [" + i + "] " + formatAppCandidate(a)).join("\n"),
     );
   }
 
@@ -391,7 +385,7 @@ function parseAppSearch(query: string):
   let dependency;
 
   if (currency) {
-    dependency = getDependencies(currency.managerAppName)[0];
+    dependency = getDependencies(currency.managerAppName)[0]?.replace(/ /g, "");
   }
 
   return {
@@ -422,7 +416,7 @@ export async function createImplicitSpeculos(query: string): Promise<{
   invariant(
     match,
     "speculos: invalid format of '%s'. Usage example: speculos:nanoS:bitcoin@1.3.x",
-    query
+    query,
   );
   const { search, dependency, appName } = <
     {
@@ -434,10 +428,7 @@ export async function createImplicitSpeculos(query: string): Promise<{
 
   const appCandidate = findAppCandidate(apps, search);
   invariant(appCandidate, "could not find an app that matches '%s'", query);
-  log(
-    "speculos",
-    "using app " + formatAppCandidate(appCandidate as AppCandidate)
-  );
+  log("speculos", "using app " + formatAppCandidate(appCandidate as AppCandidate));
   return appCandidate
     ? {
         device: await createSpeculosDevice({

@@ -1,15 +1,12 @@
 import { Flex, Text, Log } from "@ledgerhq/native-ui";
 import React from "react";
-import Animation from "../Animation";
-import getDeviceAnimation from "../DeviceAction/getDeviceAnimation";
-import manager from "@ledgerhq/live-common/lib/manager";
+import manager from "@ledgerhq/live-common/manager/index";
 import { useTranslation } from "react-i18next";
-import { Device } from "@ledgerhq/live-common/lib/hw/actions/types";
-import {
-  DeviceInfo,
-  FirmwareUpdateContext,
-} from "@ledgerhq/live-common/lib/types/manager";
+import { Device } from "@ledgerhq/live-common/hw/actions/types";
+import { DeviceInfo, FirmwareUpdateContext } from "@ledgerhq/types-live";
 import { useTheme } from "styled-components/native";
+import { getDeviceAnimation } from "../../helpers/getDeviceAnimation";
+import Animation from "../Animation";
 import Track from "../../analytics/Track";
 
 type Props = {
@@ -28,7 +25,7 @@ const ConfirmUpdateStep = ({ device, deviceInfo, latestFirmware }: Props) => {
       <Animation
         source={getDeviceAnimation({
           device,
-          key: "validate",
+          key: "allowUpdate",
           theme: theme as "light" | "dark" | undefined,
         })}
       />
@@ -53,11 +50,7 @@ const ConfirmUpdateStep = ({ device, deviceInfo, latestFirmware }: Props) => {
             mt={4}
           >
             {manager
-              .formatHashName(
-                latestFirmware.osu.hash,
-                device.modelId,
-                deviceInfo,
-              )
+              .formatHashName(latestFirmware.osu.hash, device.modelId, deviceInfo)
               .map((hash, i) => (
                 <Text key={`${i}-${hash}`}>{hash}</Text>
               ))}
@@ -65,7 +58,7 @@ const ConfirmUpdateStep = ({ device, deviceInfo, latestFirmware }: Props) => {
         </Flex>
       ) : null}
       <Flex
-        grow={1}
+        flexGrow={1}
         justifyContent="space-between"
         flexDirection="row"
         alignSelf="stretch"
@@ -77,7 +70,7 @@ const ConfirmUpdateStep = ({ device, deviceInfo, latestFirmware }: Props) => {
         <Text variant="subtitle">{deviceInfo.version}</Text>
       </Flex>
       <Flex
-        grow={1}
+        flexGrow={1}
         justifyContent="space-between"
         flexDirection="row"
         alignSelf="stretch"

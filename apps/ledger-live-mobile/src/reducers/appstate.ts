@@ -1,96 +1,106 @@
 import { handleActions } from "redux-actions";
+import type { Action, ReducerMap } from "redux-actions";
 import { createSelector } from "reselect";
 import { NetworkDown } from "@ledgerhq/errors";
-import type { State } from ".";
+import type { AppState, State } from "./types";
+
+import type {
+  AppStateAddBackgroundEventPayload,
+  AppStateIsConnectedPayload,
+  AppStatePayload,
+  AppStateSetHasConnectedDevicePayload,
+  AppStateSetModalLockPayload,
+  AppStateUpdateMainNavigatorVisibilityPayload,
+  DangerouslyOverrideStatePayload,
+} from "../actions/types";
+import { AppStateActionTypes } from "../actions/types";
 
 export type AsyncState = {
-  isConnected: boolean | null,
+  isConnected: boolean | null;
 };
 
-export type BackgroundEvent = {
-  type: "confirmPin"
-} | {
-  type: "downloadingUpdate",
-  progress?: number
-} | {
-  type: "confirmUpdate"
-} | {
-  type: "flashingMcu",
-  progress?: number,
-  installing?: string | null,
-} | {
-  type: "firmwareUpdated"
-} | {
-  type: "error",
-  error: any
-};
-
-export type AppState = {
-  isConnected: boolean | null,
-  hasConnectedDevice: boolean,
-  modalLock: boolean,
-  backgroundEvents: Array<BackgroundEvent>,
-};
-
-const initialState: AppState = {
+export const INITIAL_STATE: AppState = {
   isConnected: true,
   hasConnectedDevice: false, // NB for this current session, have we done a device action with a device.
   modalLock: false,
   backgroundEvents: [],
+  debugMenuVisible: false,
+  isMainNavigatorVisible: true,
 };
 
-const handlers: Object = {
-  SYNC_IS_CONNECTED: (
-    state: AppState,
-    { isConnected }: { isConnected: boolean | null },
-  ) => ({
+const handlers: ReducerMap<AppState, AppStatePayload> = {
+  [AppStateActionTypes.DEBUG_MENU_VISIBLE]: state => ({
     ...state,
-    isConnected,
+    debugMenuVisible: true,
   }),
-  HAS_CONNECTED_DEVICE: (
-    state: AppState,
-    { hasConnectedDevice }: { hasConnectedDevice: boolean },
-  ) => ({ ...state, hasConnectedDevice }),
-  SET_MODAL_LOCK: (state: AppState, { modalLock }: { modalLock: boolean }) => ({
+
+  [AppStateActionTypes.SYNC_IS_CONNECTED]: (state, action) => ({
     ...state,
-    modalLock,
+    isConnected: (action as Action<AppStateIsConnectedPayload>).payload,
   }),
-  QUEUE_BACKGROUND_EVENT: (state: AppState, { event }: any) => ({
+
+  [AppStateActionTypes.HAS_CONNECTED_DEVICE]: (state, action) => ({
     ...state,
-    backgroundEvents: [...state.backgroundEvents, event],
+    hasConnectedDevice: (action as Action<AppStateSetHasConnectedDevicePayload>).payload,
   }),
-  DEQUEUE_BACKGROUND_EVENT: (state: AppState) => {
+
+  [AppStateActionTypes.SET_MODAL_LOCK]: (state, action) => ({
+    ...state,
+    modalLock: (action as Action<AppStateSetModalLockPayload>).payload,
+  }),
+
+  [AppStateActionTypes.QUEUE_BACKGROUND_EVENT]: (state, action) => ({
+    ...state,
+    backgroundEvents: [
+      ...state.backgroundEvents,
+      (action as Action<AppStateAddBackgroundEventPayload>).payload.event,
+    ],
+  }),
+
+  [AppStateActionTypes.DEQUEUE_BACKGROUND_EVENT]: (state: AppState) => {
     const [_, ...tail] = state.backgroundEvents;
-    return ({
+    return {
       ...state,
       backgroundEvents: tail,
-    });
+    };
   },
-  CLEAR_BACKGROUND_EVENTS: (state: AppState) => ({
+
+  [AppStateActionTypes.CLEAR_BACKGROUND_EVENTS]: (state: AppState) => ({
     ...state,
     backgroundEvents: [],
+  }),
+
+  [AppStateActionTypes.DANGEROUSLY_OVERRIDE_STATE]: (state: AppState, action): AppState => ({
+    ...state,
+    ...(action as Action<DangerouslyOverrideStatePayload>).payload.appstate,
+  }),
+
+  [AppStateActionTypes.UPDATE_MAIN_NAVIGATOR_VISIBILITY]: (state, action) => ({
+    ...state,
+    isMainNavigatorVisible: (action as Action<AppStateUpdateMainNavigatorVisibilityPayload>)
+      .payload,
   }),
 };
 
 // Selectors
 
+export const isDebugMenuVisible = (state: State) => state.appstate.debugMenuVisible;
 export const isConnectedSelector = (state: State) => state.appstate.isConnected;
 export const isModalLockedSelector = (state: State) => state.appstate.modalLock;
-export const hasConnectedDeviceSelector = (state: State) =>
-  state.appstate.hasConnectedDevice;
+export const hasConnectedDeviceSelector = (state: State) => state.appstate.hasConnectedDevice;
 
-  export const backgroundEventsSelector = (state: State) =>
-  state.appstate.backgroundEvents;
+export const backgroundEventsSelector = (state: State) => state.appstate.backgroundEvents;
 
-  export const nextBackgroundEventSelector = (state: State) =>
-  state.appstate.backgroundEvents[0];
+export const nextBackgroundEventSelector = (state: State) => state.appstate.backgroundEvents[0];
+
+export const isMainNavigatorVisibleSelector = (state: State) =>
+  state.appstate.isMainNavigatorVisible;
 
 const globalNetworkDown = new NetworkDown();
 
-// $FlowFixMe
 export const networkErrorSelector = createSelector(
   isConnectedSelector,
-  (isConnected: boolean) => (!isConnected ? globalNetworkDown : null),
+  (isConnected: boolean | null) => (!isConnected ? globalNetworkDown : null),
 );
 
-export default handleActions(handlers, initialState);
+export default handleActions<AppState, AppStatePayload>(handlers, INITIAL_STATE);

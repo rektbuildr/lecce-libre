@@ -5,16 +5,17 @@ import uniqBy from "lodash/uniqBy";
 import shuffle from "lodash/shuffle";
 import flatMap from "lodash/flatMap";
 import { BigNumber } from "bignumber.js";
+import type { Transaction } from "@ledgerhq/live-common/generated/types";
 import type {
-  TransactionStatus,
-  Transaction,
-  AccountLike,
   Account,
-} from "@ledgerhq/live-common/lib/types";
+  AccountLike,
+  AccountLikeArray,
+  TransactionStatusCommon,
+} from "@ledgerhq/types-live";
 import perFamily from "@ledgerhq/live-common/lib/generated/cli-transaction";
-import { getAccountBridge } from "@ledgerhq/live-common/lib/bridge";
-import { getAccountCurrency } from "@ledgerhq/live-common/lib/account";
-import { parseCurrencyUnit } from "@ledgerhq/live-common/lib/currencies";
+import { getAccountCurrency } from "@ledgerhq/live-common/lib/account/helpers";
+import { parseCurrencyUnit } from "@ledgerhq/live-common/lib/currencies/index";
+import { getAccountBridge } from "@ledgerhq/live-common/lib/bridge/index";
 
 const inferAmount = (account: AccountLike, str: string): BigNumber => {
   const currency = getAccountCurrency(account);
@@ -92,32 +93,39 @@ export const inferTransactionsOpts = uniqBy(
       type: String,
       desc: "quantity or list of quantity of an ERC1155 NFT separated by commas (order is kept in corelation with --tokenIds)",
     },
-  ].concat(
-    flatMap(Object.values(perFamily), (m: any) => (m && m.options) || [])
-  ),
-  "name"
+  ].concat(flatMap(Object.values(perFamily), (m: any) => (m && m.options) || [])),
+  "name",
 );
 export async function inferTransactions(
   mainAccount: Account,
-  opts: InferTransactionsOpts
-): Promise<[Transaction, TransactionStatus][]> {
+  opts: InferTransactionsOpts,
+): Promise<[Transaction, TransactionStatusCommon][]> {
   const bridge = getAccountBridge(mainAccount, null);
   const specific = perFamily[mainAccount.currency.family];
 
-  const inferAccounts =
+  const inferAccounts: (account: Account, opts: Record<string, any>) => AccountLikeArray =
     (specific && specific.inferAccounts) || ((account, _opts) => [account]);
 
-  const inferTransactions =
+  const inferTransactions: (
+    transactions: Array<{
+      account: AccountLike;
+      transaction: Transaction;
+    }>,
+    opts: Record<string, any>,
+    { inferAmount }: any,
+  ) => Transaction[] =
     (specific && specific.inferTransactions) ||
-    ((transactions, _opts, _r) => transactions);
+    ((inferred, _opts, _r) => inferred.map(({ transaction }) => transaction));
 
-  let all: any[] = await Promise.all(
+  let all: Array<{
+    account: AccountLike;
+    transaction: Transaction;
+    mainAccount: Account;
+  }> = await Promise.all(
     product(
       inferAccounts(mainAccount, opts),
-      opts.recipient || [
-        opts["self-transaction"] ? mainAccount.freshAddress : "",
-      ]
-    ).map(async ([account, recipient]) => {
+      opts.recipient || [opts["self-transaction"] ? mainAccount.freshAddress : ""],
+    ).map(async ([account, recipient]: [AccountLike, string]) => {
       const transaction = bridge.createTransaction(mainAccount);
       transaction.recipient = recipient;
       transaction.useAllAmount = !!opts["use-all-amount"];
@@ -129,9 +137,7 @@ export async function inferTransactions(
       if (opts.tokenIds && opts.collection) {
         transaction.tokenIds = opts.tokenIds.split(",");
         transaction.collection = opts.collection;
-        transaction.quantities = opts.quantities
-          ?.split(",")
-          ?.map((q) => new BigNumber(q));
+        transaction.quantities = opts.quantities?.split(",")?.map(q => new BigNumber(q));
       }
 
       return {
@@ -139,17 +145,17 @@ export async function inferTransactions(
         transaction,
         mainAccount,
       };
-    })
+    }),
   );
 
   if (opts.shuffle) {
     all = shuffle(all);
   }
 
-  const transactions: [Transaction, TransactionStatus][] = await Promise.all(
+  const transactions: [Transaction, TransactionStatusCommon][] = await Promise.all(
     inferTransactions(all, opts, {
       inferAmount,
-    }).map(async (transaction) => {
+    }).map(async transaction => {
       const tx = await bridge.prepareTransaction(mainAccount, transaction);
       const status = await bridge.getTransactionStatus(mainAccount, tx);
       const errorKeys = Object.keys(status.errors);
@@ -159,7 +165,7 @@ export async function inferTransactions(
       }
 
       return [tx, status];
-    })
+    }),
   );
 
   return transactions;

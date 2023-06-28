@@ -28,14 +28,12 @@ const AssetWrapperContainer = styled(Flex).attrs({
 const size = normalize(150);
 
 function Allocation() {
-  const distribution = useDistribution();
+  const distribution = useDistribution({ showEmptyAccounts: true });
   const { colors } = useTheme();
   const { t } = useTranslation();
 
   const renderItem = useCallback(
-    ({ item }: { item: DistributionItem; index: number }) => (
-      <DistributionCard item={item} />
-    ),
+    ({ item }: { item: DistributionItem; index: number }) => <DistributionCard item={item} />,
     [],
   );
 

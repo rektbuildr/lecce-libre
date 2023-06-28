@@ -1,102 +1,58 @@
-import React, { useCallback } from "react";
-import { Linking, FlatList } from "react-native";
-import { Trans, useTranslation } from "react-i18next";
-import { useFilteredServiceStatus } from "@ledgerhq/live-common/lib/notifications/ServiceStatusProvider";
-import { Incident } from "@ledgerhq/live-common/lib/notifications/ServiceStatusProvider/types";
-import { Alert, Flex, IconBox, Notification, Text } from "@ledgerhq/native-ui";
-import { CheckAloneMedium } from "@ledgerhq/native-ui/assets/icons";
+import React from "react";
+import { useFilteredServiceStatus } from "@ledgerhq/live-common/notifications/ServiceStatusProvider/index";
+import { Box, Flex, Icons, Text } from "@ledgerhq/native-ui";
+
 import styled, { useTheme } from "styled-components/native";
-import { urls } from "../../config/urls";
 
-type Props = {
-  item: Incident;
-  index: number;
-};
+import { Incident } from "@ledgerhq/live-common/notifications/ServiceStatusProvider/types";
 
-const MainContainer = styled.SafeAreaView`
-  background-color: ${p => p.theme.colors.palette.background.main};
-  padding: ${p => p.theme.space[6]}px;
-  flex: 1;
-`;
+import { FlatList } from "react-native";
+import { TrackScreen } from "../../analytics";
+import SettingsNavigationScrollView from "../Settings/SettingsNavigationScrollView";
 
-const BorderedIncidentContainer = styled.View`
-  border: 1px solid ${p => p.theme.colors.palette.neutral.c40};
-  padding: ${p => p.theme.space[5]}px;
-  margin-bottom: ${p => p.theme.space[5]}px;
+const DATA_TRACKING_DRAWER_NAME = "Notification Center Status";
+const Container = styled(SettingsNavigationScrollView)``;
+const IncidentBox = styled(Flex)``;
 
-  border-radius: 4px;
-`;
-
-const IncidentRow = ({ item }: Props) => {
-  const { t } = useTranslation();
-  const { incident_updates: incidentUpdates, name, shortlink } = item;
-
-  // Todo: Track back StatusLearnMore click event
-  return (
-    <BorderedIncidentContainer>
-      <Notification
-        variant={"secondary"}
-        title={name}
-        subtitle={
-          incidentUpdates && incidentUpdates.length
-            ? incidentUpdates.map(({ body }) => body).join("\n")
-            : ""
-        }
-        {...(!!shortlink && {
-          linkText: t("common.learnMore"),
-          onLinkPress: () => Linking.openURL(shortlink),
-        })}
-      />
-    </BorderedIncidentContainer>
-  );
-};
-
-export default function NotificationCenter() {
-  const { t } = useTranslation();
+export default function StatusCenter() {
   const { incidents } = useFilteredServiceStatus();
-  const { colors } = useTheme();
+  const { colors, space } = useTheme();
 
-  const onHelpPageRedirect = useCallback(() => {
-    Linking.openURL(urls.ledgerStatus); // @TODO redirect to correct url
-  }, []);
+  const ListItem = (incident: Incident) => {
+    return (
+      <IncidentBox flexDirection="row" px={7} justifyContent="center">
+        <Box mr={3} pt={1}>
+          <Icons.WarningSolidMedium
+            color={incident.impact === "critical" ? colors.error.c60 : colors.warning.c70}
+            size={14}
+          />
+        </Box>
+        <Flex flexDirection="column" justifyContent="space-between">
+          <Text variant="body" fontWeight="medium" color="neutral.c100" mb={3}>
+            {incident.name}
+          </Text>
+          {incident.incident_updates?.length && (
+            <Text variant="body" fontWeight="medium" color="neutral.c70">
+              {incident.incident_updates[0].body}
+            </Text>
+          )}
+        </Flex>
+      </IncidentBox>
+    );
+  };
 
   return (
-    <MainContainer>
-      {incidents.length > 0 ? (
-        <Alert
-          type={"warning"}
-          title={t("notificationCenter.status.error.title")}
-        />
-      ) : (
-        <Flex flex={1} alignItems={"center"} justifyContent={"flex-end"}>
-          <IconBox Icon={CheckAloneMedium} color={colors.palette.success.c80} />
-          <Text variant={"h3"} color={"palette.neutral.c100"} marginTop={6}>
-            <Trans i18nKey="notificationCenter.status.ok.title" />
-          </Text>
-          <Text variant={"paragraph"} color="palette.neutral.c80">
-            <Trans i18nKey="notificationCenter.status.ok.desc">
-              <Text variant={"paragraph"} color="palette.neutral.c80">
-                {""}
-              </Text>
-              <Text
-                variant={"paragraph"}
-                color="palette.neutral.c100"
-                style={{ textDecorationLine: "underline" }}
-                onPress={onHelpPageRedirect}
-              >
-                {""}
-              </Text>
-            </Trans>
-          </Text>
-        </Flex>
-      )}
+    <Container>
+      <TrackScreen category={DATA_TRACKING_DRAWER_NAME} type="page" refreshSource={false} />
       <FlatList
-        contentContainerStyle={{ marginTop: 20 }}
-        style={{ flex: 1 }}
         data={incidents}
-        renderItem={props => <IncidentRow {...props} />}
-        keyExtractor={(item, index) => item.id + index}
+        contentContainerStyle={{
+          flex: 1,
+        }}
+        keyExtractor={(incident: Incident) => incident.id}
+        renderItem={elem => ListItem(elem.item)}
+        ItemSeparatorComponent={() => <Box height={space[7]} />}
       />
-    </MainContainer>
+    </Container>
   );
 }

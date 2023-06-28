@@ -1,26 +1,30 @@
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Flex, Text, Icon } from "@ledgerhq/react-ui";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { setTrackingSource } from "~/renderer/analytics/TrackPage";
+import TrackPage, { setTrackingSource } from "~/renderer/analytics/TrackPage";
 import { starredMarketCoinsSelector, localeSelector } from "~/renderer/reducers/settings";
-import { useSingleCoinMarketData } from "@ledgerhq/live-common/lib/market/MarketDataProvider";
+import { useSingleCoinMarketData } from "@ledgerhq/live-common/market/MarketDataProvider";
 import styled, { useTheme } from "styled-components";
 import CryptoCurrencyIcon from "~/renderer/components/CryptoCurrencyIcon";
 import { getCurrencyColor } from "~/renderer/getCurrencyColor";
 import { addStarredMarketCoins, removeStarredMarketCoins } from "~/renderer/actions/settings";
+import { track } from "~/renderer/analytics/segment";
+import { useGetSwapTrackingProperties } from "~/renderer/screens/exchange/Swap2/utils/index";
 import { Button } from "..";
 import MarketCoinChart from "./MarketCoinChart";
 import MarketInfo from "./MarketInfo";
 import { useProviders } from "../../exchange/Swap2/Form";
-import Track from "~/renderer/analytics/Track";
-import { getAvailableAccountsById } from "@ledgerhq/live-common/lib/exchange/swap/utils";
+import { getAvailableAccountsById } from "@ledgerhq/live-common/exchange/swap/utils/index";
 import { accountsSelector } from "~/renderer/reducers/accounts";
 import { openModal } from "~/renderer/actions/modals";
-import { getAllSupportedCryptoCurrencyTickers } from "@ledgerhq/live-common/lib/platform/providers/RampCatalogProvider/helpers";
-import { useRampCatalog } from "@ledgerhq/live-common/lib/platform/providers/RampCatalogProvider";
-import { flattenAccounts } from "@ledgerhq/live-common/lib/account";
+import { getAllSupportedCryptoCurrencyTickers } from "@ledgerhq/live-common/platform/providers/RampCatalogProvider/helpers";
+import { useRampCatalog } from "@ledgerhq/live-common/platform/providers/RampCatalogProvider/index";
+import { flattenAccounts } from "@ledgerhq/live-common/account/index";
+import { useFeature } from "@ledgerhq/live-common/featureFlags/index";
+import useStakeFlow from "../../stake";
+import { stakeDefaultTrack } from "~/renderer/screens/stake/constants";
 
 const CryptoCurrencyIconWrapper = styled.div`
   height: 56px;
@@ -64,13 +68,18 @@ export default function MarketCoinScreen() {
   const allAccounts = useSelector(accountsSelector);
   const flattenedAccounts = flattenAccounts(allAccounts);
   const { providers, storedProviders } = useProviders();
+  const swapDefaultTrack = useGetSwapTrackingProperties();
+
   const swapAvailableIds = useMemo(() => {
     return providers || storedProviders
-      ? (providers || storedProviders)
+      ? (providers || storedProviders)!
           .map(({ pairs }) => pairs.map(({ from, to }) => [from, to]))
           .flat(2)
       : [];
   }, [providers, storedProviders]);
+
+  // PTX smart routing feature flag - buy sell live app flag
+  const ptxSmartRouting = useFeature("ptxSmartRouting");
 
   const {
     selectedCoinData: currency,
@@ -81,8 +90,7 @@ export default function MarketCoinScreen() {
     counterCurrency,
     setCounterCurrency,
     supportedCounterCurrencies,
-    selectCurrency,
-  } = useSingleCoinMarketData(currencyId);
+  } = useSingleCoinMarketData();
 
   const rampCatalog = useRampCatalog();
 
@@ -110,35 +118,49 @@ export default function MarketCoinScreen() {
     chartData,
   } = currency || {};
 
-  const [onRampAvailableTickers] = useMemo(() => {
+  const onRampAvailableTickers = useMemo(() => {
     if (!rampCatalog.value) {
-      return [[], []];
+      return [];
     }
-    return [getAllSupportedCryptoCurrencyTickers(rampCatalog.value.onRamp)];
+    return getAllSupportedCryptoCurrencyTickers(rampCatalog.value.onRamp);
   }, [rampCatalog.value]);
 
   const availableOnBuy =
     currency && currency.ticker && onRampAvailableTickers.includes(currency.ticker?.toUpperCase());
   const availableOnSwap = internalCurrency && swapAvailableIds.includes(internalCurrency.id);
+  const stakeProgramsFeatureFlag = useFeature("stakePrograms");
+  const listFlag = stakeProgramsFeatureFlag?.params?.list ?? [];
+  const stakeProgramsEnabled = stakeProgramsFeatureFlag?.enabled ?? false;
+  const availableOnStake =
+    stakeProgramsEnabled && currency && listFlag.includes(currency?.internalCurrency?.id);
+  const startStakeFlow = useStakeFlow();
 
   const color = internalCurrency
     ? getCurrencyColor(internalCurrency, colors.background.main)
     : colors.primary.c80;
 
   const onBuy = useCallback(
-    e => {
+    (e: React.SyntheticEvent<HTMLButtonElement>) => {
       e.preventDefault();
       e.stopPropagation();
       setTrackingSource("Page Market Coin");
+
       history.push({
         pathname: "/exchange",
-        state: {
-          mode: "onRamp",
-          defaultTicker: currency && currency.ticker ? currency.ticker.toUpperCase() : undefined,
-        },
+        state:
+          ptxSmartRouting?.enabled && currency?.internalCurrency
+            ? {
+                currency: currency.internalCurrency?.id,
+                mode: "buy", // buy or sell
+              }
+            : {
+                mode: "onRamp",
+                defaultTicker:
+                  currency && currency.ticker ? currency.ticker.toUpperCase() : undefined,
+              },
       });
     },
-    [history, currency],
+    [currency, history, ptxSmartRouting],
   );
 
   const openAddAccounts = useCallback(() => {
@@ -152,11 +174,17 @@ export default function MarketCoinScreen() {
   }, [dispatch, currency]);
 
   const onSwap = useCallback(
-    e => {
+    (e: React.SyntheticEvent<HTMLButtonElement>) => {
       if (currency?.internalCurrency?.id) {
         e.preventDefault();
         e.stopPropagation();
-        setTrackingSource("Page Market");
+        track("button_clicked", {
+          button: "swap",
+          currency: currency?.ticker,
+          page: "Page Market Coin",
+          ...swapDefaultTrack,
+        });
+        setTrackingSource("Page Market Coin");
 
         const currencyId = currency?.internalCurrency?.id;
 
@@ -171,30 +199,56 @@ export default function MarketCoinScreen() {
           state: {
             defaultCurrency: currency.internalCurrency,
             defaultAccount,
-            defaultParentAccount: defaultAccount?.parentId
-              ? flattenedAccounts.find(a => a.id === defaultAccount.parentId)
-              : null,
+            defaultParentAccount:
+              "parentId" in defaultAccount && defaultAccount?.parentId
+                ? flattenedAccounts.find(a => a.id === defaultAccount.parentId)
+                : null,
           },
         });
       }
     },
-    [currency?.internalCurrency, flattenedAccounts, history, openAddAccounts],
+    [
+      currency?.internalCurrency,
+      currency?.ticker,
+      flattenedAccounts,
+      history,
+      openAddAccounts,
+      swapDefaultTrack,
+    ],
+  );
+
+  const onStake = useCallback(
+    (e: React.SyntheticEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      track("button_clicked", {
+        button: "stake",
+        currency: currency?.ticker,
+        page: "Page Market Coin",
+        ...stakeDefaultTrack,
+      });
+      setTrackingSource("Page Market Coin");
+
+      startStakeFlow({
+        currencies: internalCurrency ? [internalCurrency.id] : undefined,
+        source: "Page Market Coin",
+      });
+    },
+    [currency?.ticker, internalCurrency, startStakeFlow],
   );
 
   const toggleStar = useCallback(() => {
     if (isStarred) {
-      dispatch(removeStarredMarketCoins(id));
+      id && dispatch(removeStarredMarketCoins(id));
     } else {
-      dispatch(addStarredMarketCoins(id));
+      id && dispatch(addStarredMarketCoins(id));
     }
   }, [dispatch, isStarred, id]);
 
   return currency && counterCurrency ? (
     <Container data-test-id="market-coin-page-container">
-      <Track
-        event="Page Market Coin"
-        onMount
-        onUpdate
+      <TrackPage
+        category="Page Market Coin"
         currencyName={name}
         starred={isStarred}
         timeframe={chartRequestParams.range}
@@ -218,11 +272,11 @@ export default function MarketCoinScreen() {
             <Flex flexDirection="row" alignItems="center" justifyContent={"center"}>
               <Title>{name}</Title>
               <StarContainer data-test-id="market-coin-star-button" onClick={toggleStar}>
-                <Icon name={isStarred > 0 ? "StarSolid" : "Star"} size={28} />
+                <Icon name={isStarred ? "StarSolid" : "Star"} size={28} />
               </StarContainer>
             </Flex>
             <Text variant="small" color="neutral.c60">
-              {ticker.toUpperCase()}
+              {ticker?.toUpperCase()}
             </Text>
           </Flex>
         </Flex>
@@ -240,8 +294,18 @@ export default function MarketCoinScreen() {
                 </Button>
               )}
               {availableOnSwap && (
-                <Button data-test-id="market-coin-swap-button" variant="color" onClick={onSwap}>
+                <Button
+                  data-test-id="market-coin-swap-button"
+                  variant="color"
+                  onClick={onSwap}
+                  mr={1}
+                >
                   {t("accounts.contextMenu.swap")}
+                </Button>
+              )}
+              {availableOnStake && (
+                <Button variant="color" onClick={onStake} data-test-id="market-coin-stake-button">
+                  {t("accounts.contextMenu.stake")}
                 </Button>
               )}
             </>
@@ -279,7 +343,7 @@ export default function MarketCoinScreen() {
         atlDate={atlDate}
         locale={locale}
         counterCurrency={counterCurrency}
-        loading={process.env.PLAYWRIGHT_RUN ? false : loading}
+        loading={loading}
       />
     </Container>
   ) : null;

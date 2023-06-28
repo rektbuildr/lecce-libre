@@ -1,41 +1,21 @@
-import completeExchange from "@ledgerhq/live-common/lib/exchange/platform/completeExchange";
-import { Exchange } from "@ledgerhq/live-common/lib/exchange/platform/types";
-import { createAction } from "@ledgerhq/live-common/lib/hw/actions/completeExchange";
-import { createAction as txCreateAction } from "@ledgerhq/live-common/lib/hw/actions/transaction";
-import type { Device } from "@ledgerhq/live-common/lib/hw/actions/types";
-import connectApp from "@ledgerhq/live-common/lib/hw/connectApp";
-import type {
-  Operation, Transaction
-} from "@ledgerhq/live-common/lib/types";
-import React, { useCallback, useEffect, useState } from "react";
+import completeExchange from "@ledgerhq/live-common/exchange/platform/completeExchange";
+import { createAction } from "@ledgerhq/live-common/hw/actions/completeExchange";
+import { createAction as txCreateAction } from "@ledgerhq/live-common/hw/actions/transaction";
+import connectApp from "@ledgerhq/live-common/hw/connectApp";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { TokenCurrency } from "@ledgerhq/types-cryptoassets";
 import DeviceActionModal from "../../../components/DeviceActionModal";
 import { useBroadcast } from "../../../components/useBroadcast";
+import { StackNavigatorProps } from "../../../components/RootNavigator/types/helpers";
+import { PlatformExchangeNavigatorParamList } from "../../../components/RootNavigator/types/PlatformExchangeNavigator";
+import { ScreenName } from "../../../const";
 
-type Result = {
-  operation?: Operation,
-  error?: Error,
-};
-
-type Props = {
-  navigation: any,
-  route: {
-    params: {
-      request: {
-        exchangeType: number,
-        provider: string,
-        exchange: Exchange,
-        transaction: Transaction,
-        binaryPayload: string,
-        signature: string,
-        feesStrategy: string,
-      },
-      device: Device,
-      onResult: (result: Result) => void,
-    },
-  },
-};
+type Props = StackNavigatorProps<
+  PlatformExchangeNavigatorParamList,
+  ScreenName.PlatformCompleteExchange
+>;
 
 const PlatformCompleteExchange: React.FC<Props> = ({
   route: {
@@ -43,11 +23,9 @@ const PlatformCompleteExchange: React.FC<Props> = ({
   },
   navigation,
 }) => {
-  const {
-    fromAccount: account,
-    fromParentAccount: parentAccount,
-  } = request.exchange;
-  let tokenCurrency;
+  const { fromAccount: account, fromParentAccount: parentAccount } = request.exchange;
+  let tokenCurrency: TokenCurrency | undefined;
+
   if (account.type === "TokenAccount") tokenCurrency = account.token;
 
   const broadcast = useBroadcast({ account, parentAccount });
@@ -73,16 +51,13 @@ const PlatformCompleteExchange: React.FC<Props> = ({
     navigation.pop();
   }, [navigation]);
 
-  const onCompleteExchange = useCallback(
-    ({ completeExchangeResult, completeExchangeError }) => {
-      if (completeExchangeError) {
-        setError(completeExchangeError);
-      } else {
-        setTransaction(completeExchangeResult);
-      }
-    },
-    [],
-  );
+  const onCompleteExchange = useCallback(({ completeExchangeResult, completeExchangeError }) => {
+    if (completeExchangeError) {
+      setError(completeExchangeError);
+    } else {
+      setTransaction(completeExchangeResult);
+    }
+  }, []);
 
   const onSign = useCallback(({ signedOperation, transactionSignError }) => {
     if (transactionSignError) {
@@ -91,6 +66,17 @@ const PlatformCompleteExchange: React.FC<Props> = ({
       setSignedOperation(signedOperation);
     }
   }, []);
+
+  const signRequest = useMemo(
+    () => ({
+      tokenCurrency,
+      parentAccount,
+      account,
+      transaction,
+      appName: "Exchange",
+    }),
+    [account, parentAccount, tokenCurrency, transaction],
+  );
 
   return (
     <SafeAreaView style={styles.root}>
@@ -101,6 +87,7 @@ const PlatformCompleteExchange: React.FC<Props> = ({
           action={exchangeAction}
           onClose={onClose}
           onResult={onCompleteExchange}
+          // @ts-expect-error Wrong types?
           request={request}
         />
       ) : (
@@ -110,18 +97,13 @@ const PlatformCompleteExchange: React.FC<Props> = ({
           action={sendAction}
           onClose={onClose}
           onResult={onSign}
-          request={{
-            tokenCurrency,
-            parentAccount,
-            account,
-            transaction,
-            appName: "Exchange",
-          }}
+          // @ts-expect-error Wrong types?
+          request={signRequest}
         />
       )}
     </SafeAreaView>
   );
-}
+};
 
 const exchangeAction = createAction(completeExchange);
 const sendAction = txCreateAction(connectApp);

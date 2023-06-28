@@ -1,201 +1,142 @@
-/* eslint-disable react-native/no-inline-styles */
-import React, { useCallback } from "react";
-import { TouchableWithoutFeedback } from "react-native";
+import React, { useCallback, useMemo } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { useAnnouncements } from "@ledgerhq/live-common/lib/notifications/AnnouncementProvider";
-import { useFilteredServiceStatus } from "@ledgerhq/live-common/lib/notifications/ServiceStatusProvider";
-import { Box, Flex, Text } from "@ledgerhq/native-ui";
-import {
-  NotificationsMedium,
-  NotificationsOnMedium,
-  SettingsMedium,
-  WarningMedium,
-} from "@ledgerhq/native-ui/assets/icons";
+import { Flex, Text } from "@ledgerhq/native-ui";
+import { CardMedium, SettingsMedium, WalletConnectMedium } from "@ledgerhq/native-ui/assets/icons";
+import { useTranslation } from "react-i18next";
 import { useTheme } from "styled-components/native";
-import Animated, {
-  Extrapolate,
-  interpolate,
-  SharedValue,
-  useAnimatedStyle,
-} from "react-native-reanimated";
-import { Trans } from "react-i18next";
-import { Portfolio } from "@ledgerhq/live-common/lib/portfolio/v2/types";
-import { Currency } from "@ledgerhq/live-common/lib/types";
+import useFeature from "@ledgerhq/live-common/featureFlags/useFeature";
+import { StackNavigationProp } from "@react-navigation/stack";
 import Touchable from "../../components/Touchable";
 import { NavigatorName, ScreenName } from "../../const";
-import { scrollToTop } from "../../navigation/utils";
-import LiveLogo from "../../icons/LiveLogo";
-import CurrencyUnitValue from "../../components/CurrencyUnitValue";
-import Placeholder from "../../components/Placeholder";
 import { withDiscreetMode } from "../../context/DiscreetModeContext";
+import DiscreetModeButton from "../../components/DiscreetModeButton";
+import { track } from "../../analytics";
+import useDynamicContent from "../../dynamicContent/dynamicContent";
+import Notifications from "../../icons/Notifications";
 
-function PortfolioHeader({
-  currentPositionY,
-  graphCardEndPosition,
-  portfolio,
-  counterValueCurrency,
-  hidePortfolio,
-}: {
-  currentPositionY: SharedValue<number>;
-  graphCardEndPosition: number;
-  portfolio: Portfolio;
-  counterValueCurrency: Currency;
-  hidePortfolio: boolean;
-}) {
+const NotificationsButton = () => {
   const navigation = useNavigation();
-  const { colors, space } = useTheme();
-
-  const { allIds, seenIds } = useAnnouncements();
-  const { incidents } = useFilteredServiceStatus();
+  const { colors } = useTheme();
+  const { notificationCards } = useDynamicContent();
 
   const onNotificationButtonPress = useCallback(() => {
-    // @ts-expect-error navigation ts issue
-    navigation.navigate(NavigatorName.NotificationCenter);
-  }, [navigation]);
-
-  const onStatusErrorButtonPress = useCallback(() => {
-    // @ts-expect-error navigation ts issue
+    track("button_clicked", {
+      button: "notification bell",
+      screen: ScreenName.Portfolio,
+    });
     navigation.navigate(NavigatorName.NotificationCenter, {
-      screen: ScreenName.NotificationCenterStatus,
+      screen: ScreenName.NotificationCenter,
     });
   }, [navigation]);
 
+  const notificationsCount = useMemo(
+    () => notificationCards.length - notificationCards.filter(n => n.viewed).length,
+    [notificationCards],
+  );
+  return (
+    <Touchable onPress={onNotificationButtonPress}>
+      <Notifications
+        size={24}
+        color={colors.neutral.c100}
+        dotColor={colors.error.c40}
+        isOn={notificationsCount > 0}
+      />
+    </Touchable>
+  );
+};
+
+function PortfolioHeader({ hidePortfolio }: { hidePortfolio: boolean }) {
+  const navigation = useNavigation();
+
+  const { t } = useTranslation();
+
+  const walletConnectEntryPoint = useFeature("walletConnectEntryPoint");
+
+  const onNavigate = useCallback(
+    (name: string, options?: object) => {
+      (navigation as StackNavigationProp<{ [key: string]: object | undefined }>).navigate(
+        name,
+        options,
+      );
+    },
+    [navigation],
+  );
+
+  const onWalletConnectPress = useCallback(
+    () =>
+      onNavigate(NavigatorName.WalletConnect, {
+        screen: ScreenName.WalletConnectConnect,
+      }),
+    [onNavigate],
+  );
+
   const onSettingsButtonPress = useCallback(() => {
+    track("button_clicked", {
+      button: "Settings",
+    });
     // @ts-expect-error navigation ts issue
     navigation.navigate(NavigatorName.Settings);
   }, [navigation]);
 
-  const notificationsCount = allIds.length - seenIds.length;
-
-  const TopLeftStyle = useAnimatedStyle(() => {
-    const opacity =
-      currentPositionY.value === 0
-        ? 1
-        : interpolate(
-            currentPositionY.value,
-            [graphCardEndPosition - 30, graphCardEndPosition],
-            [1, 0],
-            Extrapolate.CLAMP,
-          );
-
-    return {
-      opacity,
-    };
-  }, [graphCardEndPosition]);
-
-  const AfterScrollTopLeftStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(
-      currentPositionY.value,
-      [graphCardEndPosition, graphCardEndPosition + 30],
-      [0, 1],
-      Extrapolate.CLAMP,
-    );
-
-    return {
-      opacity,
-    };
-  }, [graphCardEndPosition]);
-
-  const ContainerStyle = useAnimatedStyle(() => {
-    const borderBottomWidth = interpolate(
-      currentPositionY.value,
-      [graphCardEndPosition, graphCardEndPosition + 30],
-      [0, 1],
-      Extrapolate.CLAMP,
-    );
-
-    return {
-      borderBottomWidth,
-    };
-  }, [graphCardEndPosition]);
-
-  const isAvailable = portfolio.balanceAvailable;
-  const balanceHistory = portfolio.balanceHistory;
-  const currentPortfolio = balanceHistory[balanceHistory.length - 1];
-  const unit = counterValueCurrency.units[0];
+  const onSideImageCardButtonPress = useCallback(() => {
+    navigation.navigate(ScreenName.PlatformApp, {
+      platform: "cl-card",
+      name: "CL Card Powered by Ledger",
+    });
+  }, [navigation]);
 
   return (
-    <Animated.View
-      style={[
-        ContainerStyle,
-        {
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          borderBottomColor: colors.background.main,
-          paddingHorizontal: space[6],
-          paddingVertical: space[4],
-        },
-      ]}
-    >
-      <TouchableWithoutFeedback onPress={scrollToTop}>
-        <Flex
-          flexDirection={"row"}
-          alignItems={"center"}
-          flexGrow={1}
+    <Flex flexDirection="row" alignItems="center" justifyContent="space-between" py={3}>
+      <Flex flexDirection={"row"} alignItems={"center"} mr={3} flexShrink={1} flexGrow={1}>
+        <Text
+          variant={"h4"}
+          fontWeight={"semiBold"}
+          color={"neutral.c100"}
+          flexGrow={0}
           flexShrink={1}
+          textAlign="center"
+          mr={3}
+          numberOfLines={2}
         >
-          <Animated.View style={[hidePortfolio ? {} : TopLeftStyle, {}]}>
-            <LiveLogo size={32} color={colors.neutral.c100} />
-          </Animated.View>
-          <Animated.View
-            style={[
-              hidePortfolio ? { opacity: 0 } : AfterScrollTopLeftStyle,
-              {
-                marginLeft: -32,
-              },
-            ]}
+          {t("tabs.portfolio")}
+        </Text>
+        {!hidePortfolio && <DiscreetModeButton size={20} />}
+      </Flex>
+      <Flex flexDirection="row">
+        <Flex mr={7}>
+          <Touchable
+            onPress={onSideImageCardButtonPress}
+            event="button_clicked"
+            eventProperties={{
+              button: "card",
+              screen: ScreenName.Portfolio,
+            }}
           >
-            <Flex
-              flexDirection={"column"}
-              justifyContent={"center"}
-              alignItems={"flex-start"}
-            >
-              <Text
-                variant={"tiny"}
-                fontWeight={"semiBold"}
-                color={"neutral.c70"}
-                textTransform={"uppercase"}
-                mb={1}
-              >
-                <Trans i18nKey={"tabs.portfolio"} />
-              </Text>
-              {isAvailable ? (
-                <Text variant={"h2"} color={"neutral.c100"}>
-                  <CurrencyUnitValue
-                    unit={unit}
-                    value={currentPortfolio.value}
-                  />
-                </Text>
-              ) : (
-                <Placeholder width={150} containerHeight={28} />
-              )}
-            </Flex>
-          </Animated.View>
-        </Flex>
-      </TouchableWithoutFeedback>
-      <Box mr={7}>
-        <Touchable onPress={onNotificationButtonPress}>
-          {notificationsCount > 0 ? (
-            <NotificationsOnMedium size={24} color={"neutral.c100"} />
-          ) : (
-            <NotificationsMedium size={24} color={"neutral.c100"} />
-          )}
-        </Touchable>
-      </Box>
-      {incidents.length > 0 && (
-        <Box mr={7}>
-          <Touchable onPress={onStatusErrorButtonPress}>
-            <WarningMedium size={24} color={"warning.c100"} />
+            <CardMedium size={24} color={"neutral.c100"} />
           </Touchable>
-        </Box>
-      )}
-      <Box>
+        </Flex>
+        {!!walletConnectEntryPoint?.enabled && (
+          <Flex mr={7}>
+            <Touchable
+              onPress={onWalletConnectPress}
+              event="button_clicked"
+              eventProperties={{
+                button: "Wallet Connect",
+                screen: ScreenName.WalletConnectConnect,
+              }}
+            >
+              <WalletConnectMedium size={24} color={"neutral.c100"} />
+            </Touchable>
+          </Flex>
+        )}
+        <Flex mr={7}>
+          <NotificationsButton />
+        </Flex>
         <Touchable onPress={onSettingsButtonPress} testID="settings-icon">
           <SettingsMedium size={24} color={"neutral.c100"} />
         </Touchable>
-      </Box>
-    </Animated.View>
+      </Flex>
+    </Flex>
   );
 }
 

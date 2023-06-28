@@ -4,10 +4,12 @@ import styled from "styled-components";
 import FlexBox, { FlexBoxProps } from "../Flex";
 import Divider, { Props as DividerProps } from "../../asorted/Divider";
 import Close from "@ledgerhq/icons-ui/react/CloseMedium";
-import ArrowLeft from "@ledgerhq/icons-ui/react/ArrowLeftRegular";
+import ArrowLeft from "@ledgerhq/icons-ui/react/ArrowLeftMedium";
+
 import TransitionSlide from "../../transitions/TransitionSlide";
 import TransitionInOut from "../../transitions/TransitionInOut";
 import Text from "../../asorted/Text";
+import Button from "../../cta/Button";
 
 export enum Direction {
   Left = "left",
@@ -24,37 +26,34 @@ const Wrapper = styled(FlexBox)<{
   big?: boolean;
 }>`
   height: 100%;
-  width: ${(p) =>
+  width: ${p =>
     p.big ? p.theme.sizes.drawer.side.big.width : p.theme.sizes.drawer.side.small.width}px;
   flex-direction: column;
   align-items: stretch;
   justify-content: space-between;
-  z-index: ${(p) => p.theme.zIndexes[8]};
+  z-index: ${p => p.theme.zIndexes[8]};
 `;
+
 const Overlay = styled.div<{ direction: Direction }>`
   display: flex;
   position: fixed;
-  justify-content: ${(p) => (p.direction === Direction.Left ? "flex-end" : "flex-start")};
+  justify-content: ${p => (p.direction === Direction.Left ? "flex-end" : "flex-start")};
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
   z-index: 999;
-  background-color: ${(p) => p.theme.colors.constant.overlay};
+  background-color: ${p => p.theme.colors.constant.overlay};
 `;
+
 const ScrollWrapper = styled(FlexBox)`
   &::-webkit-scrollbar {
     display: none;
   }
 `;
+
 const ButtonPlaceholder = styled.div`
-  min-width: ${(p) => p.theme.space[13]}px;
-`;
-const Button = styled.button`
-  background: unset;
-  border: unset;
-  cursor: pointer;
-  color: ${(p) => p.theme.colors.neutral.c100};
+  min-width: ${p => p.theme.space[12]}px;
 `;
 
 export interface DrawerProps {
@@ -141,7 +140,7 @@ const DrawerContent = React.forwardRef(
             <Wrapper
               big={big}
               onClick={stopClickPropagation}
-              backgroundColor={backgroundColor ?? "neutral.c00"}
+              backgroundColor={backgroundColor ?? "background.main"}
             >
               <Container>
                 <FlexBox
@@ -154,9 +153,7 @@ const DrawerContent = React.forwardRef(
                   {!hideNavigation && (
                     <>
                       {onBack != null ? (
-                        <Button onClick={onBack}>
-                          <ArrowLeft size={21} />
-                        </Button>
+                        <Button variant="neutral" onClick={onBack} Icon={ArrowLeft} />
                       ) : (
                         <ButtonPlaceholder />
                       )}
@@ -168,9 +165,7 @@ const DrawerContent = React.forwardRef(
                     </Text>
                   ) || <div />}
                   <FlexBox alignSelf="flex-start">
-                    <Button onClick={onClose}>
-                      <Close />
-                    </Button>
+                    <Button variant="neutral" onClick={onClose} Icon={Close} />
                   </FlexBox>
                 </FlexBox>
                 <ScrollWrapper
@@ -187,7 +182,7 @@ const DrawerContent = React.forwardRef(
                 </ScrollWrapper>
                 {footer && (
                   <>
-                    <Divider variant="light" {...extraFooterDividerProps} />
+                    <Divider {...extraFooterDividerProps} />
                     <FlexBox alignItems="center" py={8} px={12} {...extraFooterProps}>
                       {footer}
                     </FlexBox>

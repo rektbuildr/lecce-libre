@@ -57,15 +57,15 @@ _Every route is preceded by the protocol \*\*\_ledgerlive://_\*\*\_
 
   `ledgerlive://swap` will redirect to swap page
 
-* **_manager_** 🠒 Device Management Flow
+* **_myledger_** 🠒 Device Management Flow
 
-  `ledgerlive://manager` will redirect to manager page
+  `ledgerlive://myledger` will redirect to MyLedger page
 
-* **_manager?installApp_** 🠒 Device Management Flow
+* **_myledger?installApp_** 🠒 Device Management Flow
 
-  `ledgerlive://manager?installApp=bitcoin` will redirect to manager page with a pre-filled search for bitcoin
+  `ledgerlive://myledger?installApp=bitcoin` will redirect to MyLedger page with a pre-filled search for bitcoin
 
-        - *installApp* => the search query to be pre-filled when the manager opens
+        - *installApp* => the search query to be pre-filled when MyLedger opens
 
 - **_discover_** 🠒 Live discover catalog
 
@@ -77,3 +77,7 @@ _Every route is preceded by the protocol \*\*\_ledgerlive://_\*\*\_
 
         - *APP_ID* => the url param app id
         - *?params* => the url query params that will be transmitted to the app, you should refer to each apps documentation in order to use them.
+
+- **_market_** 🠒 Live Market Page
+
+  `ledgerlive://market` will redirect to market page

@@ -14,21 +14,29 @@ export class Modal {
   readonly doneButton: Locator;
   readonly closeButton: Locator;
   readonly backButton: Locator;
+  readonly stakeProviderContainer: (stakeProvider: string) => Locator;
+  readonly stakeProviderSupportLink: (stakeProvider: string) => Locator;
 
   constructor(page: Page) {
     this.page = page;
-    this.container = page.locator('[data-test-id=modal-container][style="opacity: 1; transform: scale(1);"]');
-    this.title = page.locator('data-test-id=modal-title');
-    this.subtitle = page.locator('data-test-id=modal-subtitle');
-    this.content = page.locator('data-test-id=modal-content');
-    this.backdrop = page.locator('data-test-id=modal-backdrop');
-    this.continueButton = page.locator('data-test-id=modal-continue-button');
-    this.saveButton = page.locator('data-test-id=modal-save-button');
-    this.cancelButton = page.locator('data-test-id=modal-cancel-button');
-    this.confirmButton = page.locator('data-test-id=modal-confirm-button');
-    this.doneButton = page.locator('data-test-id=modal-done-button');
-    this.closeButton = page.locator('data-test-id=modal-close-button');
-    this.backButton = page.locator('data-test-id=modal-back-button');
+    this.container = page.locator(
+      '[data-test-id=modal-container][style*="opacity: 1"][style*="transform: scale(1)"]',
+    );
+    this.title = page.locator("data-test-id=modal-title");
+    this.subtitle = page.locator("data-test-id=modal-subtitle");
+    this.content = page.locator("data-test-id=modal-content");
+    this.backdrop = page.locator("data-test-id=modal-backdrop");
+    this.continueButton = page.locator("data-test-id=modal-continue-button");
+    this.saveButton = page.locator("data-test-id=modal-save-button");
+    this.cancelButton = page.locator("data-test-id=modal-cancel-button");
+    this.confirmButton = page.locator("data-test-id=modal-confirm-button");
+    this.doneButton = page.locator("data-test-id=modal-done-button");
+    this.closeButton = page.locator("data-test-id=modal-close-button");
+    this.backButton = page.locator("data-test-id=modal-back-button");
+    this.stakeProviderContainer = stakeProviderID =>
+      page.locator(`data-test-id=stake-provider-container-${stakeProviderID}`);
+    this.stakeProviderSupportLink = stakeProviderID =>
+      page.locator(`data-test-id=stake-provider-support-link-${stakeProviderID}`);
   }
 
   async continue() {
@@ -57,5 +65,22 @@ export class Modal {
 
   async close() {
     await this.closeButton.click();
+  }
+
+  async waitForModalToAppear() {
+    await this.container.waitFor({ state: "attached" });
+    await this.backdrop.waitFor({ state: "attached" });
+  }
+
+  async waitForModalToDisappear() {
+    await this.container.waitFor({ state: "detached" });
+  }
+
+  async chooseStakeProvider(stakeProvider: string) {
+    await this.stakeProviderContainer(stakeProvider).click();
+  }
+
+  async chooseStakeSupportLink(stakeProvider: string) {
+    await this.stakeProviderSupportLink(stakeProvider).dispatchEvent("click");
   }
 }

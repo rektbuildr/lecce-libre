@@ -1,35 +1,52 @@
-import { Operation, Transaction } from "@ledgerhq/live-common/lib/types";
 import { useTheme } from "@react-navigation/native";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { Trans } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { useSelector } from "react-redux";
-import { TrackScreen } from "../../../analytics";
+import invariant from "invariant";
+import { getAccountCurrency } from "@ledgerhq/live-common/account/index";
+import { TrackScreen, track } from "../../../analytics";
 import PreventNativeBack from "../../../components/PreventNativeBack";
 import ValidateSuccess from "../../../components/ValidateSuccess";
 import { ScreenName } from "../../../const";
 import { accountScreenSelector } from "../../../reducers/accounts";
-import invariant from "invariant";
+import {
+  BaseComposite,
+  StackNavigatorNavigation,
+  StackNavigatorProps,
+} from "../../../components/RootNavigator/types/helpers";
+import { SolanaDelegationFlowParamList } from "./types";
+import { BaseNavigatorStackParamList } from "../../../components/RootNavigator/types/BaseNavigator";
+import { getTrackingDelegationType } from "../../helpers";
 
-type Props = {
-  navigation: any;
-  route: { params: RouteParams };
-};
-
-type RouteParams = {
-  accountId: string;
-  deviceId: string;
-  transaction: Transaction;
-  result: Operation;
-};
+type Props = BaseComposite<
+  StackNavigatorProps<SolanaDelegationFlowParamList, ScreenName.DelegationValidationSuccess>
+>;
 
 export default function ValidationSuccess({ navigation, route }: Props) {
   const { colors } = useTheme();
   const { account } = useSelector(accountScreenSelector(route));
 
+  const validator = route.params.validatorName ?? "unknown";
+  const source = route.params.source?.name ?? "unknown";
+  const delegation = getTrackingDelegationType({
+    type: route.params.result.type,
+  });
+  const currency = getAccountCurrency(account);
+
   const onClose = useCallback(() => {
-    navigation.getParent().pop();
+    navigation.getParent<StackNavigatorNavigation<BaseNavigatorStackParamList>>().pop();
   }, [navigation]);
+
+  useEffect(() => {
+    if (delegation)
+      track("staking_completed", {
+        currency,
+        validator,
+        source,
+        delegation,
+      });
+  }, [source, validator, delegation, currency]);
 
   const goToOperationDetails = useCallback(() => {
     if (!account) return;
@@ -54,9 +71,7 @@ export default function ValidationSuccess({ navigation, route }: Props) {
         onClose={onClose}
         onViewDetails={goToOperationDetails}
         title={<Trans i18nKey={"solana.delegation.broadcastSuccessTitle"} />}
-        description={
-          <Trans i18nKey={"solana.delegation.broadcastSuccessDescription"} />
-        }
+        description={<Trans i18nKey={"solana.delegation.broadcastSuccessDescription"} />}
       />
     </View>
   );

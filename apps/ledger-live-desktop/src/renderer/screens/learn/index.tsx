@@ -2,7 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Flex, Text } from "@ledgerhq/react-ui";
 import useTheme from "~/renderer/hooks/useTheme";
-import { useFeature } from "@ledgerhq/live-common/lib/featureFlags";
+import { useFeature } from "@ledgerhq/live-common/featureFlags/index";
 
 const DEFAULT_LEARN_URL = "https://www.ledger.com/ledger-live-learn";
 
@@ -10,7 +10,7 @@ export default function LearnScreen() {
   const { t, i18n } = useTranslation();
   const learn = useFeature("learn");
   const learnURL = learn?.params?.desktop?.url ? learn.params.desktop.url : DEFAULT_LEARN_URL;
-  const themeType: string = useTheme("colors.palette.type");
+  const themeType: string = useTheme().colors.palette.type;
 
   const uri = `${learnURL}?theme=${themeType}&lang=${i18n.languages[0]}`;
 

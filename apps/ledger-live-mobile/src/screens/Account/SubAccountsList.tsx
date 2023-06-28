@@ -1,26 +1,25 @@
 import React, { useCallback, useState, useMemo } from "react";
 import { Trans } from "react-i18next";
+import { useSelector } from "react-redux";
 import take from "lodash/take";
 import { StyleSheet, View, FlatList } from "react-native";
-import Icon from "react-native-vector-icons/dist/FontAwesome";
 import { useNavigation, useTheme } from "@react-navigation/native";
-import {
-  Account,
-  SubAccount,
-  TokenAccount,
-} from "@ledgerhq/live-common/lib/types";
-import useEnv from "@ledgerhq/live-common/lib/hooks/useEnv";
-import { listSubAccounts } from "@ledgerhq/live-common/lib/account";
-import { listTokenTypesForCryptoCurrency } from "@ledgerhq/live-common/lib/currencies";
-import { Button, Flex, Text } from "@ledgerhq/native-ui";
-import { DropdownMedium, DropupMedium } from "@ledgerhq/native-ui/assets/icons";
+import { Account, SubAccount, TokenAccount } from "@ledgerhq/types-live";
+import useEnv from "@ledgerhq/live-common/hooks/useEnv";
+import { getAccountCurrency, listSubAccounts } from "@ledgerhq/live-common/account/index";
+import { listTokenTypesForCryptoCurrency } from "@ledgerhq/live-common/currencies/index";
+import { Flex, Text } from "@ledgerhq/native-ui";
+import { DropdownMedium, DropupMedium, PlusMedium } from "@ledgerhq/native-ui/assets/icons";
 import { NavigatorName, ScreenName } from "../../const";
 import SubAccountRow from "../../components/SubAccountRow";
 import Touchable from "../../components/Touchable";
 import TokenContextualModal from "../Settings/Accounts/TokenContextualModal";
 import perFamilySubAccountList from "../../generated/SubAccountList";
+import SectionTitle from "../WalletCentricSections/SectionTitle";
+import Button from "../../components/Button";
+import { blacklistedTokenIdsSelector } from "../../reducers/settings";
 
-const keyExtractor = (o: any) => o.id;
+const keyExtractor = (item: SubAccount): string => item.id;
 
 const styles = StyleSheet.create({
   footer: {
@@ -40,17 +39,11 @@ const styles = StyleSheet.create({
     paddingLeft: 12,
     flexDirection: "row",
   },
-  header: {
-    marginBottom: 8,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
 });
 
 type Props = {
   parentAccount: Account;
-  onAccountPress: (subAccount: SubAccount) => void;
+  onAccountPress: (_: SubAccount) => void;
   accountId: string;
   useCounterValue?: boolean;
 };
@@ -67,12 +60,15 @@ export default function SubAccountsList({
   const navigation = useNavigation();
   const [account, setAccount] = useState<TokenAccount | typeof undefined>();
   const [isCollapsed, setIsCollapsed] = useState(true);
-  const subAccounts = listSubAccounts(parentAccount);
+  const blacklistedTokenIds = useSelector(blacklistedTokenIdsSelector);
+  const subAccounts = listSubAccounts(parentAccount).filter(subAccount => {
+    return !blacklistedTokenIds.includes(getAccountCurrency(subAccount).id);
+  });
+
   const family = parentAccount.currency.family;
-  const specific = perFamilySubAccountList[family];
+  const specific = perFamilySubAccountList[family as keyof typeof perFamilySubAccountList];
 
   const hasSpecificTokenWording = specific && specific.hasSpecificTokenWording;
-  const ReceiveButton = specific && specific.ReceiveButton;
 
   const Placeholder = specific && specific.Placeholder;
 
@@ -83,7 +79,7 @@ export default function SubAccountsList({
 
   const navigateToReceiveConnectDevice = useCallback(() => {
     navigation.navigate(NavigatorName.ReceiveFunds, {
-      screen: ScreenName.ReceiveConnectDevice,
+      screen: ScreenName.ReceiveConfirmation,
       params: {
         accountId,
       },
@@ -92,32 +88,26 @@ export default function SubAccountsList({
 
   const renderHeader = useCallback(
     () => (
-      <View style={styles.header}>
-        <Text variant={"h3"}>
-          <Trans
-            i18nKey={
-              isToken
-                ? hasSpecificTokenWording
-                  ? `${family}.token`
-                  : "common.token"
-                : "common.subaccount"
-            }
-            count={subAccounts.length}
-          />
-          {` (${subAccounts.length})`}
-        </Text>
-      </View>
+      <SectionTitle
+        title={
+          <>
+            <Trans
+              i18nKey={
+                isToken
+                  ? hasSpecificTokenWording
+                    ? `${family}.token`
+                    : "common.token"
+                  : "common.subaccount"
+              }
+              count={subAccounts.length}
+            />
+            {` (${subAccounts.length})`}
+          </>
+        }
+        containerProps={{ mb: 6 }}
+      />
     ),
-    [
-      isToken,
-      hasSpecificTokenWording,
-      family,
-      subAccounts.length,
-      ReceiveButton,
-      accountId,
-      navigateToReceiveConnectDevice,
-      colors.live,
-    ],
+    [isToken, hasSpecificTokenWording, family, subAccounts.length],
   );
 
   const renderFooter = useCallback(() => {
@@ -126,10 +116,7 @@ export default function SubAccountsList({
       return Placeholder ? (
         <Placeholder accountId={accountId} />
       ) : (
-        <Touchable
-          event="AccountReceiveSubAccount"
-          onPress={navigateToReceiveConnectDevice}
-        >
+        <Touchable event="AccountReceiveSubAccount" onPress={navigateToReceiveConnectDevice}>
           <View
             style={[
               styles.footer,
@@ -138,20 +125,18 @@ export default function SubAccountsList({
               },
             ]}
           >
-            <Icon color={colors.live} size={26} name="plus" />
+            <PlusMedium color={"primary.c80"} size={26} />
             <View style={styles.footerText}>
               <Text variant={"large"}>
                 <Trans
-                  i18nKey={`account.tokens${
-                    hasSpecificTokenWording ? `.${family}` : ""
-                  }.howTo`}
+                  i18nKey={`account.tokens${hasSpecificTokenWording ? `.${family}` : ""}.howTo`}
                   values={{ currency: parentAccount.currency.family }}
                 >
                   <Text variant={"large"} fontWeight={"semiBold"}>
-                    text
+                    PLACEHOLDER_TEXT
                   </Text>
                   <Text variant={"large"} fontWeight={"semiBold"}>
-                    text
+                    PLACEHOLDER_TEXT
                   </Text>
                 </Trans>
               </Text>
@@ -222,7 +207,7 @@ export default function SubAccountsList({
         />
       </Flex>
     ),
-    [onAccountPress, parentAccount],
+    [onAccountPress, parentAccount, useCounterValue],
   );
 
   if (!isToken && subAccounts.length === 0) {

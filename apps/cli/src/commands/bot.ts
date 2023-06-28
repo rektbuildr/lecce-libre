@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 import { generateMnemonic } from "bip39";
 import { from } from "rxjs";
-import { getEnv } from "@ledgerhq/live-common/lib/env";
-import { bot } from "@ledgerhq/live-common/lib/bot";
+import { getEnv } from "@ledgerhq/live-common/env";
+import { bot } from "@ledgerhq/live-common/bot/index";
 import { currencyOpt } from "../scan";
 export default {
   description:
@@ -25,7 +25,7 @@ export default {
           "here is a possible software seed you can use:\n" +
           "SEED='" +
           generateMnemonic(256) +
-          "'"
+          "'",
       );
       throw new Error("Please define a SEED env variable to run this bot.");
     }

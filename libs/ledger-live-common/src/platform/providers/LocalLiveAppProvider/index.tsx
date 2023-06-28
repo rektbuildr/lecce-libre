@@ -1,12 +1,6 @@
-import React, {
-  useContext,
-  createContext,
-  useMemo,
-  useState,
-  useCallback,
-} from "react";
+import React, { useContext, createContext, useMemo, useState, useCallback } from "react";
 import { LiveAppRegistry } from "./types";
-import { LiveAppManifest } from "../types";
+import { LiveAppManifest } from "../../types";
 
 const initialState: LiveAppRegistry = {
   liveAppById: {},
@@ -29,27 +23,23 @@ type LiveAppProviderProps = {
   children: React.ReactNode;
 };
 
-export function useLocalLiveAppManifest(
-  appId: string
-): LiveAppManifest | undefined {
+export function useLocalLiveAppManifest(appId?: string): LiveAppManifest | undefined {
   const localLiveAppRegistry = useContext(liveAppContext).state;
 
-  return localLiveAppRegistry.liveAppById[appId];
+  return appId ? localLiveAppRegistry.liveAppById[appId] : undefined;
 }
 
 export function useLocalLiveAppContext(): LiveAppContextType {
   return useContext(liveAppContext);
 }
 
-export function LocalLiveAppProvider({
-  children,
-}: LiveAppProviderProps): JSX.Element {
+export function LocalLiveAppProvider({ children }: LiveAppProviderProps): JSX.Element {
   const [state, setState] = useState<LiveAppRegistry>(initialState);
 
   const addLocalManifest = useCallback((newManifest: LiveAppManifest) => {
-    setState((oldState) => {
+    setState(oldState => {
       const liveAppByIndex = oldState.liveAppByIndex.filter(
-        (manifest) => manifest.id !== newManifest.id
+        manifest => manifest.id !== newManifest.id,
       );
 
       liveAppByIndex.push(newManifest);
@@ -64,10 +54,8 @@ export function LocalLiveAppProvider({
   }, []);
 
   const removeLocalManifestById = useCallback((manifestId: string) => {
-    setState((oldState) => {
-      const liveAppByIndex = oldState.liveAppByIndex.filter(
-        (manifest) => manifest.id !== manifestId
-      );
+    setState(oldState => {
+      const liveAppByIndex = oldState.liveAppByIndex.filter(manifest => manifest.id !== manifestId);
 
       const liveAppById = {
         ...oldState.liveAppById,
@@ -88,10 +76,8 @@ export function LocalLiveAppProvider({
       addLocalManifest,
       removeLocalManifestById,
     }),
-    [state, addLocalManifest, removeLocalManifestById]
+    [state, addLocalManifest, removeLocalManifestById],
   );
 
-  return (
-    <liveAppContext.Provider value={value}>{children}</liveAppContext.Provider>
-  );
+  return <liveAppContext.Provider value={value}>{children}</liveAppContext.Provider>;
 }

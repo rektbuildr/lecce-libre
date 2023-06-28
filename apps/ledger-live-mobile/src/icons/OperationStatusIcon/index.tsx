@@ -1,5 +1,5 @@
 import React from "react";
-import { OperationType } from "@ledgerhq/live-common/lib/types";
+import { OperationType } from "@ledgerhq/types-live";
 import { Icons, BoxedIcon } from "@ledgerhq/native-ui";
 import {
   DEFAULT_BOX_SIZE,
@@ -24,8 +24,6 @@ const iconsComponent = {
   OPT_IN: Icons.PlusMedium,
   OPT_OUT: Icons.TrashMedium,
   CLOSE_ACCOUNT: Icons.TrashMedium,
-  REDEEM: Icons.MinusMedium,
-  SUPPLY: Icons.ArrowRightMedium,
   APPROVE: Icons.PlusMedium,
   BOND: Icons.LinkMedium,
   UNBOND: Icons.LinkNoneMedium,
@@ -37,9 +35,17 @@ const iconsComponent = {
   SET_CONTROLLER: Icons.ArrowFromBottomMedium,
   NFT_IN: Icons.ArrowBottomMedium,
   NFT_OUT: Icons.ArrowTopMedium,
+  ACTIVATE: Icons.ShieldCheckMedium,
+  LOCK: Icons.LockMedium,
+  UNLOCK: Icons.UnlockMedium,
+  REVOKE: Icons.VoteNoneMedium,
+  REGISTER: Icons.PlusMedium,
+  STAKE: Icons.HandshakeMedium,
+  UNSTAKE: Icons.UndelegateMedium,
+  WITHDRAW_UNSTAKED: Icons.CoinsMedium,
 };
 
-export const OperationStatusIcon = ({
+const OperationStatusIcon = ({
   type,
   confirmed,
   failed,
@@ -49,24 +55,15 @@ export const OperationStatusIcon = ({
   size?: number;
   type: OperationType;
   confirmed?: boolean;
-  Badge?: React.ComponentType<{ size: number }>;
+  Badge?: React.ComponentType<{ size?: number; color?: string }>;
   failed?: boolean;
 }) => {
-  const Icon = iconsComponent[type] || iconsComponent.NONE;
+  const Icon = iconsComponent[type as keyof typeof iconsComponent] || iconsComponent.NONE;
   const BadgeIcon =
-    Badge ||
-    (failed
-      ? Icons.CircledCrossSolidMedium
-      : confirmed
-      ? undefined
-      : Icons.HistoryMedium);
+    Badge || (failed ? Icons.CircledCrossSolidMedium : confirmed ? undefined : Icons.HistoryMedium);
   const borderColor = failed ? "error.c40" : "neutral.c40";
-  const iconColor = failed
-    ? "error.c100"
-    : confirmed
-    ? "neutral.c100"
-    : "neutral.c50";
-  const badgeColor = failed ? "error.c100" : "neutral.c70";
+  const iconColor = failed ? "error.c50" : confirmed ? "neutral.c100" : "neutral.c50";
+  const badgeColor = failed ? "error.c50" : "neutral.c70";
   return (
     <BoxedIcon
       Icon={Icon}

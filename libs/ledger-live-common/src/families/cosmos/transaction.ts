@@ -1,25 +1,19 @@
 import { BigNumber } from "bignumber.js";
 import type { Transaction, TransactionRaw } from "./types";
 import {
+  formatTransactionStatusCommon as formatTransactionStatus,
   fromTransactionCommonRaw,
+  fromTransactionStatusRawCommon as fromTransactionStatusRaw,
   toTransactionCommonRaw,
-} from "../../transaction/common";
-import type { Account } from "../../types";
+  toTransactionStatusRawCommon as toTransactionStatusRaw,
+} from "@ledgerhq/coin-framework/transaction/common";
 import { getAccountUnit } from "../../account";
 import { formatCurrencyUnit } from "../../currencies";
+import { Account } from "@ledgerhq/types-live";
 
 export const formatTransaction = (
-  {
-    mode,
-    amount,
-    fees,
-    recipient,
-    validators,
-    memo,
-    cosmosSourceValidator,
-    useAllAmount,
-  }: Transaction,
-  account: Account
+  { mode, amount, fees, recipient, validators, memo, sourceValidator, useAllAmount }: Transaction,
+  account: Account,
 ): string => `
 ${mode.toUpperCase()} ${
   useAllAmount
@@ -38,18 +32,16 @@ ${
     ? ""
     : validators
         .map(
-          (v) =>
+          v =>
             "  " +
             formatCurrencyUnit(getAccountUnit(account), v.amount, {
               disableRounding: true,
             }) +
             " -> " +
-            v.address
+            v.address,
         )
         .join("\n")
-}${
-  !cosmosSourceValidator ? "" : "\n  source validator=" + cosmosSourceValidator
-}
+}${!sourceValidator ? "" : "\n  source validator=" + sourceValidator}
 with fees=${fees ? formatCurrencyUnit(getAccountUnit(account), fees) : "?"}${
   !memo ? "" : `\n  memo=${memo}`
 }`;
@@ -68,9 +60,9 @@ export const fromTransactionRaw = (tr: TransactionRaw): Transaction => {
     fees: tr.fees ? new BigNumber(tr.fees) : null,
     gas: tr.gas ? new BigNumber(tr.gas) : null,
     memo: tr.memo,
-    cosmosSourceValidator: tr.cosmosSourceValidator,
+    sourceValidator: tr.sourceValidator,
     validators: tr.validators
-      ? tr.validators.map((v) => ({ ...v, amount: new BigNumber(v.amount) }))
+      ? tr.validators.map(v => ({ ...v, amount: new BigNumber(v.amount) }))
       : [],
   };
 };
@@ -89,14 +81,16 @@ export const toTransactionRaw = (t: Transaction): TransactionRaw => {
     fees: t.fees ? t.fees.toString() : null,
     gas: t.gas ? t.gas.toString() : null,
     memo: t.memo,
-    cosmosSourceValidator: t.cosmosSourceValidator,
-    validators: t.validators
-      ? t.validators.map((v) => ({ ...v, amount: v.amount.toString() }))
-      : [],
+    sourceValidator: t.sourceValidator,
+    validators: t.validators ? t.validators.map(v => ({ ...v, amount: v.amount.toString() })) : [],
   };
 };
+
 export default {
   formatTransaction,
   fromTransactionRaw,
   toTransactionRaw,
+  fromTransactionStatusRaw,
+  toTransactionStatusRaw,
+  formatTransactionStatus,
 };

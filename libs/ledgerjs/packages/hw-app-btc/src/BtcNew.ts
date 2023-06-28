@@ -1,5 +1,4 @@
 import { crypto } from "bitcoinjs-lib";
-import semver from "semver";
 import { pointCompress } from "tiny-secp256k1";
 import {
   getXpubComponents,
@@ -10,7 +9,6 @@ import {
 } from "./bip32";
 import { BufferReader } from "./buffertools";
 import type { CreateTransactionArg } from "./createTransaction";
-import { AppAndVersion } from "./getAppAndVersion";
 import type { AddressFormat } from "./getWalletPublicKey";
 import {
   AccountType,
@@ -21,25 +19,12 @@ import {
   SpendingCondition,
 } from "./newops/accounttype";
 import { AppClient as Client } from "./newops/appClient";
-import {
-  createKey,
-  DefaultDescriptorTemplate,
-  WalletPolicy,
-} from "./newops/policy";
+import { createKey, DefaultDescriptorTemplate, WalletPolicy } from "./newops/policy";
 import { extract } from "./newops/psbtExtractor";
 import { finalize } from "./newops/psbtFinalizer";
 import { psbtIn, PsbtV2 } from "./newops/psbtv2";
 import { serializeTransaction } from "./serializeTransaction";
 import type { Transaction } from "./types";
-
-const newSupportedApps = ["Bitcoin", "Bitcoin Test"];
-
-export function canSupportApp(appAndVersion: AppAndVersion): boolean {
-  return (
-    newSupportedApps.includes(appAndVersion.name) &&
-    semver.major(appAndVersion.version) >= 2
-  );
-}
 
 /**
  * This class implements the same interface as BtcOld (formerly
@@ -99,7 +84,7 @@ export default class BtcNew {
     const xpubComponents = getXpubComponents(xpub);
     if (xpubComponents.version != xpubVersion) {
       throw new Error(
-        `Expected xpub version ${xpubVersion} doesn't match the xpub version from the device ${xpubComponents.version}`
+        `Expected xpub version ${xpubVersion} doesn't match the xpub version from the device ${xpubComponents.version}`,
       );
     }
     return xpub;
@@ -117,12 +102,15 @@ export default class BtcNew {
     opts?: {
       verify?: boolean;
       format?: AddressFormat;
-    }
+    },
   ): Promise<{
     publicKey: string;
     bitcoinAddress: string;
     chainCode: string;
   }> {
+    if (!isPathNormal(path)) {
+      throw Error(`non-standard path: ${path}`);
+    }
     const pathElements: number[] = pathStringToArray(path);
     const xpub = await this.client.getExtendedPubkey(false, pathElements);
 
@@ -131,12 +119,10 @@ export default class BtcNew {
     const address = await this.getWalletAddress(
       pathElements,
       descrTemplFrom(opts?.format ?? "legacy"),
-      display
+      display,
     );
     const components = getXpubComponents(xpub);
-    const uncompressedPubkey = Buffer.from(
-      pointCompress(components.pubkey, false)
-    );
+    const uncompressedPubkey = Buffer.from(pointCompress(components.pubkey, false));
     return {
       publicKey: uncompressedPubkey.toString("hex"),
       bitcoinAddress: address,
@@ -162,7 +148,7 @@ export default class BtcNew {
   private async getWalletAddress(
     pathElements: number[],
     descrTempl: DefaultDescriptorTemplate,
-    display: boolean
+    display: boolean,
   ): Promise<string> {
     const accountPath = hardenedPathOf(pathElements);
     if (accountPath.length + 2 != pathElements.length) {
@@ -172,7 +158,7 @@ export default class BtcNew {
     const masterFingerprint = await this.client.getMasterFingerprint();
     const policy = new WalletPolicy(
       descrTempl,
-      createKey(masterFingerprint, accountPath, accountXpub)
+      createKey(masterFingerprint, accountPath, accountXpub),
     );
     const changeAndIndex = pathElements.slice(-2, pathElements.length);
     return this.client.getWalletAddress(
@@ -180,21 +166,19 @@ export default class BtcNew {
       Buffer.alloc(32, 0),
       changeAndIndex[0],
       changeAndIndex[1],
-      display
+      display,
     );
   }
 
   /**
-   * Build and sign a transaction. See Btc.createPaymentTransactionNew for
+   * Build and sign a transaction. See Btc.createPaymentTransaction for
    * details on how to use this method.
    *
    * This method will convert the legacy arguments, CreateTransactionArg, into
    * a psbt which is finally signed and finalized, and the extracted fully signed
    * transaction is returned.
    */
-  async createPaymentTransactionNew(
-    arg: CreateTransactionArg
-  ): Promise<string> {
+  async createPaymentTransaction(arg: CreateTransactionArg): Promise<string> {
     const inputCount = arg.inputs.length;
     if (inputCount == 0) {
       throw Error("No inputs");
@@ -242,7 +226,7 @@ export default class BtcNew {
         pathElems,
         accountType,
         masterFp,
-        arg.sigHashType
+        arg.sigHashType,
       );
     }
 
@@ -250,11 +234,7 @@ export default class BtcNew {
     const outputsBufferReader = new BufferReader(outputsConcat);
     const outputCount = outputsBufferReader.readVarInt();
     psbt.setGlobalOutputCount(outputCount);
-    const changeData = await this.outputScriptAt(
-      accountPath,
-      accountType,
-      arg.changePath
-    );
+    const changeData = await this.outputScriptAt(accountPath, accountType, arg.changePath);
     // If the caller supplied a changePath, we must make sure there actually is
     // a change output. If no change output found, we'll throw an error.
     let changeFound = !changeData;
@@ -267,8 +247,7 @@ export default class BtcNew {
       // We won't know if we're paying to ourselves, because there's no
       // information in arg to support multiple "change paths". One exception is
       // if there are multiple outputs to the change address.
-      const isChange =
-        changeData && outputScript.equals(changeData?.cond.scriptPubKey);
+      const isChange = changeData && outputScript.equals(changeData?.cond.scriptPubKey);
       if (isChange) {
         changeFound = true;
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -280,8 +259,7 @@ export default class BtcNew {
     }
     if (!changeFound) {
       throw new Error(
-        "Change script not found among outputs! " +
-          changeData?.cond.scriptPubKey.toString("hex")
+        "Change script not found among outputs! " + changeData?.cond.scriptPubKey.toString("hex"),
       );
     }
 
@@ -308,6 +286,32 @@ export default class BtcNew {
   }
 
   /**
+   * Signs an arbitrary hex-formatted message with the private key at
+   * the provided derivation path according to the Bitcoin Signature format
+   * and returns v, r, s.
+   */
+  async signMessage({ path, messageHex }: { path: string; messageHex: string }): Promise<{
+    v: number;
+    r: string;
+    s: string;
+  }> {
+    const pathElements: number[] = pathStringToArray(path);
+    const message = Buffer.from(messageHex, "hex");
+    const sig = await this.client.signMessage(message, pathElements);
+    const buf = Buffer.from(sig, "base64");
+
+    const v = buf.readUInt8() - 27 - 4;
+    const r = buf.slice(1, 33).toString("hex");
+    const s = buf.slice(33, 65).toString("hex");
+
+    return {
+      v,
+      r,
+      s,
+    };
+  }
+
+  /**
    * Calculates an output script along with public key and possible redeemScript
    * from a path and accountType. The accountPath must be a prefix of path.
    *
@@ -318,7 +322,7 @@ export default class BtcNew {
   private async outputScriptAt(
     accountPath: number[],
     accountType: AccountType,
-    path: string | undefined
+    path: string | undefined,
   ): Promise<{ cond: SpendingCondition; pubkey: Buffer } | undefined> {
     if (!path) return undefined;
     const pathElems = pathStringToArray(path);
@@ -326,9 +330,7 @@ export default class BtcNew {
     // going on.
     for (let i = 0; i < accountPath.length; i++) {
       if (accountPath[i] != pathElems[i]) {
-        throw new Error(
-          `Path ${path} not in account ${pathArrayToString(accountPath)}`
-        );
+        throw new Error(`Path ${path} not in account ${pathArrayToString(accountPath)}`);
       }
     }
     const xpub = await this.client.getExtendedPubkey(false, pathElems);
@@ -345,16 +347,11 @@ export default class BtcNew {
   private async setInput(
     psbt: PsbtV2,
     i: number,
-    input: [
-      Transaction,
-      number,
-      string | null | undefined,
-      number | null | undefined
-    ],
+    input: [Transaction, number, string | null | undefined, number | null | undefined],
     pathElements: number[],
     accountType: AccountType,
     masterFP: Buffer,
-    sigHashType?: number
+    sigHashType?: number,
   ): Promise<void> {
     const inputTx = input[0];
     const spentOutputIndex = input[1];
@@ -373,21 +370,14 @@ export default class BtcNew {
     const xpubBase58 = await this.client.getExtendedPubkey(false, pathElements);
 
     const pubkey = pubkeyFromXpub(xpubBase58);
-    if (!inputTx.outputs)
-      throw Error("Missing outputs array in transaction to sign");
+    if (!inputTx.outputs) throw Error("Missing outputs array in transaction to sign");
     const spentTxOutput = inputTx.outputs[spentOutputIndex];
     const spendCondition: SpendingCondition = {
       scriptPubKey: spentTxOutput.script,
       redeemScript: redeemScript,
     };
     const spentOutput = { cond: spendCondition, amount: spentTxOutput.amount };
-    accountType.setInput(
-      i,
-      inputTxBuffer,
-      spentOutput,
-      [pubkey],
-      [pathElements]
-    );
+    accountType.setInput(i, inputTxBuffer, spentOutput, [pubkey], [pathElements]);
 
     psbt.setInputPreviousTxId(i, inputTxid);
     psbt.setInputOutputIndex(i, spentOutputIndex);
@@ -405,13 +395,13 @@ export default class BtcNew {
   private async signPsbt(
     psbt: PsbtV2,
     walletPolicy: WalletPolicy,
-    progressCallback: () => void
+    progressCallback: () => void,
   ): Promise<void> {
     const sigs: Map<number, Buffer> = await this.client.signPsbt(
       psbt,
       walletPolicy,
       Buffer.alloc(32, 0),
-      progressCallback
+      progressCallback,
     );
     sigs.forEach((v, k) => {
       // Note: Looking at BIP32 derivation does not work in the generic case,
@@ -433,9 +423,7 @@ export default class BtcNew {
   }
 }
 
-function descrTemplFrom(
-  addressFormat: AddressFormat
-): DefaultDescriptorTemplate {
+function descrTemplFrom(addressFormat: AddressFormat): DefaultDescriptorTemplate {
   if (addressFormat == "legacy") return "pkh(@0)";
   if (addressFormat == "p2sh") return "sh(wpkh(@0))";
   if (addressFormat == "bech32") return "wpkh(@0)";
@@ -446,10 +434,64 @@ function descrTemplFrom(
 function accountTypeFromArg(
   arg: CreateTransactionArg,
   psbt: PsbtV2,
-  masterFp: Buffer
+  masterFp: Buffer,
 ): AccountType {
   if (arg.additionals.includes("bech32m")) return new p2tr(psbt, masterFp);
   if (arg.additionals.includes("bech32")) return new p2wpkh(psbt, masterFp);
   if (arg.segwit) return new p2wpkhWrapped(psbt, masterFp);
   return new p2pkh(psbt, masterFp);
+}
+
+/*
+  The new protocol only allows standard path.
+  Standard paths are (currently):
+  M/44'/(1|0)'/X'
+  M/49'/(1|0)'/X'
+  M/84'/(1|0)'/X'
+  M/86'/(1|0)'/X'
+  M/48'/(1|0)'/X'/Y'
+  followed by "", "(0|1)", or "(0|1)/b", where a and b are 
+  non-hardened. For example, the following paths are standard
+  M/48'/1'/99'/7'
+  M/86'/1'/99'/0
+  M/48'/0'/99'/7'/1/17
+  The following paths are non-standard
+  M/48'/0'/99'           // Not deepest hardened path
+  M/48'/0'/99'/7'/1/17/2 // Too many non-hardened derivation steps
+  M/199'/0'/1'/0/88      // Not a known purpose 199
+  M/86'/1'/99'/2         // Change path item must be 0 or 1
+*/
+function isPathNormal(path: string): boolean {
+  //path is not deepest hardened node of a standard path or deeper, use BtcOld
+  const h = 0x80000000; //HARDENED from bip32
+  const pathElems = pathStringToArray(path);
+
+  const hard = (n: number) => n >= h;
+  const soft = (n: number | undefined) => n === undefined || n < h;
+  const change = (n: number | undefined) => n === undefined || n === 0 || n === 1;
+
+  if (
+    pathElems.length >= 3 &&
+    pathElems.length <= 5 &&
+    [44 + h, 49 + h, 84 + h, 86 + h].some(v => v == pathElems[0]) &&
+    [0 + h, 1 + h].some(v => v == pathElems[1]) &&
+    hard(pathElems[2]) &&
+    change(pathElems[3]) &&
+    soft(pathElems[4])
+  ) {
+    return true;
+  }
+  if (
+    pathElems.length >= 4 &&
+    pathElems.length <= 6 &&
+    48 + h == pathElems[0] &&
+    [0 + h, 1 + h].some(v => v == pathElems[1]) &&
+    hard(pathElems[2]) &&
+    hard(pathElems[3]) &&
+    change(pathElems[4]) &&
+    soft(pathElems[5])
+  ) {
+    return true;
+  }
+  return false;
 }

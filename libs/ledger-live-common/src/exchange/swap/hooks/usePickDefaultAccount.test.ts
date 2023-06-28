@@ -3,8 +3,11 @@ import BigNumber from "bignumber.js";
 
 import { usePickDefaultAccount } from "./usePickDefaultAccount";
 import { genAccount } from "../../../mock/account";
-import type { Account, CryptoCurrency } from "../../../types";
 import { getCryptoCurrencyById } from "../../../currencies";
+import type { CryptoCurrency } from "@ledgerhq/types-cryptoassets";
+import type { Account } from "@ledgerhq/types-live";
+import { setSupportedCurrencies } from "../../../currencies";
+setSupportedCurrencies(["ethereum"]);
 
 function* accountGenerator(currency: CryptoCurrency): Generator<Account> {
   let id = 0;
@@ -32,9 +35,7 @@ describe("usePickDefaultAccount", () => {
   test("do nothing when fromAccount is not null/undefined", () => {
     const accounts: Account[] = [getEthAccount(), getBtcAccount()];
 
-    renderHook(() =>
-      usePickDefaultAccount(accounts, getEthAccount(), setFromAccount)
-    );
+    renderHook(() => usePickDefaultAccount(accounts, getEthAccount(), setFromAccount));
 
     expect(setFromAccount).toHaveBeenCalledTimes(0);
   });
@@ -47,9 +48,7 @@ describe("usePickDefaultAccount", () => {
       { ...getEthAccount(), disabled: true },
     ];
 
-    renderHook(() =>
-      usePickDefaultAccount(accounts, undefined, setFromAccount)
-    );
+    renderHook(() => usePickDefaultAccount(accounts, undefined, setFromAccount));
 
     expect(setFromAccount).toHaveBeenCalledTimes(0);
   });
@@ -60,9 +59,7 @@ describe("usePickDefaultAccount", () => {
 
     const accounts: Account[] = [ethAccount, getBtcAccount()];
 
-    renderHook(() =>
-      usePickDefaultAccount(accounts, undefined, setFromAccount)
-    );
+    renderHook(() => usePickDefaultAccount(accounts, undefined, setFromAccount));
 
     expect(setFromAccount).toHaveBeenCalledTimes(1);
     expect(setFromAccount).toHaveBeenCalledWith(ethAccount);
@@ -80,9 +77,7 @@ describe("usePickDefaultAccount", () => {
       { ...getEthAccount(), disabled: true },
     ];
 
-    renderHook(() =>
-      usePickDefaultAccount(accounts, undefined, setFromAccount)
-    );
+    renderHook(() => usePickDefaultAccount(accounts, undefined, setFromAccount));
 
     expect(setFromAccount).toHaveBeenCalledTimes(1);
     expect(setFromAccount).toHaveBeenCalledWith(btcAccount);
@@ -111,9 +106,7 @@ describe("usePickDefaultAccount", () => {
       ethAccount5,
     ];
 
-    renderHook(() =>
-      usePickDefaultAccount(accounts, undefined, setFromAccount)
-    );
+    renderHook(() => usePickDefaultAccount(accounts, undefined, setFromAccount));
 
     expect(setFromAccount).toHaveBeenCalledTimes(1);
     expect(setFromAccount).toHaveBeenCalledWith(ethAccount);
@@ -126,15 +119,9 @@ describe("usePickDefaultAccount", () => {
     btcAccount.balance = new BigNumber(0.2);
     btcAccount2.balance = new BigNumber(0.001);
 
-    const accounts: Account[] = [
-      { ...getEthAccount(), disabled: true },
-      btcAccount,
-      btcAccount2,
-    ];
+    const accounts: Account[] = [{ ...getEthAccount(), disabled: true }, btcAccount, btcAccount2];
 
-    renderHook(() =>
-      usePickDefaultAccount(accounts, undefined, setFromAccount)
-    );
+    renderHook(() => usePickDefaultAccount(accounts, undefined, setFromAccount));
 
     expect(setFromAccount).toHaveBeenCalledTimes(1);
     expect(setFromAccount).toHaveBeenCalledWith(btcAccount);

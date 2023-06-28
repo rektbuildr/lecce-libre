@@ -1,8 +1,9 @@
 import { BigNumber } from "bignumber.js";
-import type { CurrenciesData } from "../../../types";
-import type { NetworkInfoRaw, Transaction } from "../types";
+import type { CurrenciesData } from "@ledgerhq/types-live";
+import type { NetworkInfoRaw, Transaction, BitcoinAccountRaw } from "../types";
 import { fromTransactionRaw } from "../transaction";
 import scanAccounts1 from "./litecoin.scanAccounts.1";
+
 const networkInfo: NetworkInfoRaw = {
   family: "bitcoin",
   feeItems: {
@@ -47,15 +48,13 @@ const dataset: CurrenciesData<Transaction> = {
             rbf: false,
             utxoStrategy: {
               strategy: 0,
-              pickUnconfirmedRBF: false,
               excludeUTXOs: [],
             },
           }),
           expectedStatus: {
             errors: {},
             warnings: {},
-            //  estimatedFees: new BigNumber("5694"),
-            amount: new BigNumber("200000"), //  totalSpent: new BigNumber("205694")
+            amount: new BigNumber("200000"),
           },
         },
         {
@@ -70,7 +69,6 @@ const dataset: CurrenciesData<Transaction> = {
             rbf: false,
             utxoStrategy: {
               strategy: 0,
-              pickUnconfirmedRBF: false,
               excludeUTXOs: [],
             },
           }),
@@ -93,15 +91,36 @@ const dataset: CurrenciesData<Transaction> = {
             rbf: false,
             utxoStrategy: {
               strategy: 0,
-              pickUnconfirmedRBF: false,
               excludeUTXOs: [],
             },
           }),
           expectedStatus: {
             errors: {},
             warnings: {},
-            //  estimatedFees: new BigNumber("5694"),
-            amount: new BigNumber("205273"), //  totalSpent: new BigNumber("210967")
+            amount: new BigNumber("205273"),
+          },
+        },
+        {
+          name: "Send max",
+          transaction: fromTransactionRaw({
+            amount: "0",
+            recipient: "ltc1qd2x2x0wf3wgkka87qlm8772tuw6yx6fl9j07ag",
+            useAllAmount: true,
+            family: "bitcoin",
+            feePerByte: "39",
+            networkInfo,
+            rbf: false,
+            utxoStrategy: {
+              strategy: 0,
+              excludeUTXOs: [],
+            },
+          }),
+          expectedStatus: (account, tx, status) => {
+            return {
+              amount: account.spendableBalance.minus(status.estimatedFees),
+              warnings: {},
+              errors: {},
+            };
           },
         },
       ],
@@ -128,7 +147,10 @@ const dataset: CurrenciesData<Transaction> = {
         lastSyncDate: "",
         balance: "2183515",
         xpub: "Ltub2ZDyeYFtDj5kHy4w5WaXBDE9217rNDYfmv7u5NV8dk8vKdmkqAfPdwRma5rkPcj5daMU8JiiLXQYPX9rtqEzrK1YrmkofcpADTV7s5FgzLF",
-      },
+        bitcoinResources: {
+          utxos: [],
+        },
+      } as BitcoinAccountRaw,
     },
     {
       raw: {
@@ -154,7 +176,10 @@ const dataset: CurrenciesData<Transaction> = {
         lastSyncDate: "",
         balance: "0",
         xpub: "Ltub2Yz97oUCaVDo1Ak6FJ1Fvg2EscNzrWvLYxnXeY7rrArUPpdfgUAEWM49MrjVBNrdjwgFnMbqKGh8XkUdQFx3h8y1SDcak4vGSbqKM5PR8Rr",
-      },
+        bitcoinResources: {
+          utxos: [],
+        },
+      } as BitcoinAccountRaw,
     },
   ],
 };

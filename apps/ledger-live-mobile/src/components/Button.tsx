@@ -1,9 +1,8 @@
-/* eslint-disable import/named */
 import React, { useCallback, memo, useContext, useMemo } from "react";
-import { ViewStyle } from "react-native";
+import { StyleProp, ViewStyle } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import { Button } from "@ledgerhq/native-ui";
-import { ButtonProps } from "@ledgerhq/native-ui/components/cta/Button";
+import type { ButtonProps } from "@ledgerhq/native-ui/components/cta/Button/index";
 import ButtonUseTouchable from "../context/ButtonUseTouchable";
 import { track } from "../analytics";
 
@@ -32,16 +31,16 @@ export interface BaseButtonProps extends Omit<ButtonProps, "type"> {
   // the button will toggle in a pending state and
   // will wait the promise to complete before enabling the button again
   // it also displays a spinner if it takes more than WAIT_TIME_BEFORE_SPINNER
-  onPress?: () => any;
+  onPress?: () => void;
   pending?: boolean;
   disabled?: boolean;
-  IconLeft?: React.ComponentType<{ size: number; color: string }>;
-  IconRight?: React.ComponentType<{ size: number; color: string }>;
-  containerStyle?: ViewStyle;
+  IconLeft?: React.ComponentType<{ size?: number; color?: string }>;
+  IconRight?: React.ComponentType<{ size?: number; color?: string }>;
+  containerStyle?: StyleProp<ViewStyle>;
   type?: string;
   // for analytics
   event?: string;
-  eventProperties?: Object;
+  eventProperties?: Record<string, unknown>;
   // for testing
   testID?: string;
 }
@@ -51,12 +50,13 @@ type Props = BaseButtonProps & {
   isFocused: boolean;
 };
 
+/**
+ * @deprecated This button is a wrapper around native-ui, trying to translate the props of this component to those of the native-ui button. Please use directly Button from @ledgerhq/native-ui or the wrapped one from ./wrappedUi if you want to use event and eventProperties props.
+ */
 function ButtonWrapped(props: BaseButtonProps) {
   const isFocused = useIsFocused(); // @Warning be careful not to import the wrapped button outside of navigation context
   const useTouchable = useContext(ButtonUseTouchable);
-  return (
-    <BaseButton {...props} useTouchable={useTouchable} isFocused={isFocused} />
-  );
+  return <BaseButton {...props} useTouchable={useTouchable} isFocused={isFocused} />;
 }
 
 export function BaseButton({
@@ -110,8 +110,7 @@ export function BaseButton({
   ]);
 
   const ButtonIcon = Icon ?? IconRight ?? IconLeft;
-  const buttonIconPosition =
-    iconPosition ?? (IconRight && "right") ?? (IconLeft && "left");
+  const buttonIconPosition = iconPosition ?? (IconRight && "right") ?? (IconLeft && "left");
 
   return (
     <Button

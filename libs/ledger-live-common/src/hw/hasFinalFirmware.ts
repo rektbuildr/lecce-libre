@@ -1,4 +1,4 @@
-import type { FinalFirmware } from "../types/manager";
-export const hasFinalFirmware = (
-  final: FinalFirmware | null | undefined
-): boolean => Boolean(final && final?.firmware);
+import type { FinalFirmware } from "@ledgerhq/types-live";
+
+export const hasFinalFirmware = (final: FinalFirmware | null | undefined): boolean =>
+  Boolean(final && final?.firmware);

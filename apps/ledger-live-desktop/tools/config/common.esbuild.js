@@ -1,5 +1,5 @@
 const path = require("path");
-const { AliasPlugin, StripFlowPlugin } = require("esbuild-utils");
+const { AliasPlugin } = require("esbuild-utils");
 
 const rootFolder = path.resolve(__dirname, "..", "..");
 const srcFolder = path.resolve(rootFolder, "src");
@@ -19,7 +19,6 @@ module.exports = {
     AliasPlugin({
       "~": srcFolder,
     }),
-    StripFlowPlugin(/\.jsx?$/),
   ],
   loader: {
     ".woff": "file",
@@ -27,6 +26,7 @@ module.exports = {
     ".eot": "file",
     ".ttf": "file",
     ".otf": "file",
+    ".webm": "file",
     ".png": "dataurl",
     ".jpg": "dataurl",
     ".jpeg": "dataurl",
@@ -34,7 +34,7 @@ module.exports = {
     ".svg": "dataurl",
   },
   logOverride: {
-    "this-is-undefined-in-esm": "debug",
+    "this-is-undefined-in-esm": "silent",
     "ignored-bare-import": "debug",
   },
 };

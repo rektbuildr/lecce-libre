@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { Alert } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { Switch } from "@ledgerhq/native-ui";
 import { setPrivacyBiometrics } from "../../../actions/settings";
 import { privacySelector } from "../../../reducers/settings";
@@ -9,7 +9,7 @@ import SettingsRow from "../../../components/SettingsRow";
 import { useBiometricAuth } from "../../../components/RequestBiometricAuth";
 
 type Props = {
-  iconLeft?: any;
+  iconLeft?: React.ReactNode;
 };
 
 export default function BiometricsRow({ iconLeft }: Props) {
@@ -20,8 +20,11 @@ export default function BiometricsRow({ iconLeft }: Props) {
 
   const [validationPending, setValidationPending] = useState(false);
   const [biometricsEnabled, setBiometricsEnabled] = useState(
-    privacy.biometricsEnabled || validationPending,
+    privacy?.biometricsEnabled || validationPending,
   );
+
+  const biometricsType =
+    t(`auth.enableBiometrics.${privacy?.biometricsType?.toLowerCase()}`) ?? privacy?.biometricsType;
 
   const onValueChange = useCallback(
     async (biometricsEnabled: boolean) => {
@@ -41,10 +44,7 @@ export default function BiometricsRow({ iconLeft }: Props) {
     error => {
       setValidationPending(false);
       setBiometricsEnabled((val: boolean) => !val);
-      Alert.alert(
-        t("auth.failed.title"),
-        `${t("auth.failed.denied")}\n${String(error || "")}`,
-      );
+      Alert.alert(t("auth.failed.title"), `${t("auth.failed.denied")}\n${String(error || "")}`);
     },
     [t],
   );
@@ -54,7 +54,6 @@ export default function BiometricsRow({ iconLeft }: Props) {
     onSuccess,
     onError,
   });
-
   if (!privacy) return null;
   return (
     <>
@@ -64,24 +63,8 @@ export default function BiometricsRow({ iconLeft }: Props) {
             event="BiometricsRow"
             iconLeft={iconLeft}
             centeredIcon
-            title={
-              <Trans
-                i18nKey="auth.enableBiometrics.title"
-                values={{
-                  ...privacy,
-                  biometricsType: privacy.biometricsType,
-                }}
-              />
-            }
-            desc={
-              <Trans
-                i18nKey="auth.enableBiometrics.desc"
-                values={{
-                  ...privacy,
-                  biometricsType: privacy.biometricsType,
-                }}
-              />
-            }
+            title={t("auth.enableBiometrics.title", { biometricsType })}
+            desc={t("auth.enableBiometrics.desc", { biometricsType })}
           >
             <Switch checked={biometricsEnabled} onChange={onValueChange} />
           </SettingsRow>

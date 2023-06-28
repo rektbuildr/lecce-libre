@@ -2,35 +2,23 @@ import {
   getAccountCurrency,
   getAccountUnit,
   getMainAccount,
-} from "@ledgerhq/live-common/lib/account";
-import { getAccountBridge } from "@ledgerhq/live-common/lib/bridge";
-import useBridgeTransaction from "@ledgerhq/live-common/lib/bridge/useBridgeTransaction";
-import {
-  formatCurrencyUnit,
-  getCurrencyColor,
-} from "@ledgerhq/live-common/lib/currencies";
-import { getMaxDelegationAvailable } from "@ledgerhq/live-common/lib/families/cosmos/logic";
-import { useLedgerFirstShuffledValidatorsCosmos } from "@ledgerhq/live-common/lib/families/cosmos/react";
-import {
-  CosmosValidatorItem,
-  Transaction,
-} from "@ledgerhq/live-common/lib/families/cosmos/types";
-import { LEDGER_VALIDATOR_ADDRESS } from "@ledgerhq/live-common/lib/families/cosmos/utils";
-import { AccountLike } from "@ledgerhq/live-common/lib/types";
+} from "@ledgerhq/live-common/account/index";
+import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
+import useBridgeTransaction from "@ledgerhq/live-common/bridge/useBridgeTransaction";
+import { formatCurrencyUnit, getCurrencyColor } from "@ledgerhq/live-common/currencies/index";
+import { getMaxDelegationAvailable } from "@ledgerhq/live-common/families/cosmos/logic";
+import { useLedgerFirstShuffledValidatorsCosmosFamily } from "@ledgerhq/live-common/families/cosmos/react";
+import { CosmosAccount, CosmosValidatorItem } from "@ledgerhq/live-common/families/cosmos/types";
+import cosmosBase from "@ledgerhq/live-common/families/cosmos/chain/cosmosBase";
+import { AccountLike } from "@ledgerhq/types-live";
 import { Text } from "@ledgerhq/native-ui";
 import { useTheme } from "@react-navigation/native";
 import { BigNumber } from "bignumber.js";
 import invariant from "invariant";
-import React, {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import { Trans } from "react-i18next";
-import { Animated, SafeAreaView, StyleSheet, View } from "react-native";
-import Icon from "react-native-vector-icons/dist/Feather";
+import { Animated, SafeAreaView, StyleSheet, View, TextStyle, StyleProp } from "react-native";
+import Icon from "react-native-vector-icons/Feather";
 import { useSelector } from "react-redux";
 import { TrackScreen } from "../../../analytics";
 import { rgba } from "../../../colors";
@@ -43,17 +31,13 @@ import { ScreenName } from "../../../const";
 import DelegatingContainer from "../../tezos/DelegatingContainer";
 import { accountScreenSelector } from "../../../reducers/accounts";
 import ValidatorImage from "../shared/ValidatorImage";
+import { StackNavigatorProps } from "../../../components/RootNavigator/types/helpers";
+import { CosmosDelegationFlowParamList } from "./types";
 
-type Props = {
-  navigation: any;
-  route: { params: RouteParams };
-};
-
-type RouteParams = {
-  validator: CosmosValidatorItem;
-  transaction?: Transaction;
-  fromSelectAmount: boolean;
-};
+type Props = StackNavigatorProps<
+  CosmosDelegationFlowParamList,
+  ScreenName.CosmosDelegationValidator
+>;
 
 export default function DelegationSummary({ navigation, route }: Props) {
   const { validator } = route.params;
@@ -62,8 +46,8 @@ export default function DelegationSummary({ navigation, route }: Props) {
 
   invariant(account, "account must be defined");
 
-  const validators = useLedgerFirstShuffledValidatorsCosmos();
   const mainAccount = getMainAccount(account, parentAccount);
+  const validators = useLedgerFirstShuffledValidatorsCosmosFamily(mainAccount.currency.id);
   const bridge = getAccountBridge(account, undefined);
 
   const chosenValidator = useMemo(() => {
@@ -74,32 +58,24 @@ export default function DelegationSummary({ navigation, route }: Props) {
     return validators[0];
   }, [validators, validator]);
 
-  const {
-    transaction,
-    updateTransaction,
-    setTransaction,
-    status,
-    bridgePending,
-    bridgeError,
-  } = useBridgeTransaction(() => {
-    const tx = route.params.transaction;
+  const { transaction, updateTransaction, setTransaction, status, bridgePending, bridgeError } =
+    useBridgeTransaction(() => {
+      const tx = route.params.transaction;
 
-    if (!tx) {
-      const t = bridge.createTransaction(mainAccount);
+      if (!tx) {
+        const t = bridge.createTransaction(mainAccount);
 
-      return {
-        account,
-        transaction: bridge.updateTransaction(t, {
-          mode: "delegate",
-          validators: [],
-          /** @TODO remove this once the bridge handles it */
-          recipient: mainAccount.freshAddress,
-        }),
-      };
-    }
+        return {
+          account,
+          transaction: bridge.updateTransaction(t, {
+            mode: "delegate",
+            validators: [],
+          }),
+        };
+      }
 
-    return { account, transaction: tx };
-  });
+      return { account, transaction: tx };
+    });
 
   invariant(transaction, "transaction must be defined");
   invariant(transaction.family === "cosmos", "transaction cosmos");
@@ -114,9 +90,7 @@ export default function DelegationSummary({ navigation, route }: Props) {
       updateTransaction(_ => tmpTransaction);
     }
 
-    if (
-      chosenValidator.validatorAddress !== transaction.validators[0].address
-    ) {
+    if (chosenValidator.validatorAddress !== transaction.validators[0].address) {
       setTransaction(
         bridge.updateTransaction(transaction, {
           validators: [
@@ -128,13 +102,8 @@ export default function DelegationSummary({ navigation, route }: Props) {
         }),
       );
     }
-  }, [
-    route.params,
-    updateTransaction,
-    bridge,
-    setTransaction,
-    chosenValidator,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [route.params, updateTransaction, bridge, setTransaction, chosenValidator]);
 
   const [rotateAnim] = useState(() => new Animated.Value(0));
   useEffect(() => {
@@ -165,7 +134,7 @@ export default function DelegationSummary({ navigation, route }: Props) {
 
   const rotate = rotateAnim.interpolate({
     inputRange: [0, 1],
-    // $FlowFixMe
+
     outputRange: ["0deg", "30deg"],
   });
 
@@ -180,30 +149,40 @@ export default function DelegationSummary({ navigation, route }: Props) {
   const currency = getAccountCurrency(account);
   const color = getCurrencyColor(currency);
 
-  const max = getMaxDelegationAvailable(mainAccount, 0);
+  const max = getMaxDelegationAvailable(mainAccount as CosmosAccount, 0);
 
   const onChangeAmount = () => {
     navigation.navigate(ScreenName.CosmosDelegationAmount, {
       ...route.params,
       transaction,
       validator: chosenValidator,
-      min: null,
+      min: undefined,
       max,
       value: transaction.amount,
       status,
       nextScreen: ScreenName.CosmosDelegationValidator,
-      redelegatedBalance: null,
+      redelegatedBalance: undefined,
     });
   };
 
   const onContinue = useCallback(async () => {
     navigation.navigate(ScreenName.CosmosDelegationSelectDevice, {
+      source: route.params.source,
       accountId: account.id,
-      parentId: parentAccount && parentAccount.id,
+      parentId: parentAccount?.id,
       transaction,
       status,
+      validatorName: chosenValidator.name,
     });
-  }, [status, account, parentAccount, navigation, transaction]);
+  }, [
+    navigation,
+    account.id,
+    parentAccount?.id,
+    transaction,
+    status,
+    chosenValidator.name,
+    route.params.source,
+  ]);
 
   const hasErrors = Object.keys(status.errors).length > 0;
 
@@ -222,17 +201,8 @@ export default function DelegationSummary({ navigation, route }: Props) {
             </View>
           }
           right={
-            <Touchable
-              event="DelegationFlowSummaryChangeCircleBtn"
-              onPress={onChangeDelegator}
-            >
-              <Circle
-                size={70}
-                style={[
-                  styles.validatorCircle,
-                  { borderColor: colors.primary },
-                ]}
-              >
+            <Touchable event="DelegationFlowSummaryChangeCircleBtn" onPress={onChangeDelegator}>
+              <Circle size={70} style={[styles.validatorCircle, { borderColor: colors.primary }]}>
                 <Animated.View
                   style={{
                     transform: [
@@ -243,13 +213,10 @@ export default function DelegationSummary({ navigation, route }: Props) {
                   }}
                 >
                   <ValidatorImage
-                    isLedger={
-                      chosenValidator.validatorAddress ===
-                      LEDGER_VALIDATOR_ADDRESS
-                    }
-                    name={
-                      chosenValidator?.name ?? chosenValidator?.validatorAddress
-                    }
+                    isLedger={cosmosBase.COSMOS_FAMILY_LEDGER_VALIDATOR_ADDRESSES.includes(
+                      chosenValidator.validatorAddress,
+                    )}
+                    name={chosenValidator?.name ?? chosenValidator?.validatorAddress}
                   />
                 </Animated.View>
                 <ChangeDelegator />
@@ -398,9 +365,7 @@ function SummaryWords({
           <Trans i18nKey="delegation.to" />
         </Words>
         <Touchable onPress={onChangeValidator}>
-          <Selectable
-            name={validator?.name ?? validator?.validatorAddress ?? "-"}
-          />
+          <Selectable name={validator?.name ?? validator?.validatorAddress ?? "-"} />
         </Touchable>
       </Line>
     </>
@@ -411,9 +376,7 @@ const AccountBalanceTag = ({ account }: { account: AccountLike }) => {
   const unit = getAccountUnit(account);
   const { colors } = useTheme();
   return (
-    <View
-      style={[styles.accountBalanceTag, { backgroundColor: colors.border }]}
-    >
+    <View style={[styles.accountBalanceTag, { backgroundColor: colors.border }]}>
       <Text
         fontWeight="semiBold"
         numberOfLines={1}
@@ -446,7 +409,7 @@ const Words = ({
 }: {
   children: ReactNode;
   highlighted?: boolean;
-  style?: any;
+  style?: StyleProp<TextStyle>;
 }) => (
   <Text
     numberOfLines={1}
@@ -458,21 +421,10 @@ const Words = ({
   </Text>
 );
 
-const Selectable = ({
-  name,
-  readOnly,
-}: {
-  name: string;
-  readOnly?: boolean;
-}) => {
+const Selectable = ({ name }: { name: string; readOnly?: boolean }) => {
   const { colors } = useTheme();
   return (
-    <View
-      style={[
-        styles.validatorSelection,
-        { backgroundColor: rgba(colors.primary, 0.2) },
-      ]}
-    >
+    <View style={[styles.validatorSelection, { backgroundColor: rgba(colors.primary, 0.2) }]}>
       <Text
         fontWeight="bold"
         numberOfLines={1}
@@ -482,12 +434,7 @@ const Selectable = ({
         {name}
       </Text>
 
-      <View
-        style={[
-          styles.validatorSelectionIcon,
-          { backgroundColor: colors.primary },
-        ]}
-      >
+      <View style={[styles.validatorSelectionIcon, { backgroundColor: colors.primary }]}>
         <Icon size={16} name="edit-2" color={colors.text} />
       </View>
     </View>

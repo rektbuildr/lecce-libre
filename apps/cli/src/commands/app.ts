@@ -1,14 +1,14 @@
 import { from, concat } from "rxjs";
 import { map, mergeMap, ignoreElements } from "rxjs/operators";
-import manager from "@ledgerhq/live-common/lib/manager";
-import type { DeviceInfo } from "@ledgerhq/live-common/lib/types/manager";
-import { withDevice } from "@ledgerhq/live-common/lib/hw/deviceAccess";
-import getDeviceInfo from "@ledgerhq/live-common/lib/hw/getDeviceInfo";
-import openApp from "@ledgerhq/live-common/lib/hw/openApp";
-import quitApp from "@ledgerhq/live-common/lib/hw/quitApp";
-import installApp from "@ledgerhq/live-common/lib/hw/installApp";
-import uninstallApp from "@ledgerhq/live-common/lib/hw/uninstallApp";
+import manager from "@ledgerhq/live-common/manager/index";
+import { withDevice } from "@ledgerhq/live-common/hw/deviceAccess";
+import getDeviceInfo from "@ledgerhq/live-common/hw/getDeviceInfo";
+import openApp from "@ledgerhq/live-common/hw/openApp";
+import quitApp from "@ledgerhq/live-common/hw/quitApp";
+import installApp from "@ledgerhq/live-common/hw/installApp";
+import uninstallApp from "@ledgerhq/live-common/hw/uninstallApp";
 import { deviceOpt, inferManagerApp } from "../scan";
+import type { DeviceInfo } from "@ledgerhq/types-live";
 export default {
   description: "Manage Ledger device's apps",
   args: [
@@ -68,18 +68,16 @@ export default {
     quit: string;
     debug: string;
   }>) =>
-    withDevice(device || "")((t) => {
+    withDevice(device || "")(t => {
       if (quit) return from(quitApp(t));
       if (open) return from(openApp(t, inferManagerApp(open)));
       if (debug)
         return from(getDeviceInfo(t)).pipe(
           mergeMap((deviceInfo: DeviceInfo) =>
             from(manager.getAppsList(deviceInfo, true)).pipe(
-              mergeMap((list) => {
+              mergeMap(list => {
                 const app = list.find(
-                  (item) =>
-                    item.name.toLowerCase() ===
-                    inferManagerApp(debug).toLowerCase()
+                  item => item.name.toLowerCase() === inferManagerApp(debug).toLowerCase(),
                 );
 
                 if (!app) {
@@ -87,52 +85,44 @@ export default {
                 }
 
                 return [app];
-              })
-            )
-          )
+              }),
+            ),
+          ),
         );
       return from(getDeviceInfo(t)).pipe(
         mergeMap((deviceInfo: DeviceInfo) =>
           from(manager.getAppsList(deviceInfo, true)).pipe(
-            mergeMap((list) =>
+            mergeMap(list =>
               concat(
-                ...(uninstall || []).map((application) => {
+                ...(uninstall || []).map(application => {
                   const { targetId } = deviceInfo;
                   const app = list.find(
-                    (item) =>
-                      item.name.toLowerCase() ===
-                      inferManagerApp(application).toLowerCase()
+                    item => item.name.toLowerCase() === inferManagerApp(application).toLowerCase(),
                   );
 
                   if (!app) {
-                    throw new Error(
-                      "application '" + application + "' not found"
-                    );
+                    throw new Error("application '" + application + "' not found");
                   }
 
                   return uninstallApp(t, targetId, app);
                 }),
-                ...(install || []).map((application) => {
+                ...(install || []).map(application => {
                   const { targetId } = deviceInfo;
                   const app = list.find(
-                    (item) =>
-                      item.name.toLowerCase() ===
-                      inferManagerApp(application).toLowerCase()
+                    item => item.name.toLowerCase() === inferManagerApp(application).toLowerCase(),
                   );
 
                   if (!app) {
-                    throw new Error(
-                      "application '" + application + "' not found"
-                    );
+                    throw new Error("application '" + application + "' not found");
                   }
 
                   return installApp(t, targetId, app);
-                })
-              )
-            )
-          )
+                }),
+              ),
+            ),
+          ),
         ),
-        verbose ? map((a) => a) : ignoreElements()
+        verbose ? map(a => a) : ignoreElements(),
       );
     }),
 };

@@ -1,6 +1,5 @@
-import type { AccountBridge, CurrencyBridge } from "../../../types/bridge";
 import type { Transaction } from "../types";
-import { sync, scanAccounts } from "../js-synchronisation";
+import { sync, scanAccounts, SignerContext } from "../js-synchronisation";
 import createTransaction from "../js-createTransaction";
 import prepareTransaction from "../js-prepareTransaction";
 import getTransactionStatus from "../js-getTransactionStatus";
@@ -10,10 +9,15 @@ import broadcast from "../js-broadcast";
 import { calculateFees } from "./../cache";
 import { perCoinLogic } from "../logic";
 import { makeAccountBridgeReceive } from "../../../bridge/jsHelpers";
-import * as explorerConfigAPI from "../../../api/explorerConfig";
+import { AccountBridge, CurrencyBridge } from "@ledgerhq/types-live";
+import { assignFromAccountRaw, assignToAccountRaw } from "../serialization";
+import { withDevice } from "../../../hw/deviceAccess";
+import Btc from "@ledgerhq/hw-app-btc";
+import { from } from "rxjs";
+import { CryptoCurrency } from "@ledgerhq/types-cryptoassets";
 
 const receive = makeAccountBridgeReceive({
-  injectGetAddressParams: (account) => {
+  injectGetAddressParams: account => {
     const perCoin = perCoinLogic[account.currency.id];
 
     if (perCoin && perCoin.injectGetAddressParams) {
@@ -22,7 +26,7 @@ const receive = makeAccountBridgeReceive({
   },
 });
 
-const updateTransaction = (t, patch) => {
+const updateTransaction = (t, patch): any => {
   const updatedT = { ...t, ...patch };
 
   // We accept case-insensitive addresses as input from user,
@@ -34,28 +38,21 @@ const updateTransaction = (t, patch) => {
   return updatedT;
 };
 
-const preload = async () => {
-  const explorerConfig = await explorerConfigAPI.preload();
-  return {
-    explorerConfig,
-  };
-};
-
-const hydrate = (maybeConfig: any) => {
-  if (
-    typeof maybeConfig === "object" &&
-    maybeConfig &&
-    maybeConfig.explorerConfig
-  ) {
-    explorerConfigAPI.hydrate(maybeConfig.explorerConfig);
-  }
-};
+const signerContext: SignerContext = (
+  deviceId: string,
+  crypto: CryptoCurrency,
+  fn: (signer: Btc) => Promise<string>,
+): Promise<string> =>
+  withDevice(deviceId)(transport =>
+    from(fn(new Btc({ transport, currency: crypto.id }))),
+  ).toPromise();
 
 const currencyBridge: CurrencyBridge = {
-  scanAccounts,
-  preload,
-  hydrate,
+  scanAccounts: scanAccounts(signerContext),
+  preload: () => Promise.resolve({}),
+  hydrate: () => {},
 };
+
 const accountBridge: AccountBridge<Transaction> = {
   estimateMaxSpendable,
   createTransaction,
@@ -63,7 +60,7 @@ const accountBridge: AccountBridge<Transaction> = {
   updateTransaction,
   getTransactionStatus,
   receive,
-  sync,
+  sync: sync(signerContext),
   signOperation,
   broadcast: async ({ account, signedOperation }) => {
     calculateFees.reset();
@@ -72,7 +69,10 @@ const accountBridge: AccountBridge<Transaction> = {
       signedOperation,
     });
   },
+  assignFromAccountRaw,
+  assignToAccountRaw,
 };
+
 export default {
   currencyBridge,
   accountBridge,

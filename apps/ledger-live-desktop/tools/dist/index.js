@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-// @flow
 const SentryCli = require("@sentry/cli");
 const yargs = require("yargs");
 const execa = require("execa");
@@ -27,17 +26,12 @@ const exec = async (file, args, options = {}) => {
   return execa(file, args, opts);
 };
 
-const rmDir = dir =>
-  new Promise((resolve, reject) => {
-    const fullPath = path.resolve(__dirname, rootFolder, dir);
+const rmDir = dir => {
+  const fullPath = path.resolve(__dirname, rootFolder, dir);
+  return rimraf(fullPath);
+};
 
-    rimraf(fullPath, error => {
-      if (error) return reject(error);
-      resolve();
-    });
-  });
-
-const cleaningTasks = args => [
+const cleaningTasks = _args => [
   {
     title: "Remove `node_modules/.cache` folder",
     task: () => rmDir("node_modules/.cache"),
@@ -258,7 +252,9 @@ yargs
   .command(
     "check",
     "Run health checks",
-    () => {},
+    () => {
+      // ignore
+    },
     args => runTasks(healthChecksTasks, args),
   )
   .command(

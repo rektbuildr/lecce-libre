@@ -1,7 +1,5 @@
 package com.ledger.live;
-import expo.modules.ReactActivityDelegateWrapper;
 
-import android.app.PendingIntent;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -11,26 +9,22 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-
 import com.facebook.react.ReactActivity;
+import com.facebook.react.ReactActivityDelegate;
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
+import com.facebook.react.defaults.DefaultReactActivityDelegate;
 
 import org.devio.rn.splashscreen.SplashScreen;
 
-import com.facebook.react.ReactActivityDelegate;
-import com.facebook.react.ReactRootView;
-
-import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 import java.util.Locale;
+
+import com.facebook.react.modules.i18nmanager.I18nUtil;
 
 public class MainActivity extends ReactActivity {
 
-    String importDataString = null;
-
     /**
-     * Returns the name of the main component registered from JavaScript. This is
-     * used to schedule rendering of the component.
+     * Returns the name of the main component registered from JavaScript. This is used to schedule
+     * rendering of the component.
      */
     @Override
     protected String getMainComponentName() {
@@ -38,19 +32,36 @@ public class MainActivity extends ReactActivity {
     }
 
     @Override
+    public void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+    }
+
+    /**
+     * Returns the instance of the {@link ReactActivityDelegate}. Here we use a util class {@link
+     * DefaultReactActivityDelegate} which allows you to easily enable Fabric and Concurrent React
+     * (aka React 18) with two boolean flags.
+     */
+    @Override
+    protected ReactActivityDelegate createReactActivityDelegate() {
+        return new DefaultReactActivityDelegate(
+            this,
+            getMainComponentName(),
+            // If you opted-in for the New Architecture, we enable the Fabric Renderer.
+            DefaultNewArchitectureEntryPoint.getFabricEnabled(), // fabricEnabled
+            // If you opted-in for the New Architecture, we enable Concurrent React (i.e. React 18).
+            DefaultNewArchitectureEntryPoint.getConcurrentReactEnabled() // concurrentRootEnabled
+            );
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         if (!BuildConfig.DEBUG) {
             SplashScreen.show(this, true);
-        } else {
-            // Allow data override for debug builds
-            Bundle extras = getIntent().getExtras();
-            if (extras != null) {
-                this.importDataString = extras.getString("importDataString");
-            }
         }
         super.onCreate(null);
-        /**
+        /*
          * Addresses an inconvenient side-effect of using `password-visible`, that
          * allowed styled texts to be pasted (receiver's address for instance) retaining
          * the styles of the source text.
@@ -84,6 +95,9 @@ public class MainActivity extends ReactActivity {
             });
         }
 
+        I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
+        sharedI18nUtilInstance.allowRTL(getApplicationContext(), true);
+
     }
 
     @Override
@@ -109,27 +123,5 @@ public class MainActivity extends ReactActivity {
             getBaseContext().getResources().updateConfiguration(config,
                     getBaseContext().getResources().getDisplayMetrics());
         }
-
-    }
-
-    @Override
-    protected ReactActivityDelegate createReactActivityDelegate() {
-        return new ReactActivityDelegateWrapper(this, new ReactActivityDelegate(this, getMainComponentName()) {
-            @Override
-            protected ReactRootView createRootView() {
-                return new RNGestureHandlerEnabledRootView(MainActivity.this);
-            }
-
-            @Override
-            protected Bundle getLaunchOptions() {
-                if (importDataString != null) {
-                    Bundle bundle = new Bundle();
-                    bundle.putString("importDataString", importDataString);
-                    return bundle;
-                } else {
-                    return new Bundle();
-                }
-            }
-        });
     }
 }

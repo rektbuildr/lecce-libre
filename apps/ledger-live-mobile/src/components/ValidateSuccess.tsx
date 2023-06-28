@@ -1,8 +1,10 @@
 import React, { memo } from "react";
 import { Trans } from "react-i18next";
-import { Icons, IconBox, Text, Flex, Button, Log } from "@ledgerhq/native-ui";
+import { Icons, IconBox, Text, Flex, Log } from "@ledgerhq/native-ui";
 
+import { IconOrElementType } from "@ledgerhq/native-ui/components/Icon/type";
 import Alert from "./Alert";
+import Button from "./Button";
 
 type Props = {
   onClose?: () => void;
@@ -11,10 +13,10 @@ type Props = {
   description?: React.ReactNode;
   primaryButton?: React.ReactNode;
   secondaryButton?: React.ReactNode;
-  icon?: React.ReactNode;
+  icon?: IconOrElementType;
   iconColor?: string;
-  iconBoxSize: number;
-  iconSize: number;
+  iconBoxSize?: number;
+  iconSize?: number;
   info?: React.ReactNode;
   onLearnMore?: () => void;
 };
@@ -27,7 +29,7 @@ function ValidateSuccess({
   primaryButton,
   secondaryButton,
   icon = Icons.CheckAloneMedium,
-  iconColor = "success.c100",
+  iconColor = "success.c50",
   iconBoxSize = 64,
   iconSize = 24,
   info,
@@ -35,18 +37,10 @@ function ValidateSuccess({
 }: Props) {
   return (
     <Flex flex={1} p={6}>
-      <Flex
-        flex={1}
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <IconBox
-          Icon={icon}
-          color={iconColor}
-          boxSize={iconBoxSize}
-          iconSize={iconSize}
-        />
+      <Flex flex={1} flexDirection="column" justifyContent="center" alignItems="center">
+        {icon ? (
+          <IconBox Icon={icon} color={iconColor} boxSize={iconBoxSize} iconSize={iconSize} />
+        ) : null}
         <Flex py={8}>
           <Log>{title || <Trans i18nKey="send.validation.sent" />}</Log>
         </Flex>
@@ -72,6 +66,7 @@ function ValidateSuccess({
             <Button
               event="SendSuccessViewDetails"
               type="main"
+              outline={false}
               onPress={onViewDetails}
               mt={7}
             >
@@ -83,6 +78,7 @@ function ValidateSuccess({
             <Button
               event="SendSuccessClose"
               type={undefined}
+              outline={false}
               onPress={onClose}
               mt={7}
             >

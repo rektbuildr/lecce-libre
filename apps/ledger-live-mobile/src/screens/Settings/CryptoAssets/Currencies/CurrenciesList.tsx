@@ -2,31 +2,36 @@ import React, { useCallback, useMemo } from "react";
 import { StyleSheet, FlatList } from "react-native";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
-import { CryptoCurrency } from "@ledgerhq/live-common/lib/types";
+import { CryptoCurrency } from "@ledgerhq/types-cryptoassets";
 import { Box, Text } from "@ledgerhq/native-ui";
 import { ScreenName } from "../../../../const";
 import { cryptoCurrenciesSelector } from "../../../../reducers/accounts";
 import SettingsRow from "../../../../components/SettingsRow";
 import CurrencyIcon from "../../../../components/CurrencyIcon";
 import { getCurrencyHasSettings } from "./CurrencySettings";
+import { State } from "../../../../reducers/types";
+import { SettingsNavigatorStackParamList } from "../../../../components/RootNavigator/types/SettingsNavigator";
+import { StackNavigatorProps } from "../../../../components/RootNavigator/types/helpers";
 
 type Props = {
-  navigation: any;
   currencies: CryptoCurrency[];
 };
 
-const mapStateToProps = createStructuredSelector({
+const mapStateToProps = createStructuredSelector<State, { currencies: CryptoCurrency[] }>({
   currencies: cryptoCurrenciesSelector,
 });
 
-function CurrenciesList({ navigation, currencies }: Props) {
+function CurrenciesList({
+  navigation,
+  currencies,
+}: Props & StackNavigatorProps<SettingsNavigatorStackParamList, ScreenName.CryptoAssetsSettings>) {
   const currenciesWithSetting = useMemo(
     () => currencies.filter(getCurrencyHasSettings),
     [currencies],
   );
 
   const renderItem = useCallback(
-    ({ item }: { item: any }) => (
+    ({ item }: { item: CryptoCurrency }) => (
       <SettingsRow
         event="CurrenciesList"
         eventProperties={{ currency: item.id }}
@@ -34,12 +39,7 @@ function CurrenciesList({ navigation, currencies }: Props) {
           <>
             {item.name}
             {"  "}
-            <Text
-              variant={"body"}
-              fontWeight={"medium"}
-              color={"neutral.c70"}
-              ml={3}
-            >
+            <Text variant={"body"} fontWeight={"medium"} color={"neutral.c70"} ml={3}>
               {item.ticker}
             </Text>
           </>

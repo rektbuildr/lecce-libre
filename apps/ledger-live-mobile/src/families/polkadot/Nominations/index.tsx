@@ -6,23 +6,25 @@ import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { Polkadot as PolkadotIdenticon } from "@polkadot/reactnative-identicon/icons";
 
-import { getMainAccount } from "@ledgerhq/live-common/lib/account";
-import {
-  getDefaultExplorerView,
-  getAddressExplorer,
-} from "@ledgerhq/live-common/lib/explorers";
-import { Account } from "@ledgerhq/live-common/lib/types";
+import { getMainAccount } from "@ledgerhq/live-common/account/index";
+import { getDefaultExplorerView, getAddressExplorer } from "@ledgerhq/live-common/explorers";
 import {
   canNominate,
   isStash,
   hasExternalController,
   hasExternalStash,
   hasPendingOperationType,
-} from "@ledgerhq/live-common/lib/families/polkadot/logic";
-import { usePolkadotPreloadData } from "@ledgerhq/live-common/lib/families/polkadot/react";
-import type { PolkadotNomination } from "@ledgerhq/live-common/lib/families/polkadot/types";
+} from "@ledgerhq/live-common/families/polkadot/logic";
+import { usePolkadotPreloadData } from "@ledgerhq/live-common/families/polkadot/react";
+import type {
+  PolkadotAccount,
+  PolkadotNomination,
+  PolkadotValidator,
+} from "@ledgerhq/live-common/families/polkadot/types";
 
-import { Flex } from "@ledgerhq/native-ui";
+import { Box, Flex } from "@ledgerhq/native-ui";
+import { AccountLike } from "@ledgerhq/types-live";
+import { StackNavigationProp } from "@react-navigation/stack";
 import { ScreenName, NavigatorName } from "../../../const";
 import AccountDelegationInfo from "../../../components/AccountDelegationInfo";
 import { urls } from "../../../config/urls";
@@ -44,12 +46,18 @@ import EarnLight from "../../../images/illustration/Light/_003.png";
 import EarnDark from "../../../images/illustration/Dark/_003.png";
 
 type Props = {
-  account: Account,
+  account: AccountLike;
 };
 
-export default function Nominations({ account }: Props) {
+type Section = {
+  nomination: PolkadotNomination;
+  validator: PolkadotValidator | undefined;
+};
+
+export default function Nominations(props: Props) {
+  const { account } = props as { account: PolkadotAccount };
   const { t } = useTranslation();
-  const mainAccount = getMainAccount(account);
+  const mainAccount = getMainAccount(account) as PolkadotAccount;
 
   const navigation = useNavigation();
 
@@ -57,17 +65,14 @@ export default function Nominations({ account }: Props) {
 
   const { polkadotResources } = mainAccount;
 
-  const { lockedBalance, unlockedBalance, nominations, unlockings } =
-    polkadotResources || {};
+  const { lockedBalance, unlockedBalance, nominations, unlockings } = polkadotResources || {};
 
   const [nomination, setNomination] = useState<PolkadotNomination>();
 
   const mappedNominations = useMemo(() => {
     const all =
       nominations?.map(nomination => {
-        const validator = validators.find(
-          v => v.address === nomination.address,
-        );
+        const validator = validators.find(v => v.address === nomination.address);
         return {
           nomination,
           validator,
@@ -83,7 +88,10 @@ export default function Nominations({ account }: Props) {
         }
         return sections;
       },
-      { uncollapsed: [], collapsed: [] },
+      {
+        uncollapsed: [] as Section[],
+        collapsed: [] as Section[],
+      },
     );
   }, [nominations, validators]);
 
@@ -101,9 +109,7 @@ export default function Nominations({ account }: Props) {
   const mappedUnlockings = useMemo(() => {
     const now = new Date(Date.now());
     const withoutUnlocked =
-      unlockings?.filter(({ completionDate }) =>
-        isAfter(completionDate, now),
-      ) ?? [];
+      unlockings?.filter(({ completionDate }) => isAfter(completionDate, now)) ?? [];
 
     const [firstRow, ...otherRows] =
       unlockedBalance && unlockedBalance.gt(0)
@@ -119,12 +125,13 @@ export default function Nominations({ account }: Props) {
       screen,
       params,
     }: {
-      route: typeof NavigatorName | typeof ScreenName,
-      screen?: typeof ScreenName,
-      params?: { [key: string]: any },
+      route: string;
+      screen?: string;
+      params?: { [key: string]: unknown };
     }) => {
-      setNomination();
-      navigation.navigate(route, {
+      setNomination(undefined);
+      // This is complicated (even impossible?) to type properly…
+      (navigation as StackNavigationProp<{ [key: string]: object }>).navigate(route, {
         screen,
         params: { ...params, accountId: account.id },
       });
@@ -179,15 +186,12 @@ export default function Nominations({ account }: Props) {
   }, [onNavigate]);
 
   const onCloseDrawer = useCallback(() => {
-    setNomination();
+    setNomination(undefined);
   }, []);
 
   const onOpenExplorer = useCallback(
-    (address: string) => {
-      const url = getAddressExplorer(
-        getDefaultExplorerView(account.currency),
-        address,
-      );
+    (address?: string | null) => {
+      const url = address && getAddressExplorer(getDefaultExplorerView(account.currency), address);
       if (url) Linking.openURL(url);
     },
     [account.currency],
@@ -207,25 +211,20 @@ export default function Nominations({ account }: Props) {
     [mappedNomination, t, account, onOpenExplorer],
   );
 
-  const electionOpen =
-    staking?.electionClosed !== undefined ? !staking?.electionClosed : false;
+  const electionOpen = staking?.electionClosed !== undefined ? !staking?.electionClosed : false;
 
   const hasBondedBalance = lockedBalance && lockedBalance.gt(0);
   const hasUnlockedBalance = unlockedBalance && unlockedBalance.gt(0);
   const hasNominations = nominations && nominations?.length > 0;
   const hasUnlockings = unlockings && unlockings.length > 0;
   const hasPendingBondOperation = hasPendingOperationType(account, "BOND");
-  const hasPendingWithdrawUnbondedOperation = hasPendingOperationType(
-    account,
-    "WITHDRAW_UNBONDED",
-  );
+  const hasPendingWithdrawUnbondedOperation = hasPendingOperationType(account, "WITHDRAW_UNBONDED");
 
   const nominateEnabled = !electionOpen && canNominate(account);
   const rebondEnabled = !electionOpen && !!hasUnlockings;
   const withdrawEnabled =
     !electionOpen && hasUnlockedBalance && !hasPendingWithdrawUnbondedOperation;
-  const earnRewardsEnabled =
-    !electionOpen && !hasBondedBalance && !hasPendingBondOperation;
+  const earnRewardsEnabled = !electionOpen && !hasBondedBalance && !hasPendingBondOperation;
 
   const renderNomination = useCallback(
     ({ nomination, validator }, i, isLast) => (
@@ -321,33 +320,26 @@ export default function Nominations({ account }: Props) {
             <PolkadotIdenticon
               address={mappedNomination?.nomination.address}
               size={size}
+              // publicKey is not really needed, ts is wrong here but well…
+              publicKey=""
             />
           ) : null
         }
         data={drawerInfo}
         isNominated
       />
-      {electionOpen && (
-        <Alert type="warning">
-          {t("polkadot.info.electionOpen.description")}
-        </Alert>
-      )}
+      {electionOpen && <Alert type="warning">{t("polkadot.info.electionOpen.description")}</Alert>}
       {!hasBondedBalance && hasPendingBondOperation && (
-        <Alert type="warning">
-          {t("polkadot.nomination.hasPendingBondOperation")}
-        </Alert>
+        <Alert type="warning">{t("polkadot.nomination.hasPendingBondOperation")}</Alert>
       )}
       {!hasNominations ? (
         <AccountDelegationInfo
           title={t("polkadot.nomination.emptyState.title")}
           image={
-          <Flex alignItems="center" mb={6}>
-            <Illustration
-              lightSource={EarnLight}
-              darkSource={EarnDark}
-              size={150}
-            />
-          </Flex>}
+            <Flex alignItems="center" mb={6}>
+              <Illustration lightSource={EarnLight} darkSource={EarnDark} size={150} />
+            </Flex>
+          }
           description={t("polkadot.nomination.emptyState.description", {
             name: account.currency.name,
           })}
@@ -362,7 +354,7 @@ export default function Nominations({ account }: Props) {
           }
         />
       ) : (
-        <View style={styles.wrapper}>
+        <Box>
           <AccountSectionLabel
             name={t("polkadot.nomination.header")}
             RightComponent={
@@ -385,16 +377,14 @@ export default function Nominations({ account }: Props) {
               </Alert>
             )}
           </CollapsibleList>
-        </View>
+        </Box>
       )}
 
       {hasUnlockings ? (
         <View style={styles.wrapper}>
           <AccountSectionLabel
             name={t("polkadot.unlockings.header")}
-            RightComponent={
-              <RebondAction disabled={!rebondEnabled} onPress={onRebond} />
-            }
+            RightComponent={<RebondAction disabled={!rebondEnabled} onPress={onRebond} />}
           />
           <CollapsibleList
             uncollapsedItems={mappedUnlockings.uncollapsed}
@@ -410,7 +400,7 @@ export default function Nominations({ account }: Props) {
 
 const styles = StyleSheet.create({
   root: {
-    margin: 16,
+    marginHorizontal: 16,
   },
   illustration: { alignSelf: "center", marginBottom: 16 },
   wrapper: {

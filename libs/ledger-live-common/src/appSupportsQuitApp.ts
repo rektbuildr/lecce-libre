@@ -145,7 +145,6 @@ export const minAppVersion = {
   Webchain: "1.3.7",
   Woleet: "1.2.4",
   XRP: "2.0.1",
-  XSN: "1.5.0",
   ZClassic: "1.5.0",
   Zcash: "1.5.0",
   Zcoin: "1.5.0",
@@ -153,5 +152,4 @@ export const minAppVersion = {
   kUSD: "1.3.7",
 };
 export default ({ name, version }: AppAndVersion) =>
-  !(name in minAppVersion) ||
-  semver.gte(semver.coerce(version) || "", minAppVersion[name]);
+  !(name in minAppVersion) || semver.gte(semver.coerce(version) || "", minAppVersion[name]);

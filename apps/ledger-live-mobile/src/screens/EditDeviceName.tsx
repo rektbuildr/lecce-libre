@@ -1,147 +1,187 @@
-// @flow
-
-import React, { memo, useCallback, useState } from "react";
-import SafeAreaView from "react-native-safe-area-view";
-import { Trans } from "react-i18next";
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Trans, useTranslation } from "react-i18next";
 import { connect } from "react-redux";
+import { TextInput as NativeTextInput } from "react-native";
 import { DeviceNameInvalid } from "@ledgerhq/errors";
-import { Text, Icons, Flex } from "@ledgerhq/native-ui";
+import { useToasts } from "@ledgerhq/live-common/notifications/ToastProvider/index";
+import { Button, Text, Icons, Flex } from "@ledgerhq/native-ui";
+import { createAction } from "@ledgerhq/live-common/hw/actions/renameDevice";
+import renameDevice from "@ledgerhq/live-common/hw/renameDevice";
+import getDeviceNameMaxLength from "@ledgerhq/live-common/hw/getDeviceNameMaxLength";
 import { TrackScreen } from "../analytics";
-import Button from "../components/Button";
+import KeyboardBackgroundDismiss from "../components/KeyboardBackgroundDismiss";
 import TextInput from "../components/TextInput";
 import TranslatedError from "../components/TranslatedError";
-import { editDeviceName, connectingStep } from "../components/DeviceJob/steps";
-import DeviceJob from "../components/DeviceJob";
+import DeviceActionModal from "../components/DeviceActionModal";
 import KeyboardView from "../components/KeyboardView";
 import { saveBleDeviceName } from "../actions/ble";
+import { RootComposite, StackNavigatorProps } from "../components/RootNavigator/types/helpers";
+import { BaseNavigatorStackParamList } from "../components/RootNavigator/types/BaseNavigator";
+import { ScreenName } from "../const";
+import { BaseOnboardingNavigatorParamList } from "../components/RootNavigator/types/BaseOnboardingNavigator";
+import { BleSaveDeviceNamePayload } from "../actions/types";
 
-const MAX_DEVICE_NAME = 20;
+const action = createAction(renameDevice);
 
-function FooterError({ error }: { error: Error }) {
-  return (
-    <Text variant="body" color="error.c100" numberOfLines={2}>
-      <Icons.WarningMedium color="error.c100" size={16} />
-      <TranslatedError error={error} />
-    </Text>
-  );
-}
 const mapDispatchToProps = {
   saveBleDeviceName,
 };
 
+type NavigationProps = RootComposite<
+  | StackNavigatorProps<BaseNavigatorStackParamList, ScreenName.EditDeviceName>
+  | StackNavigatorProps<BaseOnboardingNavigatorParamList, ScreenName.EditDeviceName>
+>;
 type Props = {
-  navigation: any;
-  route: { params: RouteParams };
-  saveBleDeviceName: (d: string, v: string) => void;
-};
-
-type RouteParams = {
-  deviceId: string;
-  deviceName: string;
-};
+  saveBleDeviceName: ({ deviceId, name }: BleSaveDeviceNamePayload) => void;
+} & NavigationProps;
 
 function EditDeviceName({ navigation, route, saveBleDeviceName }: Props) {
-  const [name, setName] = useState<string>(route.params?.deviceName);
-  const [error, setError] = useState(null);
-  const [connecting, setConnecting] = useState(null);
+  const originalName = route.params?.deviceName;
+  const device = route.params?.device;
+  const deviceInfo = route.params?.deviceInfo;
 
-  const validate = useCallback(
-    n => {
-      const invalidCharacters = n.replace(/[\x00-\x7F]*/g, "");
-      setError(
-        invalidCharacters
-          ? new DeviceNameInvalid("", { invalidCharacters })
-          : undefined,
-      );
-    },
-    [setError],
+  const textInputRef = useRef<NativeTextInput | null>(null);
+
+  const { t } = useTranslation();
+  const { pushToast } = useToasts();
+
+  const maxDeviceName = useMemo(
+    () =>
+      getDeviceNameMaxLength({
+        deviceModelId: device.modelId,
+        version: deviceInfo.version,
+      }),
+    [device.modelId, deviceInfo.version],
   );
 
-  const onChangeText = useCallback(
-    (name: string) => {
-      setName(name);
-      validate(name);
-    },
-    [validate],
-  );
+  const [name, setName] = useState<string>(originalName.slice(0, maxDeviceName));
+  const [completed, setCompleted] = useState<boolean>(false);
+  const [error, setError] = useState<Error | undefined | null>(null);
+  const [running, setRunning] = useState(false);
+  const request = useMemo(() => ({ name }), [name]);
 
-  const onInputCleared = useCallback(() => {
-    setName("");
+  const onChangeText = useCallback((name: string) => {
+    // Nb mobile devices tend to use U+2018 for single quote, not supported
+    // by our firmware, replacing it a U+0027. Same for U+201C,U+201D,...
+    // TODO when we offer device rename on LLD, move this logic to common.
+    const sanitizedName = name.replace(/[’‘]/g, "'").replace(/[“”]/g, '"');
+    // eslint-disable-next-line no-control-regex
+    const invalidCharacters = sanitizedName.replace(/[\x00-\x7F]*/g, "");
+    const maybeError = invalidCharacters
+      ? new DeviceNameInvalid("", { invalidCharacters })
+      : undefined;
+
+    setError(maybeError);
+    setName(sanitizedName);
   }, []);
 
   const onSubmit = useCallback(async () => {
-    if (route.params?.deviceName !== name) {
-      setTimeout(() => {
-        setName(name.trim());
-        setConnecting({
-          deviceId: route.params?.deviceId,
-          deviceName: name.trim(),
-          modelId: "nanoX",
-          wired: false,
-        });
-      }, 800);
+    setRunning(true);
+    if (originalName !== name) {
+      setName(name.trim());
     } else {
       navigation.goBack();
     }
-  }, [name, navigation, route.params?.deviceId, route.params?.deviceName]);
+  }, [name, navigation, originalName]);
 
-  const onCancel = useCallback(() => {
-    setConnecting(null);
-  }, []);
+  const onSuccess = useCallback(() => {
+    setCompleted(true);
+    setRunning(false);
+    saveBleDeviceName({ deviceId: device.deviceId, name });
 
-  const onDone = useCallback(() => {
-    saveBleDeviceName(route.params?.deviceId, name);
+    pushToast({
+      id: "rename-device-success",
+      type: "success",
+      icon: "success",
+      title: t("EditDeviceName.success", { deviceName: name }),
+    });
+
     navigation.goBack();
-  }, [saveBleDeviceName, route.params?.deviceId, name, navigation]);
+  }, [device.deviceId, name, navigation, pushToast, saveBleDeviceName, t]);
 
-  const remainingCount = MAX_DEVICE_NAME - name.length;
+  const onClose = useCallback(() => {
+    if (completed) {
+      navigation.goBack();
+    } else {
+      setRunning(false);
+    }
+  }, [completed, navigation]);
+
+  const remainingCount = maxDeviceName - name.length;
+  const cleanName = name.trim();
+  const disabled = !cleanName || !!error || running || cleanName === originalName;
+
+  /**
+   * Blurring the input when "running" (when the device action modal is mounted)
+   * allows to avoid a glitch in case of success: on iOS, if the input was
+   * focused when the modal got initially mounted, on the unmount of the modal
+   * it would refocus the input, so the keyboard would reappear. In this
+   * specific case, on success of the renaming action, the input gets unmounted
+   * as well (because we navigate away from this screen), resulting in a glitch
+   * where the keyboard appears and then quickly disappears.
+   */
+  useEffect(() => {
+    let handle: number;
+    if (running) textInputRef.current?.blur();
+    else {
+      handle = requestAnimationFrame(() => textInputRef.current?.focus());
+    }
+    return () => {
+      handle && cancelAnimationFrame(handle);
+    };
+  }, [running]);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <KeyboardView style={{ flex: 1 }}>
-        <TrackScreen category="EditDeviceName" />
-        <Flex flex={1} p={6} bg="background.main">
-          <TextInput
-            value={name}
-            onChangeText={onChangeText}
-            onInputCleared={onInputCleared}
-            maxLength={MAX_DEVICE_NAME}
-            autoFocus
-            selectTextOnFocus
-            blurOnSubmit={false}
-            clearButtonMode="always"
-            placeholder="Satoshi Nakamoto"
-          />
-          <Text variant="small" color="neutral.c80">
-            <Trans
-              i18nKey="EditDeviceName.charactersRemaining"
-              values={{ remainingCount }}
+    <KeyboardBackgroundDismiss>
+      <SafeAreaView style={{ flex: 1 }}>
+        <KeyboardView style={{ flex: 1 }}>
+          <TrackScreen category="EditDeviceName" />
+          <Flex flex={1} p={6} bg="background.main">
+            <TextInput
+              ref={textInputRef}
+              value={name}
+              onChangeText={onChangeText}
+              maxLength={maxDeviceName}
+              selectTextOnFocus
+              blurOnSubmit={true}
+              clearButtonMode="always"
+              placeholder="Satoshi Nakamoto"
             />
-          </Text>
-          <Flex flex={1} />
 
-          {error ? <FooterError error={error} /> : null}
-          <Button
-            event="EditDeviceNameSubmit"
-            type="main"
-            title={<Trans i18nKey="EditDeviceName.action" />}
-            onPress={onSubmit}
-            disabled={!name.trim() || !!error}
-          />
-        </Flex>
+            {error ? (
+              <Flex alignItems={"center"} flexDirection={"row"} mt={1}>
+                <Icons.WarningMedium color="error.c50" size={16} />
+                <Text variant="small" color="error.c50" ml={2} numberOfLines={2}>
+                  <TranslatedError error={error} />
+                </Text>
+              </Flex>
+            ) : (
+              <Text variant="small" color="neutral.c80" mt={1}>
+                <Trans i18nKey="EditDeviceName.charactersRemaining" values={{ remainingCount }} />
+              </Text>
+            )}
 
-        <DeviceJob
-          deviceModelId="nanoX" // NB: EditDeviceName feature is only available on NanoX over BLE.
-          meta={connecting}
-          onCancel={onCancel}
-          onDone={onDone}
-          steps={[connectingStep, editDeviceName(name)]}
-        />
-      </KeyboardView>
-    </SafeAreaView>
+            <Button type="main" onPress={onSubmit} mt={5} disabled={disabled}>
+              <Trans i18nKey="EditDeviceName.action" />
+            </Button>
+          </Flex>
+
+          {running ? (
+            <DeviceActionModal
+              device={device}
+              request={request}
+              action={action}
+              onClose={onClose}
+              onResult={onSuccess}
+            />
+          ) : null}
+        </KeyboardView>
+      </SafeAreaView>
+    </KeyboardBackgroundDismiss>
   );
 }
 
 const m = connect(null, mapDispatchToProps)(EditDeviceName);
 
-export default memo<Props>(m);
+export default memo<NavigationProps>(m);

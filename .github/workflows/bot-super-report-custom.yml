@@ -1,0 +1,32 @@
+name: "Bot Super Report (custom)"
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: the branch to filter (if any)
+      environment:
+        description: the environment to filter (if any)
+      days:
+        description: number of days to take
+      slackChannel:
+        description: channel to use for the report
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup the toolchain
+        uses: ./tools/actions/composites/setup-toolchain
+      - name: Install dependencies
+        run: pnpm i --filter='!./apps/**'
+
+      - name: generate super report
+        uses: ./tools/actions/generate-bot-super-report
+        with:
+          branch: ${{inputs.branch}}
+          environment: ${{inputs.environment}}
+          days: ${{inputs.days}}
+          slackChannel: ${{inputs.slackChannel}}
+          githubToken: ${{github.token}}
+          slackApiToken: ${{secrets.SLACK_API_TOKEN}}

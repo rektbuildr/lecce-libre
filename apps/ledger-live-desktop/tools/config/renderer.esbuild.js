@@ -6,11 +6,12 @@ const {
   electronRendererExternals,
   nodeExternals,
 } = require("esbuild-utils");
+const { DOTENV_FILE } = require("../utils");
 const common = require("./common.esbuild");
 
 module.exports = {
   ...common,
-  entryPoints: ["src/renderer/index.js"],
+  entryPoints: ["src/renderer/index.ts"],
   entryNames: "renderer.bundle",
   platform: "browser",
   target: ["chrome91"],
@@ -18,8 +19,8 @@ module.exports = {
   mainFields: ["browser", "module", "main"],
   external: [...nodeExternals, ...electronRendererExternals],
   resolveExtensions: process.env.V3
-    ? [".v3.tsx", ".v3.ts", ".v3.jsx", ".v3.js", ".tsx", ".ts", ".jsx", ".js", ".json"]
-    : [".jsx", ".js", ".v3.tsx", ".v3.ts", ".v3.jsx", ".v3.js", ".tsx", ".ts", ".json"],
+    ? [".v3.tsx", ".v3.ts", ".tsx", ".ts", ".js", ".jsx", ".json"]
+    : [".tsx", ".ts", ".v3.tsx", ".v3.ts", ".js", ".jsx", ".json"],
   plugins: [
     ...common.plugins,
     AliasPlugin({
@@ -34,22 +35,14 @@ module.exports = {
     HtmlPlugin({
       files: [
         {
-          entryPoints: ["src/renderer/index.js", "renderer.bundle.css"],
+          entryPoints: ["src/renderer/index.ts", "renderer.bundle.css"],
           htmlTemplate: "src/renderer/index.html",
           filename: "index.html",
           title: "Ledger Live",
         },
       ],
     }),
-    DotEnvPlugin(
-      process.env.TESTING
-        ? ".env.testing"
-        : process.env.STAGING
-        ? ".env.staging"
-        : process.env.NODE_ENV === "production"
-        ? ".env.production"
-        : ".env",
-    ),
+    DotEnvPlugin(DOTENV_FILE),
     // {
     //   name: "Side Effects",
     //   setup(build) {

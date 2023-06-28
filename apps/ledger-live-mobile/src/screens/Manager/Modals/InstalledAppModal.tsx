@@ -2,22 +2,32 @@ import React, { useState, useCallback, useMemo } from "react";
 import { Linking } from "react-native";
 import { Trans } from "react-i18next";
 
-import { State } from "@ledgerhq/live-common/lib/apps";
-import { isLiveSupportedApp } from "@ledgerhq/live-common/lib/apps/logic";
+import { State } from "@ledgerhq/live-common/apps/index";
+import { isLiveSupportedApp } from "@ledgerhq/live-common/apps/logic";
 
 import styled from "styled-components/native";
 import { Flex, Text, Button } from "@ledgerhq/native-ui";
+import { App } from "@ledgerhq/types-live";
 import { urls } from "../../../config/urls";
 
-import { NavigatorName } from "../../../const";
+import { NavigatorName, ScreenName } from "../../../const";
 
 import AppIcon from "../AppsList/AppIcon";
 
-import BottomModal from "../../../components/BottomModal";
+import QueuedDrawer from "../../../components/QueuedDrawer";
+import type {
+  BaseComposite,
+  StackNavigatorProps,
+} from "../../../components/RootNavigator/types/helpers";
+import { ManagerNavigatorStackParamList } from "../../../components/RootNavigator/types/ManagerNavigator";
+
+type NavigationProps = BaseComposite<
+  StackNavigatorProps<ManagerNavigatorStackParamList, ScreenName.ManagerMain>
+>;
 
 type Props = {
   state: State;
-  navigation: any;
+  navigation: NavigationProps["navigation"];
   disable: boolean;
 };
 
@@ -41,23 +51,12 @@ const ButtonsContainer = styled(Flex).attrs({
 
 const InstallSuccessBar = ({ state, navigation, disable }: Props) => {
   const [hasBeenShown, setHasBeenShown] = useState(disable);
-  const {
-    installQueue,
-    uninstallQueue,
-    recentlyInstalledApps,
-    appByName,
-    installed,
-  } = state;
+  const { installQueue, uninstallQueue, recentlyInstalledApps, appByName, installed } = state;
 
   const onAddAccount = useCallback(() => {
     navigation.navigate(NavigatorName.AddAccounts);
     setHasBeenShown(true);
   }, [navigation]);
-
-  const onSupportLink = useCallback(() => {
-    Linking.openURL(urls.appSupport);
-    setHasBeenShown(true);
-  }, []);
 
   const successInstalls = useMemo(
     () =>
@@ -81,29 +80,29 @@ const InstallSuccessBar = ({ state, navigation, disable }: Props) => {
     [successInstalls],
   );
 
-  const app = useMemo(
-    () =>
-      (successInstalls && successInstalls.length > 0 && successInstalls[0]) ||
-      {},
+  const app: App | undefined = useMemo(
+    () => (successInstalls && successInstalls.length > 0 && successInstalls[0]) || undefined,
     [successInstalls],
   );
+
+  const onSupportLink = useCallback(() => {
+    Linking.openURL(app?.supportURL || urls.appSupport);
+    setHasBeenShown(true);
+  }, [app]);
 
   const onClose = useCallback(() => setHasBeenShown(true), []);
 
   return (
-    <BottomModal isOpened={successInstalls.length >= 1} onClose={onClose}>
+    <QueuedDrawer isRequestingToBeOpened={successInstalls.length >= 1} onClose={onClose}>
       <Flex alignItems="center">
-        <AppIcon app={app} size={48} radius={14} />
+        {app && <AppIcon app={app} size={48} radius={14} />}
         <TextContainer>
           <ModalText color="neutral.c100" fontWeight="medium" variant="h2">
             <Trans i18nKey="AppAction.install.done.title" />
           </ModalText>
           <ModalText color="neutral.c70" fontWeight="medium" variant="body">
             {hasLiveSupported ? (
-              <Trans
-                i18nKey="AppAction.install.done.description"
-                values={{ app: app.name }}
-              />
+              <Trans i18nKey="AppAction.install.done.description" values={{ app: app?.name }} />
             ) : (
               <Trans i18nKey="manager.installSuccess.notSupported" />
             )}
@@ -121,7 +120,7 @@ const InstallSuccessBar = ({ state, navigation, disable }: Props) => {
           )}
         </ButtonsContainer>
       </Flex>
-    </BottomModal>
+    </QueuedDrawer>
   );
 };
 

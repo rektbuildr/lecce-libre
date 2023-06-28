@@ -1,12 +1,11 @@
-import type { Account } from "../../types";
-import type { BitcoinOutput, BitcoinInput } from "./types";
+import type { BitcoinOutput, BitcoinInput, BitcoinAccount } from "./types";
 import { formatCurrencyUnit } from "../../currencies";
 import { getEnv } from "../../env";
 import { perCoinLogic } from "./logic";
 
 const sortUTXO = (a, b) => b.value.minus(a.value).toNumber();
 
-function injectGetAddressParams(account: Account) {
+function injectGetAddressParams(account: BitcoinAccount): any {
   const perCoin = perCoinLogic[account.currency.id];
 
   if (perCoin && perCoin.injectGetAddressParams) {
@@ -14,17 +13,15 @@ function injectGetAddressParams(account: Account) {
   }
 }
 
-export function formatInput(account: Account, input: BitcoinInput): string {
+export function formatInput(account: BitcoinAccount, input: BitcoinInput): string {
   return `${(input.value
     ? formatCurrencyUnit(account.unit, input.value, {
         showCode: false,
       })
     : ""
-  ).padEnd(12)} ${input.address || ""} ${input.previousTxHash || ""}@${
-    input.previousOutputIndex
-  }`;
+  ).padEnd(12)} ${input.address || ""} ${input.previousTxHash || ""}@${input.previousOutputIndex}`;
 }
-export function formatOutput(account: Account, o: BitcoinOutput): string {
+export function formatOutput(account: BitcoinAccount, o: BitcoinOutput): string {
   return [
     formatCurrencyUnit(account.unit, o.value, {
       showCode: false,
@@ -33,15 +30,13 @@ export function formatOutput(account: Account, o: BitcoinOutput): string {
     o.isChange ? "(change)" : "",
     o.rbf ? "rbf" : "",
     o.hash,
-    `@${o.outputIndex} (${
-      o.blockHeight ? account.blockHeight - o.blockHeight : 0
-    })`,
+    `@${o.outputIndex} (${o.blockHeight ? account.blockHeight - o.blockHeight : 0})`,
   ]
     .filter(Boolean)
     .join(" ");
 }
 
-function formatAccountSpecifics(account: Account): string {
+function formatAccountSpecifics(account: BitcoinAccount): string {
   if (!account.bitcoinResources) return "";
   const { utxos } = account.bitcoinResources;
   let str = `\n${utxos.length} UTXOs`;
@@ -51,7 +46,7 @@ function formatAccountSpecifics(account: Account): string {
     .slice(0)
     .sort(sortUTXO)
     .slice(0, displayAll ? utxos.length : n)
-    .map((utxo) => `\n${formatOutput(account, utxo)}`)
+    .map(utxo => `\n${formatOutput(account, utxo)}`)
     .join("");
 
   if (!displayAll) {

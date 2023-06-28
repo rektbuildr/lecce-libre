@@ -1,64 +1,66 @@
 import type { DeviceAction } from "../../bot/types";
 import type { Transaction } from "./types";
 import { formatCurrencyUnit } from "../../currencies";
-import { deviceActionFlow } from "../../bot/specs";
+import { deviceActionFlow, SpeculosButton } from "../../bot/specs";
 
-const acceptTransaction: DeviceAction<Transaction, any> = deviceActionFlow({
+export const acceptTransaction: DeviceAction<Transaction, any> = deviceActionFlow({
   steps: [
     {
       title: "Transfer",
     },
     {
       title: "with Key #0?",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
     },
     {
       title: "Operator",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       expectedValue: ({ account }) => account.freshAddress,
     },
     {
       title: "Sender",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       expectedValue: ({ account }) => account.freshAddress,
     },
     {
       title: "Recipient",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       expectedValue: ({ transaction }) => transaction.recipient,
     },
     {
       title: "Amount",
-      button: "Rr",
-      expectedValue: ({ account: { unit }, transaction: { amount } }) =>
-        formatCurrencyUnit(unit, amount, {
-          disableRounding: true,
-          subMagnitude: 10,
-        }) + " hbar",
+      button: SpeculosButton.RIGHT,
+      expectedValue: ({ account: { unit }, status: { amount } }) => {
+        return (
+          formatCurrencyUnit(unit, amount, {
+            disableRounding: true,
+            showAllDigits: true,
+          }) + " hbar"
+        );
+      },
     },
     {
       title: "Fee",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       expectedValue: ({ account: { unit }, status: { estimatedFees } }) =>
         formatCurrencyUnit(unit, estimatedFees, {
           disableRounding: true,
-          subMagnitude: 10,
+          showAllDigits: true,
         }) + " hbar",
     },
     {
       title: "Max Fee",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       expectedValue: () => "1 hbar",
     },
     {
       title: "Memo",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
+      expectedValue: ({ transaction }) => transaction.memo as string,
     },
     {
       title: "Confirm",
-      button: "LRlr",
+      button: SpeculosButton.BOTH,
     },
   ],
 });
-
-export default { acceptTransaction };

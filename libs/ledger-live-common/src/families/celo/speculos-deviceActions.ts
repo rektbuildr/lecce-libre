@@ -1,50 +1,59 @@
 import type { DeviceAction } from "../../bot/types";
 import type { Transaction } from "./types";
-import { deviceActionFlow } from "../../bot/specs";
-import { formatCurrencyUnit } from "../../currencies";
-const acceptTransaction: DeviceAction<Transaction, any> = deviceActionFlow({
+import { deviceActionFlow, formatDeviceAmount, SpeculosButton } from "../../bot/specs";
+
+const typeWording = {
+  send: "Send",
+  lock: "Lock",
+  unlock: "Unlock",
+  withdraw: "Withdraw",
+  vote: "Vote",
+  revoke: "Revoke",
+  activate: "Activate",
+  register: "Create Account",
+};
+
+export const acceptTransaction: DeviceAction<Transaction, any> = deviceActionFlow({
   steps: [
     {
       title: "Review",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
     },
     {
       title: "Amount",
-      button: "Rr",
-      expectedValue: ({ account, status }) => {
-        const formattedValue =
-          "CELO " +
-          formatCurrencyUnit(account.unit, status.amount, {
-            disableRounding: true,
-          });
-
-        if (!formattedValue.includes(".")) {
-          // if the value is pure integer, in the app it will automatically add an .0
-          return formattedValue + ".0";
-        }
-
-        return formattedValue;
-      },
+      button: SpeculosButton.RIGHT,
+      expectedValue: ({ account, status }) =>
+        formatDeviceAmount(account.currency, status.amount, {
+          forceFloating: true,
+        }),
     },
     {
       title: "Address",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
       expectedValue: ({ transaction }) => transaction.recipient,
     },
     {
       title: "Max Fees",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
     },
     {
       title: "No Gateway Fee",
-      button: "Rr",
+      button: SpeculosButton.RIGHT,
+    },
+    {
+      title: "Validator",
+      button: SpeculosButton.RIGHT,
+    },
+    {
+      title: "Type",
+      button: SpeculosButton.RIGHT,
+      expectedValue: ({ transaction }) => {
+        return typeWording[transaction.mode];
+      },
     },
     {
       title: "Accept",
-      button: "LRlr",
+      button: SpeculosButton.BOTH,
     },
   ],
 });
-export default {
-  acceptTransaction,
-};

@@ -2,11 +2,13 @@ import { Page, Locator } from "@playwright/test";
 
 export class Layout {
   readonly page: Page;
+  readonly renderError: Locator;
   readonly totalBalance: Locator;
   readonly pageScroller: Locator;
   readonly loadingLogo: Locator;
   readonly logo: Locator;
-  readonly bigSpinner: Locator;
+  readonly loadingSpinner: Locator;
+  readonly bigLoadingSpinner: Locator;
   readonly inputError: Locator;
   readonly inputWarning: Locator;
   readonly drawerCollapseButton: Locator;
@@ -27,11 +29,14 @@ export class Layout {
   readonly bookmarkedAccountsList: Locator;
   readonly bookmarkedAccounts: Locator;
   readonly drawerSwapButton: Locator;
+  readonly drawerEarnButton: Locator;
   readonly appUpdateBanner: Locator;
   readonly discreetTooltip: Locator;
 
   constructor(page: Page) {
     this.page = page;
+
+    this.renderError = page.locator("data-test-id=render-error");
 
     // portfolio && accounts
     this.totalBalance = page.locator("data-test-id=total-balance");
@@ -47,6 +52,7 @@ export class Layout {
     this.drawerManagerButton = page.locator("data-test-id=drawer-manager-button");
     this.drawerBuycryptoButton = page.locator("data-test-id=drawer-exchange-button");
     this.drawerSwapButton = page.locator("data-test-id=drawer-swap-button");
+    this.drawerEarnButton = page.locator("data-test-id=drawer-earn-button");
     this.drawerExperimentalButton = page.locator("data-test-id=drawer-experimental-button");
     this.bookmarkedAccountsList = page.locator("data-test-id=drawer-bookmarked-accounts");
     this.bookmarkedAccounts = this.bookmarkedAccountsList.locator(".bookmarked-account-item");
@@ -57,7 +63,7 @@ export class Layout {
     this.topbarSettingsButton = page.locator("data-test-id=topbar-settings-button");
     this.topbarLockButton = page.locator("data-test-id=topbar-password-lock-button");
     this.topbarHelpButton = page.locator("data-test-id=topbar-help-button");
-    this.discreetTooltip = page.locator("#tippy-12"); //automatically generated tippy id but it's consistent
+    this.discreetTooltip = page.locator("#tippy-12"); // automatically generated tippy id but it's consistent
 
     // general
     this.pageScroller = page.locator("id=page-scroller");
@@ -65,7 +71,8 @@ export class Layout {
     this.logo = page.locator("data-test-id=logo");
     this.inputError = page.locator("id=input-error"); // no data-test-id because css style is applied
     this.inputWarning = page.locator("id=input-warning"); // no data-test-id because css style is applied
-    this.bigSpinner = page.locator("data-test-id=big-loading-spinner");
+    this.loadingSpinner = page.locator("data-test-id=loading-spinner");
+    this.bigLoadingSpinner = page.locator("data-test-id=-big-loading-spinner");
 
     // updater
     this.appUpdateBanner = page.locator("data-test-id=layout-app-update-banner");
@@ -99,6 +106,10 @@ export class Layout {
     await this.drawerSwapButton.click();
   }
 
+  async goToEarn() {
+    await this.drawerEarnButton.click();
+  }
+
   async toggleDiscreetMode() {
     await this.topbarDiscreetButton.click();
     await this.discreetTooltip.waitFor({ state: "hidden" }); // makes sure the tooltip has disappeared to prevent flakiness
@@ -120,8 +131,17 @@ export class Layout {
     await this.drawerReceiveButton.click();
   }
 
-  async waitForLoadingSpinnerToDisappear() {
-    await this.bigSpinner.waitFor({ state: "hidden" });
-    await this.bigSpinner.waitFor({ state: "detached" });
+  async waitForLoadingSpinner() {
+    await this.loadingSpinner.waitFor({ state: "visible" });
+    await this.loadingSpinner.waitFor({ state: "detached" });
+  }
+
+  async waitForBigLoadingSpinner() {
+    await this.bigLoadingSpinner.waitFor({ state: "visible" });
+    await this.bigLoadingSpinner.waitFor({ state: "detached" });
+  }
+
+  async waitForLoadingSpinnerToHaveDisappeared() {
+    await this.loadingSpinner.waitFor({ state: "detached" });
   }
 }

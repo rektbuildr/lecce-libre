@@ -27,12 +27,12 @@ package = load_json(json_path: "./package.json")
 
 def infer_android_version_code
   # Checks all relevant tracks in the play console and take the highest (plus one).
-  ["Nightly", "internal", "beta", "alpha", "production"].map { |track|
+  ["Nightly", "internal", "beta", "alpha", "production", "Recover Beta"].map { |track|
     google_play_track_version_codes(
       package_name: "com.ledger.live",
       track: track,
       json_key_data: ENV["ANDROID_SERVICE_KEY_CONTENT"]
-    )[0].to_i
+    ).map(&:to_i).max
   }.max + 1
 end
 
@@ -88,12 +88,48 @@ platform :ios do
     set_api_key
   end
 
+  desc "private: refresh profiles"
+  private_lane :refresh_ios_profiles do
+    match(
+      type: "development",
+      app_identifier: ["com.ledger.live", "com.ledger.live.dev", "com.ledger.live.ledgerconnect"],
+      force_for_new_devices: true,
+      git_url: ENV["GIT_REPO_URL"],
+      username: ENV["APPLE_ID"],
+      team_id: ENV["DEVELOPER_TEAM_ID"],
+      keychain_name: ENV["CI_KEYCHAIN_NAME"],
+      keychain_password: ENV["CI_KEYCHAIN_PASSWORD"],
+      git_basic_authorization: Base64.strict_encode64("#{ENV["GIT_REPO_USER"]}:#{ENV["GH_TOKEN"]}"),
+    )
+    match(
+      type: "adhoc",
+      app_identifier: ["com.ledger.live", "com.ledger.live.dev", "com.ledger.live.ledgerconnect"],
+      force_for_new_devices: true,
+      git_url: ENV["GIT_REPO_URL"],
+      username: ENV["APPLE_ID"],
+      team_id: ENV["DEVELOPER_TEAM_ID"],
+      keychain_name: ENV["CI_KEYCHAIN_NAME"],
+      keychain_password: ENV["CI_KEYCHAIN_PASSWORD"],
+      git_basic_authorization: Base64.strict_encode64("#{ENV["GIT_REPO_USER"]}:#{ENV["GH_TOKEN"]}"),
+    )
+    match(
+      type: "appstore",
+      app_identifier: "com.ledger.live",
+      git_url: ENV["GIT_REPO_URL"],
+      username: ENV["APPLE_ID"],
+      team_id: ENV["DEVELOPER_TEAM_ID"],
+      keychain_name: ENV["CI_KEYCHAIN_NAME"],
+      keychain_password: ENV["CI_KEYCHAIN_PASSWORD"],
+      git_basic_authorization: Base64.strict_encode64("#{ENV["GIT_REPO_USER"]}:#{ENV["GH_TOKEN"]}"),
+    )
+  end
+
   desc "buid for deployment (app-store or ad-hoc)"
   private_lane :build do |options|
     export_options_method = options[:local] ? "development" : (options[:adhoc] ? "ad-hoc" : "app-store")
     code_sign_identity = "iPhone Distribution"
     MY_APP_BUNDLE_ID = ENV["MY_APP_BUNDLE_ID"]
-    MY_APP_ID = (options[:adhoc] ? "#{ENV["SHORT_BUNDLE_ID"]}.local" : "#{ENV["APP_IDENTIFIER"]}")
+    MY_APP_ID = ENV["APP_IDENTIFIER"]
 
     MY_PROFILE = (options[:adhoc] ? "match AdHoc #{MY_APP_BUNDLE_ID}" : "match AppStore #{MY_APP_BUNDLE_ID}")
     MY_TEAM = ENV["DEVELOPER_TEAM_ID"]
@@ -114,6 +150,14 @@ platform :ios do
         build_number: build_number + 1,
         xcodeproj: XCODE_PROJECT
       })
+
+      if (options[:ci])
+        sh(
+          <<-SHELL
+          echo "IOS_BUILD_NUMBER=#{build_number+1}" >> $GITHUB_ENV
+          SHELL
+        )
+      end
     end
 
     if (options[:ci])
@@ -129,6 +173,19 @@ platform :ios do
         readonly: true,
         output_path: "./fastlane/certs"
       )
+      begin
+        sh(
+        <<~SHELL
+        curl -f -o /tmp/AppleWWDRCA.cer https://developer.apple.com/certificationauthority/AppleWWDRCA.cer
+        sudo security import /tmp/AppleWWDRCA.cer -k /Library/Keychains/System.keychain -T /usr/bin/codesign -T /usr/bin/security -T /usr/bin/productbuild
+
+        curl -f -o /tmp/AppleWWDRCAG3.cer https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer
+        sudo security import /tmp/AppleWWDRCAG3.cer -k /Library/Keychains/System.keychain -T /usr/bin/codesign -T /usr/bin/security -T /usr/bin/productbuild
+        SHELL
+        )
+      rescue
+        # Ignore
+      end
     else
       if (!options[:local])
         match(
@@ -208,13 +265,15 @@ platform :ios do
 
   desc "upload to Testflight (only to be run after an app-store build)"
   private_lane :upload do |options|
+    build_number = get_build_number(xcodeproj: "ios/ledgerlivemobile.xcodeproj")
+
     if (options[:nightly])
       begin
-        build_number = get_build_number(xcodeproj: "ios/ledgerlivemobile.xcodeproj")
         pilot(
           skip_submission: false,
           app_identifier: "com.ledger.live",
-          skip_waiting_for_build_processing: false,
+          skip_waiting_for_build_processing: true,
+          # wait_processing_timeout_duration: 1800, # 30mn
           ipa: IPA_DIRECTORY,
           changelog: "Nightly Build v#{package['version']} (#{build_number})",
           beta_app_review_info: {
@@ -224,17 +283,19 @@ platform :ios do
           }
         )
 
-        pilot(
-          distribute_only: true,
-          groups: ["External Nightly"],
-          distribute_external: true,
-          app_identifier: "com.ledger.live",
-          app_platform: 'ios',
-          app_version: package["version"],
-          build_number: get_build_number(xcodeproj: "ios/ledgerlivemobile.xcodeproj"),
-          notify_external_testers: true,
-          reject_build_waiting_for_review: !options[:ci]
-        )
+        # pilot(
+        #   distribute_only: true,
+        #   groups: ["External Nightly"],
+        #   distribute_external: true,
+        #   app_identifier: "com.ledger.live",
+        #   app_platform: 'ios',
+        #   app_version: package["version"],
+        #   build_number: get_build_number(xcodeproj: "ios/ledgerlivemobile.xcodeproj"),
+        #   notify_external_testers: true,
+        #   reject_build_waiting_for_review: !options[:ci],
+        #   skip_waiting_for_build_processing: false,
+        #   wait_processing_timeout_duration: 1800, # 30mn
+        # )
       rescue => e
         raise unless e.message.include? "Another build is in review"
 
@@ -245,7 +306,8 @@ platform :ios do
         skip_submission: true,
         app_identifier: "com.ledger.live",
         skip_waiting_for_build_processing: true,
-        ipa: IPA_DIRECTORY
+        ipa: IPA_DIRECTORY,
+        changelog: "v#{package['version']} (#{build_number})",
       )
     end
   end
@@ -265,7 +327,7 @@ platform :ios do
   lane :ci_testflight do |options|
     setup_ios_ci
     build(ci: true)
-    upload
+    upload(ci: true)
   end
 
   desc "ci: create nightly version"
@@ -285,6 +347,23 @@ platform :ios do
       adhoc: true,
       ci: true
     )
+  end
+
+  desc "ci: add a device to apple profiles"
+  lane :add_ios_device do
+    setup_ios_ci
+    register_devices(
+      devices: {
+        ENV["DEVICE_NAME"] => ENV["UDID"]
+      }
+    )
+    refresh_ios_profiles
+  end
+
+  desc "ci: sync apple profiles"
+  lane :sync_ios_profiles do
+    setup_ios_ci
+    refresh_ios_profiles
   end
 
   # ============================ END CI BUILD =============================
@@ -336,36 +415,56 @@ platform :android do
   desc "private: build the app apk for the specified build `type`. Defaults to `Release`"
   private_lane :build do |options|
     type = options.fetch(:type, "Release")
-    task = options[:apk] ? "assemble" : "bundle"
+    tasks =
+      options[:apk_and_aab] ? ["assemble", "bundle"] :
+      options[:apk] ? ["assemble"] :
+      ["bundle"]
+    tasks = tasks.map { |task| task + type }
+    if(options[:ci])
+      sh(
+          <<-SHELL
+          echo "ANDROID_BUILD_NUMBER=#{infer_android_version_code()}" >> $GITHUB_ENV
+          SHELL
+        )
+    end
 
     gradle(task: "clean", project_dir: 'android/')
-    gradle(
-      task: task,
-      build_type: type,
-      print_command: false,
-      properties: {
-        "android.injected.signing.store.file" => ENV["ANDROID_KEYSTORE_FILE"],
-        "android.injected.signing.store.password" => ENV["ANDROID_KEYSTORE_PASS"],
-        "android.injected.signing.key.alias" => ENV["ANDROID_KEY_ALIAS"],
-        "android.injected.signing.key.password" => ENV["ANDROID_KEY_PASS"],
-      },
-      project_dir: 'android/'
-    )
+    if (options[:local])
+      gradle(
+        tasks: tasks,
+        print_command: false,
+        project_dir: 'android/'
+      )
+    else
+      gradle(
+        tasks: tasks,
+        print_command: false,
+        properties: {
+          "android.injected.signing.store.file" => ENV["ANDROID_KEYSTORE_FILE"],
+          "android.injected.signing.store.password" => ENV["ANDROID_KEYSTORE_PASS"],
+          "android.injected.signing.key.alias" => ENV["ANDROID_KEY_ALIAS"],
+          "android.injected.signing.key.password" => ENV["ANDROID_KEY_PASS"],
+        },
+        project_dir: 'android/'
+      )
+    end
   end
 
   desc "upload to Play Store"
   private_lane :upload do |options|
     if(options[:ci])
       upload_to_play_store(
-        track: options[:nightly] ? 'Nightly' : "internal",
+        track: options[:nightly] ? 'Nightly' : options[:recover] ? 'Recover Beta' : "internal",
         package_name: 'com.ledger.live',
-        json_key_data: ENV["ANDROID_SERVICE_KEY_CONTENT"]
+        json_key_data: ENV["ANDROID_SERVICE_KEY_CONTENT"],
+        skip_upload_apk: true
       )
     else
       upload_to_play_store(
-        track: options[:nightly] ? 'Nightly' : "internal",
+        track: options[:nightly] ? 'Nightly' : options[:recover] ? 'Recover Beta' : "internal",
         package_name: "com.ledger.live",
         json_key: ENV["ANDROID_SERVICE_KEY_PATH"],
+        skip_upload_apk: true
       )
     end
   end
@@ -373,31 +472,68 @@ platform :android do
   # ============================= END PRIVATE =============================
   # ============================= LOCAL BUILD =============================
 
-  desc "build APK (can be uploaded to Play Store)"
-  lane :apk do
+  desc "build APK (local) (cannot be uploaded to Play Store)"
+  lane :apk_local do
     build(
-      type: "Release",
-      apk: true
+      type: "StagingRelease",
+      apk: true,
+      local: true
     )
   end
 
   # =========================== END LOCAL BUILD ===========================
   # ============================== CI BUILD ===============================
 
-  desc "build APK and send to Google Play Store"
+  desc "build APK (cannot be uploaded to Play Store)"
+  lane :apk do
+    build(
+      type: "StagingRelease",
+      apk: true
+    )
+  end
+
+  desc "build APKs + AAB and send the AAB to the Google Play Store "
   lane :ci_playstore do
     prepare_android_internal
-    build(type: "Release")
+    build(
+      type: "Release",
+      ci: true,
+      apk_and_aab: true
+    )
     upload(ci: true)
   end
 
   desc "build nightly version"
   lane :ci_nightly do
-    prepare_android_internal(nightly: true)
-    build(type: "Release")
+    prepare_android_internal
+    build(
+      type: "Release",
+      ci: true
+    )
     upload(
       nightly: true,
       ci: true
+    )
+  end
+
+  desc "build recover version"
+  lane :ci_recover do
+    prepare_android_internal
+    build(
+      type: "Release",
+      ci: true
+    )
+    upload(
+      recover: true,
+      ci: true
+    )
+  end
+
+  lane :ci_build do
+    build(
+      type: "Release",
+      ci: true,
+      apk: true
     )
   end
 

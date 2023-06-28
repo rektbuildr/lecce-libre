@@ -1,38 +1,40 @@
 import React, { useCallback, useMemo, useState, memo } from "react";
 
-import {
-  useNftMetadata,
-  getNftCapabilities,
-} from "@ledgerhq/live-common/lib/nft";
+import { useNftMetadata, getNftCapabilities } from "@ledgerhq/live-common/nft/index";
 import { BigNumber } from "bignumber.js";
 import { useNavigation, useTheme } from "@react-navigation/native";
-import { Account, ProtoNFT } from "@ledgerhq/live-common/lib/types";
-import { getAccountBridge } from "@ledgerhq/live-common/lib/bridge";
 import {
-  View,
-  StyleSheet,
-  FlatList,
-  SafeAreaView,
-  TouchableOpacity,
-  Platform,
-} from "react-native";
+  Account,
+  NFTCollectionMetadataResponse,
+  NFTMetadataResponse,
+  ProtoNFT,
+  TokenAccount,
+} from "@ledgerhq/types-live";
+import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
+import type { NFTResource } from "@ledgerhq/live-common/nft/NftMetadataProvider/types";
+import { View, StyleSheet, FlatList, TouchableOpacity, Platform } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import LoadingFooter from "../../components/LoadingFooter";
 import NftMedia from "../../components/Nft/NftMedia";
 import Skeleton from "../../components/Skeleton";
 import LText from "../../components/LText";
 import { ScreenName } from "../../const";
+import { StackNavigatorNavigation } from "../../components/RootNavigator/types/helpers";
+import { SendFundsNavigatorStackParamList } from "../../components/RootNavigator/types/SendFundsNavigator";
 
 const MAX_NFTS_FIRST_RENDER = 8;
 const NFTS_TO_ADD_ON_LIST_END_REACHED = 8;
 
-const NftRow = memo(({ account, nft }: { account: Account; nft: ProtoNFT }) => {
-  const navigation = useNavigation();
+const NftRow = memo(({ account, nft }: { account: Account | TokenAccount; nft: ProtoNFT }) => {
+  const { t } = useTranslation();
+  const navigation =
+    useNavigation<StackNavigatorNavigation<SendFundsNavigatorStackParamList, ScreenName.SendNft>>();
   const { colors } = useTheme();
-  const { status, metadata } = useNftMetadata(
-    nft?.contract,
-    nft?.tokenId,
-    nft?.currencyId,
-  );
+  const { status, metadata } = useNftMetadata(nft?.contract, nft?.tokenId, nft?.currencyId) as {
+    status: NFTResource["status"];
+    metadata?: NFTMetadataResponse["result"] & NFTCollectionMetadataResponse["result"];
+  };
 
   const nftCapabilities = useMemo(() => getNftCapabilities(nft), [nft]);
 
@@ -50,7 +52,7 @@ const NftRow = memo(({ account, nft }: { account: Account; nft: ProtoNFT }) => {
 
     navigation.navigate(ScreenName.SendSelectRecipient, {
       accountId: account.id,
-      parentId: account.parentId,
+      parentId: (account as TokenAccount).parentId,
       transaction,
     });
   }, [account, nft, nftCapabilities.hasQuantity, navigation]);
@@ -66,16 +68,8 @@ const NftRow = memo(({ account, nft }: { account: Account; nft: ProtoNFT }) => {
         />
       </View>
       <View style={styles.nftNameContainer}>
-        <Skeleton
-          style={[styles.nftNameSkeleton, styles.nftName]}
-          loading={status === "loading"}
-        >
-          <LText
-            style={styles.nftName}
-            semiBold
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
+        <Skeleton style={[styles.nftNameSkeleton]} loading={status === "loading"}>
+          <LText style={styles.nftName} semiBold numberOfLines={1} ellipsizeMode="tail">
             {metadata?.nftName || "-"}
           </LText>
         </Skeleton>
@@ -84,13 +78,13 @@ const NftRow = memo(({ account, nft }: { account: Account; nft: ProtoNFT }) => {
           ellipsizeMode="middle"
           style={[styles.tokenId, { color: colors.grey }]}
         >
-          ID {nft?.tokenId}
+          {t("common.patterns.id", { value: nft?.tokenId })}
         </LText>
       </View>
       {nft?.standard === "ERC1155" ? (
         <View style={styles.amount}>
           <LText numberOfLines={1} style={{ color: colors.grey }}>
-            x{nft?.amount?.toFixed()}
+            {t("common.patterns.times", { value: nft?.amount?.toFixed() })}
           </LText>
         </View>
       ) : null}
@@ -115,36 +109,26 @@ const SendFundsSelectNft = ({ route }: Props) => {
   const { colors } = useTheme();
 
   const [nftCount, setNftCount] = useState(MAX_NFTS_FIRST_RENDER);
-  const nftsSlice = useMemo(() => collection?.slice(0, nftCount) || [], [
-    collection,
-    nftCount,
-  ]);
+  const nftsSlice = useMemo(() => collection?.slice(0, nftCount) || [], [collection, nftCount]);
   const onEndReached = useCallback(
     () => setNftCount(nftCount + NFTS_TO_ADD_ON_LIST_END_REACHED),
     [nftCount, setNftCount],
   );
 
   const renderItem = useCallback(
-    ({ item }: { item: ProtoNFT }) => (
-      <NftRow account={account} collection={collection} nft={item} />
-    ),
-    [account, collection],
+    ({ item }: { item: ProtoNFT }) => <NftRow account={account} nft={item} />,
+    [account],
   );
 
   return (
-    <SafeAreaView
-      style={[styles.root, { backgroundColor: colors.background }]}
-      forceInset={{ bottom: "always" }}
-    >
+    <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
       <FlatList
         contentContainerStyle={styles.nfts}
         data={nftsSlice}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         onEndReached={onEndReached}
-        ListFooterComponent={
-          nftCount < collection?.length ? <LoadingFooter /> : null
-        }
+        ListFooterComponent={nftCount < collection?.length ? <LoadingFooter /> : null}
       />
     </SafeAreaView>
   );
@@ -175,6 +159,7 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         shadowOffset: {
           height: 2,
+          width: 0,
         },
       },
     }),

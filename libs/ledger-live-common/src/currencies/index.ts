@@ -1,13 +1,3 @@
-import { encodeURIScheme, decodeURIScheme } from "./CurrencyURIScheme";
-import type { Currency } from "../types";
-import { sanitizeValueString } from "./sanitizeValueString";
-import {
-  sortByMarketcap,
-  getMarketcapTickers,
-  useMarketcapTickers,
-  currenciesByMarketcap,
-  useCurrenciesByMarketcap,
-} from "./sortByMarketcap";
 import {
   listFiatCurrencies,
   findFiatCurrencyByTicker,
@@ -28,25 +18,35 @@ import {
   findTokenById,
   findTokenByAddress,
   hasTokenId,
-  getTokenById,
-  findCompoundToken,
   getAbandonSeedAddress,
+  getTokenById,
+  addTokens,
 } from "@ledgerhq/cryptoassets";
-export * from "./support";
-import { parseCurrencyUnit } from "./parseCurrencyUnit";
-import { chopCurrencyUnitDecimals } from "./chopCurrencyUnitDecimals";
 import {
+  encodeURIScheme,
+  decodeURIScheme,
+  sanitizeValueString,
+  chopCurrencyUnitDecimals,
   formatCurrencyUnit,
   formatCurrencyUnitFragment,
-} from "./formatCurrencyUnit";
-import { formatShort } from "./formatShort";
-import { valueFromUnit } from "./valueFromUnit";
-import { getCurrencyColor } from "./color";
+  formatShort,
+  valueFromUnit,
+  findCurrencyByTicker,
+} from "@ledgerhq/coin-framework/currencies/index";
+import { getCurrencyColor, ColorableCurrency } from "./color";
+import { parseCurrencyUnit } from "@ledgerhq/coin-framework/currencies/parseCurrencyUnit";
+import {
+  sortByMarketcap,
+  getMarketcapTickers,
+  useMarketcapTickers,
+  currenciesByMarketcap,
+  useCurrenciesByMarketcap,
+} from "./sortByMarketcap";
 
-const findCurrencyByTicker = (ticker: string): Currency | null | undefined =>
-  findCryptoCurrencyByTicker(ticker) ||
-  findFiatCurrencyByTicker(ticker) ||
-  findTokenByTicker(ticker);
+export * from "@ledgerhq/coin-framework/currencies/BigNumberToLocaleString";
+export * from "@ledgerhq/coin-framework/currencies/formatCurrencyUnit";
+export * from "@ledgerhq/coin-framework/currencies/support";
+export * from "./helpers";
 
 export {
   sortByMarketcap,
@@ -65,7 +65,6 @@ export {
   findCryptoCurrencyByKeyword,
   findFiatCurrencyByTicker,
   hasFiatCurrencyTicker,
-  listTokens,
   listTokensForCryptoCurrency,
   listTokenTypesForCryptoCurrency,
   findTokenByAddress,
@@ -86,5 +85,7 @@ export {
   valueFromUnit,
   sanitizeValueString,
   getCurrencyColor,
-  findCompoundToken,
+  ColorableCurrency,
+  listTokens,
+  addTokens,
 };

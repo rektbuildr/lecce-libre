@@ -3,19 +3,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { TouchableOpacity } from "react-native";
 import { Trans } from "react-i18next";
 
-import { Action } from "@ledgerhq/live-common/lib/apps";
-import { App } from "@ledgerhq/live-common/lib/types/manager";
+import { Action } from "@ledgerhq/live-common/apps/index";
+import { App } from "@ledgerhq/types-live";
 
 import styled from "styled-components/native";
 import { Flex, Icons, Text, Button } from "@ledgerhq/native-ui";
 import { hasInstalledAnyAppSelector } from "../../../reducers/settings";
 import { installAppFirstTime } from "../../../actions/settings";
 import AppIcon from "../AppsList/AppIcon";
-import BottomModal from "../../../components/BottomModal";
+import QueuedDrawer from "../../../components/QueuedDrawer";
 
 type Props = {
   appInstallWithDependencies: { app: App; dependencies: App[] };
-  dispatch: (action: Action) => void;
+  dispatch: (_: Action) => void;
   onClose: () => void;
 };
 
@@ -79,7 +79,7 @@ function AppDependenciesModal({
   }, [dispatch, dispatchProps, onClose, name, hasInstalledAnyApp]);
 
   return (
-    <BottomModal isOpened={!!app} onClose={onClose} actions={[]}>
+    <QueuedDrawer isRequestingToBeOpened={!!app} onClose={onClose}>
       <Flex alignItems="center">
         {!!dependencies.length && (
           <>
@@ -116,11 +116,7 @@ function AppDependenciesModal({
                 <Trans i18nKey="AppAction.install.continueInstall" />
               </Button>
               <CancelButton onPress={onClose}>
-                <Text
-                  variant="large"
-                  fontWeight="semiBold"
-                  color="neutral.c100"
-                >
+                <Text variant="large" fontWeight="semiBold" color="neutral.c100">
                   <Trans i18nKey="common.cancel" />
                 </Text>
               </CancelButton>
@@ -128,7 +124,7 @@ function AppDependenciesModal({
           </>
         )}
       </Flex>
-    </BottomModal>
+    </QueuedDrawer>
   );
 }
 

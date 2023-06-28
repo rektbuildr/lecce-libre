@@ -1,15 +1,14 @@
-import { BigNumber } from "bignumber.js";
-import type {
+import {
+  Account,
+  AccountRaw,
   TransactionCommon,
   TransactionCommonRaw,
-} from "../../types/transaction";
+  TransactionStatusCommon,
+  TransactionStatusCommonRaw,
+} from "@ledgerhq/types-live";
+import { BigNumber } from "bignumber.js";
 
-export type TronOperationMode =
-  | "send"
-  | "freeze"
-  | "unfreeze"
-  | "vote"
-  | "claimReward";
+export type TronOperationMode = "send" | "freeze" | "unfreeze" | "vote" | "claimReward";
 export type TronResource = "BANDWIDTH" | "ENERGY";
 export type NetworkInfo = {
   family: "tron";
@@ -207,3 +206,7 @@ export type TronTransactionInfo = {
   unfreeze_amount: number;
 };
 export type TronTransactionInfoRaw = [number, number, number, number];
+export type TronAccount = Account & { tronResources: TronResources };
+export type TronAccountRaw = AccountRaw & { tronResources: TronResourcesRaw };
+export type TransactionStatus = TransactionStatusCommon;
+export type TransactionStatusRaw = TransactionStatusCommonRaw;

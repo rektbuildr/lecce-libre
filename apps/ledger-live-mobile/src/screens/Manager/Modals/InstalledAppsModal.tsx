@@ -2,10 +2,9 @@ import React, { memo, useCallback, useMemo, useEffect } from "react";
 
 import { Text, Flex, Button, BaseModal } from "@ledgerhq/native-ui";
 import { FlatList } from "react-native";
-import { App } from "@ledgerhq/live-common/lib/types/manager";
-import { State, Action } from "@ledgerhq/live-common/lib/apps";
+import { App, DeviceInfo } from "@ledgerhq/types-live";
+import { State, Action } from "@ledgerhq/live-common/apps/index";
 import { Trans } from "react-i18next";
-import { ListAppsResult } from "@ledgerhq/live-common/lib/apps/types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AppIcon from "../AppsList/AppIcon";
 import ByteSize from "../../../components/ByteSize";
@@ -13,7 +12,7 @@ import AppUninstallButton from "../AppsList/AppUninstallButton";
 import AppProgressButton from "../AppsList/AppProgressButton";
 
 type HeaderProps = {
-  illustration: any;
+  illustration: JSX.Element;
 };
 
 const Header = ({ illustration }: HeaderProps) => (
@@ -28,11 +27,8 @@ const Header = ({ illustration }: HeaderProps) => (
 type UninstallButtonProps = {
   app: App;
   state: State;
-  dispatch: (action: Action) => void;
-  setAppUninstallWithDependencies: (params: {
-    dependents: App[];
-    app: App;
-  }) => void;
+  dispatch: (_: Action) => void;
+  setAppUninstallWithDependencies: (_: { dependents: App[]; app: App }) => void;
 };
 
 const UninstallButton = ({
@@ -42,10 +38,7 @@ const UninstallButton = ({
   setAppUninstallWithDependencies,
 }: UninstallButtonProps) => {
   const { uninstallQueue } = state;
-  const uninstalling = useMemo(() => uninstallQueue.includes(app.name), [
-    uninstallQueue,
-    app.name,
-  ]);
+  const uninstalling = useMemo(() => uninstallQueue.includes(app.name), [uninstallQueue, app.name]);
   const renderAppState = () => {
     switch (true) {
       case uninstalling:
@@ -69,27 +62,13 @@ const UninstallButton = ({
 type RowProps = {
   app: App;
   state: State;
-  dispatch: (action: Action) => void;
-  setAppUninstallWithDependencies: (params: {
-    dependents: App[];
-    app: App;
-  }) => void;
-  deviceInfo: any;
+  dispatch: (_: Action) => void;
+  setAppUninstallWithDependencies: (_: { dependents: App[]; app: App }) => void;
+  deviceInfo: DeviceInfo;
 };
 
-const Row = ({
-  app,
-  state,
-  dispatch,
-  setAppUninstallWithDependencies,
-  deviceInfo,
-}: RowProps) => (
-  <Flex
-    flexDirection="row"
-    py={4}
-    alignItems="center"
-    justifyContent="space-between"
-  >
+const Row = ({ app, state, dispatch, setAppUninstallWithDependencies, deviceInfo }: RowProps) => (
+  <Flex flexDirection="row" py={4} alignItems="center" justifyContent="space-between">
     <Flex flexDirection="row" alignItems="center">
       <AppIcon app={app} size={24} radius={8} />
       <Text variant="large" fontWeight="semiBold" color="neutral.c100" ml={4}>
@@ -114,21 +93,10 @@ const Row = ({
   </Flex>
 );
 
-type RouteParams = {
-  result: ListAppsResult;
-  illustration: any;
-  deviceInfo: any;
-  deviceId: string;
-  setAppUninstallWithDependencies: (params: {
-    dependents: App[];
-    app: App;
-  }) => void;
-};
-
 const modalStyleOverrides = {
   modal: {
     flex: 1,
-    justifyContent: "flex-end",
+    justifyContent: "flex-end" as const,
     margin: 0,
   },
   container: {
@@ -145,14 +113,11 @@ type Props = {
   isOpen: boolean;
   onClose: () => void;
   state: State;
-  dispatch: (action: Action) => void;
-  appList: ListAppsResult;
-  setAppUninstallWithDependencies: (params: {
-    dependents: App[];
-    app: App;
-  }) => void;
-  illustration: any;
-  deviceInfo: any;
+  dispatch: (_: Action) => void;
+  appList?: App[];
+  setAppUninstallWithDependencies: (_: { dependents: App[]; app: App }) => void;
+  illustration: JSX.Element;
+  deviceInfo: DeviceInfo;
 };
 
 const InstalledAppsModal = ({
@@ -165,9 +130,7 @@ const InstalledAppsModal = ({
   illustration,
   deviceInfo,
 }: Props) => {
-  const onUninstallAll = useCallback(() => dispatch({ type: "wipe" }), [
-    dispatch,
-  ]);
+  const onUninstallAll = useCallback(() => dispatch({ type: "wipe" }), [dispatch]);
 
   const renderItem = useCallback(
     ({ item }: { item: App }) => (
@@ -184,7 +147,7 @@ const InstalledAppsModal = ({
 
   useEffect(() => {
     if (!appList || !appList.length) onClose();
-  }, [appList]);
+  }, [appList, onClose]);
 
   const insets = useSafeAreaInsets();
   const { top: safeAreaTop, bottom: safeAreaBottom } = insets;
@@ -207,7 +170,7 @@ const InstalledAppsModal = ({
         <FlatList
           data={appList}
           renderItem={renderItem}
-          keyExtractor={item => item.id}
+          keyExtractor={item => "" + item.id}
           ListHeaderComponent={<Header illustration={illustration} />}
           showsVerticalScrollIndicator={false}
         />

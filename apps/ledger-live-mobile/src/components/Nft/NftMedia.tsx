@@ -1,21 +1,24 @@
 import React from "react";
 import { VideoProperties } from "react-native-video";
 import { FastImageProps } from "react-native-fast-image";
-import { NFTMediaSizes, NFTMetadata } from "@ledgerhq/live-common/lib/types";
-import { NFTResource } from "@ledgerhq/live-common/lib/nft/NftMetadataProvider/types";
+import { NFTMediaSize, NFTMetadata } from "@ledgerhq/types-live";
+import { NFTResource } from "@ledgerhq/live-common/nft/NftMetadataProvider/types";
 import { Theme } from "@react-navigation/native";
+import { StyleProp, ViewStyle } from "react-native";
 import { getMetadataMediaType } from "../../logic/nft";
 import { withTheme } from "../../colors";
 import NftImage from "./NftImage";
 import NftVideo from "./NftVideo";
 
 type Props = {
-  style?: Object;
+  style?: StyleProp<ViewStyle>;
   status: NFTResource["status"];
-  metadata: NFTMetadata;
-  mediaFormat: NFTMediaSizes;
-  resizeMode?: FastImageProps["resizeMode"] | VideoProperties["resizeMode"];
-  colors: Theme;
+  metadata?: NFTMetadata | null;
+  mediaFormat: NFTMediaSize;
+  resizeMode?: FastImageProps["resizeMode"] & VideoProperties["resizeMode"];
+  colors: Theme["colors"];
+  transparency?: boolean;
+  children?: React.ReactNode | null;
 };
 
 type State = {
@@ -23,33 +26,28 @@ type State = {
 };
 
 class NftMedia extends React.PureComponent<Props, State> {
-  state = {
-    useFallback: false,
-  };
-
-  setUseFallback = (_useFallback: boolean): void => {
-    this.setState({ useFallback: _useFallback });
-  };
-
   render() {
-    const { metadata, mediaFormat, colors } = this.props;
-    const { useFallback } = this.state;
+    const { metadata, mediaFormat, status } = this.props;
 
-    const contentType = getMetadataMediaType(metadata, mediaFormat);
-    const Component =
-      contentType === "video" && !useFallback ? NftVideo : NftImage;
+    let { uri } = metadata?.medias?.[mediaFormat] || {};
+    let contentType = getMetadataMediaType(metadata, mediaFormat);
 
-    const { uri, mediaType } =
-      metadata?.medias[useFallback ? "preview" : mediaFormat] || {};
+    const noData = status === "nodata";
+    const metadataError = status === "error";
+    const noSource = status === "loaded" && !uri;
+
+    if (noData || metadataError || noSource) {
+      uri = metadata?.medias?.preview?.uri;
+      contentType = getMetadataMediaType(metadata, "preview");
+    }
+
+    const Component = contentType === "video" ? NftVideo : NftImage;
 
     return (
       <Component
         {...this.props}
-        colors={colors}
-        src={uri}
-        mediaType={mediaType}
-        useFallback={useFallback}
-        setUseFallback={this.setUseFallback}
+        src={uri as string}
+        srcFallback={metadata?.medias?.preview?.uri as string}
       />
     );
   }

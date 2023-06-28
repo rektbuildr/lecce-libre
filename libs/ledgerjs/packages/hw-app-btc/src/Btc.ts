@@ -1,9 +1,7 @@
 import type Transport from "@ledgerhq/hw-transport";
-import { pathStringToArray } from "./bip32";
-import BtcNew, { canSupportApp } from "./BtcNew";
+import BtcNew from "./BtcNew";
 import BtcOld from "./BtcOld";
 import type { CreateTransactionArg } from "./createTransaction";
-import { getAppAndVersion } from "./getAppAndVersion";
 import { getTrustedInput } from "./getTrustedInput";
 import { getTrustedInputBIP143 } from "./getTrustedInputBIP143";
 import type { AddressFormat } from "./getWalletPublicKey";
@@ -13,32 +11,50 @@ import type { SignP2SHTransactionArg } from "./signP2SHTransaction";
 import { splitTransaction } from "./splitTransaction";
 import type { Transaction } from "./types";
 export type { AddressFormat };
+import { signP2SHTransaction } from "./signP2SHTransaction";
+import { checkIsBtcLegacy, getAppAndVersion } from "./getAppAndVersion";
+
 /**
  * Bitcoin API.
  *
  * @example
  * import Btc from "@ledgerhq/hw-app-btc";
- * const btc = new Btc(transport)
+ * const btc = new Btc({ transport, currency: "bitcoin" });
  */
 
 export default class Btc {
-  transport: Transport;
+  private _transport: Transport;
+  private _impl: BtcOld | BtcNew;
 
-  constructor(transport: Transport, scrambleKey = "BTC") {
-    this.transport = transport;
-    transport.decorateAppAPIMethods(
+  constructor({
+    transport,
+    scrambleKey = "BTC",
+    currency = "bitcoin",
+  }: {
+    transport: Transport;
+    scrambleKey?: string;
+    currency?: string;
+  }) {
+    this._transport = transport;
+    this._transport.decorateAppAPIMethods(
       this,
       [
         "getWalletXpub",
         "getWalletPublicKey",
         "signP2SHTransaction",
-        "signMessageNew",
-        "createPaymentTransactionNew",
+        "signMessage",
+        "createPaymentTransaction",
         "getTrustedInput",
         "getTrustedInputBIP143",
       ],
-      scrambleKey
+      scrambleKey,
     );
+    // new APDU (nano app API) for bitcoin and old APDU for altcoin
+    if (currency === "bitcoin" || currency === "bitcoin_testnet") {
+      this._impl = new BtcNew(new AppClient(this._transport));
+    } else {
+      this._impl = new BtcOld(this._transport);
+    }
   }
 
   /**
@@ -49,7 +65,9 @@ export default class Btc {
    * @returns XPUB of the account
    */
   getWalletXpub(arg: { path: string; xpubVersion: number }): Promise<string> {
-    return this.getCorrectImpl().then((impl) => impl.getWalletXpub(arg));
+    return this.changeImplIfNecessary().then(impl => {
+      return impl.getWalletXpub(arg);
+    });
   }
 
   /**
@@ -79,7 +97,7 @@ export default class Btc {
     opts?: {
       verify?: boolean;
       format?: AddressFormat;
-    }
+    },
   ): Promise<{
     publicKey: string;
     bitcoinAddress: string;
@@ -88,7 +106,7 @@ export default class Btc {
     let options;
     if (arguments.length > 2 || typeof opts === "boolean") {
       console.warn(
-        "btc.getWalletPublicKey deprecated signature used. Please switch to getWalletPublicKey(path, { format, verify })"
+        "btc.getWalletPublicKey deprecated signature used. Please switch to getWalletPublicKey(path, { format, verify })",
       );
       options = {
         verify: !!opts,
@@ -98,91 +116,34 @@ export default class Btc {
     } else {
       options = opts || {};
     }
-    return this.getCorrectImpl().then((impl) => {
-      /**
-       * Definition: A "normal path" is a prefix of a standard path where all
-       * the hardened steps of the standard path are included. For example, the
-       * paths m/44'/1'/17' and m/44'/1'/17'/1 are normal paths, but m/44'/1'
-       * is not. m/'199/1'/17'/0/1 is not a normal path either.
-       *
-       * There's a compatiblity issue between old and new app: When exporting
-       * the key of a non-normal path with verify=false, the new app would
-       * return an error, whereas the old app would return the key.
-       *
-       * See
-       * https://github.com/LedgerHQ/app-bitcoin-new/blob/master/doc/bitcoin.md#get_extended_pubkey
-       *
-       * If format bech32m is used, we'll not use old, because it doesn't
-       * support it.
-       *
-       * When to use new (given the app supports it)
-       *   * format is bech32m or
-       *   * path is normal or
-       *   * verify is true
-       *
-       * Otherwise use old.
-       */
-      if (
-        impl instanceof BtcNew &&
-        options.format != "bech32m" &&
-        (!options.verify || options.verify == false) &&
-        !isPathNormal(path)
-      ) {
-        console.warn(`WARNING: Using deprecated device protocol to get the public key because
-        
-        * a non-standard path is requested, and
-        * verify flag is false
-        
-        The new protocol only allows export of non-standard paths if the 
-        verify flag is true. Standard paths are (currently):
-
-        M/44'/(1|0)'/X'
-        M/49'/(1|0)'/X'
-        M/84'/(1|0)'/X'
-        M/86'/(1|0)'/X'
-        M/48'/(1|0)'/X'/Y'
-
-        followed by "", "(0|1)", or "(0|1)/b", where a and b are 
-        non-hardened. For example, the following paths are standard
-        
-        M/48'/1'/99'/7'
-        M/86'/1'/99'/0
-        M/48'/0'/99'/7'/1/17
-
-        The following paths are non-standard
-
-        M/48'/0'/99'           // Not deepest hardened path
-        M/48'/0'/99'/7'/1/17/2 // Too many non-hardened derivation steps
-        M/199'/0'/1'/0/88      // Not a known purpose 199
-        M/86'/1'/99'/2         // Change path item must be 0 or 1
-
-        This compatibility safeguard will be removed in the future.
-        Please consider calling Btc.getWalletXpub() instead.`);
-        return this.old().getWalletPublicKey(path, options);
-      } else {
-        return impl.getWalletPublicKey(path, options);
-      }
+    return this.changeImplIfNecessary().then(impl => {
+      return impl.getWalletPublicKey(path, options);
     });
   }
 
   /**
    * You can sign a message according to the Bitcoin Signature format and retrieve v, r, s given the message and the BIP 32 path of the account to sign.
    * @example
-   btc.signMessageNew_async("44'/60'/0'/0'/0", Buffer.from("test").toString("hex")).then(function(result) {
+   btc.signMessage("44'/60'/0'/0'/0", Buffer.from("test").toString("hex")).then(function(result) {
      var v = result['v'] + 27 + 4;
      var signature = Buffer.from(v.toString(16) + result['r'] + result['s'], 'hex').toString('base64');
      console.log("Signature : " + signature);
    }).catch(function(ex) {console.log(ex);});
    */
-  signMessageNew(
+  signMessage(
     path: string,
-    messageHex: string
+    messageHex: string,
   ): Promise<{
     v: number;
     r: string;
     s: string;
   }> {
-    return this.old().signMessageNew(path, messageHex);
+    return this.changeImplIfNecessary().then(impl => {
+      return impl.signMessage({
+        path,
+        messageHex,
+      });
+    });
   }
 
   /**
@@ -218,14 +179,14 @@ export default class Btc {
    outputScriptHex: "01905f0100000000001976a91472a5d75c8d2d0565b656a5232703b167d50d5a2b88ac"
   }).then(res => ...);
    */
-  createPaymentTransactionNew(arg: CreateTransactionArg): Promise<string> {
+  createPaymentTransaction(arg: CreateTransactionArg): Promise<string> {
     if (arguments.length > 1) {
-      console.warn(
-        "@ledgerhq/hw-app-btc: createPaymentTransactionNew multi argument signature is deprecated. please switch to named parameters."
+      throw new Error(
+        "@ledgerhq/hw-app-btc: createPaymentTransaction multi argument signature is deprecated. please switch to named parameters.",
       );
     }
-    return this.getCorrectImpl().then((impl) => {
-      return impl.createPaymentTransactionNew(arg);
+    return this.changeImplIfNecessary().then(impl => {
+      return impl.createPaymentTransaction(arg);
     });
   }
 
@@ -249,7 +210,7 @@ export default class Btc {
   }).then(result => ...);
    */
   signP2SHTransaction(arg: SignP2SHTransactionArg): Promise<string[]> {
-    return this.old().signP2SHTransaction(arg);
+    return signP2SHTransaction(this._transport, arg);
   }
 
   /**
@@ -262,14 +223,14 @@ export default class Btc {
     isSegwitSupported: boolean | null | undefined = false,
     hasTimestamp = false,
     hasExtraData = false,
-    additionals: Array<string> = []
+    additionals: Array<string> = [],
   ): Transaction {
     return splitTransaction(
       transactionHex,
       isSegwitSupported,
       hasTimestamp,
       hasExtraData,
-      additionals
+      additionals,
     );
   }
 
@@ -285,89 +246,46 @@ export default class Btc {
   getTrustedInput(
     indexLookup: number,
     transaction: Transaction,
-    additionals: Array<string> = []
+    additionals: Array<string> = [],
   ): Promise<string> {
-    return getTrustedInput(
-      this.transport,
-      indexLookup,
-      transaction,
-      additionals
-    );
+    return getTrustedInput(this._transport, indexLookup, transaction, additionals);
   }
 
   getTrustedInputBIP143(
     indexLookup: number,
     transaction: Transaction,
-    additionals: Array<string> = []
+    additionals: Array<string> = [],
   ): string {
-    return getTrustedInputBIP143(
-      this.transport,
-      indexLookup,
-      transaction,
-      additionals
-    );
+    return getTrustedInputBIP143(this._transport, indexLookup, transaction, additionals);
   }
 
-  // cache the underlying implementation (only once)
-  private _lazyImpl: BtcOld | BtcNew | null = null;
-  private async getCorrectImpl(): Promise<BtcOld | BtcNew> {
-    const { _lazyImpl } = this;
-    if (_lazyImpl) return _lazyImpl;
-    const impl = await this.inferCorrectImpl();
-    this._lazyImpl = impl;
-    return impl;
-  }
+  async changeImplIfNecessary(): Promise<BtcOld | BtcNew> {
+    // if BtcOld was instantiated, stick with it
+    if (this._impl instanceof BtcOld) return this._impl;
 
-  private async inferCorrectImpl(): Promise<BtcOld | BtcNew> {
-    const appAndVersion = await getAppAndVersion(this.transport);
-    const canUseNewImplementation = canSupportApp(appAndVersion);
-    if (!canUseNewImplementation) {
-      return this.old();
-    } else {
-      return this.new();
+    const appAndVersion = await getAppAndVersion(this._transport);
+    let isBtcLegacy = true; // default for all altcoins
+
+    if (appAndVersion.name === "Bitcoin" || appAndVersion.name === "Bitcoin Test") {
+      const [major, minor] = appAndVersion.version.split(".");
+      // we use the legacy protocol for versions below 2.1.0 of the Bitcoin app.
+      isBtcLegacy = parseInt(major) <= 1 || (parseInt(major) == 2 && parseInt(minor) == 0);
+    } else if (
+      appAndVersion.name === "Bitcoin Legacy" ||
+      appAndVersion.name === "Bitcoin Test Legacy"
+    ) {
+      // the "Bitcoin Legacy" and "Bitcoin Testnet Legacy" app use the legacy protocol, regardless of the version
+      isBtcLegacy = true;
+    } else if (appAndVersion.name === "Exchange") {
+      // We can't query the version of the Bitcoin app if we're coming from Exchange;
+      // therefore, we use a workaround to distinguish legacy and new versions.
+      // This can be removed once Ledger Live enforces minimum bitcoin version >= 2.1.0.
+      isBtcLegacy = await checkIsBtcLegacy(this._transport);
     }
-  }
 
-  protected old(): BtcOld {
-    return new BtcOld(this.transport);
+    if (isBtcLegacy) {
+      this._impl = new BtcOld(this._transport);
+    }
+    return this._impl;
   }
-
-  protected new(): BtcNew {
-    return new BtcNew(new AppClient(this.transport));
-  }
-}
-
-function isPathNormal(path: string): boolean {
-  //path is not deepest hardened node of a standard path or deeper, use BtcOld
-  const h = 0x80000000;
-  const pathElems = pathStringToArray(path);
-
-  const hard = (n: number) => n >= h;
-  const soft = (n: number | undefined) => !n || n < h;
-  const change = (n: number | undefined) => !n || n == 0 || n == 1;
-
-  if (
-    pathElems.length >= 3 &&
-    pathElems.length <= 5 &&
-    [44 + h, 49 + h, 84 + h, 86 + h].some((v) => v == pathElems[0]) &&
-    [0 + h, 1 + h].some((v) => v == pathElems[1]) &&
-    hard(pathElems[2]) &&
-    change(pathElems[3]) &&
-    soft(pathElems[4])
-  ) {
-    return true;
-  }
-  if (
-    pathElems.length >= 4 &&
-    pathElems.length <= 6 &&
-    48 + h == pathElems[0] &&
-    [0 + h, 1 + h].some((v) => v == pathElems[1]) &&
-    hard(pathElems[2]) &&
-    hard(pathElems[3]) &&
-    change(pathElems[4]) &&
-    soft(pathElems[5])
-  ) {
-    return true;
-  }
-  return false;
 }

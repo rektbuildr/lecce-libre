@@ -8,8 +8,8 @@
 /* eslint-disable no-console */
 
 const path = require("path");
-const defaultSourceExts = require("metro-config/src/defaults/defaults")
-  .sourceExts;
+const defaultSourceExts =
+  require("metro-config/src/defaults/defaults").sourceExts;
 const { makeMetroConfig } = require("@rnx-kit/metro-config");
 const MetroSymlinksResolver = require("@rnx-kit/metro-resolver-symlinks");
 const resolve = require("metro-resolver").resolve;
@@ -32,7 +32,7 @@ function forceDependency(moduleName, filters, nodeModulesPaths) {
   return null;
 }
 
-module.exports = function(options = {}, config = {}) {
+module.exports = function (options = {}, config = {}) {
   const {
     // Root of the project
     projectRoot,
@@ -42,6 +42,8 @@ module.exports = function(options = {}, config = {}) {
     remapModule,
     // Gives to ability to hijack the resolver early on
     earlyResolver,
+    // Guards against resolving globally installed packages
+    globalPackagesGuard = true,
     // Useful callbacks
     callbackSymlinkResolution,
     callbackSymlinkResolutionError,
@@ -63,6 +65,17 @@ module.exports = function(options = {}, config = {}) {
       "node_modules"
     ),
   ];
+
+  function checkGlobalPackage(resolution) {
+    if (
+      globalPackagesGuard &&
+      path
+        .relative(path.resolve(__dirname, "..", ".."), resolution)
+        .startsWith("..")
+    ) {
+      throw new Error("Global package resolution is not allowed", resolution);
+    }
+  }
 
   const symlinkResolver = MetroSymlinksResolver({
     remapModule: (context, moduleName, platform) => {
@@ -87,14 +100,13 @@ module.exports = function(options = {}, config = {}) {
     },
     resolver: {
       nodeModulesPaths,
-      resolveRequest: (context, realModuleName, platform, moduleName) => {
+      resolveRequest: (context, moduleName, platform) => {
         try {
           if (earlyResolver) {
             const earlyResolution = earlyResolver(
               context,
-              realModuleName,
-              platform,
-              moduleName
+              moduleName,
+              platform
             );
             if (earlyResolution) return earlyResolution;
           }
@@ -122,6 +134,7 @@ module.exports = function(options = {}, config = {}) {
               platform,
             });
           }
+          checkGlobalPackage(resolution.filePath);
           return resolution;
         } catch (error) {
           try {
@@ -152,6 +165,7 @@ module.exports = function(options = {}, config = {}) {
               });
             }
             if (path.isAbsolute(resolution)) {
+              checkGlobalPackage(resolution);
               return {
                 filePath: resolution,
                 type: "sourceFile",
@@ -168,9 +182,7 @@ module.exports = function(options = {}, config = {}) {
             }
           }
 
-          delete context.resolveRequest;
-
-          return resolve(context, realModuleName, platform, moduleName);
+          return context.resolveRequest(context, moduleName, platform);
         }
       },
       sourceExts: [...defaultSourceExts, "cjs"],

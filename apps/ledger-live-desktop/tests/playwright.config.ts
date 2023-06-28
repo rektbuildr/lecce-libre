@@ -4,7 +4,21 @@ const config: PlaywrightTestConfig = {
   testDir: "specs/",
   testIgnore: "specs/recorder.spec.ts",
   outputDir: "./artifacts/test-results",
-  timeout: process.env.CI ? 60000 : 600000,
+  timeout: process.env.CI ? 190000 : 600000,
+  expect: {
+    timeout: 30000,
+    toHaveScreenshot: {
+      /**
+       * do not increase unless it makes most tests flaky
+       * if you need a less sensitive threshold for a given test,
+       * configure it for specific screenshots
+       * */
+      maxDiffPixelRatio: 0.005,
+    },
+    toMatchSnapshot: {
+      maxDiffPixelRatio: 0.01,
+    },
+  },
   globalTimeout: 0,
   globalSetup: require.resolve("./utils/global-setup"),
   globalTeardown: require.resolve("./utils/global-teardown"),
@@ -19,15 +33,6 @@ const config: PlaywrightTestConfig = {
     video: process.env.CI ? "on-first-retry" : "off", // FIXME: "off" doesn't seem to work
     trace: process.env.CI ? "retain-on-failure" : "off", // FIXME: traceview doesn't seem to work
   },
-  /*
-  webServer: {
-    command: "serve",
-    port: 3001,
-    timeout: 120 * 1000,
-    reuseExistingServer: !process.env.CI,
-    cwd: "tests/utils/dummy-app-build",
-  },
-  */
   forbidOnly: !!process.env.CI,
   preserveOutput: process.env.CI ? "failures-only" : "always",
   maxFailures: process.env.CI ? 5 : undefined,
@@ -35,8 +40,27 @@ const config: PlaywrightTestConfig = {
   workers: process.env.CI ? 1 : 1, // NOTE: 'macos-latest' and 'windows-latest' can't run 3 concurrent workers
   retries: process.env.CI ? 2 : 0, // FIXME: --update-snapshots doesn't work with --retries
   reporter: process.env.CI
-    ? [["html", { open: "never", outputFolder: "artifacts/html-report" }], ["github"]]
+    ? [
+        ["html", { open: "never", outputFolder: "artifacts/html-report" }],
+        ["github"],
+        ["line"],
+        ["allure-playwright"],
+      ]
     : "list",
+  // TODO: Introduce the idea of projects
+  // to have different level of depths in the 2e2 tests
+
+  // projects: [
+  //   {
+  //     name: "smoke",
+  //     testMatch: /.*smoke.spec.ts/,
+  //   },
+  //   {
+  //     name: "full",
+  //     testIgnore: [/.*smoke.spec.ts/, "specs/recorder.spec.ts"],
+  //     dependencies: ["smoke"],
+  //   },
+  // ],
 };
 
 export default config;

@@ -15,6 +15,7 @@ const {
   addDependencies,
   addDevDependencies,
   addPeerDependencies,
+  removeDependencies,
 } = require("./tools/pnpm-utils");
 
 function readPackage(pkg, context) {
@@ -42,35 +43,39 @@ function readPackage(pkg, context) {
   process(
     [
       /*
-        Adding jest and co. as dev. dependencies for /ledgerjs/* sub-packages.
-        This is done this way because these packages are not hoisted hence unaccessible otherwise.
-        Furthermore it makes these packages self-contained which eases the CI process.
+        Fix the unmet peer dep on rxjs for the wallet-api-server
+        Because we're still using rxjs v6 everywhere
+        We only added rxjs v7 as an alias on rxjs7
       */
-      addDevDependencies(
-        /^@ledgerhq\/(hw-app.*|hw-transport.*|cryptoassets|devices|errors|logs|react-native-hid|react-native-hw-transport-ble|types-.*)$/,
-        {
-          jest: "^27.4.7",
-          "ts-jest": "^27.1.2",
-          "ts-node": "^10.4.0",
-          "@types/node": "*",
-          "@types/jest": "*",
-          "source-map-support": "*",
-          typescript: "^4",
-          documentation: "13.2.4",
-          rimraf: "*",
-        },
-        { silent: true }
-      ),
+      addDependencies("@ledgerhq/wallet-api-server", {
+        rxjs: pkg.peerDependencies?.rxjs ?? "*",
+      }),
+      removeDependencies("@ledgerhq/wallet-api-server", ["rxjs"], {
+        kind: "peerDependencies",
+      }),
       /*
         The following packages are broken and do not declare their dependencies properly.
         So we are going to patch these until the maintainers fix their own stuff…
         Feel free to make PRs if you feel like it :).
       */
+      /*
+        Remove react-native/react-dom from react-redux optional peer dependencies.
+        Without this, using react-redux code in LLM from LLC will fail because the package will get duplicated.
+      */
+      removeDependencies("react-redux", ["react-native", "react-dom"], {
+        kind: "peerDependencies",
+      }),
       /* Storybook packages */
       addDependencies("@storybook/webpack-config", { "resolve-from": "*" }),
       addDependencies("@storybook/addon-knobs", {
         // Match the major version of the package
         "@storybook/client-api": major ? "" + major : "*",
+      }),
+      addPeerDependencies("@storybook/addon-ondevice-backgrounds", {
+        "@emotion/native": "*",
+      }),
+      addPeerDependencies("@storybook/addon-react-native-web", {
+        webpack: "*",
       }),
       /* @celo/* packages */
       addDependencies(/@celo\/(?!base)+/, { "@celo/base": `^${pkg.version}` }),
@@ -82,7 +87,7 @@ function readPackage(pkg, context) {
         "web3-utils": pkg.dependencies?.["web3"],
       }),
       addDependencies("@celo/utils", {
-        randombytes: "*",
+        "fp-ts": "*",
         rlp: "*",
       }),
       /*  @cosmjs/* packages */
@@ -111,6 +116,7 @@ function readPackage(pkg, context) {
       // Crashes ios build if removed /!\
       addDependencies("react-native", {
         mkdirp: "*",
+        yargs: "*",
       }),
       addPeerDependencies("@react-native-community/cli", {
         "metro-resolver": "*",
@@ -119,14 +125,25 @@ function readPackage(pkg, context) {
         "metro-transform-worker": "*",
       }),
       addPeerDependencies("metro-transform-worker", {
-        "metro-minify-uglify": "*",
+        "metro-minify-terser": "*",
       }),
-      /* @expo/* packages */
+      /* Expo packages… */
       addDependencies("@expo/webpack-config", {
         "resolve-from": "*",
         "fs-extra": "*",
+        tapable: "*",
+        "source-map": "*",
       }),
-      addDependencies("expo-cli", { "@expo/metro-config": "*" }),
+      addPeerDependencies("@expo/cli", {
+        glob: "*",
+        metro: "*",
+        "metro-core": "*",
+        "@expo/metro-config": "*",
+        minimatch: "*",
+      }),
+      addDependencies("@expo/cli", {
+        "find-yarn-workspace-root": "*",
+      }),
       addDependencies("@expo/metro-config", { glob: "*" }),
       addDependencies("@expo/dev-tools", { "@expo/spawn-async": "*" }),
       addDependencies("@expo/dev-server", {
@@ -134,13 +151,35 @@ function readPackage(pkg, context) {
         "@expo/spawn-async": "*",
         glob: "*",
       }),
+      addDependencies("expo-pwa", {
+        "@expo/config": "*",
+      }),
+      addPeerDependencies("expo-modules-core", {
+        "react-native": "*",
+      }),
+      addPeerDependencies("expo", {
+        "react-native": "*",
+        react: "*",
+      }),
+      addPeerDependencies(/^expo-/, {
+        "expo-modules-core": "*",
+        "expo-constants": "*",
+        "react-native": "*",
+        react: "*",
+      }),
+      addPeerDependencies("expo-asset", {
+        "expo-file-system": "*",
+      }),
+      addPeerDependencies("expo-font", {
+        "expo-asset": "*",
+      }),
       /* Other packages */
       addDependencies("detox", {
         "@jest/reporters": "*",
         "jest-environment-node": "*",
         "jest-circus": "*",
       }),
-      addDependencies("jest", { "jest-config": "*" }),
+      addDependencies("allure-playwright", { "@playwright/test": "*" }),
       addPeerDependencies("@svgr/core", { "@svgr/plugin-svgo": "*" }),
       addDependencies("@sentry/react-native", {
         tslib: "*",
@@ -152,7 +191,18 @@ function readPackage(pkg, context) {
       addDependencies("react-native-locale", {
         fbjs: "*",
       }),
+      addDependencies("react-native-tcp", {
+        "stream-browserify": "*",
+      }),
+      addDependencies("postcss-loader", {
+        "postcss-flexbugs-fixes": "*",
+        "postcss-preset-env": "*",
+        "postcss-normalize": "*",
+      }),
       addPeerDependencies("any-observable", {
+        rxjs: "*",
+      }),
+      addPeerDependencies("rxjs-compat", {
         rxjs: "*",
       }),
       addPeerDependencies("@cspotcode/source-map-support", {
@@ -164,6 +214,22 @@ function readPackage(pkg, context) {
       addPeerDependencies("jest-worker", {
         metro: "*",
       }),
+      addPeerDependencies("react-lottie", {
+        "prop-types": "*",
+      }),
+      addDependencies("@actions/cache", { "@azure/abort-controller": "*" }),
+      addDependencies("rn-fetch-blob", { lodash: "*" }),
+      // addPeerDependencies("styled-components", { "react-native": "*" }),
+      addPeerDependencies("use-latest-callback", { react: "*" }),
+      addPeerDependencies("rn-range-slider", {
+        react: "*",
+        "react-native": "*",
+        "prop-types": "*",
+      }),
+      addPeerDependencies("react-native-animatable", {
+        react: "*",
+        "react-native": "*",
+      }),
       // "dmg-builder" is required to build .dmg electron apps on macs,
       // but is not declared as such by app-builder-lib.
       // I'm not adding it as a dependency because if I did,
@@ -173,9 +239,24 @@ function readPackage(pkg, context) {
         "dmg-builder": "*",
         lodash: "*",
       }),
-      /* Packages that are missing @types/* dependencies */
-      addPeerDependencies("react-native-gesture-handler", {
-        "@types/react": "*",
+      // Try to prevent pnpm-lock.yaml flakiness
+      removeDependencies("follow-redirects", ["debug"], {
+        kind: "peerDependencies",
+      }),
+      addDependencies("@shopify/react-native-performance", {
+        tslib: "*",
+      }),
+      addDependencies("@shopify/react-native-performance-navigation", {
+        tslib: "*",
+      }),
+      addPeerDependencies("react-native-easy-markdown", {
+        "prop-types": "*",
+      }),
+      addPeerDependencies("storyly-react-native", {
+        "prop-types": "*",
+      }),
+      addPeerDependencies("asyncstorage-down", {
+        "@react-native-async-storage/async-storage": "*",
       }),
     ],
     pkg,

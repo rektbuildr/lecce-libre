@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import ReactNativeModal, { ModalProps } from "react-native-modal";
 import styled from "styled-components/native";
 import { StyleProp, ViewStyle } from "react-native";
@@ -22,11 +22,12 @@ export type BaseModalProps = {
   preventBackdropClick?: boolean;
   Icon?: IconOrElementType;
   iconColor?: string;
-  title?: string;
-  description?: string;
+  title?: React.ReactNode;
+  description?: React.ReactNode;
   subtitle?: string;
   children?: React.ReactNode;
   noCloseButton?: boolean;
+  CustomHeader?: React.ComponentType;
 } & Partial<ModalProps>;
 
 const SafeContainer = styled.SafeAreaView`
@@ -49,6 +50,7 @@ const CloseContainer = styled.View`
   display: flex;
   align-items: flex-end;
   margin-bottom: ${(p) => p.theme.space[6]}px;
+  z-index: 10;
 `;
 
 const ClosePressableExtendedBounds = styled.TouchableOpacity.attrs({
@@ -136,6 +138,8 @@ export default function BaseModal({
   description,
   subtitle,
   children,
+  onModalHide,
+  CustomHeader,
   ...rest
 }: BaseModalProps): React.ReactElement {
   const backDropProps = preventBackdropClick
@@ -146,22 +150,35 @@ export default function BaseModal({
         onSwipeComplete: onClose,
       };
 
+  // Workaround: until this, onModalHide={onClose}, making onClose being called twice and onModalHide being never called
+  // The real fix would be to have onModalHide={onModalHide} and make sure every usage on onClose in the consumers of this component
+  // expect the correct behavior
+  const onModalHideWithClose = useCallback(() => {
+    onClose();
+    onModalHide && onModalHide();
+  }, [onClose, onModalHide]);
+
   return (
     <ReactNativeModal
-      {...rest}
       {...backDropProps}
-      isVisible={isOpen}
+      {...rest}
+      isVisible={!!isOpen}
       deviceWidth={width}
       deviceHeight={height}
       useNativeDriver
       useNativeDriverForBackdrop
       hideModalContentWhileAnimating
-      onModalHide={onClose}
+      onModalHide={onModalHideWithClose}
       style={[defaultModalStyle, modalStyle]}
     >
       <SafeContainer style={safeContainerStyle}>
+        {CustomHeader && (
+          <CustomHeader>
+            {!noCloseButton && <ModalHeaderCloseButton onClose={onClose} />}
+          </CustomHeader>
+        )}
         <Container style={containerStyle}>
-          {!noCloseButton && <ModalHeaderCloseButton onClose={onClose} />}
+          {!CustomHeader && !noCloseButton && <ModalHeaderCloseButton onClose={onClose} />}
           <ModalHeader
             Icon={Icon}
             iconColor={iconColor}

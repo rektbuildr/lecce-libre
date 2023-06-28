@@ -3,34 +3,33 @@ import { TouchableOpacity } from "react-native";
 import { Trans } from "react-i18next";
 import styled from "styled-components/native";
 import { useNavigation } from "@react-navigation/native";
-import { getOperationAmountNumber } from "@ledgerhq/live-common/lib/operation";
+import { getOperationAmountNumber } from "@ledgerhq/live-common/operation";
 import {
   getMainAccount,
   getAccountCurrency,
   getAccountName,
   getAccountUnit,
-} from "@ledgerhq/live-common/lib/account";
-
-import {
-  Account,
-  Operation,
-  AccountLike,
-} from "@ledgerhq/live-common/lib/types";
-
+} from "@ledgerhq/live-common/account/index";
+import { Account, Operation, AccountLike } from "@ledgerhq/types-live";
 import { Box, Flex, InfiniteLoader, Text } from "@ledgerhq/native-ui";
-
 import debounce from "lodash/debounce";
+import { isEqual } from "lodash";
 import CurrencyUnitValue from "./CurrencyUnitValue";
 import CounterValue from "./CounterValue";
-
 import OperationIcon from "./OperationIcon";
 import { ScreenName } from "../const";
 import OperationRowDate from "./OperationRowDate";
 import OperationRowNftName from "./OperationRowNftName";
-
 import perFamilyOperationDetails from "../generated/operationDetails";
+import { track } from "../analytics";
+import { UnionToIntersection } from "../types/helpers";
+import { BaseNavigation } from "./RootNavigator/types/helpers";
 
-const ContainerTouchable = styled(Flex).attrs(p => ({
+type FamilyOperationDetailsIntersection = UnionToIntersection<
+  (typeof perFamilyOperationDetails)[keyof typeof perFamilyOperationDetails]
+>;
+
+const ContainerTouchable = styled(Flex).attrs(_ => ({
   height: "64px",
   flexDirection: "row",
   alignItems: "center",
@@ -38,7 +37,7 @@ const ContainerTouchable = styled(Flex).attrs(p => ({
   py: 6,
 }))<{ isLast?: boolean }>``;
 
-const Wrapper = styled(Flex).attrs(p => ({
+const Wrapper = styled(Flex).attrs<{ isOptimistic?: boolean }>(p => ({
   flex: 1,
   flexDirection: "row",
   alignItems: "center",
@@ -61,13 +60,13 @@ const BodyLeftContainer = styled(Flex).attrs({
   flex: 1,
 })``;
 
-const BodyRightContainer = styled(Flex).attrs(p => ({
+const BodyRightContainer = styled(Flex).attrs<{ flexShrink?: number }>(p => ({
   flexDirection: "column",
   justifyContent: "flex-start",
   alignItems: "flex-end",
   flexShrink: p.flexShrink ?? 0,
   pl: 4,
-}))``;
+}))<{ flexShrink?: number }>``;
 
 type Props = {
   operation: Operation;
@@ -83,7 +82,7 @@ const placeholderProps = {
   containerHeight: 20,
 };
 
-export default function OperationRow({
+function OperationRow({
   account,
   parentAccount,
   operation,
@@ -91,9 +90,12 @@ export default function OperationRow({
   multipleAccounts,
   isLast,
 }: Props) {
-  const navigation = useNavigation();
+  const navigation = useNavigation<BaseNavigation>();
 
   const goToOperationDetails = debounce(() => {
+    track("transaction_clicked", {
+      transaction: operation.type,
+    });
     const params = [
       ScreenName.OperationDetails,
       {
@@ -103,7 +105,7 @@ export default function OperationRow({
         isSubOperation,
         key: operation.id,
       },
-    ];
+    ] as const;
 
     /** if suboperation push to stack navigation else we simply navigate */
     if (isSubOperation) navigation.push(...params);
@@ -111,34 +113,30 @@ export default function OperationRow({
   }, 300);
 
   const isNftOperation =
-    ["NFT_IN", "NFT_OUT"].includes(operation.type) &&
-    operation.contract &&
-    operation.tokenId;
+    ["NFT_IN", "NFT_OUT"].includes(operation.type) && operation.contract && operation.tokenId;
 
   const renderAmountCellExtra = useCallback(() => {
     const mainAccount = getMainAccount(account, parentAccount);
     const currency = getAccountCurrency(account);
     const unit = getAccountUnit(account);
-    const specific = mainAccount.currency.family
-      ? perFamilyOperationDetails[mainAccount.currency.family]
+    const specific = mainAccount?.currency?.family
+      ? (perFamilyOperationDetails[
+          mainAccount.currency.family as keyof typeof perFamilyOperationDetails
+        ] as FamilyOperationDetailsIntersection)
       : null;
 
     const SpecificAmountCell =
       specific && specific.amountCell
-        ? specific.amountCell[operation.type]
+        ? specific.amountCell[operation.type as keyof typeof specific.amountCell]
         : null;
 
     return SpecificAmountCell ? (
-      <SpecificAmountCell
-        operation={operation}
-        unit={unit}
-        currency={currency}
-      />
+      <SpecificAmountCell operation={operation} unit={unit} currency={currency} />
     ) : null;
   }, [account, operation, parentAccount]);
 
   const amount = getOperationAmountNumber(operation);
-  const valueColor = amount.isNegative() ? "neutral.c100" : "success.c100";
+  const valueColor = amount.isNegative() ? "neutral.c100" : "success.c50";
   const currency = getAccountCurrency(account);
   const unit = getAccountUnit(account);
 
@@ -151,11 +149,7 @@ export default function OperationRow({
   );
 
   return (
-    <ContainerTouchable
-      as={TouchableOpacity}
-      isLast={isLast}
-      onPress={goToOperationDetails}
-    >
+    <ContainerTouchable as={TouchableOpacity} isLast={isLast} onPress={goToOperationDetails}>
       <Box opacity={isOptimistic ? 0.5 : 1}>
         <OperationIcon
           size={40}
@@ -166,40 +160,23 @@ export default function OperationRow({
       </Box>
       <Wrapper opacity={isOptimistic ? 0.5 : 1}>
         <BodyLeftContainer>
-          <Text
-            variant="body"
-            fontWeight="semiBold"
-            color="neutral.c100"
-            numberOfLines={1}
-          >
+          <Text variant="body" fontWeight="semiBold" color="neutral.c100" numberOfLines={1}>
             {multipleAccounts ? getAccountName(account) : text}
           </Text>
 
           {isOptimistic ? (
             <Flex flexDirection="row" alignItems="center">
               {spinner}
-              <Text
-                numberOfLines={1}
-                variant="paragraph"
-                fontWeight="medium"
-                color="neutral.c70"
-              >
+              <Text numberOfLines={1} variant="paragraph" fontWeight="medium" color="neutral.c70">
                 <Trans
                   i18nKey={
-                    amount.isNegative()
-                      ? "operationDetails.sending"
-                      : "operationDetails.receiving"
+                    amount.isNegative() ? "operationDetails.sending" : "operationDetails.receiving"
                   }
                 />
               </Text>
             </Flex>
           ) : (
-            <Text
-              numberOfLines={1}
-              color="neutral.c70"
-              variant="paragraph"
-              fontWeight="medium"
-            >
+            <Text numberOfLines={1} color="neutral.c70" variant="paragraph" fontWeight="medium">
               {text} <OperationRowDate date={operation.date} />
             </Text>
           )}
@@ -217,18 +194,8 @@ export default function OperationRow({
           </BodyRightContainer>
         ) : amount.isZero() ? null : (
           <BodyRightContainer>
-            <Text
-              numberOfLines={1}
-              color={valueColor}
-              variant="body"
-              fontWeight="semiBold"
-            >
-              <CurrencyUnitValue
-                showCode
-                unit={unit}
-                value={amount}
-                alwaysShowSign
-              />
+            <Text numberOfLines={1} color={valueColor} variant="body" fontWeight="semiBold">
+              <CurrencyUnitValue showCode unit={unit} value={amount} alwaysShowSign />
             </Text>
             <Text variant="paragraph" fontWeight="medium" color="neutral.c70">
               <CounterValue
@@ -247,3 +214,9 @@ export default function OperationRow({
     </ContainerTouchable>
   );
 }
+
+/**
+ * you might be surprised but isEqual on these objects is actually very fast
+ * (are we keeping the same object refs at a deep level? no lo se señor)
+ * */
+export default React.memo(OperationRow, isEqual);

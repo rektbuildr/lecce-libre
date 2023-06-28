@@ -1,11 +1,25 @@
-<img src="https://user-images.githubusercontent.com/211411/34776833-6f1ef4da-f618-11e7-8b13-f0697901d6a8.png" height="100" />
+<img src="https://user-images.githubusercontent.com/4631227/191834116-59cf590e-25cc-4956-ae5c-812ea464f324.png" height="100" />
 
-[Github](https://github.com/LedgerHQ/ledgerjs/),
-[Ledger Devs Slack](https://ledger-dev.slack.com/)
+[GitHub](https://github.com/LedgerHQ/ledger-live/),
+[Ledger Devs Discord](https://developers.ledger.com/discord-pro),
+[Developer Portal](https://developers.ledger.com/)
 
 ## @ledgerhq/hw-app-eth
 
 Ledger Hardware Wallet ETH JavaScript bindings.
+
+***
+
+## Are you adding Ledger support to your software wallet?
+
+You may be using this package to communicate with the Ethereum Nano App.
+
+For a smooth and quick integration:
+
+*   See the developers’ documentation on the [Developer Portal](https://developers.ledger.com/docs/transport/overview/) and
+*   Go on [Discord](https://developers.ledger.com/discord-pro/) to chat with developer support and the developer community.
+
+***
 
 ## API
 
@@ -22,48 +36,61 @@ Ledger Hardware Wallet ETH JavaScript bindings.
     *   [signTransaction](#signtransaction)
         *   [Parameters](#parameters-2)
         *   [Examples](#examples-2)
-    *   [getAppConfiguration](#getappconfiguration)
-    *   [signPersonalMessage](#signpersonalmessage)
+    *   [clearSignTransaction](#clearsigntransaction)
         *   [Parameters](#parameters-3)
         *   [Examples](#examples-3)
-    *   [signEIP712HashedMessage](#signeip712hashedmessage)
+    *   [getAppConfiguration](#getappconfiguration)
+    *   [signPersonalMessage](#signpersonalmessage)
         *   [Parameters](#parameters-4)
         *   [Examples](#examples-4)
-    *   [signEIP712Message](#signeip712message)
+    *   [signEIP712HashedMessage](#signeip712hashedmessage)
         *   [Parameters](#parameters-5)
         *   [Examples](#examples-5)
-    *   [starkGetPublicKey](#starkgetpublickey)
+    *   [signEIP712Message](#signeip712message)
         *   [Parameters](#parameters-6)
-    *   [starkSignOrder](#starksignorder)
-        *   [Parameters](#parameters-7)
-    *   [starkSignOrder_v2](#starksignorder_v2)
-        *   [Parameters](#parameters-8)
-    *   [starkSignTransfer](#starksigntransfer)
-        *   [Parameters](#parameters-9)
-    *   [starkSignTransfer_v2](#starksigntransfer_v2)
-        *   [Parameters](#parameters-10)
-    *   [starkProvideQuantum](#starkprovidequantum)
-        *   [Parameters](#parameters-11)
-    *   [starkProvideQuantum_v2](#starkprovidequantum_v2)
-        *   [Parameters](#parameters-12)
-    *   [starkUnsafeSign](#starkunsafesign)
-        *   [Parameters](#parameters-13)
-    *   [eth2GetPublicKey](#eth2getpublickey)
-        *   [Parameters](#parameters-14)
         *   [Examples](#examples-6)
-    *   [eth2SetWithdrawalIndex](#eth2setwithdrawalindex)
+    *   [getChallenge](#getchallenge)
+    *   [starkGetPublicKey](#starkgetpublickey)
+        *   [Parameters](#parameters-7)
+    *   [starkSignOrder](#starksignorder)
+        *   [Parameters](#parameters-8)
+    *   [starkSignOrder_v2](#starksignorder_v2)
+        *   [Parameters](#parameters-9)
+    *   [starkSignTransfer](#starksigntransfer)
+        *   [Parameters](#parameters-10)
+    *   [starkSignTransfer_v2](#starksigntransfer_v2)
+        *   [Parameters](#parameters-11)
+    *   [starkProvideQuantum](#starkprovidequantum)
+        *   [Parameters](#parameters-12)
+    *   [starkProvideQuantum_v2](#starkprovidequantum_v2)
+        *   [Parameters](#parameters-13)
+    *   [starkUnsafeSign](#starkunsafesign)
+        *   [Parameters](#parameters-14)
+    *   [eth2GetPublicKey](#eth2getpublickey)
         *   [Parameters](#parameters-15)
-    *   [getEIP1024PublicEncryptionKey](#geteip1024publicencryptionkey)
-        *   [Parameters](#parameters-16)
         *   [Examples](#examples-7)
-    *   [getEIP1024SharedSecret](#geteip1024sharedsecret)
+    *   [eth2SetWithdrawalIndex](#eth2setwithdrawalindex)
+        *   [Parameters](#parameters-16)
+    *   [getEIP1024PublicEncryptionKey](#geteip1024publicencryptionkey)
         *   [Parameters](#parameters-17)
         *   [Examples](#examples-8)
+    *   [getEIP1024SharedSecret](#geteip1024sharedsecret)
+        *   [Parameters](#parameters-18)
+        *   [Examples](#examples-9)
+    *   [provideERC20TokenInformation](#provideerc20tokeninformation)
+        *   [Parameters](#parameters-19)
+    *   [setExternalPlugin](#setexternalplugin)
+        *   [Parameters](#parameters-20)
+    *   [setPlugin](#setplugin)
+        *   [Parameters](#parameters-21)
+    *   [provideNFTInformation](#providenftinformation)
+        *   [Parameters](#parameters-22)
+    *   [provideDomainName](#providedomainname)
+        *   [Parameters](#parameters-23)
 *   [loadInfosForContractMethod](#loadinfosforcontractmethod)
-    *   [Parameters](#parameters-18)
+    *   [Parameters](#parameters-24)
 *   [byContractAddressAndChainId](#bycontractaddressandchainid)
-    *   [Parameters](#parameters-19)
-*   [list](#list)
+    *   [Parameters](#parameters-25)
 *   [ResolutionConfig](#resolutionconfig)
     *   [Properties](#properties)
 
@@ -115,7 +142,7 @@ You can sign a transaction and retrieve v, r, s given the raw transaction and th
 ##### Examples
 
 ```javascript
-import ledgerService from "@ledgerhq/hw-app-eth/lib/services/ledger"
+import { ledgerService } from "@ledgerhq/hw-app-eth"
 const tx = "e8018504e3b292008252089428ee52a8f3d6e5d15f8b131996950d7f296c7952872bd72a2487400080"; // raw tx to sign
 const resolution = await ledgerService.resolveTransaction(tx);
 const result = eth.signTransaction("44'/60'/0'/0/0", tx, resolution);
@@ -123,6 +150,27 @@ console.log(result);
 ```
 
 Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)<{s: [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), v: [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), r: [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)}>** 
+
+#### clearSignTransaction
+
+Helper to get resolution and signature of a transaction in a single method
+
+##### Parameters
+
+*   `path` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** : the BIP32 path to sign the transaction on
+*   `rawTxHex` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** : the raw ethereum transaction in hexadecimal to sign
+*   `resolutionConfig` **[ResolutionConfig](#resolutionconfig)** : configuration about what should be clear signed in the transaction
+*   `throwOnError`  : optional parameter to determine if a failing resolution of the transaction should throw an error or not (optional, default `false`)
+
+##### Examples
+
+```javascript
+const tx = "e8018504e3b292008252089428ee52a8f3d6e5d15f8b131996950d7f296c7952872bd72a2487400080"; // raw tx to sign
+const result = eth.clearSignTransaction("44'/60'/0'/0/0", tx, { erc20: true, externalPlugins: true, nft: true});
+console.log(result);
+```
+
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)<{r: [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), s: [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), v: [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)}>** 
 
 #### getAppConfiguration
 
@@ -181,6 +229,7 @@ Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/
 
 Sign an EIP-721 formatted message following the specification here:
 https://github.com/LedgerHQ/app-ethereum/blob/develop/doc/ethapp.asc#sign-eth-eip-712
+⚠️ This method is not compatible with nano S (LNS). Make sure to use a try/catch to fallback on the signEIP712HashedMessage method ⚠️
 
 ##### Parameters
 
@@ -215,6 +264,12 @@ message: {contents: "Hello, Bob!"},
 ```
 
 Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)** 
+
+#### getChallenge
+
+Method returning a 4 bytes TLV challenge as an hexa string
+
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)<[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** 
 
 #### starkGetPublicKey
 
@@ -415,6 +470,57 @@ eth.getEIP1024SharedSecret("44'/60'/0'/0/0", "87020e80af6e07a6e4697f091eacadb9e7
 
 Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)<{sharedSecret: [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)}>** an object with a shared secret
 
+#### provideERC20TokenInformation
+
+provides a trusted description of an ERC 20 token to associate a contract address with a ticker and number of decimals.
+
+##### Parameters
+
+*   `data` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** stringified buffer of ERC20 signature
+
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)<[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)>** a boolean
+
+#### setExternalPlugin
+
+provides the name of a trusted binding of a plugin with a contract address and a supported method selector. This plugin will be called to interpret contract data in the following transaction signing command.
+
+##### Parameters
+
+*   `payload` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** external plugin data
+*   `signature` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** signature for the plugin
+
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)<[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)>** a boolean
+
+#### setPlugin
+
+provides the name of a trusted binding of a plugin with a contract address and a supported method selector. This plugin will be called to interpret contract data in the following transaction signing command.
+
+##### Parameters
+
+*   `data` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** stringified buffer of plugin signature
+
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)<[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)>** a boolean
+
+#### provideNFTInformation
+
+provides a trusted description of an NFT to associate a contract address with a collectionName.
+
+##### Parameters
+
+*   `data` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** stringified buffer of the NFT description
+
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)<[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)>** a boolean
+
+#### provideDomainName
+
+provides a domain name (like ENS) to be displayed during transactions in place of the address it is associated to. It shall be run just before a transaction involving the associated address that would be displayed on the device.
+
+##### Parameters
+
+*   `data` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** an stringied buffer of some TLV encoded data to represent the domain
+
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)<[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)>** a boolean
+
 ### loadInfosForContractMethod
 
 Retrieve the metadatas a given contract address and a method selector
@@ -436,24 +542,20 @@ Retrieve the token information by a given contract address if any
 
 *   `contract` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** 
 *   `chainId` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** 
+*   `erc20SignaturesBlob` **([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) | null)?** 
 
-Returns **(TokenInfo | null | [undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined))** 
-
-### list
-
-list all the ERC20 tokens informations
-
-Returns **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)\<TokenInfo>** 
+Returns **ReturnType\<any>** 
 
 ### ResolutionConfig
 
 Allows to configure precisely what the service need to resolve.
 for instance you can set nft:true if you need clear signing on NFTs. If you set it and it is not a NFT transaction, it should still work but will do a useless service resolution.
 
-Type: {nft: [boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?, externalPlugins: [boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?, erc20: [boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?}
+Type: {nft: [boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?, externalPlugins: [boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?, erc20: [boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?, domains: [Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)\<DomainDescriptor>?}
 
 #### Properties
 
 *   `nft` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?** 
 *   `externalPlugins` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?** 
 *   `erc20` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)?** 
+*   `domains` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)\<DomainDescriptor>?** 

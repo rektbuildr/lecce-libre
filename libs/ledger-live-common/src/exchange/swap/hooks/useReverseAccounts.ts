@@ -1,7 +1,7 @@
+import type { Account } from "@ledgerhq/types-live";
 import { useCallback, useMemo } from "react";
-import { SwapDataType, SwapSelectorStateType, SwapTransactionType } from ".";
+import { SwapDataType, SwapSelectorStateType, SwapTransactionType } from "../types";
 import { flattenAccounts } from "../../../account";
-import { Account } from "../../../types";
 
 export const useReverseAccounts = ({
   accounts,
@@ -27,9 +27,7 @@ export const useReverseAccounts = ({
     if (!toAccount || !fromCurrency) return false;
 
     const allAccounstWithSub = accounts ? flattenAccounts(accounts) : [];
-    const isToSwappable = !!allAccounstWithSub.find(
-      (account) => account.id === toAccount?.id
-    );
+    const isToSwappable = !!allAccounstWithSub.find(account => account.id === toAccount?.id);
 
     return isToSwappable;
   }, [toAccount, fromCurrency, accounts]);

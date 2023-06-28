@@ -12,20 +12,26 @@ import NftViewer from "../Nft/NftViewer";
 import NftCollectionHeaderTitle from "../../screens/Nft/NftCollection/NftCollectionHeaderTitle";
 import NftGalleryHeaderTitle from "../../screens/Nft/NftGallery/NftGalleryHeaderTitle";
 import { getStackNavigatorConfig } from "../../navigation/navigatorConfig";
-import AccountHeaderRight from "../../screens/Account/AccountHeaderRight";
-import AccountHeaderTitle from "../../screens/Account/AccountHeaderTitle";
 import ReadOnlyAccounts from "../../screens/Accounts/ReadOnly/ReadOnlyAccounts";
+import ReadOnlyAssets from "../../screens/Portfolio/ReadOnlyAssets";
 
-import ReadOnlyAccountHeaderRight from "../../screens/Account/ReadOnly/ReadOnlyAccountHeaderRight";
-import ReadOnlyAccountHeaderTitle from "../../screens/Account/ReadOnly/ReadOnlyAccountHeaderTitle";
+import Asset from "../../screens/WalletCentricAsset";
+import ReadOnlyAsset from "../../screens/WalletCentricAsset/ReadOnly";
+import Assets from "../../screens/Assets";
+
 import ReadOnlyAccount from "../../screens/Account/ReadOnly/ReadOnlyAccount";
+
+import type { AccountsNavigatorParamList } from "./types/AccountsNavigator";
+import { hasNoAccountsSelector } from "../../reducers/accounts";
+
+const Stack = createStackNavigator<AccountsNavigatorParamList>();
 
 export default function AccountsNavigator() {
   const { colors } = useTheme();
-  const stackNavConfig = useMemo(() => getStackNavigatorConfig(colors), [
-    colors,
-  ]);
-  const readOnlyModeEnabled = useSelector(readOnlyModeEnabledSelector);
+  const stackNavConfig = useMemo(() => getStackNavigatorConfig(colors), [colors]);
+
+  const hasNoAccounts = useSelector(hasNoAccountsSelector);
+  const readOnlyModeEnabled = useSelector(readOnlyModeEnabledSelector) && hasNoAccounts;
 
   return (
     <Stack.Navigator screenOptions={stackNavConfig}>
@@ -39,20 +45,7 @@ export default function AccountsNavigator() {
       <Stack.Screen
         name={ScreenName.Account}
         component={readOnlyModeEnabled ? ReadOnlyAccount : Account}
-        options={{
-          headerTitle: () =>
-            readOnlyModeEnabled ? (
-              <ReadOnlyAccountHeaderTitle />
-            ) : (
-              <AccountHeaderTitle />
-            ),
-          headerRight: () =>
-            readOnlyModeEnabled ? (
-              <ReadOnlyAccountHeaderRight />
-            ) : (
-              <AccountHeaderRight />
-            ),
-        }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name={ScreenName.NftCollection}
@@ -75,8 +68,20 @@ export default function AccountsNavigator() {
           headerTitle: "",
         }}
       />
+      <Stack.Screen
+        name={ScreenName.Assets}
+        component={readOnlyModeEnabled ? ReadOnlyAssets : Assets}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name={ScreenName.Asset}
+        component={readOnlyModeEnabled ? ReadOnlyAsset : Asset}
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack.Navigator>
   );
 }
-
-const Stack = createStackNavigator();

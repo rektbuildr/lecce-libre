@@ -9,7 +9,7 @@ import withEnv from "../../../logic/withEnv";
 
 type Props = {
   hideEmptyTokenAccountsEnabled: boolean;
-  setHideEmptyTokenAccounts: (val: boolean) => void;
+  setHideEmptyTokenAccounts: (_: boolean) => void;
 };
 
 const mapDispatchToProps = {
@@ -28,15 +28,12 @@ function HideEmptyTokenAccountsRow({
       title={<Trans i18nKey="settings.display.hideEmptyTokenAccounts" />}
       desc={<Trans i18nKey="settings.display.hideEmptyTokenAccountsDesc" />}
     >
-      <Switch
-        checked={hideEmptyTokenAccountsEnabled}
-        onChange={setHideEmptyTokenAccounts}
-      />
+      <Switch checked={hideEmptyTokenAccountsEnabled} onChange={setHideEmptyTokenAccounts} />
     </SettingsRow>
   );
 }
 
-export default compose(
+export default compose<React.ComponentType<Record<string, unknown>>>(
   withEnv("HIDE_EMPTY_TOKEN_ACCOUNTS", "hideEmptyTokenAccountsEnabled"),
   connect(null, mapDispatchToProps),
 )(HideEmptyTokenAccountsRow);

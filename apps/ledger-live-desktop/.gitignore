@@ -12,6 +12,9 @@ dbdata/
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
+# Output of pnpm run test:jest
+report.json
+
 # Runtime data
 pids
 *.pid
@@ -113,10 +116,12 @@ dist
 !jsconfig.json
 !tools/dist
 
-src/renderer/generated/
+src/renderer/families/generated.ts
 tests/coverage/
 tests/artifacts/*
 !tests/artifacts/.gitkeep
+tests/utils/dummy-live-app/build
+tests/utils/dummy-wallet-app/build
 
 # Yalc
 .yalc
@@ -129,3 +134,6 @@ ui-lib/storybook-static/*
 
 # IDE
 .vscode/*
+
+# release-notes generated file
+release-notes.json

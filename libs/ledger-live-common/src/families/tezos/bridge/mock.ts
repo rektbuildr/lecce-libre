@@ -12,8 +12,8 @@ import {
   RecommendSubAccountsToEmpty,
   NotEnoughBalanceToDelegate,
 } from "@ledgerhq/errors";
-import type { Transaction } from "../types";
-import type { AccountBridge, CurrencyBridge } from "../../../types";
+import type { TezosAccount, Transaction } from "../types";
+import type { Account, AccountBridge, CurrencyBridge } from "@ledgerhq/types-live";
 import { isAccountBalanceSignificant, getMainAccount } from "../../../account";
 import {
   scanAccounts,
@@ -45,12 +45,8 @@ const defaultGetFees = (a, t: any) =>
 
 const estimateMaxSpendable = ({ account, parentAccount, transaction }) => {
   const mainAccount = getMainAccount(account, parentAccount);
-  const estimatedFees = transaction
-    ? defaultGetFees(mainAccount, transaction)
-    : new BigNumber(10);
-  return Promise.resolve(
-    BigNumber.max(0, account.balance.minus(estimatedFees))
-  );
+  const estimatedFees = transaction ? defaultGetFees(mainAccount, transaction) : new BigNumber(10);
+  return Promise.resolve(BigNumber.max(0, account.balance.minus(estimatedFees)));
 };
 
 const createTransaction = (): Transaction => ({
@@ -69,7 +65,7 @@ const createTransaction = (): Transaction => ({
 
 const updateTransaction = (t, patch) => ({ ...t, ...patch });
 
-const getTransactionStatus = (a, t) => {
+const getTransactionStatus = (a: Account, t: Transaction) => {
   const errors: {
     recipient?: Error;
     amount?: Error;
@@ -80,11 +76,11 @@ const getTransactionStatus = (a, t) => {
   } = {};
   const subAcc = !t.subAccountId
     ? null
-    : a.subAccounts && a.subAccounts.find((ta) => ta.id === t.subAccountId);
+    : a.subAccounts && a.subAccounts.find(ta => ta.id === t.subAccountId);
   const account = subAcc || a;
 
   if (t.mode !== "undelegate") {
-    if (account.freshAddress === t.recipient) {
+    if ((account as TezosAccount).freshAddress === t.recipient) {
       errors.recipient = new InvalidAddressBecauseDestinationIsAlsoSource();
     } else {
       if (!t.recipient) {
@@ -126,11 +122,7 @@ const getTransactionStatus = (a, t) => {
     errors.amount = new NotEnoughBalanceInParentAccount();
   }
 
-  if (
-    !errors.recipient &&
-    !errors.amount &&
-    (amount.lt(0) || totalSpent.gt(account.balance))
-  ) {
+  if (!errors.recipient && !errors.amount && (amount.lt(0) || totalSpent.gt(account.balance))) {
     errors.amount = new NotEnoughBalance();
     totalSpent = new BigNumber(0);
     amount = new BigNumber(0);
@@ -145,11 +137,7 @@ const getTransactionStatus = (a, t) => {
 
     const thresholdWarning = 0.5 * 10 ** a.currency.units[0].magnitude;
 
-    if (
-      !subAcc &&
-      !errors.amount &&
-      account.balance.minus(totalSpent).lt(thresholdWarning)
-    ) {
+    if (!subAcc && !errors.amount && account.balance.minus(totalSpent).lt(thresholdWarning)) {
       if (isAccountDelegating(account)) {
         warnings.amount = new RecommendUndelegation();
       } else if ((a.subAccounts || []).some(isAccountBalanceSignificant)) {

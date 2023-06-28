@@ -1,14 +1,14 @@
 export interface TX {
   id: string;
+  hash?: string;
   account: number;
   index: number;
   received_at: string;
-  block: Block;
+  block: Block | null;
   address: string;
   inputs: Input[];
   outputs: Output[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  fees?: any;
+  fees?: number;
 }
 
 export interface Input {
@@ -44,17 +44,13 @@ export interface Address {
 export interface IStorage {
   appendTxs(txs: TX[]): number;
   getAddressUnspentUtxos(address: Address): Output[];
-  getLastTx(txFilter: {
-    account: number;
-    index: number;
-    confirmed?: boolean;
-  }): TX | undefined;
+  getLastConfirmedTxBlock(txFilter: { account: number; index: number }): Block | null;
+  hasTx(txFilter: { account: number; index: number }): boolean;
+  hasPendingTx(txFilter: { account: number; index: number }): boolean;
   getLastUnconfirmedTx(): TX | undefined;
+  getHighestBlockHeightAndHash(): Block | null;
   getTx(address: string, txId: string): TX | undefined;
-  getUniquesAddresses(addressesFilter: {
-    account?: number;
-    index?: number;
-  }): Address[];
+  getUniquesAddresses(addressesFilter: { account?: number; index?: number }): Address[];
   removeTxs(txsFilter: { account: number; index: number }): void;
   removePendingTxs(txsFilter: { account: number; index: number }): void;
   addAddress(key: string, address: string): void;

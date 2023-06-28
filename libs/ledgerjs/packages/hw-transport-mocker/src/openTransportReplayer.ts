@@ -4,6 +4,8 @@ import type { RecordStore } from "./RecordStore";
 
 export class TransportReplayer extends Transport {
   recordStore: RecordStore;
+  artificialExchangeDelay = 0;
+
   constructor(recordStore: RecordStore) {
     super();
     this.recordStore = recordStore;
@@ -11,7 +13,7 @@ export class TransportReplayer extends Transport {
 
   static isSupported = () => Promise.resolve(true);
   static list = () => Promise.resolve([null]);
-  static listen = (o) => {
+  static listen = o => {
     let unsubscribed;
     setTimeout(() => {
       if (unsubscribed) return;
@@ -27,8 +29,11 @@ export class TransportReplayer extends Transport {
       },
     };
   };
-  static open = (recordStore: RecordStore) =>
-    Promise.resolve(new TransportReplayer(recordStore));
+  static open = (recordStore: RecordStore) => Promise.resolve(new TransportReplayer(recordStore));
+
+  setArtificialExchangeDelay(delay: number): void {
+    this.artificialExchangeDelay = delay;
+  }
 
   setScrambleKey() {}
 
@@ -42,7 +47,17 @@ export class TransportReplayer extends Transport {
     try {
       const buffer = this.recordStore.replayExchange(apdu);
       log("apdu", buffer.toString("hex"));
-      return Promise.resolve(buffer);
+
+      if (this.artificialExchangeDelay) {
+        return new Promise(resolve => {
+          setTimeout(() => {
+            resolve(buffer);
+            this.setArtificialExchangeDelay(0);
+          }, this.artificialExchangeDelay);
+        });
+      } else {
+        return Promise.resolve(buffer);
+      }
     } catch (e) {
       log("apdu-error", String(e));
       return Promise.reject(e);
@@ -54,9 +69,7 @@ export class TransportReplayer extends Transport {
  * create a transport replayer with a record store.
  * @param recordStore
  */
-const openTransportReplayer = (
-  recordStore: RecordStore
-): Promise<TransportReplayer> => {
+const openTransportReplayer = (recordStore: RecordStore): Promise<TransportReplayer> => {
   return TransportReplayer.open(recordStore);
 };
 

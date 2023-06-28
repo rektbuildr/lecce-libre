@@ -8,6 +8,22 @@ const trc10Tokens = require("./trc10-tokens");
 
 const { signedList, whitelist } = trc10Tokens;
 
+const ts = `export type TRC10Token = [
+  number, // id
+  string, // abbr
+  string, // name
+  string, // contractAddress
+  number, // precision
+  boolean, // delisted
+  string, // ledgerSignature
+  boolean? // enableCountervalues
+];
+
+import tokens from "./trc10.json";
+
+export default tokens as TRC10Token[];
+`;
+
 const b58 = (hex) => bs58check.encode(Buffer.from(hex, "hex"));
 
 const convertTRC10 = ({
@@ -87,18 +103,11 @@ async function fetchTrc10Tokens() {
 
 const outputFolder = path.join(
   __dirname,
-  "../../../packages/cryptoassets/data"
+  "../../../packages/cryptoassets/src/data"
 );
 
 fetchTrc10Tokens().then((array) => {
-  fs.writeFileSync(
-    path.join(outputFolder, "trc10.js"),
-    "module.exports = " +
-      "[\n" +
-      array.map((item) => JSON.stringify(item)).join(",\n") +
-      "\n]" +
-      ";",
-    "utf-8"
-  );
-  console.log(`Wrote ${array.length} tokens in trc10.js`);
+  fs.writeFileSync(path.join(outputFolder, "trc10.json"), JSON.stringify(array), "utf-8");
+  fs.writeFileSync(path.join(outputFolder, "trc10.ts"), ts,"utf-8");
+  console.log(`Wrote ${array.length} tokens in trc10.json`);
 });

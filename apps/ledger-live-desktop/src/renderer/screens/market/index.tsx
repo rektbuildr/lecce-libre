@@ -3,13 +3,13 @@ import { Flex, Button as BaseButton, Text, SearchInput, Dropdown } from "@ledger
 import { useSelector } from "react-redux";
 import { starredMarketCoinsSelector } from "~/renderer/reducers/settings";
 import { useTranslation } from "react-i18next";
-import { useMarketData } from "@ledgerhq/live-common/lib/market/MarketDataProvider";
+import { useMarketData } from "@ledgerhq/live-common/market/MarketDataProvider";
 import styled from "styled-components";
 import CounterValueSelect from "./CountervalueSelect";
 import MarketList from "./MarketList";
 import SideDrawerFilter from "./SideDrawerFilter";
-import { rangeDataTable } from "@ledgerhq/live-common/lib/market/utils/rangeDataTable";
-import Track from "~/renderer/analytics/Track";
+import { rangeDataTable } from "@ledgerhq/live-common/market/utils/rangeDataTable";
+import TrackPage from "~/renderer/analytics/TrackPage";
 
 const Container = styled(Flex).attrs({
   flex: "1",
@@ -88,7 +88,7 @@ export default function Market() {
   const toggleFilterByStarredAccounts = useCallback(() => {
     if (starredMarketCoins.length > 0 || starFilterOn) {
       const starred = starFilterOn ? [] : starredMarketCoins;
-      refresh({ starred });
+      refresh({ starred, search: "" });
     }
   }, [refresh, starFilterOn, starredMarketCoins]);
 
@@ -108,10 +108,8 @@ export default function Market() {
 
   return (
     <Container>
-      <Track
-        event="Page Market"
-        onMount
-        onUpdate
+      <TrackPage
+        category="Market"
         sort={order !== "desc"}
         timeframe={range}
         countervalue={counterCurrency}
@@ -130,7 +128,7 @@ export default function Market() {
         <SelectBarContainer flexDirection="row" alignItems="center" justifyContent="flex-end">
           <Flex data-test-id="market-countervalue-select" justifyContent="flex-end" mx={4}>
             <CounterValueSelect
-              counterCurrency={counterCurrency}
+              counterCurrency={String(counterCurrency)}
               setCounterCurrency={setCounterCurrency}
               supportedCounterCurrencies={supportedCounterCurrencies}
             />
@@ -161,7 +159,7 @@ export default function Market() {
                 },
                 liveCompatible: {
                   toggle: toggleLiveCompatible,
-                  value: liveCompatible,
+                  value: Boolean(liveCompatible),
                 },
               }}
               t={t}

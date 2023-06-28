@@ -4,11 +4,12 @@ import invariant from "invariant";
 import flatMap from "lodash/flatMap";
 import zipWith from "lodash/zipWith";
 import { BigNumber } from "bignumber.js";
-import { getValidators } from "./validators";
-import type { Transaction, AccountLike } from "../../types";
 import { Transaction as CosmosTransaction } from "./types";
 import type { CosmosDelegationInfo } from "./types";
+import { AccountLike } from "@ledgerhq/types-live";
 import { getCryptoCurrencyById } from "../../currencies";
+import { CosmosValidatorsManager } from "./CosmosValidatorsManager";
+
 const options = [
   {
     name: "mode",
@@ -31,7 +32,7 @@ const options = [
     desc: "add a memo to a transaction",
   },
   {
-    name: "cosmosSourceValidator",
+    name: "sourceValidator",
     type: String,
     desc: "for redelegate, add a source validator",
   },
@@ -52,17 +53,15 @@ const options = [
 function inferTransactions(
   transactions: Array<{
     account: AccountLike;
-    transaction: Transaction;
+    transaction: CosmosTransaction;
   }>,
   opts: Record<string, any>,
-  { inferAmount }: any
-): Transaction[] {
+  { inferAmount }: any,
+): CosmosTransaction[] {
   return flatMap(transactions, ({ transaction, account }) => {
     invariant(transaction.family === "cosmos", "cosmos family");
     const validatorsAddresses: string[] = opts["cosmosValidator"] || [];
-    const validatorsAmounts: BigNumber[] = (
-      opts["cosmosAmountValidator"] || []
-    ).map((value) => {
+    const validatorsAmounts: BigNumber[] = (opts["cosmosAmountValidator"] || []).map(value => {
       return inferAmount(account, value);
     });
     const validators: CosmosDelegationInfo[] = zipWith(
@@ -71,7 +70,7 @@ function inferTransactions(
       (address, amount) => ({
         address,
         amount: amount || new BigNumber(0),
-      })
+      }),
     );
     return {
       ...transaction,
@@ -81,21 +80,22 @@ function inferTransactions(
       fees: opts.fees ? inferAmount(account, opts.fees) : null,
       gas: opts.gasLimit ? new BigNumber(opts.gasLimit) : null,
       validators: validators,
-      cosmosSourceValidator: opts.cosmosSourceValidator,
+      sourceValidator: opts.sourceValidator,
     } as CosmosTransaction;
   });
 }
 
 const cosmosValidatorsFormatters = {
-  json: (list) => JSON.stringify(list),
-  default: (list) =>
+  json: list => JSON.stringify(list),
+  default: list =>
     list
       .map(
-        (v) =>
-          `${v.validatorAddress} "${v.name}" ${v.votingPower} ${v.commission} ${v.estimatedYearlyRewardsRate}`
+        v =>
+          `${v.validatorAddress} "${v.name}" ${v.votingPower} ${v.commission} ${v.estimatedYearlyRewardsRate}`,
       )
       .join("\n"),
 };
+const cosmosValidatorsManager = new CosmosValidatorsManager(getCryptoCurrencyById("cosmos"));
 const cosmosValidators = {
   args: [
     {
@@ -109,13 +109,12 @@ const cosmosValidators = {
   }: Partial<{
     format: string;
   }>): Observable<string> =>
-    from(getValidators(getCryptoCurrencyById("cosmos"))).pipe(
-      map((validators) => {
+    from(cosmosValidatorsManager.getValidators()).pipe(
+      map(validators => {
         const f =
-          (format && cosmosValidatorsFormatters[format]) ||
-          cosmosValidatorsFormatters.default;
+          (format && cosmosValidatorsFormatters[format]) || cosmosValidatorsFormatters.default;
         return f(validators);
-      })
+      }),
     ),
 };
 export default {

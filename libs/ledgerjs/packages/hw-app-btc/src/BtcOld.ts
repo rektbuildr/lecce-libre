@@ -6,10 +6,8 @@ import type { CreateTransactionArg } from "./createTransaction";
 import { createTransaction } from "./createTransaction";
 import type { AddressFormat } from "./getWalletPublicKey";
 import { getWalletPublicKey } from "./getWalletPublicKey";
-import { signMessage } from "./signMessage";
-import type { SignP2SHTransactionArg } from "./signP2SHTransaction";
-import { signP2SHTransaction } from "./signP2SHTransaction";
 import { pathArrayToString, pathStringToArray } from "./bip32";
+import { signMessage } from "./signMessage";
 export type { AddressFormat };
 
 /**
@@ -17,7 +15,7 @@ export type { AddressFormat };
  *
  * @example
  * import Btc from "@ledgerhq/hw-app-btc";
- * const btc = new Btc(transport)
+ * const btc = new Btc({ transport, currency: "zcash" });
  */
 
 export default class BtcOld {
@@ -42,12 +40,10 @@ export default class BtcOld {
   }): Promise<string> {
     const pathElements = pathStringToArray(path);
     const parentPath = pathElements.slice(0, -1);
-    const parentDerivation = await this.derivatePath(
-      pathArrayToString(parentPath)
-    );
+    const parentDerivation = await this.derivatePath(pathArrayToString(parentPath));
     const accountDerivation = await this.derivatePath(path);
     const fingerprint = makeFingerprint(
-      compressPublicKeySECP256(Buffer.from(parentDerivation.publicKey, "hex"))
+      compressPublicKeySECP256(Buffer.from(parentDerivation.publicKey, "hex")),
     );
     const xpub = makeXpub(
       xpubVersion,
@@ -55,7 +51,7 @@ export default class BtcOld {
       fingerprint,
       pathElements[pathElements.length - 1],
       Buffer.from(accountDerivation.chainCode, "hex"),
-      compressPublicKeySECP256(Buffer.from(accountDerivation.publicKey, "hex"))
+      compressPublicKeySECP256(Buffer.from(accountDerivation.publicKey, "hex")),
     );
     return xpub;
   }
@@ -87,7 +83,7 @@ export default class BtcOld {
     opts?: {
       verify?: boolean;
       format?: AddressFormat;
-    }
+    },
   ): Promise<{
     publicKey: string;
     bitcoinAddress: string;
@@ -97,29 +93,6 @@ export default class BtcOld {
       throw new Error("Unsupported address format bech32m");
     }
     return getWalletPublicKey(this.transport, { ...opts, path });
-  }
-
-  /**
-   * You can sign a message according to the Bitcoin Signature format and retrieve v, r, s given the message and the BIP 32 path of the account to sign.
-   * @example
-   btc.signMessageNew_async("44'/60'/0'/0'/0", Buffer.from("test").toString("hex")).then(function(result) {
-     var v = result['v'] + 27 + 4;
-     var signature = Buffer.from(v.toString(16) + result['r'] + result['s'], 'hex').toString('base64');
-     console.log("Signature : " + signature);
-   }).catch(function(ex) {console.log(ex);});
-   */
-  signMessageNew(
-    path: string,
-    messageHex: string
-  ): Promise<{
-    v: number;
-    r: string;
-    s: string;
-  }> {
-    return signMessage(this.transport, {
-      path,
-      messageHex,
-    });
   }
 
   /**
@@ -154,42 +127,24 @@ export default class BtcOld {
    outputScriptHex: "01905f0100000000001976a91472a5d75c8d2d0565b656a5232703b167d50d5a2b88ac"
   }).then(res => ...);
    */
-  createPaymentTransactionNew(arg: CreateTransactionArg): Promise<string> {
+  createPaymentTransaction(arg: CreateTransactionArg): Promise<string> {
     if (arguments.length > 1) {
-      console.warn(
-        "@ledgerhq/hw-app-btc: createPaymentTransactionNew multi argument signature is deprecated. please switch to named parameters."
+      throw new Error(
+        "@ledgerhq/hw-app-btc: createPaymentTransaction multi argument signature is deprecated. please switch to named parameters.",
       );
     }
     return createTransaction(this.transport, arg);
   }
 
-  /**
-   * To obtain the signature of multisignature (P2SH) inputs, call signP2SHTransaction_async with the folowing parameters
-   * @param inputs is an array of [ transaction, output_index, redeem script, optional sequence ] where
-   * * transaction is the previously computed transaction object for this UTXO
-   * * output_index is the output in the transaction used as input for this UTXO (counting from 0)
-   * * redeem script is the mandatory redeem script associated to the current P2SH input
-   * * sequence is the sequence number to use for this input (when using RBF), or non present
-   * @param associatedKeysets is an array of BIP 32 paths pointing to the path to the private key used for each UTXO
-   * @param outputScriptHex is the hexadecimal serialized outputs of the transaction to sign
-   * @param lockTime is the optional lockTime of the transaction to sign, or default (0)
-   * @param sigHashType is the hash type of the transaction to sign, or default (all)
-   * @return the signed transaction ready to be broadcast
-   * @example
-  btc.signP2SHTransaction({
-  inputs: [ [tx, 1, "52210289b4a3ad52a919abd2bdd6920d8a6879b1e788c38aa76f0440a6f32a9f1996d02103a3393b1439d1693b063482c04bd40142db97bdf139eedd1b51ffb7070a37eac321030b9a409a1e476b0d5d17b804fcdb81cf30f9b99c6f3ae1178206e08bc500639853ae"] ],
-  associatedKeysets: ["0'/0/0"],
-  outputScriptHex: "01905f0100000000001976a91472a5d75c8d2d0565b656a5232703b167d50d5a2b88ac"
-  }).then(result => ...);
-   */
-  signP2SHTransaction(arg: SignP2SHTransactionArg): Promise<string[]> {
-    if (arguments.length > 1) {
-      console.warn(
-        "@ledgerhq/hw-app-btc: signP2SHTransaction multi argument signature is deprecated. please switch to named parameters."
-      );
-    }
-
-    return signP2SHTransaction(this.transport, arg);
+  async signMessage({ path, messageHex }: { path: string; messageHex: string }): Promise<{
+    v: number;
+    r: string;
+    s: string;
+  }> {
+    return signMessage(this.transport, {
+      path,
+      messageHex,
+    });
   }
 }
 
@@ -204,10 +159,7 @@ function asBufferUInt32BE(n: number): Buffer {
 }
 
 const compressPublicKeySECP256 = (publicKey: Buffer) =>
-  Buffer.concat([
-    Buffer.from([0x02 + (publicKey[64] & 0x01)]),
-    publicKey.slice(1, 33),
-  ]);
+  Buffer.concat([Buffer.from([0x02 + (publicKey[64] & 0x01)]), publicKey.slice(1, 33)]);
 
 function makeXpub(
   version: number,
@@ -215,7 +167,7 @@ function makeXpub(
   parentFingerprint: Buffer,
   index: number,
   chainCode: Buffer,
-  pubKey: Buffer
+  pubKey: Buffer,
 ) {
   const indexBuffer = asBufferUInt32BE(index);
   indexBuffer[0] |= 0x80;

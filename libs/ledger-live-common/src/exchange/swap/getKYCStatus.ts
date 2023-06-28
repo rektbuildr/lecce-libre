@@ -1,13 +1,11 @@
-import network from "../../network";
-import { getSwapAPIBaseURL } from "./";
-import type { GetKYCStatus } from "./types";
-import { SwapCheckKYCStatusFailed } from "../../errors";
+import network from "@ledgerhq/live-network/network";
 import { getEnv } from "../../env";
+import { SwapCheckKYCStatusFailed } from "../../errors";
+import { getSwapAPIBaseURL } from "./";
 import { mockGetKYCStatus } from "./mock";
-export const getKYCStatus: GetKYCStatus = async (
-  provider: string,
-  id: string
-) => {
+import type { GetKYCStatus } from "./types";
+
+export const getKYCStatus: GetKYCStatus = async (provider: string, id: string) => {
   const mockedStatus = getEnv("MOCK_SWAP_KYC");
   if (mockedStatus) return mockGetKYCStatus(id, mockedStatus);
 
@@ -17,7 +15,7 @@ export const getKYCStatus: GetKYCStatus = async (
   });
 
   if (!res.data?.status) {
-    return new SwapCheckKYCStatusFailed(id);
+    throw new SwapCheckKYCStatusFailed(id);
   }
 
   const { status } = res.data;
@@ -26,4 +24,5 @@ export const getKYCStatus: GetKYCStatus = async (
     status,
   };
 };
+
 export default getKYCStatus;

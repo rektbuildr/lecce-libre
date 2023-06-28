@@ -1,74 +1,19 @@
+import { getTokenById } from "@ledgerhq/cryptoassets";
+import type { CryptoCurrency, TokenCurrency } from "@ledgerhq/types-cryptoassets";
+import type { Account, SubAccount } from "@ledgerhq/types-live";
 import BigNumber from "bignumber.js";
-
+import { getCryptoCurrencyById } from "../../../currencies";
+import { genAccount } from "../../../mock/account";
 import {
-  pickExchangeRate,
   getAccountTuplesForCurrency,
   getAvailableAccountsById,
+  isRegistrationRequired,
+  getProviderName,
+  getNoticeType,
+  shouldShowKYCBanner,
+  shouldShowLoginBanner,
 } from "./index";
-import { getMockExchangeRate } from "../mock";
-import { genAccount } from "../../../mock/account";
-import type {
-  Account,
-  CryptoCurrency,
-  SubAccount,
-  TokenCurrency,
-} from "../../../types";
-import { getCryptoCurrencyById } from "../../../currencies";
-import { getTokenById } from "@ledgerhq/cryptoassets/lib/tokens";
-
-describe("swap/utils/pickExchangeRate", () => {
-  test("calls the callback function with null when no exchange rates are passed", () => {
-    const setExchangeRate = jest.fn();
-    pickExchangeRate([], undefined, setExchangeRate);
-
-    expect(setExchangeRate).toHaveBeenCalledTimes(1);
-    expect(setExchangeRate).toHaveBeenCalledWith(null);
-  });
-
-  test("calls the callback function with null when no exchange rates are passed but there is an exchange rate", () => {
-    const setExchangeRate = jest.fn();
-    const exchangeRate = getMockExchangeRate({ provider: "wyre" });
-    pickExchangeRate([], exchangeRate, setExchangeRate);
-
-    expect(setExchangeRate).toHaveBeenCalledTimes(1);
-    expect(setExchangeRate).toHaveBeenCalledWith(null);
-  });
-
-  test("calls the callback function with the first exchange rate when the exchange passed isn't included in the list", () => {
-    const setExchangeRate = jest.fn();
-    const firstExchangeRate = getMockExchangeRate({
-      provider: "changelly",
-      tradeMethod: "fixed",
-    });
-    const exchangeRates = [
-      firstExchangeRate,
-      getMockExchangeRate({ provider: "changelly", tradeMethod: "float" }),
-    ];
-    const exchangeRate = getMockExchangeRate({ provider: "wyre" });
-
-    pickExchangeRate(exchangeRates, exchangeRate, setExchangeRate);
-
-    expect(setExchangeRate).toHaveBeenCalledTimes(1);
-    expect(setExchangeRate).toHaveBeenCalledWith(firstExchangeRate);
-  });
-
-  test("calls the callback function with the passed exchange rate when the exchange passed is included in the list", () => {
-    const setExchangeRate = jest.fn();
-    const exchangeRate = getMockExchangeRate({
-      provider: "changelly",
-      tradeMethod: "fixed",
-    });
-    const exchangeRates = [
-      getMockExchangeRate({ provider: "changelly", tradeMethod: "float" }),
-      exchangeRate,
-    ];
-
-    pickExchangeRate(exchangeRates, exchangeRate, setExchangeRate);
-
-    expect(setExchangeRate).toHaveBeenCalledTimes(1);
-    expect(setExchangeRate).toHaveBeenCalledWith(exchangeRate);
-  });
-});
+import { ValidKYCStatus } from "../types";
 
 /* TODO: Refacto these two function and move them to mock/account.ts if needed */
 function* accountGenerator(currency: CryptoCurrency): Generator<Account> {
@@ -100,11 +45,7 @@ describe("swap/utils/getAccountTuplesForCurrency", () => {
         getPolkadotAccount(),
       ];
 
-      const results = getAccountTuplesForCurrency(
-        ethCurrency,
-        allAccounts,
-        false
-      );
+      const results = getAccountTuplesForCurrency(ethCurrency, allAccounts, false);
 
       expect(results).toHaveLength(2);
       results.forEach((result, index) => {
@@ -129,11 +70,7 @@ describe("swap/utils/getAccountTuplesForCurrency", () => {
         getPolkadotAccount(),
       ];
 
-      const results = getAccountTuplesForCurrency(
-        ethCurrency,
-        allAccounts,
-        true
-      );
+      const results = getAccountTuplesForCurrency(ethCurrency, allAccounts, true);
 
       expect(results).toHaveLength(richEthAccounts.length);
       results.forEach((result, index) => {
@@ -144,17 +81,9 @@ describe("swap/utils/getAccountTuplesForCurrency", () => {
 
     test("returns an empty array if the CryptoCurrency passed has no associated account", () => {
       const ethCurrency = getCryptoCurrencyById("ethereum");
-      const allAccounts: Account[] = [
-        getCosmosAccount(),
-        getBtcAccount(),
-        getPolkadotAccount(),
-      ];
+      const allAccounts: Account[] = [getCosmosAccount(), getBtcAccount(), getPolkadotAccount()];
 
-      const results = getAccountTuplesForCurrency(
-        ethCurrency,
-        allAccounts,
-        false
-      );
+      const results = getAccountTuplesForCurrency(ethCurrency, allAccounts, false);
 
       expect(results).toHaveLength(0);
     });
@@ -175,18 +104,14 @@ describe("swap/utils/getAccountTuplesForCurrency", () => {
         getPolkadotAccount(),
       ];
 
-      const results = getAccountTuplesForCurrency(
-        aaveToken,
-        allAccounts,
-        false
-      );
+      const results = getAccountTuplesForCurrency(aaveToken, allAccounts, false);
 
       expect(results).toHaveLength(ethAccounts.length);
       results.forEach((result, index) => {
         expect(result.account).toEqual(ethAccounts[index]);
-        expect(
-          (result.subAccount as SubAccount & { token: TokenCurrency }).token
-        ).toEqual(aaveToken);
+        expect((result.subAccount as SubAccount & { token: TokenCurrency }).token).toEqual(
+          aaveToken,
+        );
       });
     });
 
@@ -199,29 +124,21 @@ describe("swap/utils/getAccountTuplesForCurrency", () => {
         getPolkadotAccount(),
       ];
 
-      const results = getAccountTuplesForCurrency(
-        aaveToken,
-        allAccounts,
-        false
-      );
+      const results = getAccountTuplesForCurrency(aaveToken, allAccounts, false);
 
       expect(results).toHaveLength(ethAccounts.length);
       results.forEach((result, index) => {
         expect(result.account).toEqual(ethAccounts[index]);
-        expect(
-          (result.subAccount as SubAccount & { token: TokenCurrency }).token
-        ).toEqual(aaveToken);
+        expect((result.subAccount as SubAccount & { token: TokenCurrency }).token).toEqual(
+          aaveToken,
+        );
       });
     });
 
     test("returns an empty array when a TokenCurrency is provided but the accounts list is empty", () => {
       const allAccounts: Account[] = [];
 
-      const results = getAccountTuplesForCurrency(
-        aaveToken,
-        allAccounts,
-        false
-      );
+      const results = getAccountTuplesForCurrency(aaveToken, allAccounts, false);
       expect(results).toHaveLength(0);
     });
   });
@@ -234,12 +151,9 @@ describe("swap/utils/getAvailableAccountsById", () => {
   const getCosmosAccount = getAccountCreator("cosmos");
 
   test("return the correct accounts after sorting/filtering them", () => {
-    const [
-      disabledAccount,
-      higherBalanceAccount,
-      lowerBalanceAccount,
-      ...accounts
-    ] = new Array(6).fill(null).map(getEthAccount);
+    const [disabledAccount, higherBalanceAccount, lowerBalanceAccount, ...accounts] = new Array(6)
+      .fill(null)
+      .map(getEthAccount);
 
     // mutate some accounts to test sorting/filtering
     disabledAccount.disabled = true;
@@ -260,8 +174,175 @@ describe("swap/utils/getAvailableAccountsById", () => {
     expect(results).toHaveLength(5);
     expect(results[0].balance.toNumber()).toBeGreaterThan(0);
     expect(results[1].balance.toNumber()).toBeGreaterThan(0);
-    expect(results[0].balance.toNumber()).toBeGreaterThan(
-      results[1].balance.toNumber()
-    );
+    expect(results[0].balance.toNumber()).toBeGreaterThan(results[1].balance.toNumber());
+  });
+});
+
+describe("swap/utils/shouldShowLoginBanner", () => {
+  test("should not display Login banner if no provider is specified", () => {
+    const result = shouldShowLoginBanner({
+      provider: undefined,
+      token: "token",
+    });
+
+    expect(result).toBe(false);
+  });
+
+  ["changelly", "wyre"].forEach(provider => {
+    test(`should not display Login banner for ${provider}`, () => {
+      const result = shouldShowLoginBanner({
+        provider,
+        token: "token",
+      });
+
+      expect(result).toBe(false);
+    });
+  });
+
+  ["ftx", "ftxus"].forEach(provider => {
+    describe(`${provider.toUpperCase()}`, () => {
+      test("should display Login banner if no token is provided", () => {
+        const result = shouldShowLoginBanner({
+          provider: provider,
+          token: undefined,
+        });
+
+        expect(result).toBe(true);
+      });
+
+      test("should display Login banner if token is expired", () => {
+        /**
+         * TODO: add test by mocking `isJwtExpired`
+         */
+      });
+
+      test("should not display Login banner if token is not expired", () => {
+        /**
+         * TODO: add test by mocking `isJwtExpired`
+         */
+      });
+    });
+  });
+});
+
+describe("swap/utils/shouldShowKYCBanner", () => {
+  test("should not display KYC banner if no provider is specified", () => {
+    const result = shouldShowKYCBanner({
+      provider: undefined,
+      kycStatus: "rejected",
+    });
+
+    expect(result).toBe(false);
+  });
+
+  test("should not display KYC banner if provider does not require KYC", () => {
+    const result = shouldShowKYCBanner({
+      provider: "changelly",
+      kycStatus: "rejected",
+    });
+
+    expect(result).toBe(false);
+  });
+
+  ["ftx", "ftxus", "wyre"].forEach(provider => {
+    describe(`${provider.toUpperCase()}`, () => {
+      ["pending", "upgradeRequired", "rejected"].forEach(status => {
+        test(`should display KYC banner if kycStatus is ${status}`, () => {
+          const result = shouldShowKYCBanner({
+            provider,
+            kycStatus: status as ValidKYCStatus,
+          });
+
+          expect(result).toBe(true);
+        });
+      });
+
+      test("should not display KYC banner if kycStatus is approved", () => {
+        const result = shouldShowKYCBanner({
+          provider,
+          kycStatus: "approved",
+        });
+
+        expect(result).toBe(false);
+      });
+    });
+  });
+});
+
+describe("swap/utils/isRegistrationRequired", () => {
+  test("should return registration is required for ftx", () => {
+    const expectedResult = true;
+
+    const result = isRegistrationRequired("ftx");
+
+    expect(result).toBe(expectedResult);
+  });
+
+  test("should return registration is not required for changelly", () => {
+    const expectedResult = false;
+
+    const result = isRegistrationRequired("changelly");
+
+    expect(result).toBe(expectedResult);
+  });
+});
+
+describe("swap/utils/getProviderName", () => {
+  test("should return uppercase provider name for ftx", () => {
+    const expectedResult = "FTX";
+
+    const result = getProviderName("ftx");
+
+    expect(result).toBe(expectedResult);
+  });
+
+  test("should return uppercase provider name for ftxus", () => {
+    const expectedResult = "FTXUS";
+
+    const result = getProviderName("ftxus");
+
+    expect(result).toBe(expectedResult);
+  });
+
+  test("should return capitalized provider name for 1inch", () => {
+    const expectedResult = "1inch";
+
+    const result = getProviderName("oneinch");
+
+    expect(result).toBe(expectedResult);
+  });
+
+  test("should return capitalized provider name for other provider", () => {
+    const expectedResult = "Changelly";
+
+    const result = getProviderName("changelly");
+
+    expect(result).toBe(expectedResult);
+  });
+});
+
+describe("swap/utils/getNoticeType", function () {
+  test("should return notice type for CIC", () => {
+    const expectedResult = { message: "provider", learnMore: false };
+
+    const result = getNoticeType("cic");
+
+    expect(result).toEqual(expectedResult);
+  });
+
+  test("should return notice type for ftx", () => {
+    const expectedResult = { message: "default", learnMore: true };
+
+    const result = getNoticeType("ftx");
+
+    expect(result).toEqual(expectedResult);
+  });
+
+  test("should return notice type for Changelly", () => {
+    const expectedResult = { message: "provider", learnMore: false };
+
+    const result = getNoticeType("changelly");
+
+    expect(result).toEqual(expectedResult);
   });
 });

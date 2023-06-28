@@ -1,5 +1,6 @@
 import type { BigNumber } from "bignumber.js";
-import { NFTStandards } from "./nft";
+import { TransactionCommonRaw } from "./transaction";
+import { NFTStandard } from "./nft";
 
 /**
  *
@@ -29,16 +30,25 @@ export type OperationType =
   | "SLASH"
   | "NOMINATE"
   | "CHILL"
-  // COMPOUND TYPE OPERATIONS
-  | "SUPPLY"
-  | "REDEEM"
+  // ETHEREUM
   | "APPROVE"
   // ALGORAND
   | "OPT_IN"
   | "OPT_OUT"
+  // CELO
+  | "LOCK"
+  | "UNLOCK"
+  | "WITHDRAW"
+  | "REVOKE"
+  | "ACTIVATE"
+  | "REGISTER"
   // NFT
   | "NFT_IN"
-  | "NFT_OUT";
+  | "NFT_OUT"
+  // NEAR
+  | "STAKE"
+  | "UNSTAKE"
+  | "WITHDRAW_UNSTAKED";
 
 /**
  *
@@ -72,7 +82,7 @@ export type Operation = {
   accountId: string;
   // --------------------------------------------- properties related to NFTs
   // the specification used for the transaction's event
-  standard?: NFTStandards | string;
+  standard?: NFTStandard | string;
   // address of an account/contract that is approved to make the transfer
   operator?: string;
   // address of the contract/collection containing an NFT (tokenId)
@@ -94,6 +104,7 @@ export type Operation = {
   internalOperations?: Operation[];
   // Operations related to ERC721 | ERC1155 tokens
   nftOperations?: Operation[];
+  transactionRaw?: TransactionCommonRaw;
 };
 
 /**
@@ -113,7 +124,7 @@ export type OperationRaw = {
   accountId: string;
   hasFailed?: boolean;
   // --------------------------------------------- properties related to NFTs
-  standard?: NFTStandards | string;
+  standard?: NFTStandard | string;
   operator?: string;
   contract?: string;
   tokenId?: string;
@@ -127,4 +138,23 @@ export type OperationRaw = {
   internalOperations?: OperationRaw[];
   // Operations related to ERC721 | ERC1155 tokens
   nftOperations?: OperationRaw[];
+  transactionRaw?: TransactionCommonRaw;
+};
+
+/**
+ *
+ */
+export type DailyOperationsSection = {
+  day: Date;
+  data: Operation[];
+};
+
+/**
+ *
+ */
+export type DailyOperations = {
+  // operations grouped by day
+  sections: DailyOperationsSection[];
+  // Is the sections complete? means there is no more operations to pull
+  completed: boolean;
 };

@@ -1,24 +1,27 @@
-import { Observable, of, concat } from "rxjs";
-import { scan, tap, catchError } from "rxjs/operators";
-import { useEffect, useState } from "react";
-import { getMainAccount } from "../../account";
-import type { ConnectAppEvent, Input as ConnectAppInput } from "../connectApp";
-import type { InitSwapInput, SwapTransaction } from "../../exchange/swap/types";
-import type { Action, Device } from "./types";
-import type { AppState } from "./app";
 import { log } from "@ledgerhq/logs";
-import { createAction as createAppAction } from "./app";
+import React, { useEffect, useState, useMemo } from "react";
+import { concat, Observable, of } from "rxjs";
+import { catchError, scan, tap } from "rxjs/operators";
+import { getMainAccount } from "../../account";
 import type {
   Exchange,
   ExchangeRate,
+  InitSwapInput,
   InitSwapResult,
   SwapRequestEvent,
+  SwapTransaction,
 } from "../../exchange/swap/types";
+import type { ConnectAppEvent, Input as ConnectAppInput } from "../connectApp";
+import type { AppRequest, AppState } from "./app";
+import { createAction as createAppAction } from "./app";
+import type { Action, Device } from "./types";
+import { TransactionStatus } from "../../generated/types";
 
 type State = {
   initSwapResult: InitSwapResult | null | undefined;
   initSwapRequested: boolean;
   initSwapError: Error | null | undefined;
+  swapId?: string;
   error?: Error;
   isLoading: boolean;
   freezeReduxDevice: boolean;
@@ -32,6 +35,8 @@ type InitSwapRequest = {
   transaction: SwapTransaction;
   userId?: string;
   requireLatestFirmware?: boolean;
+  status?: TransactionStatus;
+  device?: React.RefObject<Device | null | undefined>;
 };
 
 type Result =
@@ -40,6 +45,7 @@ type Result =
     }
   | {
       initSwapError: Error;
+      swapId?: string;
     };
 
 type InitSwapAction = Action<InitSwapRequest, InitSwapState, Result>;
@@ -47,6 +53,7 @@ type InitSwapAction = Action<InitSwapRequest, InitSwapState, Result>;
 const mapResult = ({
   initSwapResult,
   initSwapError,
+  swapId,
 }: InitSwapState): Result | null | undefined =>
   initSwapResult
     ? {
@@ -55,12 +62,14 @@ const mapResult = ({
     : initSwapError
     ? {
         initSwapError,
+        swapId,
       }
     : null;
 
 const initialState: State = {
   initSwapResult: null,
   initSwapError: null,
+  swapId: undefined,
   initSwapRequested: false,
   isLoading: true,
   freezeReduxDevice: false,
@@ -72,7 +81,12 @@ const reducer = (state: State, e: SwapRequestEvent) => {
       return { ...state, freezeReduxDevice: true };
 
     case "init-swap-error":
-      return { ...state, initSwapError: e.error, isLoading: false };
+      return {
+        ...state,
+        initSwapError: e.error,
+        swapId: e.swapId,
+        isLoading: false,
+      };
 
     case "init-swap-requested":
       return {
@@ -90,6 +104,8 @@ const reducer = (state: State, e: SwapRequestEvent) => {
         isLoading: false,
       };
   }
+
+  // FIXME it is supposed to be unreachable but it seems to be reached in swap flow. so we must preserve returning the state
   return state;
 };
 
@@ -105,33 +121,23 @@ function useFrozenValue<T>(value: T, frozen: boolean): T {
 
 export const createAction = (
   connectAppExec: (arg0: ConnectAppInput) => Observable<ConnectAppEvent>,
-  initSwapExec: (arg0: InitSwapInput) => Observable<SwapRequestEvent>
+  initSwapExec: (arg0: InitSwapInput) => Observable<SwapRequestEvent>,
 ): InitSwapAction => {
   const useHook = (
     reduxDevice: Device | null | undefined,
-    initSwapRequest: InitSwapRequest
+    initSwapRequest: InitSwapRequest,
   ): InitSwapState => {
     const [state, setState] = useState(initialState);
-    const reduxDeviceFrozen = useFrozenValue(
-      reduxDevice,
-      state.freezeReduxDevice
-    );
+    const reduxDeviceFrozen = useFrozenValue(reduxDevice, state.freezeReduxDevice);
 
-    const {
-      exchange,
-      exchangeRate,
-      transaction,
-      userId,
-      requireLatestFirmware,
-    } = initSwapRequest;
+    const { exchange, exchangeRate, transaction, userId, requireLatestFirmware } = initSwapRequest;
 
-    const { fromAccount, fromParentAccount, toAccount, toParentAccount } =
-      exchange;
+    const { fromAccount, fromParentAccount, toAccount, toParentAccount } = exchange;
     const mainFromAccount = getMainAccount(fromAccount, fromParentAccount);
     const maintoAccount = getMainAccount(toAccount, toParentAccount);
-    const appState = createAppAction(connectAppExec).useHook(
-      reduxDeviceFrozen,
-      {
+
+    const request: AppRequest = useMemo(() => {
+      return {
         appName: "Exchange",
         dependencies: [
           {
@@ -142,8 +148,9 @@ export const createAction = (
           },
         ],
         requireLatestFirmware,
-      }
-    );
+      };
+    }, [mainFromAccount, maintoAccount, requireLatestFirmware]);
+    const appState = createAppAction(connectAppExec).useHook(reduxDeviceFrozen, request);
     const { device, opened, error } = appState;
     const hasError = error || state.error;
     useEffect(() => {
@@ -162,19 +169,19 @@ export const createAction = (
           transaction,
           deviceId: device.deviceId,
           userId,
-        })
+        }),
       )
         .pipe(
-          tap((e) => {
+          tap(e => {
             log("actions-initSwap-event", e.type, e);
           }),
           catchError((error: Error) =>
             of(<SwapRequestEvent>{
               type: "init-swap-error",
               error,
-            })
+            }),
           ),
-          scan(reducer, { ...initialState, isLoading: !hasError })
+          scan(reducer, { ...initialState, isLoading: !hasError }),
         )
         .subscribe(setState);
       return () => {

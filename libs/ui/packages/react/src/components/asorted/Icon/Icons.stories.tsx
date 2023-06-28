@@ -7,7 +7,7 @@ import { Text, SearchInput, Flex, Grid } from "../../..";
 const ScrollArea = styled(Grid)`
   flex: 1;
   height: auto;
-  ${(p) => p.theme.overflow.y};
+  ${p => p.theme.overflow.y};
 `;
 
 const Container = styled(Flex).attrs({
@@ -16,7 +16,7 @@ const Container = styled(Flex).attrs({
   p: 4,
 })`
   overflow: hidden;
-  height: calc(100vh - 2em);
+  height: calc(100vh - 4em);
 `;
 
 const IconContainer = styled(Flex).attrs<{ active?: boolean }>({
@@ -25,13 +25,13 @@ const IconContainer = styled(Flex).attrs<{ active?: boolean }>({
   alignItems: "center",
   p: 4,
 })<{ active?: boolean }>`
-  ${(p) => (p.active ? `background-color: ${p.theme.colors.neutral.c20};` : ``)}
+  ${p => (p.active ? `background-color: ${p.theme.colors.neutral.c20};` : ``)}
   border-radius: 4px;
   height: 100px;
 `;
 
 const Bold = styled.b`
-  color: ${(p) => p.theme.colors.primary.c80};
+  color: ${p => p.theme.colors.primary.c80};
 `;
 
 const Story = {
@@ -39,10 +39,10 @@ const Story = {
   argTypes: {
     weight: {
       type: "enum",
-      description: "Weight",
+      description: "Weight (Deprecated)",
       defaultValue: "Medium",
       control: {
-        options: ["Light", "Medium", "Regular", "Thin", "UltraLight"],
+        options: ["Medium"],
         control: {
           type: "select",
         },
@@ -93,7 +93,7 @@ const ListTemplate = (args: IconProps) => {
           .sort((a: string, b: string) => {
             return s ? b.toLowerCase().indexOf(s) - a.toLowerCase().indexOf(s) : a.localeCompare(b);
           })
-          .map((name) => {
+          .map(name => {
             const match = name.match(regexp);
             const active = s && match;
             const index = match?.index ?? 0;

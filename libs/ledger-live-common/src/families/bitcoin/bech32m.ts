@@ -39,14 +39,9 @@ function polymodStep(pre: number): number {
   );
 }
 
-function encode(
-  prefix: string,
-  words: ArrayLike<number>,
-  LIMIT?: number
-): string {
+function encode(prefix: string, words: ArrayLike<number>, LIMIT?: number): string {
   LIMIT = LIMIT || 90;
-  if (prefix.length + 7 + words.length > LIMIT)
-    throw new TypeError("Exceeds length limit");
+  if (prefix.length + 7 + words.length > LIMIT) throw new TypeError("Exceeds length limit");
 
   prefix = prefix.toLowerCase();
 
@@ -114,35 +109,30 @@ function __decode(str: string, LIMIT?: number) {
   return { prefix, words };
 }
 
-function decodeUnsafe(str: string, LIMIT?: number) {
+function decodeUnsafe(str: string, LIMIT?: number): any {
   const res = __decode(str, LIMIT);
   if (typeof res === "object") return res;
 }
 
-function decode(str: string, LIMIT?: number) {
+function decode(str: string, LIMIT?: number): any {
   const res = __decode(str, LIMIT);
   if (typeof res === "object") return res;
 
   throw new Error(res);
 }
 
+function convert(data: ArrayLike<number>, inBits: number, outBits: number, pad: true): number[];
 function convert(
   data: ArrayLike<number>,
   inBits: number,
   outBits: number,
-  pad: true
-): number[];
-function convert(
-  data: ArrayLike<number>,
-  inBits: number,
-  outBits: number,
-  pad: false
+  pad: false,
 ): number[] | string;
 function convert(
   data: ArrayLike<number>,
   inBits: number,
   outBits: number,
-  pad: boolean
+  pad: boolean,
 ): number[] | string {
   let value = 0;
   let bits = 0;

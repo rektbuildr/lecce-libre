@@ -7,20 +7,13 @@ import { getStackNavigatorConfig } from "../../navigation/navigatorConfig";
 import AddAccountsHeaderRightClose from "../../screens/AddAccounts/AddAccountsHeaderRightClose";
 import ExchangeSelectAccount from "../../screens/Exchange/SelectAccount";
 import ExchangeSelectCurrency from "../../screens/Exchange/SelectCurrency";
-
-type TabLabelProps = {
-  focused: boolean;
-  color: string;
-};
+import { ExchangeStackNavigatorParamList } from "./types/ExchangeStackNavigator";
 
 export default function ExchangeStackNavigator() {
   const { t } = useTranslation();
   const { colors } = useTheme();
 
-  const stackNavigationConfig = useMemo(
-    () => getStackNavigatorConfig(colors, true),
-    [colors],
-  );
+  const stackNavigationConfig = useMemo(() => getStackNavigatorConfig(colors, true), [colors]);
 
   return (
     <Stack.Navigator
@@ -44,4 +37,4 @@ export default function ExchangeStackNavigator() {
   );
 }
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<ExchangeStackNavigatorParamList>();

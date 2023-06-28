@@ -12,8 +12,9 @@ type ValueType = HTMLInputElement["value"];
 export type CommonProps = InputHTMLAttributes<HTMLInputElement> &
   TypographyProps & {
     disabled?: boolean;
-    error?: string;
-    warning?: string;
+    error?: React.ReactNode;
+    warning?: React.ReactNode;
+    info?: React.ReactNode;
   };
 
 export type InputProps<T = ValueType> = Omit<CommonProps, "value" | "onChange"> & {
@@ -47,12 +48,12 @@ export type InputContainerProps = React.ComponentProps<typeof InputContainer>;
 export const InputContainer = styled.div<Partial<CommonProps> & { focus?: boolean }>`
   display: flex;
   height: 48px;
-  border: ${(p) => `1px solid ${p.theme.colors.neutral.c40}`};
+  border: ${p => `1px solid ${p.theme.colors.neutral.c40}`};
   border-radius: 24px;
   transition: all 0.2s ease;
-  color: ${(p) => p.theme.colors.neutral.c100};
+  color: ${p => p.theme.colors.neutral.c100};
 
-  ${(p) =>
+  ${p =>
     p.focus &&
     !p.error &&
     !p.warning &&
@@ -61,22 +62,22 @@ export const InputContainer = styled.div<Partial<CommonProps> & { focus?: boolea
       box-shadow: 0 0 0 4px ${rgba(p.theme.colors.primary.c60, 0.4)};
     `};
 
-  ${(p) =>
+  ${p =>
     p.error &&
     !p.disabled &&
     css`
-      border: 1px solid ${p.theme.colors.error.c100};
+      border: 1px solid ${p.theme.colors.error.c50};
     `};
 
-  ${(p) =>
+  ${p =>
     !p.error &&
     p.warning &&
     !p.disabled &&
     css`
-      border: 1px solid ${p.theme.colors.warning.c80};
+      border: 1px solid ${p.theme.colors.warning.c40};
     `};
 
-  ${(p) =>
+  ${p =>
     !p.error &&
     !p.warning &&
     !p.disabled &&
@@ -86,11 +87,11 @@ export const InputContainer = styled.div<Partial<CommonProps> & { focus?: boolea
       }
     `};
 
-  ${(p) =>
+  ${p =>
     p.disabled &&
     css`
       color: ${p.theme.colors.neutral.c60};
-      background: ${(p) => p.theme.colors.neutral.c20};
+      background: ${p => p.theme.colors.neutral.c20};
     `};
 `;
 
@@ -103,18 +104,18 @@ export const BaseInput = styled.input.attrs<
   height: 100%;
   width: 100%;
   border: 0;
-  caret-color: ${(p) => (p.error ? p.theme.colors.error.c100 : p.theme.colors.primary.c80)};
+  caret-color: ${p => (p.error ? p.theme.colors.error.c50 : p.theme.colors.primary.c80)};
   background: none;
   outline: none;
-  cursor: ${(p) => (p.disabled ? "not-allowed" : "text")};
+  cursor: ${p => (p.disabled ? "not-allowed" : "text")};
   flex-shrink: 1;
-  padding-top: 14px;
-  padding-bottom: 14px;
   padding-left: 20px;
   padding-right: 20px;
   &::placeholder {
-    color: ${(p) => (p.disabled ? p.theme.colors.neutral.c50 : p.theme.colors.neutral.c70)};
+    color: ${p => (p.disabled ? p.theme.colors.neutral.c50 : p.theme.colors.neutral.c70)};
   }
+
+  /* stylelint-disable property-no-vendor-prefix */
 
   /* Hide type=number arrow for Chrome, Safari, Edge, Opera */
   &::-webkit-outer-spin-button,
@@ -127,16 +128,21 @@ export const BaseInput = styled.input.attrs<
   &[type="number"] {
     -moz-appearance: textfield;
   }
+  /* stylelint-enable property-no-vendor-prefix */
 
   ${typography}
 `;
 
 export const InputErrorContainer = styled(Text)`
-  color: ${(p) => p.theme.colors.error.c100};
+  color: ${p => p.theme.colors.error.c50};
   margin-left: 12px;
 `;
 export const InputWarningContainer = styled(Text)`
-  color: ${(p) => p.theme.colors.warning.c80};
+  color: ${p => p.theme.colors.warning.c40};
+  margin-left: 12px;
+`;
+export const InputInfoContainer = styled(Text)`
+  color: ${p => p.theme.colors.neutral.c60};
   margin-left: 12px;
 `;
 
@@ -167,6 +173,7 @@ function Input<T = ValueType>(
     disabled,
     error,
     warning,
+    info,
     onChange,
     onChangeEvent,
     renderLeft,
@@ -202,6 +209,7 @@ function Input<T = ValueType>(
         disabled={disabled}
         error={error}
         warning={warning}
+        info={info}
         onChange={handleChange}
         value={inputValue}
         onFocus={(event: React.FocusEvent<HTMLInputElement>) => {
@@ -243,10 +251,15 @@ function Input<T = ValueType>(
       >
         {inner}
       </InputContainer>
-      {(error || warning) && !disabled && (
+      {(error || warning || info) && !disabled && (
         <FlexBox flexDirection="column" rowGap={2} mt={2}>
-          {error && <InputErrorContainer variant="small">{error}</InputErrorContainer>}
-          {warning && <InputWarningContainer variant="small">{warning}</InputWarningContainer>}
+          {error ? (
+            <InputErrorContainer variant="small">{error}</InputErrorContainer>
+          ) : warning ? (
+            <InputWarningContainer variant="small">{warning}</InputWarningContainer>
+          ) : info ? (
+            <InputInfoContainer variant="small">{info}</InputInfoContainer>
+          ) : null}
         </FlexBox>
       )}
     </div>

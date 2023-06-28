@@ -4,7 +4,7 @@ import { Checkbox as RNCheckbox } from "@ledgerhq/native-ui";
 
 type Props = {
   isChecked: boolean;
-  onChange?: (value: boolean) => void;
+  onChange?: (_: boolean) => void;
   disabled?: boolean;
 };
 
@@ -14,14 +14,7 @@ function CheckBox({ isChecked, disabled, onChange, ...props }: Props) {
     onChange(!isChecked);
   }, [isChecked, onChange]);
 
-  return (
-    <RNCheckbox
-      checked={isChecked}
-      onChange={onPress}
-      disabled={disabled}
-      {...props}
-    />
-  );
+  return <RNCheckbox checked={isChecked} onChange={onPress} disabled={disabled} {...props} />;
 }
 
 export default memo<Props>(CheckBox);

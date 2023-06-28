@@ -18,6 +18,7 @@ const INS = {
   GET_VERSION: 0x04,
   GET_ADDR: 0x05,
   SIGN: 0x06,
+  SIGN_OFFCHAIN: 0x07,
 };
 
 enum EXTRA_STATUS_CODES {
@@ -41,13 +42,13 @@ export default class Solana {
     transport: Transport,
     // the type annotation is needed for doc generator
     // eslint-disable-next-line @typescript-eslint/no-inferrable-types
-    scrambleKey: string = "solana_default_scramble_key"
+    scrambleKey: string = "solana_default_scramble_key",
   ) {
     this.transport = transport;
     this.transport.decorateAppAPIMethods(
       this,
       ["getAddress", "signTransaction", "getAppConfiguration"],
-      scrambleKey
+      scrambleKey,
     );
   }
 
@@ -68,7 +69,7 @@ export default class Solana {
     path: string,
     // the type annotation is needed for doc generator
     // eslint-disable-next-line @typescript-eslint/no-inferrable-types
-    display: boolean = false
+    display: boolean = false,
   ): Promise<{
     address: Buffer;
   }> {
@@ -77,7 +78,7 @@ export default class Solana {
     const addressBuffer = await this.sendToDevice(
       INS.GET_ADDR,
       display ? P1_CONFIRM : P1_NON_CONFIRM,
-      pathBuffer
+      pathBuffer,
     );
 
     return {
@@ -98,7 +99,7 @@ export default class Solana {
    */
   async signTransaction(
     path: string,
-    txBuffer: Buffer
+    txBuffer: Buffer,
   ): Promise<{
     signature: Buffer;
   }> {
@@ -109,11 +110,38 @@ export default class Solana {
 
     const payload = Buffer.concat([pathsCountBuffer, pathBuffer, txBuffer]);
 
-    const signatureBuffer = await this.sendToDevice(
-      INS.SIGN,
-      P1_CONFIRM,
-      payload
-    );
+    const signatureBuffer = await this.sendToDevice(INS.SIGN, P1_CONFIRM, payload);
+
+    return {
+      signature: signatureBuffer,
+    };
+  }
+
+  /**
+   * Sign a Solana off-chain message.
+   *
+   * @param path a BIP32 path
+   * @param msgBuffer serialized off-chain message
+   *
+   * @returns an object with the signature field
+   *
+   * @example
+   * solana.signOffchainMessage("44'/501'/0'", msgBuffer).then(r => r.signature)
+   */
+  async signOffchainMessage(
+    path: string,
+    msgBuffer: Buffer,
+  ): Promise<{
+    signature: Buffer;
+  }> {
+    const pathBuffer = this.pathToBuffer(path);
+    // Ledger app supports only a single derivation path per call ATM
+    const pathsCountBuffer = Buffer.alloc(1);
+    pathsCountBuffer.writeUInt8(1, 0);
+
+    const payload = Buffer.concat([pathsCountBuffer, pathBuffer, msgBuffer]);
+
+    const signatureBuffer = await this.sendToDevice(INS.SIGN_OFFCHAIN, P1_CONFIRM, payload);
 
     return {
       signature: signatureBuffer,
@@ -129,8 +157,11 @@ export default class Solana {
    * solana.getAppConfiguration().then(r => r.version)
    */
   async getAppConfiguration(): Promise<AppConfig> {
-    const [blindSigningEnabled, pubKeyDisplayMode, major, minor, patch] =
-      await this.sendToDevice(INS.GET_VERSION, P1_NON_CONFIRM, Buffer.alloc(0));
+    const [blindSigningEnabled, pubKeyDisplayMode, major, minor, patch] = await this.sendToDevice(
+      INS.GET_VERSION,
+      P1_NON_CONFIRM,
+      Buffer.alloc(0),
+    );
     return {
       blindSigningEnabled: Boolean(blindSigningEnabled),
       pubKeyDisplayMode,
@@ -141,9 +172,7 @@ export default class Solana {
   private pathToBuffer(originalPath: string) {
     const path = originalPath
       .split("/")
-      .map((value) =>
-        value.endsWith("'") || value.endsWith("h") ? value : value + "'"
-      )
+      .map(value => (value.endsWith("'") || value.endsWith("h") ? value : value + "'"))
       .join("/");
     const pathNums: number[] = BIPPath.fromString(path).toPathArray();
     return this.serializePath(pathNums);
@@ -166,10 +195,7 @@ export default class Solana {
      * and this is reported with StatusCodes.MISSING_CRITICAL_PARAMETER first byte prefix
      * so we handle it and show a user friendly error message.
      */
-    const acceptStatusList = [
-      StatusCodes.OK,
-      EXTRA_STATUS_CODES.BLIND_SIGNATURE_REQUIRED,
-    ];
+    const acceptStatusList = [StatusCodes.OK, EXTRA_STATUS_CODES.BLIND_SIGNATURE_REQUIRED];
 
     let p2 = 0;
     let payload_offset = 0;
@@ -185,7 +211,7 @@ export default class Solana {
           p1,
           p2 | P2_MORE,
           buf,
-          acceptStatusList
+          acceptStatusList,
         );
         this.throwOnFailure(reply);
         p2 |= P2_EXTEND;
@@ -194,14 +220,7 @@ export default class Solana {
 
     const buf = payload.slice(payload_offset);
     // console.log("send", p2.toString(16), buf.length.toString(16), buf);
-    const reply = await this.transport.send(
-      LEDGER_CLA,
-      instruction,
-      p1,
-      p2,
-      buf,
-      acceptStatusList
-    );
+    const reply = await this.transport.send(LEDGER_CLA, instruction, p1, p2, buf, acceptStatusList);
 
     this.throwOnFailure(reply);
 
@@ -214,9 +233,7 @@ export default class Solana {
 
     switch (status) {
       case EXTRA_STATUS_CODES.BLIND_SIGNATURE_REQUIRED:
-        throw new Error(
-          "Missing a parameter. Try enabling blind signature in the app"
-        );
+        throw new Error("Missing a parameter. Try enabling blind signature in the app");
       default:
         return;
     }

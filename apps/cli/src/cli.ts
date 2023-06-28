@@ -6,7 +6,7 @@ import commandLineArgs from "command-line-args";
 import { closeAllDevices } from "./live-common-setup";
 import commandsMain from "./commands-index";
 // TODO cli-transaction.js => cli.js
-import perFamily from "@ledgerhq/live-common/lib/generated/cli-transaction";
+import perFamily from "@ledgerhq/live-common/generated/cli-transaction";
 
 const commands = {
   ...Object.values(perFamily)
@@ -22,19 +22,18 @@ const mainOptions = commandLineArgs(
   ],
   {
     stopAtFirstUnknown: true,
-  }
+  },
 );
 
 if (mainOptions.help || !mainOptions.command) {
-  console.log("Ledger Live @ https://github.com/LedgerHQ/ledger-live-common");
+  console.log("Ledger Live @ https://github.com/LedgerHQ/ledger-live");
   console.log("");
   console.log("Usage: ledger-live <command> ...");
   console.log("");
   for (const k in commands) {
     const cmd = commands[k];
     console.log(
-      `Usage: ledger-live ${k} `.padEnd(30) +
-        (cmd.description ? `# ${cmd.description}` : "")
+      `Usage: ledger-live ${k} `.padEnd(30) + (cmd.description ? `# ${cmd.description}` : ""),
     );
     for (const opt of cmd.args) {
       let str = opt.alias ? ` -${opt.alias}, ` : "     ";
@@ -69,7 +68,7 @@ if (mainOptions.help || !mainOptions.command) {
   console.log("                    ....``              ");
   console.log("");
   console.log(
-    "Please be advised this software is experimental and shall not create any obligation for Ledger to continue to develop, offer, support or repair any of its features. The software is provided “as is.” Ledger shall not be liable for any damages whatsoever including loss of profits or data, business interruption arising from using the software."
+    "Please be advised this software is experimental and shall not create any obligation for Ledger to continue to develop, offer, support or repair any of its features. The software is provided “as is.” Ledger shall not be liable for any damages whatsoever including loss of profits or data, business interruption arising from using the software.",
   );
   process.exit(0);
 }
@@ -82,13 +81,13 @@ if (!cmd) {
 const argv = mainOptions._unknown || [];
 const options = commandLineArgs(cmd.args, { argv, stopAtFirstUnknown: true });
 from(cmd.job(options)).subscribe({
-  next: (log) => {
+  next: log => {
     if (log !== undefined) console.log(log);
   },
-  error: (error) => {
+  error: error => {
     const e = error instanceof Error ? error : deserializeError(error);
     if (process.env.VERBOSE || process.env.VERBOSE_FILE) console.error(e);
-    else console.error(String(e.message || e));
+    else console.error(String((e && e.message) || e));
     process.exit(1);
   },
   complete: () => {

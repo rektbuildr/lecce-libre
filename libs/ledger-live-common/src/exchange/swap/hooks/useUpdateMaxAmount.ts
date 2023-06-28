@@ -1,13 +1,8 @@
+import BigNumber from "bignumber.js";
 import { useCallback, useEffect, useState } from "react";
 import { getAccountBridge } from "../../../bridge";
-
-import {
-  SwapTransactionType,
-  SwapDataType,
-  SwapSelectorStateType,
-} from "./useSwapTransaction";
+import { SwapDataType, SwapSelectorStateType, SwapTransactionType } from "../types";
 import { Transaction } from "../../../generated/types";
-import BigNumber from "bignumber.js";
 
 export const ZERO = new BigNumber(0);
 
@@ -26,18 +21,21 @@ export const useUpdateMaxAmount = ({
 }): {
   isMaxEnabled: SwapDataType["isMaxEnabled"];
   toggleMax: SwapTransactionType["toggleMax"];
+  isMaxLoading: SwapDataType["isMaxLoading"];
 } => {
-  const [isMaxEnabled, setMax] = useState<SwapDataType["isMaxEnabled"]>(false);
+  const [isMaxEnabled, setIsMaxEnabled] = useState<SwapDataType["isMaxEnabled"]>(false);
+  const [isMaxLoading, setIsMaxLoading] = useState(false);
 
   const toggleMax: SwapTransactionType["toggleMax"] = useCallback(
     () =>
-      setMax((previous) => {
+      setIsMaxEnabled(previous => {
         if (previous) {
           setFromAmount(ZERO);
+          setIsMaxLoading(false);
         }
         return !previous;
       }),
-    [setFromAmount]
+    [setFromAmount],
   );
 
   /* UPDATE from amount to the estimate max spendable on account
@@ -47,11 +45,13 @@ export const useUpdateMaxAmount = ({
       const updateAmountUsingMax = async () => {
         if (!account) return;
         const bridge = getAccountBridge(account, parentAccount);
+        setIsMaxLoading(true);
         const amount = await bridge.estimateMaxSpendable({
           account,
           parentAccount,
           transaction,
         });
+        setIsMaxLoading(false);
         setFromAmount(amount);
       };
 
@@ -60,8 +60,8 @@ export const useUpdateMaxAmount = ({
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [setFromAmount, isMaxEnabled, account, parentAccount, feesStrategy]
+    [setFromAmount, isMaxEnabled, account, parentAccount, feesStrategy],
   );
 
-  return { isMaxEnabled, toggleMax };
+  return { isMaxEnabled, toggleMax, isMaxLoading };
 };

@@ -1,10 +1,10 @@
-/* eslint-disable import/named */
 import React, { ReactElement } from "react";
 import { useSelector } from "react-redux";
-import apiMock from "@ledgerhq/live-common/lib/market/api/api.mock";
+import apiMock from "@ledgerhq/live-common/market/api/api.mock";
 import Config from "react-native-config";
-import { MarketDataProvider } from "@ledgerhq/live-common/lib/market/MarketDataProvider";
+import { MarketDataProvider } from "@ledgerhq/live-common/market/MarketDataProvider";
 import { useNetInfo } from "@react-native-community/netinfo";
+import { Currency } from "@ledgerhq/types-cryptoassets";
 import {
   counterValueCurrencySelector,
   marketCounterCurrencySelector,
@@ -17,16 +17,12 @@ type Props = {
   children: React.ReactNode;
 };
 
-export default function MarketDataProviderWrapper({
-  children,
-}: Props): ReactElement {
-  const counterValueCurrency: any = useSelector(counterValueCurrencySelector);
-  const marketRequestParams: any = useSelector(marketRequestParamsSelector);
-  const marketCounterCurrency: any = useSelector(marketCounterCurrencySelector);
-  const starredMarketCoins: string[] = useSelector(starredMarketCoinsSelector);
-  const filterByStarredAccount: boolean = useSelector(
-    marketFilterByStarredAccountsSelector,
-  );
+export default function MarketDataProviderWrapper({ children }: Props): ReactElement {
+  const counterValueCurrency = useSelector(counterValueCurrencySelector);
+  const marketRequestParams = useSelector(marketRequestParamsSelector);
+  const marketCounterCurrency = useSelector(marketCounterCurrencySelector);
+  const starredMarketCoins = useSelector(starredMarketCoinsSelector);
+  const filterByStarredAccount = useSelector(marketFilterByStarredAccountsSelector);
   const { isConnected } = useNetInfo();
 
   const counterCurrency = !isConnected
@@ -41,7 +37,7 @@ export default function MarketDataProviderWrapper({
   return (
     <MarketDataProvider
       {...(Config.MOCK ? { fetchApi: apiMock } : {})}
-      countervalue={counterCurrency}
+      countervalue={counterCurrency as Currency}
       initState={{
         requestParams: {
           range: "24h",

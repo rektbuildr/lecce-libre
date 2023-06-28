@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 import { from } from "rxjs";
 import { mergeMap, filter, map } from "rxjs/operators";
-import { withDevice } from "@ledgerhq/live-common/lib/hw/deviceAccess";
-import getDeviceInfo from "@ledgerhq/live-common/lib/hw/getDeviceInfo";
-import { initState, reducer, runAll } from "@ledgerhq/live-common/lib/apps";
-import { listApps, execWithTransport } from "@ledgerhq/live-common/lib/apps/hw";
+import { withDevice } from "@ledgerhq/live-common/hw/deviceAccess";
+import getDeviceInfo from "@ledgerhq/live-common/hw/getDeviceInfo";
+import { initState, reducer, runAll } from "@ledgerhq/live-common/apps/index";
+import { listApps, execWithTransport } from "@ledgerhq/live-common/apps/hw";
 import { deviceOpt } from "../scan";
 export default {
   description: "test script to install and uninstall all apps",
@@ -14,12 +14,12 @@ export default {
   }: Partial<{
     device: string;
   }>) =>
-    withDevice(device || "")((t) => {
+    withDevice(device || "")(t => {
       const exec = execWithTransport(t);
       return from(getDeviceInfo(t)).pipe(
-        mergeMap((deviceInfo) =>
+        mergeMap(deviceInfo =>
           listApps(t, deviceInfo).pipe(
-            filter((e) => e.type === "result"),
+            filter(e => e.type === "result"),
             map((e: any) =>
               e.result.appsListNames.reduce(
                 (s, name) =>
@@ -27,12 +27,12 @@ export default {
                     type: "install",
                     name,
                   }),
-                initState(e.result)
-              )
+                initState(e.result),
+              ),
             ),
-            mergeMap((s) => runAll(s, exec))
-          )
-        )
+            mergeMap(s => runAll(s, exec)),
+          ),
+        ),
       );
     }),
 };

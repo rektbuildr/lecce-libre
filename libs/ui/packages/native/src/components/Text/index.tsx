@@ -46,8 +46,9 @@ export interface BaseTextProps
   lineHeight?: string;
   bracket?: boolean;
   textTransform?: TextStyle["textTransform"];
+  testID?: string;
   uppercase?: boolean;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 const Base = baseStyled.Text.attrs((p: BaseTextProps) => ({
@@ -81,10 +82,14 @@ const BracketText = ({ children, color = "neutral.c100", ...props }: BaseTextPro
   );
 };
 
-const Text = ({ children, bracket, ...props }: BaseTextProps) => {
+const Text = ({ children, bracket, textAlign = "left", testID, ...props }: BaseTextProps) => {
   if (bracket) return <BracketText {...props}>{children}</BracketText>;
 
-  return <Base {...props}>{children}</Base>;
+  return (
+    <Base textAlign={textAlign} {...props} testID={testID}>
+      {children}
+    </Base>
+  );
 };
 
 export default Text;

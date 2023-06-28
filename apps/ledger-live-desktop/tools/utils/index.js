@@ -1,24 +1,36 @@
 const childProcess = require("child_process");
-const webpack = require("webpack");
-const WebpackBar = require("webpackbar");
 const { prerelease } = require("semver");
-const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
+const path = require("path");
+const { DotEnvPlugin, nodeExternals } = require("esbuild-utils");
+const electronPlugin = require("vite-plugin-electron/renderer");
+const reactPlugin = require("@vitejs/plugin-react");
+const { defineConfig } = require("vite");
+
+const SENTRY_URL = process.env.SENTRY_URL;
 const pkg = require("../../package.json");
+const lldRoot = path.resolve(__dirname, "..", "..");
 
-const SENTRY_URL = process.env?.SENTRY_URL;
+let GIT_REVISION = process.env.GIT_REVISION;
 
-const GIT_REVISION = childProcess
-  .execSync("git rev-parse --short HEAD")
-  .toString("utf8")
-  .trim();
+if (!GIT_REVISION) {
+  GIT_REVISION = childProcess.execSync("git rev-parse --short HEAD").toString("utf8").trim();
+}
 
 const parsed = prerelease(pkg.version);
 let PRERELEASE = false;
-let CHANNEL;
+let CHANNEL = null;
 if (parsed) {
   PRERELEASE = !!(parsed && parsed.length);
   CHANNEL = parsed[0];
 }
+
+const DOTENV_FILE = process.env.TESTING
+  ? ".env.testing"
+  : process.env.STAGING
+  ? ".env.staging"
+  : process.env.NODE_ENV === "production"
+  ? ".env.production"
+  : ".env";
 
 // TODO: ADD BUNDLE ANALYZER
 
@@ -29,13 +41,13 @@ const buildMainEnv = (mode, argv) => {
     __GIT_REVISION__: JSON.stringify(GIT_REVISION),
     __SENTRY_URL__: JSON.stringify(SENTRY_URL || null),
     // See: https://github.com/node-formidable/formidable/issues/337
-    "global.GENTLY": false,
+    "global.GENTLY": JSON.stringify(false),
     __PRERELEASE__: JSON.stringify(PRERELEASE),
     __CHANNEL__: JSON.stringify(CHANNEL),
   };
 
   if (mode === "development") {
-    env.INDEX_URL = JSON.stringify(`http://localhost:${argv.port}/webpack/index.html`);
+    env.INDEX_URL = JSON.stringify(`http://localhost:${argv.port}/index.html`);
   }
 
   return env;
@@ -55,52 +67,108 @@ const buildRendererEnv = mode => {
   return env;
 };
 
-const buildRendererConfig = (mode, wpConf) => {
-  const entry =
-    mode === "development"
-      ? Array.isArray(wpConf.entry)
-        ? ["webpack-hot-middleware/client", ...wpConf.entry]
-        : ["webpack-hot-middleware/client", wpConf.entry]
-      : wpConf.entry;
+const buildViteConfig = argv =>
+  defineConfig({
+    configFile: false,
+    root: path.resolve(lldRoot, "src", "renderer"),
+    server: {
+      port: argv.port,
+      // force: true,
+    },
+    define: {
+      ...buildRendererEnv("development"),
+      ...DotEnvPlugin.buildDefine(DOTENV_FILE),
+    },
+    resolve: {
+      conditions: ["node", "import", "module", "browser", "default"],
+      alias: {
+        "~": path.resolve(lldRoot, "src"),
+        qrloop: require.resolve("qrloop"),
+        "@ledgerhq/react-ui": path.join(
+          path.dirname(require.resolve("@ledgerhq/react-ui/package.json")),
+          "lib",
+        ),
+        // This is not the best way to do this, but it works for now.
+        // The problem is that vitejs has trouble resolving everything under the /bridge subfolder.
+        // Even though the files are there, it can't find them - and it manages to resolve other paths just fine.
+        "@ledgerhq/coin-framework": path.join(
+          path.resolve(__dirname, "..", "..", "..", "..", "libs", "coin-framework"),
+          "lib-es",
+        ),
+        "@ledgerhq/coin-polkadot": path.join(
+          path.resolve(__dirname, "..", "..", "..", "..", "libs", "coin-polkadot"),
+          "lib-es",
+        ),
+        "@ledgerhq/coin-algorand": path.join(
+          path.resolve(__dirname, "..", "..", "..", "..", "libs", "coin-algorand"),
+          "lib-es",
+        ),
+        "@ledgerhq/coin-evm": path.join(
+          path.resolve(__dirname, "..", "..", "..", "..", "libs", "coin-evm"),
+          "lib-es",
+        ),
+        "@ledgerhq/live-network": path.join(
+          path.resolve(__dirname, "..", "..", "..", "..", "libs", "live-network"),
+          "lib-es",
+        ),
+        electron: path.join(__dirname, "electronRendererStubs.js"),
+      },
+    },
+    optimizeDeps: {
+      // The common.js dependencies and files need to be force-added below:
+      include: ["@ledgerhq/hw-app-eth/erc20"],
+      exclude: ["@braze/web-sdk"],
+      esbuildOptions: {
+        target: ["es2020"],
+        plugins: [
+          {
+            name: "Externalize Nodejs Standard Library",
+            setup(build) {
+              nodeExternals.forEach(external => {
+                build.onResolve({ filter: new RegExp(`^${external}$`) }, _args => ({
+                  path: external,
+                  external: true,
+                }));
+              });
+            },
+          },
+          {
+            name: "fix require('buffer/') calls",
+            setup(build) {
+              build.onResolve({ filter: /^buffer\/$/ }, args => {
+                if (!args.importer) return;
 
-  const plugins =
-    mode === "development"
-      ? [
-          ...wpConf.plugins,
-          new ReactRefreshWebpackPlugin(),
-          new webpack.HotModuleReplacementPlugin(),
-        ]
-      : wpConf.plugins;
+                const result = require.resolve(args.path, {
+                  paths: [args.resolveDir],
+                });
 
-  return {
-    ...wpConf,
-    mode: mode === "production" ? "production" : "development",
-    devtool: mode === "development" ? "eval-source-map" : undefined,
-    entry,
+                return {
+                  path: result,
+                };
+              });
+            },
+          },
+        ],
+      },
+    },
     plugins: [
-      ...plugins,
-      new WebpackBar({ name: "renderer" }),
-      new webpack.DefinePlugin(buildRendererEnv(mode)),
+      reactPlugin(),
+      electronPlugin(),
+      // {
+      //   name: "override:electron:config-serve",
+      //   apply: "serve",
+      //   config(config) {
+      //     // Override stubs to add missing remote and WebviewTag exports
+      //     config.resolve.alias.electron = path.join(__dirname, "electronRendererStubs.js");
+      //   },
+      // },
     ],
-    node: {
-      __dirname: false,
-      __filename: false,
-    },
-    output: {
-      ...wpConf.output,
-      publicPath: mode === "production" ? "./" : "/webpack",
-    },
-    watchOptions:
-      mode === "development"
-        ? {
-            aggregateTimeout: 150,
-          }
-        : undefined,
-  };
-};
+  });
 
 module.exports = {
   buildMainEnv,
   buildRendererEnv,
-  buildRendererConfig,
+  buildViteConfig,
+  lldRoot,
+  DOTENV_FILE,
 };

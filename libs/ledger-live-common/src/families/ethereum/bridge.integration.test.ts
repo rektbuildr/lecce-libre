@@ -3,12 +3,8 @@ import { testBridge } from "../../__tests__/test-helpers/bridge";
 
 import invariant from "invariant";
 import { BigNumber } from "bignumber.js";
-import type { AccountRaw, DatasetTest } from "../../types";
-import {
-  FeeTooHigh,
-  GasLessThanEstimate,
-  NotEnoughBalance,
-} from "@ledgerhq/errors";
+import type { AccountRaw, DatasetTest, SubAccount, TokenAccount } from "@ledgerhq/types-live";
+import { FeeTooHigh, GasLessThanEstimate, NotEnoughBalance } from "@ledgerhq/errors";
 import { fromTransactionRaw } from "./transaction";
 import type { Transaction } from "./types";
 import ethereumScanAccounts1 from "./datasets/ethereum.scanAccounts.1";
@@ -16,9 +12,10 @@ import ethereum_classic from "./datasets/ethereum_classic";
 import { syncAccount } from "../../__tests__/test-helpers/bridge";
 import { ethereum1 } from "./datasets/ethereum1";
 
-const expectedTokenAccount = (a) => {
-  invariant(a && a.type === "TokenAccount", "expected token account");
-  return a;
+const expectedTokenAccount = (account: SubAccount | undefined): TokenAccount => {
+  invariant(account && account.type === "TokenAccount", "expected token account");
+
+  return account as TokenAccount;
 };
 
 const dataset: DatasetTest<Transaction> = {
@@ -31,7 +28,7 @@ const dataset: DatasetTest<Transaction> = {
           implementations: ["js"],
           transactions: [
             {
-              name: "success1",
+              name: "Send",
               transaction: fromTransactionRaw({
                 family: "ethereum",
                 mode: "send",
@@ -54,6 +51,27 @@ const dataset: DatasetTest<Transaction> = {
               },
             },
             {
+              name: "Send max",
+              transaction: t => {
+                return {
+                  ...t,
+                  mode: "send",
+                  gasPrice: new BigNumber(100),
+                  recipient: "0x17733CAb76d9A2112576443F21735789733B1ca3",
+                  useAllAmount: true,
+                  amount: new BigNumber(5000),
+                  feesStrategy: null,
+                };
+              },
+              expectedStatus: (account, tx, status) => {
+                return {
+                  amount: BigNumber.max(account.spendableBalance.minus(status.estimatedFees), 0),
+                  errors: {},
+                  warnings: {},
+                };
+              },
+            },
+            {
               name: "Send token must succeed",
               transaction: (t, account) => ({
                 ...t,
@@ -61,10 +79,8 @@ const dataset: DatasetTest<Transaction> = {
                 amount: new BigNumber("800000000000000"),
                 subAccountId: expectedTokenAccount(
                   (account.subAccounts || []).find(
-                    (a) =>
-                      expectedTokenAccount(a).token.id ===
-                      "ethereum/erc20/aurora"
-                  )
+                    a => expectedTokenAccount(a).token.id === "ethereum/erc20/aurora",
+                  ),
                 ).id,
               }),
               expectedStatus: {
@@ -85,10 +101,8 @@ const dataset: DatasetTest<Transaction> = {
                 feesStrategy: null,
                 subAccountId: expectedTokenAccount(
                   (account.subAccounts || []).find(
-                    (a) =>
-                      expectedTokenAccount(a).token.id ===
-                      "ethereum/erc20/aurora"
-                  )
+                    a => expectedTokenAccount(a).token.id === "ethereum/erc20/aurora",
+                  ),
                 ).id,
               }),
               expectedStatus: {
@@ -111,10 +125,8 @@ const dataset: DatasetTest<Transaction> = {
                 gasPrice: new BigNumber("10"),
                 subAccountId: expectedTokenAccount(
                   (account.subAccounts || []).find(
-                    (a) =>
-                      expectedTokenAccount(a).token.id ===
-                      "ethereum/erc20/aurora"
-                  )
+                    a => expectedTokenAccount(a).token.id === "ethereum/erc20/aurora",
+                  ),
                 ).id,
               }),
               expectedStatus: {
@@ -127,12 +139,9 @@ const dataset: DatasetTest<Transaction> = {
           ],
           test: async (expect, account, bridge) => {
             if (account.subAccounts) {
-              const blacklistedTokenIds = [
-                "ethereum/erc20/weth",
-                "ethereum/erc20/amber_token",
-              ];
+              const blacklistedTokenIds = ["ethereum/erc20/weth", "ethereum/erc20/amber_token"];
               const rawTokenIds = account.subAccounts
-                .map((sa) => (sa.type === "TokenAccount" ? sa.token.id : ""))
+                .map(sa => (sa.type === "TokenAccount" ? sa.token.id : ""))
                 .filter(Boolean);
               const syncedAccount = await syncAccount(bridge, account, {
                 paginationConfig: {},
@@ -141,7 +150,7 @@ const dataset: DatasetTest<Transaction> = {
               const filteredTokenIds =
                 syncedAccount.subAccounts &&
                 syncedAccount.subAccounts
-                  .map((sa) => (sa.type === "TokenAccount" ? sa.token.id : ""))
+                  .map(sa => (sa.type === "TokenAccount" ? sa.token.id : ""))
                   .filter(Boolean);
 
               for (const tokenId of blacklistedTokenIds) {

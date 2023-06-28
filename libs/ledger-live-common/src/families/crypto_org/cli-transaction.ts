@@ -1,6 +1,8 @@
+import type { AccountLike } from "@ledgerhq/types-live";
 import invariant from "invariant";
 import flatMap from "lodash/flatMap";
-import type { Transaction, AccountLike } from "../../types";
+import type { Transaction } from "../../generated/types";
+import { CryptoOrgAccount } from "./types";
 const options = [
   {
     name: "mode",
@@ -19,7 +21,7 @@ function inferTransactions(
     account: AccountLike;
     transaction: Transaction;
   }>,
-  opts: Record<string, any>
+  opts: Record<string, any>,
 ): Transaction[] {
   return flatMap(transactions, ({ transaction, account }) => {
     invariant(transaction.family === "crypto_org", "crypto_org family");
@@ -28,8 +30,10 @@ function inferTransactions(
     }
 
     if (account.type === "Account") {
-      invariant(account.cryptoOrgResources, "unactivated account");
-      if (!account.cryptoOrgResources) throw new Error("unactivated account");
+      const cryptoOrgAccount = account as CryptoOrgAccount;
+      // We are doing the job twice... maybe use either invariant or if() throw
+      invariant(cryptoOrgAccount.cryptoOrgResources, "unactivated account");
+      if (!cryptoOrgAccount.cryptoOrgResources) throw new Error("unactivated account");
     }
 
     return {

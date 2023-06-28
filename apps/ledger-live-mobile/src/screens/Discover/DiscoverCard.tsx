@@ -1,6 +1,7 @@
 import React from "react";
-import { TouchableOpacityProps } from "react-native";
 import { Flex, Text } from "@ledgerhq/native-ui";
+import { BaseTextProps } from "@ledgerhq/native-ui/components/Text/index";
+import { FlexBoxProps } from "@ledgerhq/native-ui/components/Layout/Flex/index";
 import Touchable from "../../components/Touchable";
 
 const DiscoverCard = ({
@@ -13,20 +14,24 @@ const DiscoverCard = ({
   Image,
   disabled,
   cardProps,
+  imageContainerProps,
+  subtitleFirst,
   ...props
 }: {
   title: string;
-  titleProps?: any;
+  titleProps?: Partial<BaseTextProps>;
   subTitle?: string;
-  subTitleProps?: any;
+  subTitleProps?: Partial<BaseTextProps>;
   labelBadge?: string;
   Image: React.ReactNode;
-  onPress: TouchableOpacityProps["onPress"];
+  onPress: React.ComponentProps<typeof Touchable>["onPress"];
   disabled?: boolean;
   event?: string;
-  eventProperties?: any;
+  eventProperties?: Record<string, unknown>;
   testID?: string;
-  cardProps?: any;
+  cardProps?: Partial<FlexBoxProps>;
+  imageContainerProps?: Partial<FlexBoxProps>;
+  subtitleFirst?: boolean;
 }) => (
   <Touchable onPress={onPress} disabled={disabled} {...props}>
     <Flex
@@ -35,7 +40,7 @@ const DiscoverCard = ({
       alignItems={"center"}
       bg="neutral.c30"
       borderRadius={8}
-      mb={8}
+      mb={6}
       mx={6}
       overflow="hidden"
       minHeight={130}
@@ -49,11 +54,12 @@ const DiscoverCard = ({
         flex={1}
         justifyContent="flex-start"
         alignItems="flex-start"
+        flexDirection={subtitleFirst ? "column-reverse" : "column"}
       >
-        <Flex flexDirection="row" alignItems="center" mb={6}>
+        <Flex flexDirection="row" alignItems="center" mb={subtitleFirst ? 0 : 3}>
           <Text
             mt={2}
-            variant={"h2"}
+            variant={"h5"}
             fontWeight={"semiBold"}
             color={"neutral.c100"}
             {...titleProps}
@@ -61,12 +67,12 @@ const DiscoverCard = ({
             {title}
           </Text>
         </Flex>
-
         {subTitle && (
           <Text
-            variant={"body"}
+            mb={subtitleFirst ? 2 : 0}
+            variant={"bodyLineHeight"}
             fontWeight={"medium"}
-            color={"neutral.c70"}
+            color={"neutral.c80"}
             {...subTitleProps}
           >
             {subTitle}
@@ -82,6 +88,7 @@ const DiscoverCard = ({
           alignItems={"flex-end"}
           justifyContent={"flex-end"}
           style={{ transform: [{ scale: 1.1 }] }}
+          {...imageContainerProps}
         >
           {Image}
         </Flex>

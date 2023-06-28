@@ -4,7 +4,7 @@ import { Observable } from "rxjs";
 import { LedgerSigner, DerivationType } from "@taquito/ledger-signer";
 import { TezosToolkit } from "@taquito/taquito";
 import type { Transaction } from "./types";
-import type { Account, SignOperationEvent } from "../../types";
+import type { Account, SignOperationEvent } from "@ledgerhq/types-live";
 import { withDevice } from "../../hw/deviceAccess";
 import { getEnv } from "../../env";
 import { FeeNotLoaded } from "@ledgerhq/errors";
@@ -20,8 +20,8 @@ export const signOperation = ({
   deviceId: any;
   transaction: Transaction;
 }): Observable<SignOperationEvent> =>
-  withDevice(deviceId)((transport) =>
-    Observable.create((o) => {
+  withDevice(deviceId)(transport =>
+    Observable.create(o => {
       let cancelled;
 
       async function main() {
@@ -36,14 +36,16 @@ export const signOperation = ({
           transport,
           freshAddressPath,
           false,
-          DerivationType.ED25519
+          DerivationType.ED25519,
         );
         tezos.setProvider({ signer: ledgerSigner });
 
-        // disable the broadcast because we want to do it in a second phase (broadcast hook)
+        // Disable the broadcast because we want to do it in a second phase (broadcast hook)
+        // Use a dummy transaction hash, we don't care about this check
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        tezos.contract.context.injector.inject = async () => "";
+        tezos.contract.context.injector.inject = async () =>
+          "op4WsnE6gvDPFFzbXtsX1wLCsuAAbkA8JhXKApxvEYmaEd3fpNC";
 
         o.next({ type: "device-signature-requested" });
 
@@ -61,7 +63,7 @@ export const signOperation = ({
           params.gasLimit = upperModulo(
             transaction.gasLimit || new BigNumber(0),
             new BigNumber(136),
-            new BigNumber(1000)
+            new BigNumber(1000),
           ).toNumber();
         }
 
@@ -139,11 +141,11 @@ export const signOperation = ({
 
       main().then(
         () => o.complete(),
-        (e) => o.error(e)
+        e => o.error(e),
       );
 
       return () => {
         cancelled = true;
       };
-    })
+    }),
   );

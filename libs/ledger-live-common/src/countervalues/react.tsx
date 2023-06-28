@@ -1,7 +1,6 @@
 import { BigNumber } from "bignumber.js";
 import React, {
   createContext,
-  useRef,
   useMemo,
   useContext,
   useEffect,
@@ -10,7 +9,6 @@ import React, {
   useCallback,
   ReactElement,
 } from "react";
-import type { Account, AccountLike, Currency, Unit } from "../types";
 import { getAccountCurrency, getAccountUnit } from "../account/helpers";
 import {
   initialState,
@@ -28,6 +26,8 @@ import type {
   TrackingPair,
 } from "./types";
 import { useDebounce } from "../hooks/useDebounce";
+import type { Account, AccountLike } from "@ledgerhq/types-live";
+import type { Currency, Unit } from "@ledgerhq/types-cryptoassets";
 // Polling is the control object you get from the high level <PollingConsumer>{ polling => ...
 export type Polling = {
   // completely wipe all countervalues
@@ -70,46 +70,36 @@ const CountervaluesContext = createContext<CounterValuesState>(initialState);
 
 function trackingPairsHash(a: TrackingPair[]) {
   return a
-    .map(
-      (p) =>
-        `${p.from.ticker}:${p.to.ticker}:${
-          p.startDate?.toISOString().slice(0, 10) || ""
-        }`
-    )
+    .map(p => `${p.from.ticker}:${p.to.ticker}:${p.startDate?.toISOString().slice(0, 10) || ""}`)
     .sort()
     .join("|");
 }
 
 export function useTrackingPairForAccounts(
   accounts: Account[],
-  countervalue: Currency
+  countervalue: Currency,
 ): TrackingPair[] {
-  const memo = useMemo(
-    () => inferTrackingPairForAccounts(accounts, countervalue),
-    [accounts, countervalue]
-  );
-  const ref = useRef(memo);
-
-  if (trackingPairsHash(ref.current) === trackingPairsHash(memo)) {
-    return ref.current;
-  }
-
-  ref.current = memo;
-  return memo;
+  // first we cache the tracking pairs with its hash
+  const c = useMemo(() => {
+    const pairs = inferTrackingPairForAccounts(accounts, countervalue);
+    return { pairs, hash: trackingPairsHash(pairs) };
+  }, [accounts, countervalue]);
+  // we only want to return the pairs when the hash changes
+  // to not recalculate pairs as fast as accounts resynchronizes
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  return useMemo(() => c.pairs, [c.hash]);
 }
+
 export function Countervalues({
   children,
   userSettings,
-  pollInitDelay = 1 * 1000,
-  autopollInterval = 120 * 1000,
+  pollInitDelay = 3 * 1000,
+  autopollInterval = 8 * 60 * 1000,
   debounceDelay = 1000,
   savedState,
 }: Props): ReactElement {
   const debouncedUserSettings = useDebounce(userSettings, debounceDelay);
-  const [{ state, pending, error }, dispatch] = useReducer(
-    fetchReducer,
-    initialFetchState
-  );
+  const [{ state, pending, error }, dispatch] = useReducer(fetchReducer, initialFetchState);
 
   // flag used to trigger a loadCountervalues
   const [triggerLoad, setTriggerLoad] = useState(false);
@@ -125,18 +115,18 @@ export function Countervalues({
       type: "pending",
     });
     loadCountervalues(state, userSettings).then(
-      (state) => {
+      state => {
         dispatch({
           type: "success",
           payload: state,
         });
       },
-      (error) => {
+      error => {
         dispatch({
           type: "error",
           payload: error,
         });
-      }
+      },
     );
   }, [pending, state, userSettings, triggerLoad]);
   // save the state when it changes
@@ -174,13 +164,11 @@ export function Countervalues({
       pending,
       error,
     }),
-    [pending, error]
+    [pending, error],
   );
   return (
     <CountervaluesPollingContext.Provider value={polling}>
-      <CountervaluesContext.Provider value={state}>
-        {children}
-      </CountervaluesContext.Provider>
+      <CountervaluesContext.Provider value={state}>{children}</CountervaluesContext.Provider>
     </CountervaluesPollingContext.Provider>
   );
 }
@@ -276,7 +264,7 @@ export function useCalculateMany(
     to: Currency;
     disableRounding?: boolean;
     reverse?: boolean;
-  }
+  },
 ): Array<number | null | undefined> {
   const state = useCountervaluesState();
   // TODO how to approach perf for this? hash function of the datapoints? responsability on user land?
@@ -297,11 +285,9 @@ export function useCalculateCountervalueCallback({
         to,
         disableRounding: true,
       });
-      return typeof countervalue === "number"
-        ? new BigNumber(countervalue)
-        : countervalue;
+      return typeof countervalue === "number" ? new BigNumber(countervalue) : countervalue;
     },
-    [to, state]
+    [to, state],
   );
 }
 
@@ -338,11 +324,11 @@ export function useSendAmount({
           to: fiatCurrency,
           value: fiatAmount.toNumber(),
           reverse: true,
-        }) ?? 0
+        }) ?? 0,
       );
       return cryptoAmount;
     },
-    [state, cryptoCurrency, fiatCurrency]
+    [state, cryptoCurrency, fiatCurrency],
   );
   return {
     cryptoUnit,

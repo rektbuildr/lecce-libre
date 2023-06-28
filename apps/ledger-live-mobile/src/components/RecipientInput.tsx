@@ -1,11 +1,10 @@
 import { Flex } from "@ledgerhq/native-ui";
 import { PasteMedium } from "@ledgerhq/native-ui/assets/icons";
-import React, { ForwardedRef } from "react";
+import React, { ForwardedRef, memo } from "react";
 import { useTranslation } from "react-i18next";
 import { TextInput as BaseTextInput } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import styled from "styled-components/native";
-
 import TextInput, { Props as TextInputProps } from "./TextInput";
 
 const PasteButton = styled(TouchableOpacity).attrs(() => ({
@@ -29,15 +28,16 @@ const PasteIcon = styled(PasteMedium).attrs(p => ({
 type Props = TextInputProps & {
   ref?: ForwardedRef<BaseTextInput>;
   onPaste?: () => void;
+  placeholderTranslationKey: string;
 };
 
-const RecipientInput = ({ ref, onPaste, ...props }: Props) => {
+const RecipientInput = ({ ref, onPaste, placeholderTranslationKey, ...props }: Props) => {
   const { t } = useTranslation();
 
   return (
     <TextInput
       ref={ref}
-      placeholder={t("transfer.recipient.input")}
+      placeholder={t(placeholderTranslationKey)}
       renderRight={
         <Flex alignItems="center" justifyContent="center" pr={2}>
           <PasteButton onPress={onPaste}>
@@ -50,4 +50,8 @@ const RecipientInput = ({ ref, onPaste, ...props }: Props) => {
   );
 };
 
-export default RecipientInput;
+RecipientInput.defaultProps = {
+  placeholderTranslationKey: "transfer.recipient.input",
+};
+
+export default memo(RecipientInput);

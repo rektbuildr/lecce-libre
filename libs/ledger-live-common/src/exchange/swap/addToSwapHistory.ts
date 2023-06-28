@@ -1,7 +1,8 @@
-import type { Account, SubAccount, Operation, Transaction } from "../../types";
+import type { Transaction } from "../../generated/types";
 import type { Exchange, ExchangeRate } from "./types";
 import { getAccountCurrency, getMainAccount } from "../../account";
 import type { SwapOperation } from "../swap/types";
+import type { Account, Operation, SubAccount } from "@ledgerhq/types-live";
 
 export default ({
   account,
@@ -25,13 +26,10 @@ export default ({
   const toCurrency = getAccountCurrency(toAccount);
   const fromCurrency = getAccountCurrency(fromAccount);
   const subAccounts = account.type === "Account" && account.subAccounts;
-  const tokenId =
-    toCurrency.type === "TokenCurrency" ? toCurrency.id : undefined;
+  const tokenId = toCurrency.type === "TokenCurrency" ? toCurrency.id : undefined;
   const isFromToken = fromCurrency.type === "TokenCurrency";
   const operationId =
-    isFromToken && operation.subOperations
-      ? operation.subOperations[0].id
-      : operation.id;
+    isFromToken && operation.subOperations ? operation.subOperations[0].id : operation.id;
 
   const toAmount = transaction.amount.times(exchangeRate.magnitudeAwareRate);
 

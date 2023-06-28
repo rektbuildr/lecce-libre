@@ -1,8 +1,9 @@
 import React, { useState, useCallback } from "react";
-import { Action, State } from "@ledgerhq/live-common/lib/apps";
+import { Action, State } from "@ledgerhq/live-common/apps/index";
 import { Trans } from "react-i18next";
 
 import { Flex, Text } from "@ledgerhq/native-ui";
+import { App } from "@ledgerhq/types-live";
 import UpdateAllModal from "../Modals/UpdateAllModal";
 import AppUpdateStepper from "./AppUpdateStepper";
 
@@ -11,16 +12,11 @@ import Button from "../../../components/Button";
 type Props = {
   state: State;
   appsToUpdate: App[];
-  dispatch: (a: Action) => void;
+  dispatch: (_: Action) => void;
   isModalOpened?: boolean;
 };
 
-const AppUpdateAll = ({
-  state,
-  appsToUpdate,
-  dispatch,
-  isModalOpened,
-}: Props) => {
+const AppUpdateAll = ({ state, appsToUpdate, dispatch, isModalOpened }: Props) => {
   const { updateAllQueue } = state;
   const [modalOpen, setModalOpen] = useState(isModalOpened);
 
@@ -33,22 +29,11 @@ const AppUpdateAll = ({
   }, [dispatch]);
 
   return (
-    <Flex>
+    <Flex mt={5}>
       <AppUpdateStepper state={state} />
       {appsToUpdate.length > 0 && updateAllQueue.length <= 0 && (
-        <Flex
-          flexDirection="row"
-          alignItems="center"
-          bg="neutral.c30"
-          borderRadius={4}
-          p={6}
-        >
-          <Text
-            flex={1}
-            variant="large"
-            fontWeight="semiBold"
-            numberOfLines={2}
-          >
+        <Flex flexDirection="row" alignItems="center" bg="neutral.c30" borderRadius={4} p={6}>
+          <Text flex={1} variant="large" fontWeight="semiBold" numberOfLines={2}>
             <Trans
               i18nKey="AppAction.update.title"
               count={appsToUpdate.length}
@@ -75,7 +60,7 @@ const AppUpdateAll = ({
             </Button>
           </Flex>
           <UpdateAllModal
-            isOpened={modalOpen}
+            isOpened={!!modalOpen}
             installed={state.installed}
             apps={appsToUpdate}
             onClose={closeModal}

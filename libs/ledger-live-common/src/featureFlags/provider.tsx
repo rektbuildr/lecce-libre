@@ -1,19 +1,22 @@
-import React, {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-
-import { FeatureId, Feature } from "./types";
+import React, { createContext, useContext } from "react";
+import type { FeatureId, Feature } from "@ledgerhq/types-live";
 
 type State = {
+  isFeature: (_: string) => boolean;
   getFeature: (_: FeatureId) => Feature | null;
+  overrideFeature: (_: FeatureId, value: Feature) => void;
+  resetFeature: (_: FeatureId) => void;
+  resetFeatures: () => void;
+  getAllFlags: () => Record<string, Feature>;
 };
 
 const initialState: State = {
-  getFeature: (_) => ({ enabled: false }),
+  isFeature: _ => false,
+  getFeature: _ => ({ enabled: false }),
+  overrideFeature: _ => {},
+  resetFeature: _ => {},
+  resetFeatures: () => {},
+  getAllFlags: () => ({}),
 };
 
 const FeatureFlagsContext = createContext<State>(initialState);
@@ -22,27 +25,8 @@ export function useFeatureFlags(): State {
   return useContext<State>(FeatureFlagsContext);
 }
 
-type Props = {
-  getFeature: (_: FeatureId) => Feature | null;
-  children?: ReactNode;
-};
-
-export function FeatureFlagsProvider({
-  getFeature,
-  children,
-}: Props): JSX.Element {
-  const [state, setState] = useState<State>(initialState);
-
-  useEffect(() => {
-    setState((prev) => ({
-      ...prev,
-      getFeature,
-    }));
-  }, [getFeature]);
-
+export const FeatureFlagsProvider: React.FC<State> = ({ children, ...providerState }) => {
   return (
-    <FeatureFlagsContext.Provider value={state}>
-      {children}
-    </FeatureFlagsContext.Provider>
+    <FeatureFlagsContext.Provider value={providerState}>{children}</FeatureFlagsContext.Provider>
   );
-}
+};

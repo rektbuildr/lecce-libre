@@ -1,12 +1,7 @@
+import type { Account, AccountLike, AccountLikeArray } from "@ledgerhq/types-live";
 import invariant from "invariant";
 import flatMap from "lodash/flatMap";
-
-import type {
-  Transaction,
-  Account,
-  AccountLike,
-  AccountLikeArray,
-} from "../../types";
+import type { Transaction } from "../../generated/types";
 
 const options = [];
 
@@ -22,7 +17,7 @@ function inferTransactions(
     account: AccountLike;
     transaction: Transaction;
     mainAccount: Account;
-  }>
+  }>,
 ): Transaction[] {
   return flatMap(transactions, ({ transaction }) => {
     invariant(transaction.family === "filecoin", "filecoin family");

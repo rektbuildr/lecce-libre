@@ -3,7 +3,7 @@ import styled, { useTheme } from "styled-components/native";
 import { IconOrElementType } from "../type";
 import Flex, { FlexBoxProps } from "../../Layout/Flex";
 
-type Props = {
+export type Props = {
   Icon: IconOrElementType;
   color?: string;
   boxSize?: number;
@@ -44,6 +44,7 @@ export default function IconBox({
       {React.isValidElement(Icon) ? (
         Icon
       ) : (
+        /* @ts-expect-error TS 5 can't seem to be able to prove this is a react comopnent here */
         <Icon size={iconSize} color={color || colors.neutral.c100} />
       )}
     </IconContainer>

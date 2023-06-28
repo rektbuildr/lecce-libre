@@ -1,10 +1,4 @@
-import React, {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native";
 import WebView, { WebViewMessageEvent } from "react-native-webview";
 import NetInfo from "@react-native-community/netinfo";
@@ -34,7 +28,8 @@ export type Props = {
   onMessage?: (_: WebViewMessageEvent) => void;
   renderHeader?: () => ReactNode;
   renderLoading?: () => ReactNode;
-  renderError?: () => ReactNode;
+  renderError?: () => JSX.Element;
+  enableNavigationOverride?: boolean;
 };
 
 const WebViewScreen = ({
@@ -45,6 +40,7 @@ const WebViewScreen = ({
   renderHeader,
   renderLoading,
   renderError,
+  enableNavigationOverride = true,
 }: Props) => {
   const ref = useRef<WebView>(null);
   const navigation = useNavigation();
@@ -63,6 +59,7 @@ const WebViewScreen = ({
   }, [uri, setLoading]);
 
   useEffect(() => {
+    if (!enableNavigationOverride) return undefined;
     const unsubscribe = navigation.addListener("beforeRemove", e => {
       if (canGoBack) return;
       // Prevent default behavior of leaving the screen
@@ -71,7 +68,7 @@ const WebViewScreen = ({
     });
 
     return unsubscribe;
-  }, [canGoBack, navigation]);
+  }, [canGoBack, enableNavigationOverride, navigation]);
 
   const handleOnLoad = useCallback(() => {
     setLoading(false);
@@ -101,7 +98,7 @@ const WebViewScreen = ({
               startInLoadingState
               javaScriptCanOpenWindowsAutomatically
               allowsBackForwardNavigationGestures
-              onNavigationStateChange={(navState: any) => {
+              onNavigationStateChange={navState => {
                 setCanGoBack(!navState.canGoBack);
               }}
             />

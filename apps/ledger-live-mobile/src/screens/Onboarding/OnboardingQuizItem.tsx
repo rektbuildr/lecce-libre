@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Flex, Text } from "@ledgerhq/native-ui";
-import { Base as BaseButton } from "@ledgerhq/native-ui/components/cta/Button";
-import { Image } from "react-native";
+import { Base as BaseButton } from "@ledgerhq/native-ui/components/cta/Button/index";
+import { Image, ImageSourcePropType } from "react-native";
 import Button from "../../components/PreventDoubleClickButton";
 
 import successImage from "../../images/illustration/Light/_053.png";
@@ -17,11 +17,11 @@ type Answer = {
 type Props = {
   data: {
     question: string;
-    image: any;
+    image: ImageSourcePropType;
     answers: Answer[];
   };
   onNext: (correct: boolean) => void;
-  setBg: (bg: string) => void;
+  setBg: (_: string) => void;
   cta: string;
 };
 
@@ -38,13 +38,7 @@ export default function OnboardingQuizItem({
       <Flex flex={1} px={6} py={7}>
         <Flex flex={1} alignItems="center" justifyContent="center">
           <Image
-            source={
-              selectedAnswer
-                ? selectedAnswer.correct
-                  ? successImage
-                  : failImage
-                : image
-            }
+            source={selectedAnswer ? (selectedAnswer.correct ? successImage : failImage) : image}
             style={{ width: "100%", height: 200 }}
             resizeMode="contain"
           />
@@ -56,6 +50,7 @@ export default function OnboardingQuizItem({
                 mb={7}
                 textAlign="center"
                 color="constant.black"
+                lineHeight="34.8px"
               >
                 {selectedAnswer.title}
               </Text>
@@ -64,18 +59,14 @@ export default function OnboardingQuizItem({
               </Text>
             </>
           ) : (
-            <Text variant="h2" mt={8} textAlign="center" color="constant.black">
+            <Text variant="h2" mt={8} textAlign="center" color="constant.black" lineHeight="34.8px">
               {question}
             </Text>
           )}
         </Flex>
 
         {selectedAnswer ? (
-          <Button
-            type="main"
-            size="large"
-            onPress={() => onNext(selectedAnswer.correct)}
-          >
+          <Button type="main" size="large" onPress={() => onNext(selectedAnswer.correct)}>
             {cta}
           </Button>
         ) : (
@@ -86,16 +77,11 @@ export default function OnboardingQuizItem({
               key={i}
               onPress={() => {
                 setSelectedAnswer(answer);
-                setBg(answer.correct ? "success.c100" : "error.c100");
+                setBg(answer.correct ? "success.c50" : "error.c50");
               }}
               mt={6}
             >
-              <Text
-                variant="body"
-                flex={1}
-                textAlign="center"
-                color="constant.black"
-              >
+              <Text variant="body" flex={1} textAlign="center" color="constant.black">
                 {answer.answer}
               </Text>
             </BaseButton>

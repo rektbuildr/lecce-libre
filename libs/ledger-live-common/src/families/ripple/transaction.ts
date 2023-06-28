@@ -1,15 +1,18 @@
 import { BigNumber } from "bignumber.js";
 import type { Transaction, TransactionRaw } from "./types";
 import {
+  formatTransactionStatusCommon as formatTransactionStatus,
   fromTransactionCommonRaw,
+  fromTransactionStatusRawCommon as fromTransactionStatusRaw,
   toTransactionCommonRaw,
-} from "../../transaction/common";
-import type { Account } from "../../types";
+  toTransactionStatusRawCommon as toTransactionStatusRaw,
+} from "@ledgerhq/coin-framework/transaction/common";
+import type { Account } from "@ledgerhq/types-live";
 import { getAccountUnit } from "../../account";
 import { formatCurrencyUnit } from "../../currencies";
 export const formatTransaction = (
   { amount, recipient, fee, tag, useAllAmount }: Transaction,
-  account: Account
+  account: Account,
 ): string => `
 SEND ${
   useAllAmount
@@ -62,8 +65,12 @@ export const toTransactionRaw = (t: Transaction): TransactionRaw => {
     },
   };
 };
+
 export default {
   formatTransaction,
   fromTransactionRaw,
   toTransactionRaw,
+  fromTransactionStatusRaw,
+  toTransactionStatusRaw,
+  formatTransactionStatus,
 };

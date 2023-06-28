@@ -1,15 +1,18 @@
 import type { Transaction, TransactionRaw } from "./types";
 import { BigNumber } from "bignumber.js";
 import {
+  formatTransactionStatusCommon as formatTransactionStatus,
   fromTransactionCommonRaw,
+  fromTransactionStatusRawCommon as fromTransactionStatusRaw,
   toTransactionCommonRaw,
-} from "../../transaction/common";
-import type { Account } from "../../types";
+  toTransactionStatusRawCommon as toTransactionStatusRaw,
+} from "@ledgerhq/coin-framework/transaction/common";
+import type { Account } from "@ledgerhq/types-live";
 import { getAccountUnit } from "../../account";
 import { formatCurrencyUnit } from "../../currencies";
 export const formatTransaction = (
   { mode, amount, recipient, useAllAmount, memo }: Transaction,
-  account: Account
+  account: Account,
 ): string => `
 ${mode.toUpperCase()} ${
   useAllAmount
@@ -42,8 +45,12 @@ export const toTransactionRaw = (t: Transaction): TransactionRaw => {
     memo: t.memo,
   };
 };
+
 export default {
   formatTransaction,
   fromTransactionRaw,
   toTransactionRaw,
+  fromTransactionStatusRaw,
+  toTransactionStatusRaw,
+  formatTransactionStatus,
 };

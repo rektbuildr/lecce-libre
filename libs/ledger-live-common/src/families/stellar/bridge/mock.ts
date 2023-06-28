@@ -11,7 +11,7 @@ import {
   NotEnoughSpendableBalance,
 } from "@ledgerhq/errors";
 import { StellarWrongMemoFormat, SourceHasMultiSign } from "../../../errors";
-import type { AccountBridge, CurrencyBridge } from "../../../types";
+import type { Account, AccountBridge, CurrencyBridge } from "@ledgerhq/types-live";
 import type { Transaction } from "../types";
 import { getMainAccount } from "../../../account";
 import { formatCurrencyUnit } from "../../../currencies";
@@ -43,6 +43,9 @@ const createTransaction = (): Transaction => ({
   memoValue: null,
   memoType: null,
   useAllAmount: false,
+  mode: "send",
+  assetCode: "",
+  assetIssuer: "",
 });
 
 const updateTransaction = (t, patch) => {
@@ -81,7 +84,7 @@ const isMemoValid = (memoType: string, memoValue: string): boolean => {
   return true;
 };
 
-const getTransactionStatus = async (a, t) => {
+const getTransactionStatus = async (a: Account, t: Transaction) => {
   const errors: {
     recipient?: Error;
     fees?: Error;
@@ -113,12 +116,8 @@ const getTransactionStatus = async (a, t) => {
 
   const estimatedFees = !t.fees ? new BigNumber(0) : t.fees;
   const baseReserve = !t.baseReserve ? new BigNumber(0) : t.baseReserve;
-  let amount = !useAllAmount
-    ? t.amount
-    : a.balance.minus(baseReserve).minus(estimatedFees);
-  let totalSpent = !useAllAmount
-    ? amount.plus(estimatedFees)
-    : a.balance.minus(baseReserve);
+  let amount = !useAllAmount ? t.amount : a.balance.minus(baseReserve).minus(estimatedFees);
+  let totalSpent = !useAllAmount ? amount.plus(estimatedFees) : a.balance.minus(baseReserve);
 
   if (totalSpent.gt(a.balance.minus(baseReserve))) {
     errors.amount = new NotEnoughSpendableBalance("", {
@@ -130,18 +129,11 @@ const getTransactionStatus = async (a, t) => {
     });
   }
 
-  if (
-    !errors.amount &&
-    amount.plus(estimatedFees).plus(baseReserve).gt(a.balance)
-  ) {
+  if (!errors.amount && amount.plus(estimatedFees).plus(baseReserve).gt(a.balance)) {
     errors.amount = new NotEnoughBalance();
   }
 
-  if (
-    !errors.recipient &&
-    !errors.amount &&
-    (amount.lt(0) || totalSpent.gt(a.balance))
-  ) {
+  if (!errors.recipient && !errors.amount && (amount.lt(0) || totalSpent.gt(a.balance))) {
     errors.amount = new NotEnoughBalance();
     totalSpent = new BigNumber(0);
     amount = new BigNumber(0);
@@ -152,11 +144,7 @@ const getTransactionStatus = async (a, t) => {
   }
 
   // if amount < 1.0 you can't
-  if (
-    !errors.amount &&
-    notCreatedAddresses.includes(t.recipient) &&
-    amount.lt(10000000)
-  ) {
+  if (!errors.amount && notCreatedAddresses.includes(t.recipient) && amount.lt(10000000)) {
     errors.amount = new NotEnoughBalanceBecauseDestinationNotCreated("", {
       minimalAmount: "1 XLM",
     });
@@ -185,22 +173,14 @@ const prepareTransaction = async (a, t) => {
   const fees = t.fees || networkInfo.fees;
   const baseReserve = t.baseReserve || networkInfo.baseReserve;
 
-  if (
-    t.networkInfo !== networkInfo ||
-    t.fees !== fees ||
-    t.baseReserve !== baseReserve
-  ) {
+  if (t.networkInfo !== networkInfo || t.fees !== fees || t.baseReserve !== baseReserve) {
     return { ...t, networkInfo, fees, baseReserve };
   }
 
   return t;
 };
 
-const estimateMaxSpendable = async ({
-  account,
-  parentAccount,
-  transaction,
-}) => {
+const estimateMaxSpendable = async ({ account, parentAccount, transaction }) => {
   const mainAccount = getMainAccount(account, parentAccount);
   const t = await prepareTransaction(mainAccount, {
     ...createTransaction(),

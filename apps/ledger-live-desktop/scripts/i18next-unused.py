@@ -34,7 +34,6 @@ dynamicKeys = {
     '^(lend.account.)\w+': rep,
     '^(lend.enable.steps.)\w+': rep,
     '^(manager.modal.steps.)[\w-]+': rep,
-    '^(migrateAccounts.progress.)[\w-]+': rep,
     '^(onboarding.alerts.)\w+': rep,
     '^(onboarding.pedagogy.screens.)\w+': rep,
     '^(onboarding.quizz.questions.)\w+': rep,
@@ -62,7 +61,7 @@ def recursive_walk(folder):
             for subfolder in subfolders:
                 recursive_walk(subfolder)
         for filename in filenames:
-            if filename.endswith(".js"):
+            if filename.endswith((".js", ".tsx", ".ts", ".jsx")):
                 files.append(os.path.join(folderName, filename))
 
 recursive_walk(folder1)

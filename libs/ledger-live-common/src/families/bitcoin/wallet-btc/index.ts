@@ -1,11 +1,6 @@
 import { Currency } from "./crypto/types";
 import BitcoinLikeWallet from "./wallet";
-import {
-  DerivationModes,
-  InputInfo,
-  OutputInfo,
-  TransactionInfo,
-} from "./types";
+import { DerivationModes, InputInfo, OutputInfo, TransactionInfo } from "./types";
 import { Account, SerializedAccount } from "./account";
 import { TX, Input, Output } from "./storage/types";
 import { CoinSelect } from "./pickingstrategies/CoinSelect";
@@ -14,8 +9,9 @@ import { Merge } from "./pickingstrategies/Merge";
 import { isValidAddress, isTaprootAddress } from "./utils";
 
 import type { Account as WalletAccount } from "./account";
-import type { Account as LiveAccount } from "./../../../types";
+import type { Account as LiveAccount } from "@ledgerhq/types-live";
 import { AccountNeedResync } from "../../../errors";
+import { BitcoinAccount } from "../types";
 
 export {
   BitcoinLikeWallet,
@@ -39,7 +35,7 @@ export {
 let wallet: BitcoinLikeWallet | null = null;
 
 export const getWalletAccount = (account: LiveAccount): WalletAccount => {
-  const walletAccount = account.bitcoinResources?.walletAccount;
+  const walletAccount = (account as BitcoinAccount).bitcoinResources?.walletAccount;
   if (account.id.startsWith("libcore") || !walletAccount) {
     throw new AccountNeedResync();
   }
