@@ -15,6 +15,7 @@ import { withDevice } from "../../../hw/deviceAccess";
 import Btc from "@ledgerhq/hw-app-btc";
 import { from } from "rxjs";
 import { CryptoCurrency } from "@ledgerhq/types-cryptoassets";
+import Transport from "@ledgerhq/hw-transport";
 
 const receive = makeAccountBridgeReceive({
   injectGetAddressParams: account => {
@@ -38,13 +39,16 @@ const updateTransaction = (t, patch): any => {
   return updatedT;
 };
 
+function createSigner(transport: Transport, crypto: CryptoCurrency): Btc {
+  return new Btc({ transport, currency: crypto.id });
+}
 const signerContext: SignerContext = (
   deviceId: string,
   crypto: CryptoCurrency,
   fn: (signer: Btc) => Promise<string>,
 ): Promise<string> =>
   withDevice(deviceId)(transport => {
-    const signer = new Btc({ transport, currency: crypto.id });
+    const signer = createSigner(transport, crypto);
     return from(fn(signer));
   }).toPromise();
 
