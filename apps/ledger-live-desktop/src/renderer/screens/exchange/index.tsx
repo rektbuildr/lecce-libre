@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation } from "react-router-dom";
+import { RouteComponentProps, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { useRampCatalog } from "@ledgerhq/live-common/platform/providers/RampCatalogProvider/index";
@@ -126,12 +126,21 @@ const LegacyExchange = () => {
     </Container>
   );
 };
-const Exchange = () => {
+
+export type ExchangeComponentParams = {
+  appId?: string;
+};
+
+const Exchange = ({ match }: RouteComponentProps<ExchangeComponentParams>) => {
   // PTX smart routing feature flag - buy sell live app flag
   const ptxSmartRouting = useFeature("ptxSmartRouting");
+  const { params } = match;
+
   if (ptxSmartRouting?.enabled) {
     return (
-      <LiveAppExchange appId={ptxSmartRouting?.params?.liveAppId ?? DEFAULT_MULTIBUY_APP_ID} />
+      <LiveAppExchange
+        appId={(params.appId || ptxSmartRouting?.params?.liveAppId) ?? DEFAULT_MULTIBUY_APP_ID}
+      />
     );
   }
   return <LegacyExchange />;

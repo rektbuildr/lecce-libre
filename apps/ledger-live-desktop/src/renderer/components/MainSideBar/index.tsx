@@ -451,7 +451,7 @@ const MainSideBar = () => {
                   iconSize={20}
                   iconActiveColor="wallet"
                   onClick={handleClickExchange}
-                  isActive={location.pathname === "/exchange"}
+                  isActive={location.pathname.startsWith("/exchange")}
                   disabled={noAccounts}
                   collapsed={secondAnim}
                 />

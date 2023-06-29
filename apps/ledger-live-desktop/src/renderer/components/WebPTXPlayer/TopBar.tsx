@@ -1,4 +1,5 @@
 import React, { RefObject, useCallback, useEffect, useRef, useMemo } from "react";
+import { useHistory } from "react-router";
 import { Trans } from "react-i18next";
 import styled from "styled-components";
 import { LiveAppManifest } from "@ledgerhq/live-common/platform/types";
@@ -13,7 +14,7 @@ import { enablePlatformDevToolsSelector } from "~/renderer/reducers/settings";
 import { WebviewState, WebviewAPI } from "../Web3AppWebview/types";
 import Spinner from "../Spinner";
 import { safeGetRefValue } from "@ledgerhq/live-common/wallet-api/react";
-import { track } from "~/renderer/analytics/segment";
+// import { track } from "~/renderer/analytics/segment";
 
 const Container = styled(Box).attrs(() => ({
   horizontal: true,
@@ -96,19 +97,14 @@ export type Props = {
   webviewState: WebviewState;
 };
 
+const INTERNAL_APP_IDS = ["multibuy"];
+
 export const TopBar = ({ manifest, webviewAPIRef, webviewState }: Props) => {
-  const lastMatchingURL = useRef<string | null>(null);
+  const history = useHistory();
 
-  const isWhitelistedDomain = useMemo(() => {
-    if (!lastMatchingURL || !webviewState.url) {
-      return true;
-    }
-
-    const manifestHostname = new URL(manifest.url).hostname;
-    const currentHostname = new URL(webviewState.url).hostname;
-
-    return manifestHostname === currentHostname;
-  }, [manifest.url, webviewState.url]);
+  const isInternalApp = useMemo(() => {
+    return INTERNAL_APP_IDS.includes(manifest.id);
+  }, [manifest.id]);
 
   const enablePlatformDevTools = useSelector(enablePlatformDevToolsSelector);
   const onOpenDevTools = useCallback(() => {
@@ -118,33 +114,26 @@ export const TopBar = ({ manifest, webviewAPIRef, webviewState }: Props) => {
   }, [webviewAPIRef]);
 
   const onBackToMatchingURL = useCallback(async () => {
-    const currentHostname = new URL(webviewState.url).hostname;
-    const webview = safeGetRefValue(webviewAPIRef);
-    const safeUrl = safeGetRefValue(lastMatchingURL);
-    const url = new URL(safeUrl);
-    const urlParams = new URLSearchParams(url.searchParams);
-    const flowName = urlParams.get("liveAppFlow");
+    // track("button_clicked", {
+    //   button: flowName === "compare_providers" ? "back to quote" : "back to liveapp",
+    //   provider: currentHostname,
+    //   flow: flowName,
+    // });
 
-    track("button_clicked", {
-      button: flowName === "compare_providers" ? "back to quote" : "back to liveapp",
-      provider: currentHostname,
-      flow: flowName,
-    });
-
-    await webview.loadURL(safeUrl);
-    webview.clearHistory();
-  }, [webviewAPIRef, webviewState.url]);
+    history.goBack();
+  }, [history]);
 
   const getButtonLabel = useCallback(() => {
-    if (manifest.id === "multibuy") {
-      const safeUrl = safeGetRefValue(lastMatchingURL);
-      const url = new URL(safeUrl);
-      const urlParams = new URLSearchParams(url.searchParams);
-      const flowName = urlParams.get("liveAppFlow");
-      if (flowName === "compare_providers") return "Quote";
-    }
-    return manifest.name;
-  }, [manifest, lastMatchingURL]);
+    // if (manifest.id === "multibuy") {
+    //   const safeUrl = safeGetRefValue(lastMatchingURL);
+    //   const url = new URL(safeUrl);
+    //   const urlParams = new URLSearchParams(url.searchParams);
+    //   const flowName = urlParams.get("liveAppFlow");
+    //   if (flowName === "compare_providers") return "Quote";
+    // }
+    // return manifest.name;
+    return "Buy/Sell";
+  }, []);
 
   const handleReload = useCallback(() => {
     const webview = safeGetRefValue(webviewAPIRef);
@@ -152,17 +141,17 @@ export const TopBar = ({ manifest, webviewAPIRef, webviewState }: Props) => {
     webview.reload();
   }, [webviewAPIRef]);
 
-  useEffect(() => {
-    if (isWhitelistedDomain) {
-      lastMatchingURL.current = webviewState.url;
-    }
-  }, [isWhitelistedDomain, webviewState.url]);
+  // useEffect(() => {
+  //   if (isWhitelistedDomain) {
+  //     lastMatchingURL.current = webviewState.url;
+  //   }
+  // }, [isWhitelistedDomain, webviewState.url]);
 
   const isLoading = useDebounce(webviewState.loading, 100);
 
   return (
     <Container>
-      {!isWhitelistedDomain ? (
+      {!isInternalApp ? (
         <ItemContainer isInteractive onClick={onBackToMatchingURL}>
           <ArrowRight flipped size={16} />
           <ItemContent>
