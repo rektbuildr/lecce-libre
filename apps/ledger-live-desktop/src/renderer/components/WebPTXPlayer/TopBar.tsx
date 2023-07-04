@@ -1,5 +1,6 @@
-import React, { RefObject, useCallback, useEffect, useRef, useMemo } from "react";
-import { useHistory } from "react-router";
+import React, { RefObject, useCallback, useEffect, useMemo } from "react";
+import { useHistory, useLocation, useRouteMatch } from "react-router";
+import { URLSearchParams } from "url";
 import { Trans } from "react-i18next";
 import styled from "styled-components";
 import { LiveAppManifest } from "@ledgerhq/live-common/platform/types";
@@ -99,8 +100,20 @@ export type Props = {
 
 const INTERNAL_APP_IDS = ["multibuy"];
 
+function safeUrl(url: string) {
+  try {
+    return new URL(url);
+  } catch {
+    return null;
+  }
+}
+
 export const TopBar = ({ manifest, webviewAPIRef, webviewState }: Props) => {
   const history = useHistory();
+  const location = useLocation();
+  const match = useRouteMatch();
+
+  console.log(location);
 
   const isInternalApp = useMemo(() => {
     return INTERNAL_APP_IDS.includes(manifest.id);
@@ -146,6 +159,35 @@ export const TopBar = ({ manifest, webviewAPIRef, webviewState }: Props) => {
   //     lastMatchingURL.current = webviewState.url;
   //   }
   // }, [isWhitelistedDomain, webviewState.url]);
+
+  // We react to queryparams in the url
+  useEffect(() => {
+    if (isInternalApp && webviewState.url) {
+      const url = safeUrl(webviewState.url);
+
+      if (url) {
+        const manifestId = url.searchParams.get("goToManifest");
+
+        if (manifestId) {
+          const params = url.searchParams.get("goToParams");
+          let manifestParams = "";
+
+          if (params) {
+            try {
+              manifestParams = new URLSearchParams({
+                ...JSON.parse(params),
+                previousContext: "yo",
+              }).toString();
+            } catch {
+              // empty try/catch for json parse
+            }
+          }
+
+          history.push(`${match.url}/${manifestId}?${manifestParams}`);
+        }
+      }
+    }
+  }, [history, isInternalApp, match.url, webviewState.url]);
 
   const isLoading = useDebounce(webviewState.loading, 100);
 
