@@ -1,4 +1,5 @@
 import { checkQuote } from "@ledgerhq/live-common/exchange/swap/index";
+import WebRecoverPlayer from "~/renderer/components/WebRecoverPlayer";
 import {
   usePollKYCStatus,
   useSwapProviders,
@@ -14,6 +15,7 @@ import {
   shouldShowKYCBanner,
   shouldShowLoginBanner,
 } from "@ledgerhq/live-common/exchange/swap/utils/index";
+import manifest from "./manifest.json";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
@@ -104,6 +106,7 @@ const SwapForm = () => {
   const [currentBanner, setCurrentBanner] = useState<string | null>(null);
   const swapDefaultTrack = useGetSwapTrackingProperties();
   const [idleState, setIdleState] = useState(false);
+  const [params, setParams] = useState(undefined);
   const [error, setError] = useState<ValidCheckQuoteErrorCodes | undefined>();
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -216,17 +219,13 @@ const SwapForm = () => {
       const fromMagnitude =
         (fromAccount as unknown as SwapSelectorStateType)?.currency?.units[0].magnitude || 0;
       const fromAmount = transaction?.amount.shiftedBy(-fromMagnitude);
-
-      history.push({
-        pathname: "/swap-web",
-        state: {
-          provider,
-          fromAccountId,
-          toAccountId,
-          fromAmount,
-          quoteId: encodeURIComponent(rateId),
-          feeStrategy: feesStrategy.toUpperCase(), // Custom fee is not supported yet
-        },
+      setParams({
+        provider,
+        fromAccountId,
+        toAccountId,
+        fromAmount,
+        quoteId: encodeURIComponent(rateId),
+        feeStrategy: feesStrategy.toUpperCase(), // Custom fee is not supported yet
       });
     }
   }, [history, swapTransaction, provider, exchangeRate?.rateId]);
@@ -573,6 +572,16 @@ const SwapForm = () => {
           <FormMFABanner provider={provider} onClick={() => setCurrentFlow("MFA")} />
         ) : null}
         {error ? <FormErrorBanner provider={provider} error={error} /> : null}
+
+        {params && (
+          <WebRecoverPlayer
+            manifest={manifest}
+            inputs={{
+              ...params,
+            }}
+          />
+        )}
+
         <Box>
           <Button primary disabled={!isSwapReady} onClick={onSubmit} data-test-id="exchange-button">
             {t("common.exchange")}
