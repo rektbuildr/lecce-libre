@@ -58,6 +58,7 @@ export type FirmwareUpdateParams = {
   device: Device;
   deviceInfo: DeviceInfo;
   updateFirmwareAction?: (args: updateFirmwareActionArgs) => Observable<UpdateFirmwareActionState>;
+  isBeforeOnboarding?: boolean;
 };
 
 export type UpdateStep =
@@ -70,10 +71,23 @@ export type UpdateStep =
   | "appsRestore"
   | "completed";
 
+const installLanguageAction = createInstallLanguageAction(installLanguage);
+const staxLoadImageAction = createStaxLoadImageAction(staxLoadImage);
+const staxFetchImageAction = createStaxFetchImageAction(staxFetchImage);
+const connectManagerAction = createConnectManagerAction(connectManager);
+const connectAppAction = createConnectAppAction(connectApp);
+
+/**
+ * Handles the full logic of a firmware update + restoring settings like the locked screen image or apps
+ *
+ * @param isBeforeOnboarding: to adapt the firmware update in case the device is starting
+ *   its onboarding and it's normal it is not yet seeded. If set to true, short-circuit some steps that are unnecessary
+ */
 export const useUpdateFirmwareAndRestoreSettings = ({
   updateFirmwareAction,
   device,
   deviceInfo,
+  isBeforeOnboarding = false,
 }: FirmwareUpdateParams) => {
   const [updateStep, setUpdateStep] = useState<UpdateStep>("start");
   const [installedApps, setInstalledApps] = useState<string[]>([]);
@@ -196,13 +210,18 @@ export const useUpdateFirmwareAndRestoreSettings = ({
   }, [proceedToImageRestore, deviceInfo.languageId]);
 
   // this hook controls the chaining of device actions by updating the current step
-  // when needed. It basically implements a state macgine
+  // when needed. It basically implements a state machine
   useEffect(() => {
     let unrecoverableError;
 
     switch (updateStep) {
       case "start":
-        proceedToAppsBackup();
+        // The backup of the language package is actually done using the input device info `languageId`
+        if (isBeforeOnboarding) {
+          proceedToFirmwareUpdate();
+        } else {
+          proceedToAppsBackup();
+        }
         break;
       case "appsBackup":
         unrecoverableError =
@@ -241,9 +260,15 @@ export const useUpdateFirmwareAndRestoreSettings = ({
           installLanguageState.error &&
           !retriableErrors.some(err => installLanguageState.error instanceof err);
         if (installLanguageState.languageInstalled || unrecoverableError) {
-          if (installLanguageState.error)
+          if (installLanguageState.error) {
             log("FirmwareUpdate", "error while restoring language", installLanguageState.error);
-          proceedToImageRestore();
+          }
+
+          if (isBeforeOnboarding) {
+            proceedToUpdateCompleted();
+          } else {
+            proceedToImageRestore();
+          }
         }
         break;
       case "imageRestore":
