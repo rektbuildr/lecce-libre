@@ -8,7 +8,7 @@ import { OnboardingStep } from "@ledgerhq/live-common/hw/extractOnboardingState"
 import { useToggleOnboardingEarlyCheck } from "@ledgerhq/live-common/deviceSDK/hooks/useToggleOnboardingEarlyChecks";
 import { log } from "@ledgerhq/logs";
 import { getDeviceModel } from "@ledgerhq/devices";
-import { DeviceExtractOnboardingStateError, LockedDeviceError } from "@ledgerhq/errors";
+import { LockedDeviceError, UnexpectedBootloader } from "@ledgerhq/errors";
 import { ScreenName } from "../../const";
 import { BaseNavigatorStackParamList } from "../../components/RootNavigator/types/BaseNavigator";
 import { RootStackParamList } from "../../components/RootNavigator/types/RootNavigator";
@@ -109,12 +109,6 @@ export const SyncOnboarding = ({ navigation, route }: SyncOnboardingScreenProps)
     stopPolling: !isPollingOn,
   });
 
-  console.log(
-    `🐊 onboarding state: ${JSON.stringify(onboardingState)} | allowed error: ${JSON.stringify(
-      allowedError,
-    )}`,
-  );
-
   const { state: toggleOnboardingEarlyCheckState } = useToggleOnboardingEarlyCheck({
     deviceId: device.deviceId,
     toggleType: toggleOnboardingEarlyCheckType,
@@ -130,7 +124,6 @@ export const SyncOnboarding = ({ navigation, route }: SyncOnboardingScreenProps)
   // If the caller knows that the device is already genuine, save this information.
   const notifyEarlySecurityCheckShouldReset = useCallback(
     ({ isAlreadyGenuine }: { isAlreadyGenuine: boolean } = { isAlreadyGenuine: false }) => {
-      console.log(`🥦 notifyEarlySecurityCheckShouldReset: isAlreadyGenuine = ${isAlreadyGenuine}`);
       setIsAlreadyGenuine(isAlreadyGenuine);
       setCurrentStep("loading");
       // Resets the polling state because it could return the same result object (and so no state has changed)
@@ -179,12 +172,20 @@ export const SyncOnboarding = ({ navigation, route }: SyncOnboardingScreenProps)
     }
   }, [onboardingState]);
 
-  // A fatal error during polling triggers directly an error message
+  // A fatal error during polling triggers directly an error message (or the auto repair)
   useEffect(() => {
     if (fatalError) {
-      log("SyncOnboardingIndex", "Fatal error during polling", { fatalError });
-      setIsPollingOn(false);
-      setIsDesyncDrawerOpen(true);
+      if ((fatalError as unknown) instanceof UnexpectedBootloader) {
+        log("SyncOnboardingIndex", "Device in bootloader mode. Trying to auto repair", {
+          fatalError,
+        });
+        setIsPollingOn(false);
+        setIsAutoRepairOpen(true);
+      } else {
+        log("SyncOnboardingIndex", "Fatal error during polling", { fatalError });
+        setIsPollingOn(false);
+        setIsDesyncDrawerOpen(true);
+      }
     }
   }, [fatalError]);
 
@@ -193,17 +194,12 @@ export const SyncOnboarding = ({ navigation, route }: SyncOnboardingScreenProps)
     let timeout: ReturnType<typeof setTimeout>;
 
     if (allowedError && !(allowedError instanceof LockedDeviceError)) {
-      // TODO: not a DeviceExtractOnboardingStateError but a specific error.
-      if ((allowedError as unknown) instanceof DeviceExtractOnboardingStateError) {
-        log("SyncOnboardingIndex", "Device in bootloader mode. Trying to auto repair");
+      log("SyncOnboardingIndex", "Polling allowed error", { allowedError });
+
+      timeout = setTimeout(() => {
         setIsPollingOn(false);
-        setIsAutoRepairOpen(true);
-      } else {
-        timeout = setTimeout(() => {
-          setIsPollingOn(false);
-          setIsDesyncDrawerOpen(true);
-        }, DESYNC_TIMEOUT_MS);
-      }
+        setIsDesyncDrawerOpen(true);
+      }, DESYNC_TIMEOUT_MS);
     }
 
     return () => {
