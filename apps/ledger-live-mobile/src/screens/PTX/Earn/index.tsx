@@ -4,8 +4,11 @@ import {
   useRemoteLiveAppContext,
   useRemoteLiveAppManifest,
 } from "@ledgerhq/live-common/platform/providers/RemoteLiveAppProvider/index";
+import { useSelector } from "react-redux";
 import { useTheme } from "styled-components/native";
 import { Flex, InfiniteLoader } from "@ledgerhq/native-ui";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 import TrackScreen from "../../../analytics/TrackScreen";
 import GenericErrorView from "../../../components/GenericErrorView";
 import { useLocale } from "../../../context/Locale";
@@ -14,7 +17,6 @@ import { EarnLiveAppNavigatorParamList } from "../../../components/RootNavigator
 import { StackNavigatorProps } from "../../../components/RootNavigator/types/helpers";
 import { ScreenName } from "../../../const";
 import { counterValueCurrencySelector, discreetModeSelector } from "../../../reducers/settings";
-import { useSelector } from "react-redux";
 import { TAB_BAR_HEIGHT } from "../../../components/TabBar/shared";
 
 export type Props = StackNavigatorProps<EarnLiveAppNavigatorParamList, ScreenName.Earn>;
@@ -27,6 +29,7 @@ export function EarnScreen({ route }: Props) {
   const { locale } = useLocale();
   const { ticker: currencyTicker } = useSelector(counterValueCurrencySelector);
   const discreet = useSelector(discreetModeSelector);
+  const insets = useSafeAreaInsets();
 
   const { platform: appId, ...params } = route.params || {};
   const searchParams = route.path
@@ -46,6 +49,7 @@ export function EarnScreen({ route }: Props) {
        */
       flex={1}
       mb={TAB_BAR_HEIGHT}
+      mt={insets.top}
     >
       <TrackScreen category="EarnDashboard" name="Earn" />
       <WebPTXPlayer
