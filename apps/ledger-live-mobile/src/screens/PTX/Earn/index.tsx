@@ -39,42 +39,7 @@ export function EarnScreen({ route }: Props) {
   const localManifest = useLocalLiveAppManifest(DEFAULT_EARN_APP_ID);
   const remoteManifest = useRemoteLiveAppManifest(DEFAULT_EARN_APP_ID);
   const { state: remoteLiveAppState } = useRemoteLiveAppContext();
-  const manifest = {
-    id: "earn",
-    name: "Earn",
-    url: "http://localhost:3000",
-    homepageUrl: "http://localhost:3000",
-    icon: "",
-    platform: "all",
-    apiVersion: "^2.0.0",
-    manifestVersion: "1",
-    branch: "experimental",
-    categories: ["earn"],
-    currencies: "*",
-    content: {
-      shortDescription: { en: "Earn dashboard" },
-      description: { en: "Earn dashboard" },
-    },
-    permissions: [
-      "account.list",
-      "account.receive",
-      "account.request",
-      "currency.list",
-      "device.close",
-      "device.exchange",
-      "device.transport",
-      "message.sign",
-      "transaction.sign",
-      "transaction.signAndBroadcast",
-      "storage.set",
-      "storage.get",
-      "bitcoin.getXPub",
-      "wallet.capabilities",
-      "wallet.userId",
-      "wallet.info",
-    ],
-    domains: ["http://*", "https://*"],
-  };
+  const manifest = localManifest || remoteManifest;
 
   return manifest ? (
     <Flex
