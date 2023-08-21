@@ -49,3 +49,5 @@ jobs:
           BOT_FILTER_FAMILIES: ${{github.event.inputs.families}}
           BOT_FILTER_CURRENCIES: ${{github.event.inputs.currencies}}
           SPECULOS_USE_WEBSOCKET: ${{inputs.speculos_websocket}}
+          # test plz ignore
+          BOT_DISABLED_CURRENCIES: bitcoin,ethereum,qtum,decred,cardano,axelar,cosmos,secret_network,avalanche_c_chain,bsc,filecoin,tron,cronos,fantom,boba,telos_evm,polygon_zk_evm,polkadot
