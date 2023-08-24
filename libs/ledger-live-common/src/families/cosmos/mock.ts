@@ -33,6 +33,7 @@ function setCosmosResources(
     withdrawAddress: account.id,
     unbondings: unbondings ?? account.cosmosResources?.unbondings ?? [],
     redelegations: redelegations ?? account.cosmosResources?.redelegations ?? [],
+    sequence: 1,
   };
   return account;
 }
@@ -93,6 +94,7 @@ function addDelegationOperation(account: CosmosAccount, rng: Prando): Account {
         withdrawAddress: "",
         unbondings: [],
         redelegations: [],
+        sequence: 1,
       };
   if (spendableBalance.isZero()) return account;
 
@@ -160,6 +162,7 @@ function addRedelegationOperation(account: CosmosAccount, rng: Prando): Account 
         withdrawAddress: "",
         unbondings: [],
         redelegations: [],
+        sequence: 1,
       };
   if (!cosmosResources.delegations.length) return account;
 
@@ -219,6 +222,7 @@ function addClaimRewardsOperation(account: CosmosAccount, rng: Prando): Account 
         withdrawAddress: "",
         unbondings: [],
         redelegations: [],
+        sequence: 1,
       };
   if (!cosmosResources.delegations.length) return account;
 
@@ -267,6 +271,7 @@ function addUndelegationOperation(account: CosmosAccount, rng: Prando): Account 
         withdrawAddress: "",
         unbondings: [],
         redelegations: [],
+        sequence: 1,
       };
   if (!cosmosResources.delegations.length) return account;
 
@@ -365,6 +370,7 @@ function postScanAccount(
       withdrawAddress: account.id,
       unbondings: [],
       redelegations: [],
+      sequence: 1,
     };
     account.operations = [];
   }
