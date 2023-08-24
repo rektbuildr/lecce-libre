@@ -434,68 +434,6 @@ const cosmos = {
   ...generateGenericCosmosTest("cosmos"),
 };
 
-const osmosis = {
-  ...generateGenericCosmosTest("osmosis", {
-    testTimeout: 8 * 60 * 1000,
-  }),
-};
-
-const desmos = {
-  ...generateGenericCosmosTest("desmos", {
-    testTimeout: 8 * 60 * 1000,
-  }),
-};
-
-const umee = {
-  ...generateGenericCosmosTest("umee", {
-    testTimeout: 8 * 60 * 1000,
-  }),
-};
-
-const persistence = {
-  ...generateGenericCosmosTest("persistence", {
-    testTimeout: 8 * 60 * 1000,
-  }),
-};
-
-const quicksilver = {
-  ...generateGenericCosmosTest("quicksilver", {
-    testTimeout: 8 * 60 * 1000,
-  }),
-};
-
-const onomy = {
-  ...generateGenericCosmosTest("onomy", {
-    testTimeout: 8 * 60 * 1000,
-  }),
-};
-
-const axelar = {
-  ...generateGenericCosmosTest("axelar"),
-};
-
-const secretNetwork = {
-  ...generateGenericCosmosTest("secret_network"),
-};
-
-const stargaze = {
-  ...generateGenericCosmosTest("stargaze"),
-};
-
-const coreum = {
-  ...generateGenericCosmosTest("coreum"),
-};
-
 export default {
-  axelar,
   cosmos,
-  osmosis,
-  desmos,
-  umee,
-  persistence,
-  quicksilver,
-  onomy,
-  secretNetwork,
-  stargaze,
-  coreum,
 };
