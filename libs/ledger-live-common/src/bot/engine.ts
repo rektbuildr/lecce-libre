@@ -204,7 +204,7 @@ export async function runWithAppSpec<T extends Transaction>(
           .join(" or ")}\n`,
       );
       appReport.accountsAfter = accounts;
-      return appReport;
+      // return appReport;
     }
 
     const mutationsStartTime = now();
