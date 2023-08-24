@@ -180,8 +180,16 @@ export const getAccountShape: GetAccountShape = async info => {
     derivationMode,
   });
 
-  const { balances, blockHeight, txs, delegations, redelegations, unbondings, withdrawAddress } =
-    await new CosmosAPI(currency.id).getAccountInfo(address, currency);
+  const {
+    accountInfo,
+    balances,
+    blockHeight,
+    txs,
+    delegations,
+    redelegations,
+    unbondings,
+    withdrawAddress,
+  } = await new CosmosAPI(currency.id).getAccountInfo(address, currency);
   const oldOperations = initialAccount?.operations || [];
   const newOperations = txToOps(info, accountId, txs);
   const operations = mergeOps(oldOperations, newOperations);
@@ -223,6 +231,7 @@ export const getAccountShape: GetAccountShape = async info => {
       pendingRewardsBalance,
       unbondingBalance,
       withdrawAddress,
+      sequence: accountInfo.sequence,
     },
   };
 

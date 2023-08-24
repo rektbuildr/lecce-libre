@@ -62,6 +62,7 @@ export type CosmosResources = {
   pendingRewardsBalance: BigNumber;
   unbondingBalance: BigNumber;
   withdrawAddress: string;
+  sequence: number;
 };
 export type CosmosDelegationRaw = {
   validatorAddress: string;

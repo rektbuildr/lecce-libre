@@ -69,6 +69,15 @@ export const isAccountEmpty = (a: AccountLike): boolean => {
     return tronAcc.tronResources && tronAcc.tronResources.bandwidth.freeLimit.eq(0);
   }
 
+  if (a.type === "Account" && a.currency.family === "cosmos") {
+    const cosmosAcc = a as CosmosAccount;
+    return (
+      cosmosAcc.cosmosResources &&
+      cosmosAcc.cosmosResources.sequence === 0 &&
+      cosmosAcc.balance.isZero()
+    );
+  }
+
   return commonIsAccountEmpty(a);
 };
 
