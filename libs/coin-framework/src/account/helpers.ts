@@ -106,6 +106,14 @@ export const getAccountSpendableBalance = (account: AccountLike): BigNumber => {
 };
 
 export const isAccountEmpty = (a: AccountLike): boolean => {
+  if (a.type === "Account" && a.currency.family === "cosmos") {
+    const cosmosAcc = a as any;
+    return (
+      cosmosAcc.cosmosResources &&
+      cosmosAcc.cosmosResources.sequence === 0 &&
+      cosmosAcc.balance.isZero()
+    );
+  }
   const hasSubAccounts = a.type === "Account" && a.subAccounts && a.subAccounts.length;
   return a.operationsCount === 0 && a.balance.isZero() && !hasSubAccounts;
 };
