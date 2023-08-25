@@ -177,6 +177,7 @@ export async function runWithAppSpec<T extends Transaction>(
           (spec.mutations.length + 1) +
           " accounts",
       );
+      return appReport;
     }
 
     // "Migrate" the FIRST and every {crossAccountFrequency} account to simulate an export/import (same logic as export to mobile) – default to every 10
