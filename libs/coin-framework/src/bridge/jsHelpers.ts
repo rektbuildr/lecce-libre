@@ -513,11 +513,12 @@ export const makeScanAccounts =
               });
 
               if (!res) break;
-              log("debug", `start to stepAccount. Index: ${index}`);
+
               const account = await stepAccount(index, res, derivationMode, seedIdentifier);
-              log("debug", `end stepAccount. Index: ${index}`);
+
               if (account && !account.used) {
-                if (emptyCount >= 3) break;
+                log("debug", `empty account. Index: ${index}`);
+                if (emptyCount >= mandatoryEmptyAccountSkip) break;
                 emptyCount++;
               }
             }
