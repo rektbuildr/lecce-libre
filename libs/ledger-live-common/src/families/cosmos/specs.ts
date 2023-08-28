@@ -434,13 +434,6 @@ const cosmos = {
   ...generateGenericCosmosTest("cosmos"),
 };
 
-const quicksilver = {
-  ...generateGenericCosmosTest("quicksilver", {
-    testTimeout: 8 * 60 * 1000,
-  }),
-};
-
 export default {
   cosmos,
-  quicksilver,
 };
