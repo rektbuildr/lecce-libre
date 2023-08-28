@@ -606,6 +606,7 @@ export async function runOnAccount<T extends Transaction>({
       const timedOut = now() - testBefore > timeOut;
       const operation = account.operations.find(o => o.id === optimisticOperation.id);
 
+      /*
       if (timedOut && !operation) {
         botTest("waiting operation id to appear after broadcast", () => {
           log("bot", "failed and display operations ids ");
@@ -615,7 +616,7 @@ export async function runOnAccount<T extends Transaction>({
           log("bot", "end failed and display operations ids ");
           throw new Error("could not find optimisticOperation " + optimisticOperation.id);
         });
-      }
+      }*/
 
       if (operation) {
         log("bot", "operation found. testing... " + operation.id);

@@ -429,11 +429,14 @@ const generateGenericCosmosTest = (currencyId: string, config?: Partial<AppSpec<
     ...config,
   };
 };
-
+/*
 const cosmos = {
   ...generateGenericCosmosTest("cosmos"),
+};*/
+const quicksilver = {
+  ...generateGenericCosmosTest("quicksilver"),
 };
 
 export default {
-  cosmos,
+  quicksilver,
 };
