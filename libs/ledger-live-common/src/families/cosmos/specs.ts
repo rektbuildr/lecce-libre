@@ -422,6 +422,8 @@ const generateGenericCosmosTest = (currencyId: string, config?: Partial<AppSpec<
     transactionCheck: ({ maxSpendable }) => {
       const ggg = cryptoFactory(currencyId).minimalTransactionAmount;
       log("bot", "transaction checking");
+      log("bot", maxSpendable);
+      log("bot", maxSpendable.toString());
       log("bot", maxSpendable.toNumber());
       log("bot", ggg.toString());
       log("bot", "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
