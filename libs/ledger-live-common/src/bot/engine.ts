@@ -608,11 +608,17 @@ export async function runOnAccount<T extends Transaction>({
 
       if (timedOut && !operation) {
         botTest("waiting operation id to appear after broadcast", () => {
+          log("bot", "failed and display operations ids ");
+          account.operations.forEach(o => {
+            log("bot", o.id);
+          });
+          log("bot", "end failed and display operations ids ");
           throw new Error("could not find optimisticOperation " + optimisticOperation.id);
         });
       }
 
       if (operation) {
+        log("bot", "operation found. testing... " + operation.id);
         try {
           const arg = {
             accountBeforeTransaction,
