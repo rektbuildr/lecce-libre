@@ -10,7 +10,6 @@ import {
   genericTestDestination,
   pickSiblings,
 } from "../../bot/specs";
-import { log } from "@ledgerhq/logs";
 import type { AppSpec, MutationSpec } from "../../bot/types";
 import { getCryptoCurrencyById } from "../../currencies";
 import { getCurrentCosmosPreloadData } from "../../families/cosmos/preloadedData";
@@ -420,13 +419,6 @@ const generateGenericCosmosTest = (currencyId: string, config?: Partial<AppSpec<
     testTimeout: 2 * 60 * 1000,
     minViableAmount: cryptoFactory(currencyId).minimalTransactionAmount,
     transactionCheck: ({ maxSpendable }) => {
-      const ggg = cryptoFactory(currencyId).minimalTransactionAmount;
-      log("bot", "transaction checking");
-      log("bot", maxSpendable);
-      log("bot", maxSpendable.toString());
-      log("bot", maxSpendable.toNumber());
-      log("bot", ggg.toString());
-      log("bot", "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT");
       invariant(
         maxSpendable.gt(cryptoFactory(currencyId).minimalTransactionAmount),
         "balance is too low",
