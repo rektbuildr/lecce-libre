@@ -517,7 +517,7 @@ export const makeScanAccounts =
               const account = await stepAccount(index, res, derivationMode, seedIdentifier);
               log("debug", `end stepAccount. Index: ${index}`);
               if (account && !account.used) {
-                if (emptyCount >= 10) break;
+                if (emptyCount >= 3) break;
                 emptyCount++;
               }
             }
