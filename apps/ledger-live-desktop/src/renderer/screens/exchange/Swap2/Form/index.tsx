@@ -41,6 +41,7 @@ import BigNumber from "bignumber.js";
 import { CryptoCurrency, TokenCurrency } from "@ledgerhq/types-cryptoassets";
 import { SwapSelectorStateType } from "@ledgerhq/live-common/exchange/swap/types";
 import { SWAP_RATES_TIMEOUT } from "../../config";
+import { useSwapTransactionHelper } from "~/renderer/hooks/transactions/useSwapTransactionHelper";
 
 const Wrapper = styled(Box).attrs({
   p: 20,
@@ -213,6 +214,7 @@ const SwapForm = () => {
     swapTransaction.swap.to.account &&
     swapTransaction.swap.from.amount &&
     swapTransaction.swap.from.amount.gt(0);
+
   const onSubmit = () => {
     if (!exchangeRate) return;
 
@@ -289,6 +291,10 @@ const SwapForm = () => {
       }
     }
   };
+
+  const dexSwapHelper = useSwapTransactionHelper();
+  const onDexSwap = () => dexSwapHelper({ swapTransaction });
+
   const sourceAccount = swapTransaction.swap.from.account;
   const sourceCurrency = swapTransaction.swap.from.currency;
   const targetCurrency = swapTransaction.swap.to.currency;
@@ -364,6 +370,11 @@ const SwapForm = () => {
         <Box>
           <Button primary disabled={!isSwapReady} onClick={onSubmit} data-test-id="exchange-button">
             {t("common.exchange")}
+          </Button>
+        </Box>
+        <Box>
+          <Button primary disabled={!isSwapReady} onClick={onDexSwap}>
+            1nch Dex swap
           </Button>
         </Box>
       </Wrapper>
