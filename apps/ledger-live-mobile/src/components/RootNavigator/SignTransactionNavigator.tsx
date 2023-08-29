@@ -30,9 +30,11 @@ export default function SignTransactionNavigator() {
     | ScreenName.SignTransactionSelectDevice
     | ScreenName.SignTransactionValidationError
   >) => ({
-    beforeRemove: () =>
-      route.params?.onError &&
-      route.params?.onError(route.params.error || new Error("Signature interrupted by user")),
+    beforeRemove: () => {
+      if (route.params?.onError && route.params.error) {
+        route.params?.onError(route.params.error);
+      }
+    },
   });
 
   return (

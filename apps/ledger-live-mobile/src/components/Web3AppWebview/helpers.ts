@@ -7,11 +7,10 @@ import {
   useConfig,
   useWalletAPIServer,
 } from "@ledgerhq/live-common/wallet-api/react";
-import { Operation, SignedOperation } from "@ledgerhq/types-live";
+import { Operation } from "@ledgerhq/types-live";
 import type { Transaction } from "@ledgerhq/live-common/generated/types";
 import trackingWrapper from "@ledgerhq/live-common/wallet-api/tracking";
 import type { Device } from "@ledgerhq/live-common/hw/actions/types";
-import BigNumber from "bignumber.js";
 import { useSelector } from "react-redux";
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
 import { WebViewProps, WebView } from "react-native-webview";
@@ -21,7 +20,6 @@ import { useNavigation } from "@react-navigation/native";
 import { NavigatorName, ScreenName } from "../../const";
 import { flattenAccountsSelector } from "../../reducers/accounts";
 import { WebviewAPI, WebviewProps, WebviewState } from "./types";
-import prepareSignTransaction from "./liveSDKLogic";
 import { StackNavigatorNavigation } from "../RootNavigator/types/helpers";
 import { BaseNavigatorStackParamList } from "../RootNavigator/types/BaseNavigator";
 import { analyticsEnabledSelector } from "../../reducers/settings";
@@ -30,6 +28,9 @@ import { track } from "../../analytics/segment";
 import getOrCreateUser from "../../user";
 import * as bridge from "../../../e2e/bridge/client";
 import Config from "react-native-config";
+import { Alert } from "react-native";
+import { useTranscationSign } from "../../hooks/transactions/useTransactionSign";
+import { getEnv } from "@ledgerhq/live-env";
 
 export function useWebView(
   { manifest, inputs }: Pick<WebviewProps, "manifest" | "inputs">,
@@ -258,6 +259,8 @@ function useUiHook(): Partial<UiHook> {
   const navigation = useNavigation();
   const [device, setDevice] = useState<Device>();
 
+  const transactionSign = useTranscationSign();
+
   return useMemo(
     () => ({
       "account.request": ({ accounts$, currencies, onSuccess, onError }) => {
@@ -319,51 +322,17 @@ function useUiHook(): Partial<UiHook> {
       "storage.set": ({ key, value, storeId }) => {
         deviceStorage.save(`${storeId}-${key}`, value);
       },
-      "transaction.sign": ({
-        account,
-        parentAccount,
-        signFlowInfos: { liveTx },
-        options,
-        onSuccess,
-        onError,
-      }) => {
-        const tx = prepareSignTransaction(
-          account,
-          parentAccount,
-          liveTx as Partial<Transaction & { gasLimit: BigNumber }>,
-        );
-
-        navigation.navigate(NavigatorName.SignTransaction, {
-          screen: ScreenName.SignTransactionSummary,
-          params: {
-            currentNavigation: ScreenName.SignTransactionSummary,
-            nextNavigation: ScreenName.SignTransactionSelectDevice,
-            transaction: tx as Transaction,
-            accountId: account.id,
-            parentId: parentAccount ? parentAccount.id : undefined,
-            appName: options?.hwAppId,
-            onSuccess: ({
-              signedOperation,
-              transactionSignError,
-            }: {
-              signedOperation: SignedOperation;
-              transactionSignError: Error;
-            }) => {
-              if (transactionSignError) {
-                onError(transactionSignError);
-              } else {
-                onSuccess(signedOperation);
-
-                const n =
-                  navigation.getParent<StackNavigatorNavigation<BaseNavigatorStackParamList>>() ||
-                  navigation;
-                n.pop();
-              }
-            },
-            onError,
+      "transaction.sign": props =>
+        transactionSign({
+          ...props,
+          onSuccess: signOperation => {
+            if (getEnv("DISABLE_TRANSACTION_BROADCAST")) {
+              Alert.alert("[Swap] Tx signed!! 🎉");
+            } else {
+              props.onSuccess(signOperation);
+            }
           },
-        });
-      },
+        }),
       "device.transport": ({ appName, onSuccess, onCancel }) => {
         navigation.navigate(ScreenName.DeviceConnect, {
           appName,
@@ -438,7 +407,7 @@ function useUiHook(): Partial<UiHook> {
         });
       },
     }),
-    [navigation, device],
+    [navigation, device, transactionSign],
   );
 }
 

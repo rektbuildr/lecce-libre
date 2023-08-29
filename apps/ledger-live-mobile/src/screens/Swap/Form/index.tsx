@@ -25,6 +25,7 @@ import { TokenCurrency } from "@ledgerhq/types-cryptoassets";
 import { accountToWalletAPIAccount } from "@ledgerhq/live-common/wallet-api/converters";
 import { log } from "@ledgerhq/logs";
 import { Feature } from "@ledgerhq/types-live";
+import { formatCurrencyUnit } from "@ledgerhq/live-common/currencies/index";
 import { shallowAccountsSelector } from "../../../reducers/accounts";
 import { swapAcceptedProvidersSelector } from "../../../reducers/settings";
 import { setSwapSelectableCurrencies } from "../../../actions/settings";
@@ -54,7 +55,7 @@ import {
 import { ScreenName } from "../../../const";
 import { BaseNavigatorStackParamList } from "../../../components/RootNavigator/types/BaseNavigator";
 import { SwapFormNavigatorParamList } from "../../../components/RootNavigator/types/SwapFormNavigator";
-import { formatCurrencyUnit } from "@ledgerhq/live-common/currencies/index";
+import { useSwapTransactionHelper } from "../../../hooks/transactions/useSwapTransactionHelper";
 
 type Navigation = StackNavigatorProps<BaseNavigatorStackParamList, ScreenName.Account>;
 
@@ -300,6 +301,9 @@ export function SwapForm({
     accounts,
   ]);
 
+  const swapTxHelper = useSwapTransactionHelper();
+  const onDexSwap = () => swapTxHelper({ swapTransaction });
+
   const onCloseModal = useCallback(() => {
     setConfirmed(false);
   }, []);
@@ -395,10 +399,15 @@ export function SwapForm({
 
           <Flex paddingY={4}>
             <Max swapTx={swapTransaction} />
-
             <Button type="main" disabled={!isSwapReady} onPress={onSubmit} testID="exchange-button">
               {t("transfer.swap2.form.cta")}
             </Button>
+            <Flex paddingY={4}>
+              <Button type="main" disabled={!isSwapReady} onPress={onDexSwap}>
+                {/* eslint-disable-line i18next/no-literal-string */}
+                1nch Dex swap
+              </Button>
+            </Flex>
           </Flex>
         </Flex>
 

@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useMemo, forwardRef } from "react";
 import { useSelector } from "react-redux";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Alert, StyleSheet, View } from "react-native";
 import { WebView as RNWebView } from "react-native-webview";
 import { useNavigation } from "@react-navigation/native";
 import { JSONRPCRequest } from "json-rpc-2.0";
@@ -283,8 +283,10 @@ export const PlatformAPIWebview = forwardRef<WebviewAPI, WebviewProps>(
       }: {
         accountId: string;
         signedTransaction: RawPlatformSignedTransaction;
-      }) =>
-        broadcastTransactionLogic(
+      }) => {
+        Alert.alert("Boardcase transaction");
+        return;
+        return broadcastTransactionLogic(
           { manifest, accounts, tracking },
           accountId,
           signedTransaction,
@@ -307,7 +309,8 @@ export const PlatformAPIWebview = forwardRef<WebviewAPI, WebviewProps>(
 
             return optimisticOperation.hash;
           },
-        ),
+        );
+      },
       [manifest, accounts],
     );
 
