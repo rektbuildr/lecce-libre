@@ -605,7 +605,6 @@ export async function runOnAccount<T extends Transaction>({
     const step = account => {
       const timedOut = now() - testBefore > timeOut;
       const operation = account.operations.find(o => o.id === optimisticOperation.id);
-
       /*
       if (timedOut && !operation) {
         botTest("waiting operation id to appear after broadcast", () => {
