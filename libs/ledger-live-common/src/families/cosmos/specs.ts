@@ -58,14 +58,17 @@ const cosmosLikeTest: ({
   if (allOperationsMatchingId.length > 1) {
     console.warn(allOperationsMatchingId);
   }
+
   botTest("only one operation emerged on the tx id", () =>
     expect({ allOperationsMatchingId }).toEqual({
       allOperationsMatchingId: [operation],
     }),
   );
+
   const opExpected: Partial<CosmosOperationRaw> = toOperationRaw({
     ...optimisticOperation,
   }) as CosmosOperationRaw;
+
   const expectedExtra: CosmosOperationExtraRaw = opExpected.extra || {};
   delete opExpected.value;
   delete opExpected.fee;
@@ -74,8 +77,10 @@ const cosmosLikeTest: ({
   delete opExpected.blockHeight;
   delete opExpected.extra;
   delete opExpected.transactionSequenceNumber;
+  delete opExpected.nftOperations;
 
   const op: Partial<CosmosOperationRaw> = toOperationRaw(operation) as CosmosOperationRaw;
+
   const opExtra: CosmosOperationExtraRaw = op.extra || {};
   delete op.extra;
 
