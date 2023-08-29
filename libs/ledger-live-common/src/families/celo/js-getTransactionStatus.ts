@@ -80,6 +80,12 @@ const getTransactionStatus = async (
 
   if (transaction.mode === "unlock" || transaction.mode === "vote") {
     if (!errors.amount && totalNonVotingLockedBalance && amount.gt(totalNonVotingLockedBalance)) {
+      console.log(
+        "testhedi",
+        errors.amount,
+        totalNonVotingLockedBalance,
+        amount.gt(totalNonVotingLockedBalance),
+      );
       errors.amount = new NotEnoughBalance();
     }
   } else if (transaction.mode === "revoke") {
