@@ -15,9 +15,9 @@
     // Calling initWithDelegate() is enough to show a prompt with a redirect to the bluetooth settings.
     // (option "CBCentralManagerOptionShowPowerAlertKey" is true by default)
     // See: https://developer.apple.com/documentation/corebluetooth/cbcentralmanager/central_manager_initialization_options?language=objc
-    self.centralManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
     self.resolve = resolve;
     self.reject = reject;
+    self.centralManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
   }
   return self;
 }
