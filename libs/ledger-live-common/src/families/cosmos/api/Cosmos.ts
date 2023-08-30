@@ -12,6 +12,36 @@ import {
   CosmosUnbonding,
 } from "../types";
 
+interface PromiseWrapper {
+  promise: Promise<any>;
+  errorMessage: string;
+}
+export class PromiseArray extends Array {
+  constructor(public promiseArray: PromiseWrapper[]) {
+    super();
+    this.initialize(promiseArray);
+  }
+  private initialize(promiseArray) {
+    promiseArray.forEach(element => this.push(element));
+  }
+  private prepareElement(element): Promise<any> {
+    const newElement = element.promise;
+    newElement.catch(err => {
+      throw {
+        ...err,
+        message: element.errorMessage,
+      };
+    });
+    return newElement;
+  }
+  public unshift(element): number {
+    return super.unshift(this.prepareElement(element));
+  }
+  public push(element): number {
+    return super.push(this.prepareElement(element));
+  }
+}
+
 export class CosmosAPI {
   protected defaultEndpoint: string;
   private version: string;
@@ -36,15 +66,38 @@ export class CosmosAPI {
   }> => {
     try {
       const [balances, blockHeight, txs, delegations, redelegations, unbondings, withdrawAddress] =
-        await Promise.all([
-          this.getAllBalances(address, currency),
-          this.getHeight(),
-          this.getTransactions(address, 100),
-          this.getDelegations(address, currency),
-          this.getRedelegations(address),
-          this.getUnbondings(address),
-          this.getWithdrawAddress(address),
-        ]);
+        await Promise.all(
+          new PromiseArray([
+            {
+              promise: this.getAllBalances(address, currency),
+              errorMessage: "getAllBalances failed",
+            },
+            {
+              promise: this.getHeight(),
+              errorMessage: "getHeight failed",
+            },
+            {
+              promise: this.getTransactions(address, 100),
+              errorMessage: "getTransactions failed",
+            },
+            {
+              promise: this.getDelegations(address, currency),
+              errorMessage: "getDelegations failed",
+            },
+            {
+              promise: this.getRedelegations(address),
+              errorMessage: "getRedelegations failed",
+            },
+            {
+              promise: this.getUnbondings(address),
+              errorMessage: "getUnbondings failed",
+            },
+            {
+              promise: this.getWithdrawAddress(address),
+              errorMessage: "getWithdrawAddress failed",
+            },
+          ]),
+        );
 
       return {
         balances,
