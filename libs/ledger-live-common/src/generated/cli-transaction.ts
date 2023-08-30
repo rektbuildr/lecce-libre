@@ -10,6 +10,7 @@ import hedera from "../families/hedera/cli-transaction";
 import near from "../families/near/cli-transaction";
 import ripple from "../families/ripple/cli-transaction";
 import solana from "../families/solana/cli-transaction";
+import stacks from "../families/stacks/cli-transaction";
 import stellar from "../families/stellar/cli-transaction";
 import tezos from "../families/tezos/cli-transaction";
 import tron from "../families/tron/cli-transaction";
@@ -19,6 +20,9 @@ import network from "@ledgerhq/live-network/network";
 import polkadotCreateCliTools from "@ledgerhq/coin-polkadot/cli-transaction";
 import algorandCreateCliTools from "@ledgerhq/coin-algorand/cli-transaction";
 import evmCreateCliTools from "@ledgerhq/coin-evm/cli-transaction";
+import { cliTools as algorand } from "../families/algorand/setup";
+import { cliTools as evm } from "../families/evm/setup";
+import { cliTools as polkadot } from "../families/polkadot/setup";
 
 export default {
   bitcoin,
@@ -33,11 +37,12 @@ export default {
   near,
   ripple,
   solana,
+  stacks,
   stellar,
   tezos,
   tron,
   vechain,
-  polkadot: polkadotCreateCliTools(network, makeLRUCache),
-  algorand: algorandCreateCliTools(network, makeLRUCache),
-  evm: evmCreateCliTools(network, makeLRUCache),
+  algorand,
+  evm,
+  polkadot,
 };
