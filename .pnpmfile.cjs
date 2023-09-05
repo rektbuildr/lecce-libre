@@ -167,6 +167,7 @@ function readPackage(pkg, context) {
         react: "*",
       }),
       addPeerDependencies("expo-asset", {
+        "expo-modules-core": "*",
         "expo-file-system": "*",
       }),
       addPeerDependencies("expo-font", {
