@@ -276,6 +276,14 @@ export function useSignedTxHandler({
           logger.critical(error as Error);
         }
 
+        log("debug-swap", "useSignedTxHandler", {
+          signedOperation,
+          transactionSignError,
+          error,
+          "route.name": route.name,
+          "route.params": route.params,
+        });
+
         (navigation as StackNavigationProp<{ [key: string]: object }>).replace(
           route.name.replace("ConnectDevice", "ValidationError"),
           { ...route.params, error },
@@ -308,6 +316,14 @@ export function useSignedTxHandlerWithoutBroadcast({
         ) {
           logger.critical(error as Error);
         }
+
+        log("debug-swap", "useSignedTxHandlerWithoutBroadcast", {
+          signedOperation,
+          transactionSignError,
+          error,
+          "route.name": route.name,
+          "route.params": route.params,
+        });
 
         (navigation as StackNavigationProp<{ [key: string]: object }>).replace(
           route.name.replace("ConnectDevice", "ValidationError"),

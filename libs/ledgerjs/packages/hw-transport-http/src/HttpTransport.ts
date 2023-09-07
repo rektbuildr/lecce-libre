@@ -41,7 +41,7 @@ export default class HttpTransport extends Transport {
 
   async exchange(apdu: Buffer): Promise<Buffer> {
     const apduHex = apdu.toString("hex");
-    log("apdu", "=> " + apduHex);
+    log("apdu", "=> " + apduHex, { observableId: this.observableId });
     const response = await axios({
       method: "POST",
       url: this.url,
@@ -63,7 +63,7 @@ export default class HttpTransport extends Transport {
 
     const body: any = await response.data;
     if (body.error) throw body.error;
-    log("apdu", "<= " + body.data);
+    log("apdu", "<= " + body.data, { observableId: this.observableId });
     return Buffer.from(body.data, "hex");
   }
 

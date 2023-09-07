@@ -121,7 +121,7 @@ export default class WebSocketTransport extends Transport {
 
   async exchange(apdu: Buffer): Promise<Buffer> {
     const hex = apdu.toString("hex");
-    log("apdu", "=> " + hex);
+    log("apdu", "=> " + hex, { observableId: this.observableId });
     const res: Buffer = await new Promise((resolve, reject) => {
       this.hook.rejectExchange = (e: any) => reject(e);
 
@@ -129,7 +129,7 @@ export default class WebSocketTransport extends Transport {
 
       this.hook.send(hex);
     });
-    log("apdu", "<= " + res.toString("hex"));
+    log("apdu", "<= " + res.toString("hex"), { observableId: this.observableId });
     return res;
   }
 

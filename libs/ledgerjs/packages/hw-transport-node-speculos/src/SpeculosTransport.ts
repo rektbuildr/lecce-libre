@@ -129,14 +129,14 @@ export default class SpeculosTransport extends Transport {
 
   async exchange(apdu: Buffer): Promise<any> {
     const hex = apdu.toString("hex");
-    log("apdu", "=> " + hex);
+    log("apdu", "=> " + hex, { observableId: this.observableId });
     const encoded = encodeAPDU(apdu);
     const res: Buffer = await new Promise((resolve, reject) => {
       this.rejectExchange = reject;
       this.resolveExchange = resolve;
       this.apduSocket.write(encoded);
     });
-    log("apdu", "<= " + res.toString("hex"));
+    log("apdu", "<= " + res.toString("hex"), { observableId: this.observableId });
     return res;
   }
 

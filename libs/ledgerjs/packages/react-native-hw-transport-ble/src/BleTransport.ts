@@ -523,7 +523,7 @@ export default class BleTransport extends Transport {
     this.exchangeAtomicImpl(async () => {
       try {
         const msgIn = apdu.toString("hex");
-        log("apdu", `=> ${msgIn}`);
+        log("apdu", `=> ${msgIn}`, { observableId: this.observableId });
 
         const data = await merge(
           this.notifyObservable.pipe(receiveAPDU),
@@ -531,11 +531,11 @@ export default class BleTransport extends Transport {
         ).toPromise();
 
         const msgOut = data.toString("hex");
-        log("apdu", `<= ${msgOut}`);
+        log("apdu", `<= ${msgOut}`, { observableId: this.observableId });
 
         return data;
       } catch (e: any) {
-        log("ble-error", "exchange got " + String(e));
+        log("ble-error", "exchange got " + String(e), { observableId: this.observableId });
 
         if (this.notYetDisconnected) {
           // in such case we will always disconnect because something is bad.

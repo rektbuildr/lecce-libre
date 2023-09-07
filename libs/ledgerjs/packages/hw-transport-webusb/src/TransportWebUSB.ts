@@ -173,7 +173,7 @@ export default class TransportWebUSB extends Transport {
   async exchange(apdu: Buffer): Promise<Buffer> {
     const b = await this.exchangeAtomicImpl(async () => {
       const { channel, packetSize } = this;
-      log("apdu", "=> " + apdu.toString("hex"));
+      log("apdu", "=> " + apdu.toString("hex"), { observableId: this.observableId });
       const framing = hidFraming(channel, packetSize);
       // Write...
       const blocks = framing.makeBlocks(apdu);
@@ -194,7 +194,7 @@ export default class TransportWebUSB extends Transport {
         acc = framing.reduceResponse(acc, buffer);
       }
 
-      log("apdu", "<= " + result.toString("hex"));
+      log("apdu", "<= " + result.toString("hex"), { observableId: this.observableId });
       return result;
     }).catch(e => {
       if (e && e.message && e.message.includes("disconnected")) {

@@ -66,6 +66,10 @@ export default class Eth {
     this.loadConfig = loadConfig;
   }
 
+  setObservableId(observableId: string): void {
+    this.transport.setObservableId(observableId);
+  }
+
   constructor(transport: Transport, scrambleKey = "w0w", loadConfig: LoadConfig = {}) {
     this.transport = transport;
     this.loadConfig = loadConfig;

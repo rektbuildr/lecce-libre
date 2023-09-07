@@ -104,11 +104,11 @@ export default class SpeculosHttpTransport extends Transport {
 
   async exchange(apdu: Buffer): Promise<any> {
     const hex = apdu.toString("hex");
-    log("apdu", "=> " + hex);
+    log("apdu", "=> " + hex, { observableId: this.observableId });
     return this.instance.post("/apdu", { data: hex }).then(r => {
       // r.data is {"data": "hex value of response"}
       const data = r.data.data;
-      log("apdu", "<= " + data);
+      log("apdu", "<= " + data, { observableId: this.observableId });
       return Buffer.from(data, "hex");
     });
   }

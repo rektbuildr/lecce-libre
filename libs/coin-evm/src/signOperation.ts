@@ -15,6 +15,7 @@ import { EvmAddress, EvmSignature, EvmSigner } from "./signer";
 import { prepareForSignOperation } from "./prepareTransaction";
 import { getSerializedTransaction } from "./transaction";
 import { Transaction } from "./types";
+import uniqueId from "lodash/uniqueId";
 
 /**
  * Transforms the ECDSA signature paremeter v hexadecimal string received
@@ -59,6 +60,7 @@ export const buildSignOperation =
     transaction: Transaction;
   }): Observable<SignOperationEvent> =>
     new Observable(o => {
+      const observableId = uniqueId();
       async function main(): Promise<void> {
         const preparedTransaction = await prepareForSignOperation(account, transaction);
         const serializedTxHexString = getSerializedTransaction(preparedTransaction).slice(2); // Remove 0x prefix
@@ -83,9 +85,11 @@ export const buildSignOperation =
 
         o.next({
           type: "device-signature-requested",
+          observableId,
         });
 
         const sig = (await signerContext(deviceId, signer => {
+          signer?.setObservableId?.(observableId);
           signer.setLoadConfig(loadConfig);
           // Request signature on the nano
           return signer.signTransaction(
@@ -95,7 +99,7 @@ export const buildSignOperation =
           );
         })) as EvmSignature;
 
-        o.next({ type: "device-signature-granted" }); // Signature is done
+        o.next({ type: "device-signature-granted", observableId }); // Signature is done
 
         const { chainId = 0 } = account.currency.ethereumLikeInfo || /* istanbul ignore next */ {};
         // Create a new serialized tx with the signature now
@@ -112,6 +116,7 @@ export const buildSignOperation =
 
         o.next({
           type: "signed",
+          observableId,
           signedOperation: {
             operation,
             signature,
@@ -122,6 +127,6 @@ export const buildSignOperation =
       main().then(
         () => o.complete(),
         /* istanbul ignore next: don't test throwing an error */
-        e => o.error(e),
+        e => o.error({ ...e, observableId }),
       );
     });

@@ -39,17 +39,21 @@ export type SignOperationEvent = // Used when lot of exchange is needed with the
       progress: number;
       index: number;
       total: number;
+      observableId?: string;
     } // optional
   // REQUIRED Indicates that a signature is now appearing and awaited on the device to confirm
   | {
       type: "device-signature-requested";
+      observableId?: string;
     } // REQUIRED Indicates user have confirmed the transaction
   | {
       type: "device-signature-granted";
+      observableId?: string;
     } // REQUIRED payload of the resulting signed operation
   | {
       type: "signed";
       signedOperation: SignedOperation;
+      observableId?: string;
     };
 
 /**

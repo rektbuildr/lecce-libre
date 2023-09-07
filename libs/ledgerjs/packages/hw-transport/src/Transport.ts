@@ -52,6 +52,11 @@ export default class Transport {
   exchangeTimeout = 30000;
   unresponsiveTimeout = 15000;
   deviceModel: DeviceModel | null | undefined = null;
+  observableId: string | null | undefined = null;
+
+  setObservableId(observableId: string) {
+    this.observableId = observableId;
+  }
 
   /**
    * Check if the transport is supported on the current platform/browser.

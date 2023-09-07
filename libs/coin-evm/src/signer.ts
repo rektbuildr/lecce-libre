@@ -42,6 +42,7 @@ type LoadConfig = {
 };
 
 export interface EvmSigner {
+  setObservableId?(observableId: string): void;
   setLoadConfig(loadConfig: LoadConfig): void;
   getAddress(path: string, boolDisplay?: boolean, boolChaincode?: boolean): Promise<EvmAddress>;
   signTransaction(
