@@ -22,6 +22,7 @@ import { User } from "~/renderer/storage";
 
 Store.initRenderer();
 
+app.setAsDefaultProtocolClient("ledgerlive");
 const gotLock = app.requestSingleInstanceLock();
 const userDataDirectory = resolveUserDataDirectory();
 if (!gotLock) {
