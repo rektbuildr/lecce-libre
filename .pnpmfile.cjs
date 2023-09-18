@@ -96,6 +96,10 @@ function readPackage(pkg, context) {
       }),
       /* React Native and Metro bundler packages */
       // Crashes ios build if removed /!\
+      addDependencies("@react-native/codegen", {
+        glob: "*",
+        invariant: "*",
+      }),
       addDependencies("react-native", {
         mkdirp: "*",
         yargs: "*",
