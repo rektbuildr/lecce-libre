@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { BoxedIcon, Flex, FlowStepper, IconsLegacy, Text } from "@ledgerhq/react-ui";
+import { BoxedIcon, Flex, FlowStepper, IconsLegacy, Text, Log } from "@ledgerhq/react-ui";
 import { useDispatch } from "react-redux";
 import { ImageDownloadError } from "@ledgerhq/live-common/customImage/errors";
 import { PostOnboardingActionId } from "@ledgerhq/types-live";
@@ -310,9 +310,9 @@ const CustomImage: React.FC<Props> = props => {
               size={64}
               iconSize={24}
             />
-            <Text variant="large" alignSelf="stretch" mt={9} textAlign="center">
+            <Log mt={9} extraTextProps={{ fontSize: "20px" }}>
               {t("customImage.customImageSet")}
-            </Text>
+            </Log>
           </Flex>
         </StepContainer>
       )}
