@@ -17,7 +17,6 @@ import ManagerNavigator, { ManagerTabIcon } from "./ManagerNavigator";
 import DiscoverNavigator from "./DiscoverNavigator";
 import customTabBar from "../TabBar/CustomTabBar";
 import { MainNavigatorParamList } from "./types/MainNavigator";
-import { isMainNavigatorVisibleSelector } from "../../reducers/appstate";
 import EarnLiveAppNavigator from "./EarnLiveAppNavigator";
 import { useFeature } from "@ledgerhq/live-common/featureFlags/index";
 
@@ -32,22 +31,7 @@ export default function MainNavigator() {
   const { colors } = useTheme();
   const readOnlyModeEnabled = useSelector(readOnlyModeEnabledSelector);
   const hasOrderedNano = useSelector(hasOrderedNanoSelector);
-  const isMainNavigatorVisible = useSelector(isMainNavigatorVisibleSelector);
   const managerNavLockCallback = useManagerNavLockCallback();
-
-  const insets = useSafeAreaInsets();
-  const tabBar = useMemo(
-    () =>
-      ({ ...props }: BottomTabBarProps): JSX.Element =>
-        customTabBar({
-          ...props,
-          colors,
-          insets,
-          hideTabBar: !isMainNavigatorVisible,
-        }),
-    [colors, insets, isMainNavigatorVisible],
-  );
-
   const managerLockAwareCallback = useCallback(
     callback => {
       // NB This is conditionally going to show the confirmation modal from the manager
@@ -61,7 +45,7 @@ export default function MainNavigator() {
 
   return (
     <Tab.Navigator
-      tabBar={tabBar}
+      tabBar={customTabBar}
       screenOptions={{
         tabBarStyle: [
           {

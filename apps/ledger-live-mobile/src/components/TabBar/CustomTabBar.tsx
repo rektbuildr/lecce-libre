@@ -1,12 +1,15 @@
 import React from "react";
 import { ColorPalette, Flex } from "@ledgerhq/native-ui";
-import { Dimensions, StyleSheet, TouchableOpacity } from "react-native";
-import styled from "styled-components/native";
+import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
+import styled, { useTheme } from "styled-components/native";
 import Svg, { Path, Stop } from "react-native-svg";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import Animated, { FadeInDown, FadeOutDown } from "react-native-reanimated";
 import { TAB_BAR_HEIGHT, GRADIENT_HEIGHT } from "./shared";
 import BackgroundGradient from "./BackgroundGradient";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useSelector } from "react-redux";
+import { isMainNavigatorVisibleSelector } from "../../reducers/appstate";
 
 type SvgProps = {
   color: string;
@@ -94,12 +97,10 @@ const lightGradients = [
   },
 ];
 
-export type Props = {
-  colors: ColorPalette;
-  hideTabBar?: boolean;
-} & BottomTabBarProps;
+export type Props = BottomTabBarProps;
 
-const TabBar = ({ state, descriptors, navigation, colors, insets }: Props): JSX.Element => {
+const TabBar = ({ state, descriptors, navigation, insets }: Props): JSX.Element => {
+  const { colors } = useTheme();
   const bgColor = getBgColor(colors);
   const gradients = colors.type === "light" ? lightGradients : darkGradients;
   const { bottom: bottomInset } = insets;
@@ -195,27 +196,20 @@ const TabBar = ({ state, descriptors, navigation, colors, insets }: Props): JSX.
   );
 };
 
-export default function CustomTabBar({
-  state,
-  descriptors,
-  navigation,
-  colors,
-  insets,
-  hideTabBar = false,
-}: Props): JSX.Element {
+const CustomTabBar = ({ state, descriptors, navigation }: Props): JSX.Element => {
+  const insets = useSafeAreaInsets();
+  const isMainNavigatorVisible = useSelector(isMainNavigatorVisibleSelector);
   return (
     <Animated.View>
-      {!hideTabBar && (
+      {isMainNavigatorVisible && (
         <Animated.View entering={FadeInDown} exiting={FadeOutDown}>
-          <TabBar
-            state={state}
-            descriptors={descriptors}
-            navigation={navigation}
-            colors={colors}
-            insets={insets}
-          />
+          <TabBar state={state} descriptors={descriptors} navigation={navigation} insets={insets} />
         </Animated.View>
       )}
     </Animated.View>
   );
+};
+
+export default function customTabBar(props: Props) {
+  return <CustomTabBar {...props} />;
 }
