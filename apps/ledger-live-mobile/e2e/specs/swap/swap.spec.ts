@@ -1,17 +1,31 @@
-import { expect } from "detox";
-import { loadConfig } from "../../bridge/server";
+import { expect, device } from "detox";
+import BigNumber from "bignumber.js";
+import { DeviceModelId } from "@ledgerhq/devices";
+import { loadBleState, loadConfig } from "../../bridge/server";
 import PortfolioPage from "../../models/wallet/portfolioPage";
 import SwapFormPage from "../../models/trade/swapFormPage";
+import DeviceAction from "../../models/DeviceAction";
+import { delay, tapByText } from "../../helpers";
+import { fromTransactionRaw } from "@ledgerhq/live-common/transaction/index";
 
 let portfolioPage: PortfolioPage;
 let swapPage: SwapFormPage;
+let deviceAction: DeviceAction;
+
+const knownDevice = {
+  name: "Nano X de test",
+  id: "mock_1",
+  modelId: DeviceModelId.nanoX,
+};
 
 describe("Swap", () => {
   beforeAll(async () => {
     loadConfig("1AccountBTC1AccountETHReadOnlyFalse", true);
+    loadBleState({ knownDevices: [knownDevice] });
 
     portfolioPage = new PortfolioPage();
     swapPage = new SwapFormPage();
+    deviceAction = new DeviceAction(knownDevice);
 
     await portfolioPage.waitForPortfolioPageToLoad();
   });
@@ -48,5 +62,56 @@ describe("Swap", () => {
     await swapPage.startExchange();
     await expect(swapPage.termsAcceptButton()).toBeVisible();
     await expect(swapPage.termsCloseButton()).toBeVisible();
+  });
+
+  it("should be able to send the maximum available amount", async () => {
+    await tapByText("Accept");
+    await deviceAction.selectMockDevice();
+    await deviceAction.accessManagerWithL10n();
+    // await device.disableSynchronization();
+    await delay(5000);
+    await deviceAction.initiateSwap(new BigNumber(1000));
+    await delay(5000);
+
+    const transaction = fromTransactionRaw({
+      family: "bitcoin",
+      recipient: "1Cz2ZXb6Y6AacXJTpo4RBjQMLEmscuxD8e",
+      amount: "1",
+      feePerByte: "1",
+      networkInfo: {
+        family: "bitcoin",
+        feeItems: {
+          items: [
+            {
+              key: "0",
+              speed: "high",
+              feePerByte: "3",
+            },
+            {
+              key: "1",
+              speed: "standard",
+              feePerByte: "2",
+            },
+            {
+              key: "2",
+              speed: "low",
+              feePerByte: "1",
+            },
+          ],
+          defaultFeePerByte: "1",
+        },
+      },
+      rbf: false,
+      utxoStrategy: {
+        strategy: 0,
+        excludeUTXOs: [],
+      },
+    });
+
+    await deviceAction.confirmSwap(transaction);
+    await delay(5000);
+    // await deviceAction.accessManagerWithL10n();
+    await deviceAction.openApp();
+    await deviceAction.complete();
   });
 });

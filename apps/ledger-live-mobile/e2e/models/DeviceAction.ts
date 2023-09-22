@@ -192,6 +192,7 @@ export default class DeviceAction {
     mockDeviceEvent({ type: "opened" });
     await delay(2000); // enough time to allow the UI to switch from one action to another
     mockDeviceEvent({ type: "init-swap-requested", estimatedFees });
+    mockDeviceEvent({ type: "complete" });
   }
 
   async confirmSwap(transaction: Transaction) {
