@@ -68,7 +68,6 @@ describe("Swap", () => {
     await tapByText("Accept");
     await deviceAction.selectMockDevice();
     await deviceAction.accessManagerWithL10n();
-    // await device.disableSynchronization();
     await delay(5000);
     await deviceAction.initiateSwap(new BigNumber(1000));
     await delay(5000);
