@@ -36,12 +36,16 @@ import { accountToWalletAPIAccount } from "@ledgerhq/live-common/wallet-api/conv
 import useRefreshRates from "./hooks/useRefreshRates";
 import LoadingState from "./Rates/LoadingState";
 import EmptyState from "./Rates/EmptyState";
-import { AccountLike, Feature } from "@ledgerhq/types-live";
+import { AccountLike, AnyMessage, Feature } from "@ledgerhq/types-live";
 import BigNumber from "bignumber.js";
 import { CryptoCurrency, TokenCurrency } from "@ledgerhq/types-cryptoassets";
 import { SwapSelectorStateType } from "@ledgerhq/live-common/exchange/swap/types";
 import { SWAP_RATES_TIMEOUT } from "../../config";
 import { useSwapTransactionHelper } from "~/renderer/hooks/transactions/useSwapTransactionHelper";
+import { openModal } from "~/renderer/actions/modals";
+import { RawPlatformSignedTransaction } from "@ledgerhq/live-common/platform/rawTypes";
+import { broadcastTransactionLogic } from "~/renderer/components/Web3AppWebview/LiveAppSDKLogic";
+import { useTokenAllowanceHelper } from "~/renderer/hooks/transactions/useTokenAllowanceHelper";
 
 const Wrapper = styled(Box).attrs({
   p: 20,
@@ -292,8 +296,69 @@ const SwapForm = () => {
     }
   };
 
+  const allowanceCheckHelper = useTokenAllowanceHelper();
   const dexSwapHelper = useSwapTransactionHelper();
   const onDexSwap = () => dexSwapHelper({ swapTransaction });
+  const onAllowanceCheck = () => allowanceCheckHelper.check(swapTransaction);
+
+  const onSignMessage = () => {
+    // const from = swapTransaction.swap.from;
+    // const fromAccountId = from.parentAccount?.id || from.account?.id;
+    // const account = accounts.find(a => a.id === fromAccountId);
+    // if (!account) throw new Error('Missing account')
+    // const message: AnyMessage = {
+    //   domainHash: "",
+    //   hashStruct: "0x095ea7b30000000000000000000000001111111254eeb25477b68fb85ed929f73a9605820000000000000000000000000000000000000000000000000000000000030d40",
+    //   standard: "EIP712",
+    //   message: {
+    //     domain: {
+    //       chainId: 1,
+    //       name: "USD Coin",
+    //       verifyingContract: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    //       version: "2",
+    //     },
+    //     types: {
+    //       EIP712Domain: []
+    //     },
+    //     primaryType: "",
+    //     message: {}
+    //   }
+    // }
+    // dispatch(
+    //   openModal("MODAL_SIGN_MESSAGE", {
+    //     account,
+    //     message,
+    //     onConfirmationHandler: (args) => {
+    //       console.log('[DEX] Sign message confirm', args);
+    //     },
+    //     onFailHandler: (e) => {
+    //       console.log('[DEX] Sign message failed', e);
+    //     },
+    //     onClose: (args) => {
+    //       console.log('[DEX] Sign message close', args);
+    //     },
+    //   }),
+    // );
+  };
+
+  // const broadcastTransaction = useCallback(
+  //   async ({
+  //     accountId,
+  //     signedTransaction,
+  //   }: {
+  //     accountId: string;
+  //     signedTransaction: RawPlatformSignedTransaction;
+  //   }) => {
+  //     return broadcastTransactionLogic(
+  //       { manifest, dispatch, accounts },
+  //       accountId,
+  //       signedTransaction,
+  //       pushToast,
+  //       t,
+  //     );
+  //   },
+  //   [manifest, accounts, pushToast, dispatch, t],
+  // );
 
   const sourceAccount = swapTransaction.swap.from.account;
   const sourceCurrency = swapTransaction.swap.from.currency;
@@ -373,8 +438,18 @@ const SwapForm = () => {
           </Button>
         </Box>
         <Box>
-          <Button primary disabled={!isSwapReady} onClick={onDexSwap}>
+          <Button primary onClick={onAllowanceCheck}>
+            1nch allowance check
+          </Button>
+        </Box>
+        <Box>
+          <Button primary onClick={onDexSwap}>
             1nch Dex swap
+          </Button>
+        </Box>
+        <Box>
+          <Button primary onClick={onSignMessage}>
+            Sign message
           </Button>
         </Box>
       </Wrapper>
