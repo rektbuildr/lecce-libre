@@ -74,8 +74,8 @@ describe("Swap", () => {
 
     const transaction = fromTransactionRaw({
       family: "bitcoin",
-      recipient: "1Cz2ZXb6Y6AacXJTpo4RBjQMLEmscuxD8e",
-      amount: "1",
+      recipient: "0x046615F0862392BC5E6FB43C92AAD73DE158D235",
+      amount: "0.35",
       feePerByte: "1",
       networkInfo: {
         family: "bitcoin",
@@ -109,8 +109,9 @@ describe("Swap", () => {
 
     await deviceAction.confirmSwap(transaction);
     await delay(5000);
-    // await deviceAction.accessManagerWithL10n();
     await deviceAction.openApp();
+    await delay(5000);
     await deviceAction.complete();
+    await delay(5000);
   });
 });

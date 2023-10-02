@@ -98,6 +98,8 @@ function OperationRow({
 }: Props) {
   const navigation = useNavigation<BaseNavigation>();
 
+  console.log("WOW OPERATION ROW!!!!!!", { operation });
+
   const goToOperationDetails = debounce(() => {
     track("transaction_clicked", {
       transaction: operation.type,
