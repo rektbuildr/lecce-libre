@@ -17,7 +17,7 @@ jobs:
               - 'libs/ledgerjs/packages/cryptoassets/src/data/**'
       - name: generate token
         id: generate-token
-        uses: tibdex/github-app-token@v1
+        uses: tibdex/github-app-token@v1.8.2
         with:
           app_id: ${{ secrets.GH_BOT_APP_ID }}
           private_key: ${{ secrets.GH_BOT_PRIVATE_KEY }}
