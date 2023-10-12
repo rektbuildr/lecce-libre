@@ -54,7 +54,7 @@ export const useTokenAllowanceHelper = () => {
 
     // Should be 0 (because is just an approval tx)
     const amount = new BigNumber(approvalQuery.response.data.value);
-    const data = Buffer.from(approvalQuery.response.data.data.replace('0x', ''), 'hex');
+    const data = Buffer.from(approvalQuery.response.data.data.replace("0x", ""), "hex");
 
     // 1Inch token approval gas might be in wei?
     // gewi (Decimals: 9)
@@ -66,8 +66,7 @@ export const useTokenAllowanceHelper = () => {
       transaction.feesStrategy = "slow";
       transaction.amount = amount;
       (transaction as any).gasPrice = gasPrice;
-      (transaction as any).gasLimit = gasPrice;
-      (transaction as any).data = data
+      (transaction as any).data = data;
       return transaction;
     });
 
@@ -81,9 +80,9 @@ export const useTokenAllowanceHelper = () => {
     // }
 
     const signedTx = await signTransactionHelpers.signAndBroadcastTransaction({
-      appId: '1inch',
+      appId: "1inch",
       accountId: accountQuery.accountId,
-      tx: swapTransaction.transaction as any
+      tx: swapTransaction.transaction as any,
     });
     return signedTx;
   };
