@@ -88,7 +88,6 @@ export const useSignTransactionHelpers = (appId: string) => {
   };
 
   const signAndBroadcastTransaction = async (args: SignTransactionParams) => {
-    debugger
     const signedTransaction = await signTransaction(args);
     const txId = await broadcastTransaction({
       accountId: args.accountId,

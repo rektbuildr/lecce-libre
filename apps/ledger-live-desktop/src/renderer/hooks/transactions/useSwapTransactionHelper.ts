@@ -20,7 +20,6 @@ export const useSwapTransactionHelper = () => {
 
   const buildDexTransaction = async (swapTransaction: SwapTransactionType) => {
     const response = await query1InchSwapTx(swapTransaction);
-    const gasPrice = new BigNumber(response.tx.gasPrice).dividedBy(1000000000);
     const amount = new BigNumber(parseInt(response.tx.value));
     const txData = Buffer.from(response.tx.data.replace("0x", ""), "hex");
     const recipient = response.tx.to;
@@ -28,7 +27,6 @@ export const useSwapTransactionHelper = () => {
       transaction.recipient = recipient;
       transaction.feesStrategy = "slow";
       transaction.amount = amount;
-      (transaction as any).gasPrice = gasPrice;
       (transaction as any).data = txData;
       return transaction;
     });
