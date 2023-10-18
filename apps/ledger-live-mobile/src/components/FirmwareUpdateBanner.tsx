@@ -19,7 +19,7 @@ import { useFeature } from "@ledgerhq/live-common/featureFlags/index";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { BatteryStatusTypes } from "@ledgerhq/live-common/hw/getBatteryStatus";
 import isFirmwareUpdateVersionSupported from "@ledgerhq/live-common/hw/isFirmwareUpdateVersionSupported";
-import useLatestFirmware from "@ledgerhq/live-common/hooks/useLatestFirmware";
+import { useLatestFirmware } from "@ledgerhq/live-common/device/hooks/useLatestFirmware";
 import { useBatteryStatuses } from "@ledgerhq/live-common/deviceSDK/hooks/useBatteryStatuses";
 import { BatteryStatusFlags } from "@ledgerhq/types-devices";
 
