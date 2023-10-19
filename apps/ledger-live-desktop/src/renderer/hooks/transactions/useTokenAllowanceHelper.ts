@@ -56,16 +56,10 @@ export const useTokenAllowanceHelper = () => {
     const amount = new BigNumber(approvalQuery.response.data.value);
     const data = Buffer.from(approvalQuery.response.data.data.replace("0x", ""), "hex");
 
-    // 1Inch token approval gas might be in wei?
-    // gewi (Decimals: 9)
-    // wei  (Decimals: 0)
-    const gasPrice = new BigNumber(approvalQuery.response.data.gasPrice).dividedBy(1000000000);
-
     swapTransaction.updateTransaction(transaction => {
       transaction.recipient = recipient;
       transaction.feesStrategy = "slow";
       transaction.amount = amount;
-      (transaction as any).gasPrice = gasPrice;
       (transaction as any).data = data;
       return transaction;
     });
