@@ -175,11 +175,7 @@ const validateGas = (
   return [errors, warnings];
 };
 
-const validateNft = (
-  account: Account,
-  tx: EvmTransaction,
-  totalFees: BigNumber,
-): Array<ValidationIssues> => {
+const validateNft = (account: Account, tx: EvmTransaction): Array<ValidationIssues> => {
   if (!tx.nft) return [{}, {}];
 
   const errors: ValidationIssues = {};
@@ -196,9 +192,6 @@ const validateNft = (
     errors.amount = new QuantityNeedsToBePositive();
   } else if (nftFromAccount.amount.lt(tx.nft.quantity)) {
     errors.amount = new NotEnoughNftOwned();
-  } else if (totalFees.isGreaterThan(account.balance)) {
-    // if not enough balance to pay fees
-    errors.amount = new NotEnoughBalanceInParentAccount();
   }
 
   return [errors, warnings];
@@ -249,7 +242,7 @@ export const getTransactionStatus: AccountBridge<EvmTransaction>["getTransaction
   // Gas related errors and warnings
   const [gasErr, gasWarn] = validateGas(account, tx, totalFees, gasLimit, customGasLimit);
   // NFT related errors and warnings
-  const [nftErr, nftWarn] = validateNft(account, tx, totalFees);
+  const [nftErr, nftWarn] = validateNft(account, tx);
   // Fee ratio related errors and warnings
   const [feeRatioErr, feeRatioWarn] = validateFeeRatio(subAccount || account, tx, estimatedFees);
 
