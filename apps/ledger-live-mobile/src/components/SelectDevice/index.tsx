@@ -27,6 +27,7 @@ import { DeviceLike } from "../../reducers/types";
 import { useResetOnNavigationFocusState } from "../../helpers/useResetOnNavigationFocusState";
 import { useDebouncedRequireBluetooth } from "../RequiresBLE/hooks/useRequireBluetooth";
 import RequiresBluetoothDrawer from "../RequiresBLE/RequiresBluetoothDrawer";
+import USBDeviceSelected from "./USBDeviceSelected";
 
 type Props = {
   withArrows?: boolean;
@@ -136,6 +137,19 @@ export default function SelectDevice({
     }
   }, [bluetoothRequirementsState, lastSelectedDeviceBeforeRequireBluetoothCheck, handleOnSelect]);
 
+  const [selectedWiredDevice, setSelectedWiredDevice] = useState<Device | null>(null);
+
+  const onSelectUSBDeviceDone = useCallback(
+    (device: Device) => {
+      dispatch(setLastConnectedDevice(device));
+      dispatch(setHasConnectedDevice(true));
+      onSelect(device);
+      dispatch(setReadOnlyMode(false));
+      return;
+    },
+    [dispatch, onSelect],
+  );
+
   // When a new pairing (with a navigation) occurs, this component gets unmounted/remounted
   // Therefore, its state (isBleRequired, or a selectedDevice) cannot be updated.
   // No checks on the bluetooth requirements can done from this component because of this.
@@ -152,11 +166,7 @@ export default function SelectDevice({
           modelId,
           connectionType: "USB",
         });
-
-        dispatch(setLastConnectedDevice(device));
-        dispatch(setHasConnectedDevice(true));
-        onSelect(device);
-        dispatch(setReadOnlyMode(false));
+        setSelectedWiredDevice(device);
         return;
       }
 
@@ -261,6 +271,9 @@ export default function SelectDevice({
     });
     return () => subscription.unsubscribe();
   }, []);
+
+  if (selectedWiredDevice)
+    return <USBDeviceSelected device={selectedWiredDevice} onDone={onDone} />;
 
   return (
     <>
