@@ -35,7 +35,7 @@ const ConnectNanoScene = ({
   // Keeping the header (back arrow and information button) from the onboarding.
   const requestToSetHeaderOptions = useCallback(() => undefined, []);
 
-  const onSetDevice = useCallback(
+  const onSelectDevice = useCallback(
     async (device: Device) => {
       dispatch(setLastConnectedDevice(device));
       setDevice(device);
@@ -43,16 +43,6 @@ const ConnectNanoScene = ({
       dispatch(setHasOrderedNano(false));
     },
     [dispatch],
-  );
-
-  const directNext = useCallback(
-    async (device: Device) => {
-      dispatch(setLastConnectedDevice(device));
-      dispatch(setReadOnlyMode(false));
-      dispatch(setHasOrderedNano(false));
-      onNext();
-    },
-    [dispatch, onNext],
   );
 
   const onResult = useCallback(
@@ -69,8 +59,8 @@ const ConnectNanoScene = ({
         setDevice(undefined);
         dispatch(setReadOnlyMode(false));
         dispatch(setHasOrderedNano(false));
-        onNext();
       }
+      onNext();
     },
     [dispatch, onNext],
   );
@@ -83,7 +73,7 @@ const ConnectNanoScene = ({
       <Flex flex={1}>
         {newDeviceSelectionFeatureFlag?.enabled ? (
           <SelectDevice2
-            onSelect={onSetDevice}
+            onSelect={onSelectDevice}
             stopBleScanning={!!device}
             requestToSetHeaderOptions={requestToSetHeaderOptions}
             isChoiceDrawerDisplayedOnAddDevice={false}
@@ -93,7 +83,7 @@ const ConnectNanoScene = ({
           <SelectDevice
             withArrows
             usbOnly={usbOnly}
-            onSelect={usbOnly ? onSetDevice : directNext}
+            onSelect={onSelectDevice}
             autoSelectOnAdd
             hideAnimation
           />
