@@ -111,7 +111,7 @@
     "https": false
   },
   "dependencies": {
-    "@cardano-foundation/ledgerjs-hw-app-cardano": "^5.1.0",
+    "@cardano-foundation/ledgerjs-hw-app-cardano": "^6.0.0",
     "@celo/connect": "^3.0.1",
     "@celo/contractkit": "^3.0.1",
     "@celo/utils": "^3.0.1",
@@ -134,6 +134,7 @@
     "@ledgerhq/coin-framework": "workspace:^",
     "@ledgerhq/coin-polkadot": "workspace:^",
     "@ledgerhq/compressjs": "github:LedgerHQ/compressjs#d9e8e4d994923e0ea76a32b97289bcccfe71b82e",
+    "@ledgerhq/crypto-icons-ui": "workspace:^",
     "@ledgerhq/cryptoassets": "workspace:^",
     "@ledgerhq/devices": "workspace:^",
     "@ledgerhq/errors": "workspace:^",
@@ -151,7 +152,6 @@
     "@ledgerhq/hw-app-vet": "workspace:^",
     "@ledgerhq/hw-app-xrp": "workspace:^",
     "@ledgerhq/hw-transport": "workspace:^",
-    "@ledgerhq/crypto-icons-ui": "workspace:^",
     "@ledgerhq/hw-transport-mocker": "workspace:^",
     "@ledgerhq/hw-transport-node-speculos": "workspace:^",
     "@ledgerhq/hw-transport-node-speculos-http": "workspace:^",
