@@ -160,12 +160,16 @@ const SwapForm = () => {
         walletApiPartnerList?.enabled && walletApiPartnerList?.params?.list.includes(provider)
           ? accountToWalletAPIAccount(account, parentAccount)?.id
           : fromAccountId;
-
+      console.log("boo pathname", pathname);
+      const customDappUrl =
+        provider === "moonpay" ? providerURL.replace("ledgerlive", "https") : providerURL;
+      console.log("boo providerURL", customDappUrl);
       history.push({
         // This looks like an issue, the proper signature is: push(path, [state]) - (function) Pushes a new entry onto the history stack
         // It seems possible to also pass a LocationDescriptorObject but it does not expect extra properties
         // @ts-expect-error so customDappUrl is not expected to be here
-        customDappUrl: providerURL,
+        customDappUrl,
+        // "https://buy.moonpay.com/swaps?apiKey=pk_live_R5Lf25uBfNZyKwccAZpzcxuL3ZdJ3Hc", // "https://app.1inch.io/#/1/simple/swap/eth/usdt?ledgerLive=true&sourceTokenAmount=1.1"
         pathname,
         state: {
           returnTo: "/swap",

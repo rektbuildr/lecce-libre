@@ -1,0 +1,78 @@
+{
+  "id": "moonpay",
+  "name": "MoonPay",
+  "url": "https://buy.moonpay.com/swaps?apiKey=pk_live_j5CLt1qxbqGtYhkxUxyk6VQnSd5CBXI&ledgerlive",
+  "homepageUrl": "https://www.moonpay.com/",
+  "icon": "https://cdn.live.ledger.com/icons/platform/moonpay.png",
+  "platforms": [
+    "android",
+    "desktop",
+    "ios"
+  ],
+  "apiVersion": "^2.0.0",
+  "manifestVersion": "1",
+  "branch": "experimental",
+  "categories": [
+    "buy",
+    "swap"
+  ],
+  "currencies": "*",
+  "content": {
+    "shortDescription": {
+      "en": "A fast, simple, and secure way to buy crypto."
+    },
+    "description": {
+      "en": "MoonPay accepts all major payment methods and over 30 fiat currencies, enabling people from all over the world to buy crypto."
+    }
+  },
+  "permissions": [
+    "account.list",
+    "account.receive",
+    "account.request",
+    "currency.list",
+    "device.close",
+    "device.exchange",
+    "device.transport",
+    "message.sign",
+    "transaction.sign",
+    "transaction.signAndBroadcast",
+    "storage.set",
+    "storage.get",
+    "bitcoin.getXPub",
+    "wallet.capabilities",
+    "wallet.userId",
+    "wallet.info",
+    "exchange.start",
+    "exchange.complete",
+    "custom.swapStateGet",
+    "custom.swapStateSet",
+    "custom.throwExchangeErrorToLedgerLive",
+    "custom.throwGenericErrorToLedgerLive"
+  ],
+  "domains": [
+    "http://",
+    "https://"
+  ],
+  "visibility": "complete",
+  "overrides": [
+    {
+      "platform": "ios",
+      "changes": {
+        "currencies": [
+          "bitcoin",
+          "bitcoin_cash",
+          "bsc",
+          "digibyte",
+          "dogecoin",
+          "ethereum",
+          "litecoin",
+          "polkadot",
+          "ripple",
+          "stellar",
+          "tron"
+        ],
+        "visibility": "searchable"
+      }
+    }
+  ]
+}
