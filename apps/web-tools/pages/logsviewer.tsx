@@ -44,10 +44,41 @@ const shortAddressPreview = (addr: string, target = 20) => {
     : `${addr.slice(0, slice)}...${addr.slice(addr.length - slice)}`;
 };
 
+import ExchangeGetVersionRequest from './../payloads/ExchangeGetVersionRequest.js';
+import ExchangeGetVersionResponse from './../payloads/ExchangeGetVersionResponse.js';
+import ExchangeStartTransactionRequest from './../payloads/ExchangeStartTransactionRequest.js';
+import ExchangeStartTransactionResponse from './../payloads/ExchangeStartTransactionResponse.js';
+import ExchangeSetPartnerPublicKeyRequest from './../payloads/ExchangeSetPartnerPublicKeyRequest.js';
+import ExchangeSetPartnerPublicKeyResponse from './../payloads/ExchangeSetPartnerPublicKeyResponse.js';
+import * as KaitaiStream from 'kaitai-struct';
+type KaitaiStream = typeof KaitaiStream
+
+const decoders: Array<(s: KaitaiStream) => Object> = [
+  (s: KaitaiStream) => new ExchangeStartTransactionRequest(s),
+  (s: KaitaiStream) => new ExchangeSetPartnerPublicKeyRequest(s),
+  (s: KaitaiStream) => new ExchangeGetVersionRequest(s),
+  (s: KaitaiStream) => new ExchangeSetPartnerPublicKeyResponse(s),
+  (s: KaitaiStream) => new ExchangeStartTransactionResponse(s),
+  (s: KaitaiStream) => new ExchangeGetVersionResponse(s)
+]
+
+function tryDecodeAPDU(payload: Buffer) {
+  for (const decoder of decoders) {
+    try {
+      return decoder(new KaitaiStream(payload));
+    } catch (error) {
+    }
+  }
+  return undefined;
+}
+
 const messageLenses: Record<string, (log: Log) => string> = {
   libcore: ({ message }) => {
     const i = message.indexOf("I: ");
     return i === -1 ? message : message.slice(i + 3);
+  },
+  apdu: ({ message }) => {
+    return tryDecodeAPDU(Buffer.from(message, "hex"))?.toString() ?? "Unrecognized APDU: " + message;
   },
 };
 
@@ -174,15 +205,15 @@ const Header = ({
       return !accounts
         ? ""
         : "data:text/plain;base64," +
-            btoa(
-              JSON.stringify({
-                data: {
-                  settings: { hasCompletedOnboarding: true },
-                  user: { id: "_" },
-                  accounts,
-                },
-              }),
-            );
+        btoa(
+          JSON.stringify({
+            data: {
+              settings: { hasCompletedOnboarding: true },
+              user: { id: "_" },
+              accounts,
+            },
+          }),
+        );
     } catch (e) {
       console.error(e);
     }
@@ -391,8 +422,8 @@ class LogsViewer extends Component {
   state: {
     logs: Log[] | null;
   } = {
-    logs: null,
-  };
+      logs: null,
+    };
   onDragOver: React.DragEventHandler = evt => {
     evt.stopPropagation();
     evt.preventDefault();
