@@ -1,5 +1,5 @@
 import BitcoinTransaction from './payloads/BitcoinTransaction.js';
-import * as KaitaiStream from 'kaitai-struct';
+import KaitaiStream from 'kaitai-struct';
 
 console.log("testing...")
 
