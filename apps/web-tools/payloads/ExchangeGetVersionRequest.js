@@ -6,29 +6,11 @@
   } else if (typeof module === 'object' && module.exports) {
     module.exports = factory(require('kaitai-struct/KaitaiStream'));
   } else {
-    root.ExchangeStartTransactionRequest = factory(root.KaitaiStream);
+    root.ExchangeGetVersionRequest = factory(root.KaitaiStream);
   }
 }(typeof self !== 'undefined' ? self : this, function (KaitaiStream) {
-var ExchangeStartTransactionRequest = (function() {
-  ExchangeStartTransactionRequest.Subcommand = Object.freeze({
-    SWAP: 0,
-    SELL: 1,
-    FUND: 2,
-
-    0: "SWAP",
-    1: "SELL",
-    2: "FUND",
-  });
-
-  ExchangeStartTransactionRequest.RateType = Object.freeze({
-    FIXED: 0,
-    FLOATING: 1,
-
-    0: "FIXED",
-    1: "FLOATING",
-  });
-
-  function ExchangeStartTransactionRequest(_io, _parent, _root) {
+var ExchangeGetVersionRequest = (function() {
+  function ExchangeGetVersionRequest(_io, _parent, _root) {
     this._io = _io;
     this._parent = _parent;
     this._root = _root || this;
@@ -36,7 +18,7 @@ var ExchangeStartTransactionRequest = (function() {
 
     this._read();
   }
-  ExchangeStartTransactionRequest.prototype._read = function() {
+  ExchangeGetVersionRequest.prototype._read = function() {
     this._debug.instructionClass = { start: this._io.pos, ioOffset: this._io.byteOffset };
     this.instructionClass = this._io.readBytes(1);
     this._debug.instructionClass.end = this._io.pos;
@@ -46,15 +28,21 @@ var ExchangeStartTransactionRequest = (function() {
     this._debug.instruction = { start: this._io.pos, ioOffset: this._io.byteOffset };
     this.instruction = this._io.readBytes(1);
     this._debug.instruction.end = this._io.pos;
-    if (!((KaitaiStream.byteArrayCompare(this.instruction, [3]) == 0))) {
-      throw new KaitaiStream.ValidationNotEqualError([3], this.instruction, this._io, "/seq/1");
+    if (!((KaitaiStream.byteArrayCompare(this.instruction, [2]) == 0))) {
+      throw new KaitaiStream.ValidationNotEqualError([2], this.instruction, this._io, "/seq/1");
     }
-    this._debug.p1 = { start: this._io.pos, ioOffset: this._io.byteOffset, enumName: "ExchangeStartTransactionRequest.RateType" };
-    this.p1 = this._io.readU1();
+    this._debug.p1 = { start: this._io.pos, ioOffset: this._io.byteOffset };
+    this.p1 = this._io.readBytes(1);
     this._debug.p1.end = this._io.pos;
-    this._debug.p2 = { start: this._io.pos, ioOffset: this._io.byteOffset, enumName: "ExchangeStartTransactionRequest.Subcommand" };
-    this.p2 = this._io.readU1();
+    if (!((KaitaiStream.byteArrayCompare(this.p1, [0]) == 0))) {
+      throw new KaitaiStream.ValidationNotEqualError([0], this.p1, this._io, "/seq/2");
+    }
+    this._debug.p2 = { start: this._io.pos, ioOffset: this._io.byteOffset };
+    this.p2 = this._io.readBytes(1);
     this._debug.p2.end = this._io.pos;
+    if (!((KaitaiStream.byteArrayCompare(this.p2, [0]) == 0))) {
+      throw new KaitaiStream.ValidationNotEqualError([0], this.p2, this._io, "/seq/3");
+    }
     this._debug.dataLen = { start: this._io.pos, ioOffset: this._io.byteOffset };
     this.dataLen = this._io.readBytes(1);
     this._debug.dataLen.end = this._io.pos;
@@ -63,7 +51,7 @@ var ExchangeStartTransactionRequest = (function() {
     }
   }
 
-  return ExchangeStartTransactionRequest;
+  return ExchangeGetVersionRequest;
 })();
-return ExchangeStartTransactionRequest;
+return ExchangeGetVersionRequest;
 }));

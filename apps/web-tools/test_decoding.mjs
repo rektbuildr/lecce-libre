@@ -18,7 +18,7 @@ function tryDecode(payload) {
   return undefined;
 }
 
-const payload = Buffer.from("e0030001", "hex");
+const payload = Buffer.from("e003000100", "hex");
 const message = tryDecode(payload);
 
 if (message == undefined) {
