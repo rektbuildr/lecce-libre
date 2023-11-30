@@ -1,7 +1,5 @@
-import "payloads/BitcoinTransaction";
-import BitcoinTransaction from './payloads/BitcoinTransaction';
-// @ts-ignore
-import KaitaiStream from 'kaitai-struct';
+import BitcoinTransaction from './payloads/BitcoinTransaction.js';
+import * as KaitaiStream from 'kaitai-struct';
 
 console.log("testing...")
 
