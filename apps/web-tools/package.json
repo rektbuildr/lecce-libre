@@ -9,7 +9,7 @@
     "dns": false
   },
   "scripts": {
-    "gen": "kaitai-struct-compiler ./payloads/schemas/*.ksy --outdir ./payloads --target javascript",
+    "gen": "kaitai-struct-compiler ./payloads/schemas/*.ksy --outdir ./payloads --target javascript --read-pos",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
