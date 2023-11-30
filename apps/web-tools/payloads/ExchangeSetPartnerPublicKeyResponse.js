@@ -6,11 +6,11 @@
   } else if (typeof module === 'object' && module.exports) {
     module.exports = factory(require('kaitai-struct/KaitaiStream'));
   } else {
-    root.ExchangeStartTransactionResponse = factory(root.KaitaiStream);
+    root.ExchangeSetPartnerPublicKeyResponse = factory(root.KaitaiStream);
   }
 }(typeof self !== 'undefined' ? self : this, function (KaitaiStream) {
-var ExchangeStartTransactionResponse = (function() {
-  ExchangeStartTransactionResponse.Status = Object.freeze({
+var ExchangeSetPartnerPublicKeyResponse = (function() {
+  ExchangeSetPartnerPublicKeyResponse.Status = Object.freeze({
     DENIED_BY_USER: 27013,
     INCORRECT_COMMAND_DATA: 27264,
     DESERIALIZATION_FAILED: 27265,
@@ -48,7 +48,7 @@ var ExchangeStartTransactionResponse = (function() {
     57344: "EXECUTION_INTERRUPTED",
   });
 
-  function ExchangeStartTransactionResponse(_io, _parent, _root) {
+  function ExchangeSetPartnerPublicKeyResponse(_io, _parent, _root) {
     this._io = _io;
     this._parent = _parent;
     this._root = _root || this;
@@ -56,16 +56,13 @@ var ExchangeStartTransactionResponse = (function() {
 
     this._read();
   }
-  ExchangeStartTransactionResponse.prototype._read = function() {
-    this._debug.transactionId = { start: this._io.pos, ioOffset: this._io.byteOffset };
-    this.transactionId = KaitaiStream.bytesToStr(this._io.readBytes(10), "ASCII");
-    this._debug.transactionId.end = this._io.pos;
-    this._debug.status = { start: this._io.pos, ioOffset: this._io.byteOffset, enumName: "ExchangeStartTransactionResponse.Status" };
+  ExchangeSetPartnerPublicKeyResponse.prototype._read = function() {
+    this._debug.status = { start: this._io.pos, ioOffset: this._io.byteOffset, enumName: "ExchangeSetPartnerPublicKeyResponse.Status" };
     this.status = this._io.readU2be();
     this._debug.status.end = this._io.pos;
   }
 
-  return ExchangeStartTransactionResponse;
+  return ExchangeSetPartnerPublicKeyResponse;
 })();
-return ExchangeStartTransactionResponse;
+return ExchangeSetPartnerPublicKeyResponse;
 }));
