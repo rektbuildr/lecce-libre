@@ -35,6 +35,7 @@
     "encoding": "^0.1.13",
     "eslint-config-next": "13.5.4",
     "invariant": "^2.2.4",
+    "kaitai-struct": "^0.10.0",
     "lodash": "^4.17.21",
     "next": "13.5.4",
     "prop-types": "^15.8.1",

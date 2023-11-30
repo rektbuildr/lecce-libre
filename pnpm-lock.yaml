@@ -1383,6 +1383,9 @@ importers:
       invariant:
         specifier: ^2.2.4
         version: 2.2.4
+      kaitai-struct:
+        specifier: ^0.10.0
+        version: 0.10.0
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -42799,6 +42802,10 @@ packages:
     dependencies:
       jwa: 1.4.1
       safe-buffer: 5.2.1
+    dev: false
+
+  /kaitai-struct@0.10.0:
+    resolution: {integrity: sha512-81oxVi/OY+LrzgrONX7ciD1wtvq24nb2M9iYixRiQG+1hrDrDRqFVWuQzF1fUexh3Sg/ol6eMAz1MOVYFouzUg==}
     dev: false
 
   /katex@0.16.8:
