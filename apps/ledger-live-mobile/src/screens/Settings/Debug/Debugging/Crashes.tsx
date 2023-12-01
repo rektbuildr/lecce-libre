@@ -1,11 +1,11 @@
 import * as Sentry from "@sentry/react-native";
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
-import Button from "../../../../components/Button";
-import GenericErrorView from "../../../../components/GenericErrorView";
-import { SettingsNavigatorStackParamList } from "../../../../components/RootNavigator/types/SettingsNavigator";
-import { StackNavigatorProps } from "../../../../components/RootNavigator/types/helpers";
-import { ScreenName } from "../../../../const";
+import Button from "LLM@components/Button";
+import GenericErrorView from "LLM@components/GenericErrorView";
+import { SettingsNavigatorStackParamList } from "LLM@components/RootNavigator/types/SettingsNavigator";
+import { StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
+import { ScreenName } from "LLM@const";
 
 const styles = StyleSheet.create({
   root: {

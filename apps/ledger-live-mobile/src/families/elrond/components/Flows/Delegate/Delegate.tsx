@@ -4,9 +4,9 @@ import { useTranslation } from "react-i18next";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useTheme } from "@react-navigation/native";
 
-import StepHeader from "../../../../../components/StepHeader";
-import { getStackNavigatorConfig } from "../../../../../navigation/navigatorConfig";
-import { ScreenName } from "../../../../../const";
+import StepHeader from "LLM@components/StepHeader";
+import { getStackNavigatorConfig } from "LLM@navigation/navigatorConfig";
+import { ScreenName } from "LLM@const";
 
 import EarnRewards from "./components/EarnRewards";
 import SetDelegation from "./components/SetDelegation";
@@ -15,8 +15,8 @@ import PickAmount from "./components/PickAmount";
 import ValidationError from "./components/ValidationError";
 import ValidationSuccess from "./components/ValidationSuccess";
 
-import SelectDevice from "../../../../../screens/SelectDevice";
-import ConnectDevice from "../../../../../screens/ConnectDevice";
+import SelectDevice from "LLM@screens/SelectDevice";
+import ConnectDevice from "LLM@screens/ConnectDevice";
 
 import type { ElrondDelegationFlowParamList } from "./types";
 

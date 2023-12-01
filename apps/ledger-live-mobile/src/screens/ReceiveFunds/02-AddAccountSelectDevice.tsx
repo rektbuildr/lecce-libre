@@ -5,23 +5,23 @@ import { Flex } from "@ledgerhq/native-ui";
 import type { Device } from "@ledgerhq/live-common/hw/actions/types";
 import { useFeature } from "@ledgerhq/live-common/featureFlags/index";
 import { useIsFocused, useTheme } from "@react-navigation/native";
-import { prepareCurrency } from "../../bridge/cache";
-import { ScreenName } from "../../const";
-import { TrackScreen, track } from "../../analytics";
-import SelectDevice from "../../components/SelectDevice";
-import SelectDevice2, { SetHeaderOptionsRequest } from "../../components/SelectDevice2";
-import NavigationScrollView from "../../components/NavigationScrollView";
-import DeviceActionModal from "../../components/DeviceActionModal";
+import { prepareCurrency } from "LLM@bridge/cache";
+import { ScreenName } from "LLM@const";
+import { TrackScreen, track } from "LLM@analytics";
+import SelectDevice from "LLM@components/SelectDevice";
+import SelectDevice2, { SetHeaderOptionsRequest } from "LLM@components/SelectDevice2";
+import NavigationScrollView from "LLM@components/NavigationScrollView";
+import DeviceActionModal from "LLM@components/DeviceActionModal";
 import SkipSelectDevice from "../SkipSelectDevice";
-import { setLastConnectedDevice } from "../../actions/settings";
-import { ReceiveFundsStackParamList } from "../../components/RootNavigator/types/ReceiveFundsNavigator";
+import { setLastConnectedDevice } from "LLM@actions/settings";
+import { ReceiveFundsStackParamList } from "LLM@components/RootNavigator/types/ReceiveFundsNavigator";
 import {
   ReactNavigationHeaderOptions,
   StackNavigatorProps,
-} from "../../components/RootNavigator/types/helpers";
-import { NavigationHeaderCloseButtonAdvanced } from "../../components/NavigationHeaderCloseButton";
-import { NavigationHeaderBackButton } from "../../components/NavigationHeaderBackButton";
-import { useAppDeviceAction } from "../../hooks/deviceActions";
+} from "LLM@components/RootNavigator/types/helpers";
+import { NavigationHeaderCloseButtonAdvanced } from "LLM@components/NavigationHeaderCloseButton";
+import { NavigationHeaderBackButton } from "LLM@components/NavigationHeaderBackButton";
+import { useAppDeviceAction } from "LLM@hooks/deviceActions";
 
 // Defines some of the header options for this screen to be able to reset back to them.
 export const addAccountsSelectDeviceHeaderOptions = (

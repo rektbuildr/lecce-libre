@@ -11,14 +11,14 @@ import {
 import { accountToWalletAPIAccount } from "@ledgerhq/live-common/wallet-api/converters";
 import { useTheme } from "styled-components/native";
 import { Flex, InfiniteLoader } from "@ledgerhq/native-ui";
-import TrackScreen from "../../../analytics/TrackScreen";
-import GenericErrorView from "../../../components/GenericErrorView";
-import { useLocale } from "../../../context/Locale";
-import { WebPTXPlayer } from "../../../components/WebPTXPlayer";
-import { ExchangeNavigatorParamList } from "../../../components/RootNavigator/types/ExchangeNavigator";
-import { StackNavigatorProps } from "../../../components/RootNavigator/types/helpers";
-import { ScreenName } from "../../../const";
-import { accountsSelector } from "../../../reducers/accounts";
+import TrackScreen from "LLM@analytics/TrackScreen";
+import GenericErrorView from "LLM@components/GenericErrorView";
+import { useLocale } from "LLM@context/Locale";
+import { WebPTXPlayer } from "LLM@components/WebPTXPlayer";
+import { ExchangeNavigatorParamList } from "LLM@components/RootNavigator/types/ExchangeNavigator";
+import { StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
+import { ScreenName } from "LLM@const";
+import { accountsSelector } from "LLM@reducers/accounts";
 import { INTERNAL_APP_IDS, WALLET_API_VERSION } from "@ledgerhq/live-common/wallet-api/constants";
 
 export type Props = StackNavigatorProps<

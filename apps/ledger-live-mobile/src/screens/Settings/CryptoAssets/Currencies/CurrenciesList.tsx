@@ -4,14 +4,14 @@ import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { CryptoCurrency } from "@ledgerhq/types-cryptoassets";
 import { Box, Text } from "@ledgerhq/native-ui";
-import { ScreenName } from "../../../../const";
-import { cryptoCurrenciesSelector } from "../../../../reducers/accounts";
-import SettingsRow from "../../../../components/SettingsRow";
-import CurrencyIcon from "../../../../components/CurrencyIcon";
+import { ScreenName } from "LLM@const";
+import { cryptoCurrenciesSelector } from "LLM@reducers/accounts";
+import SettingsRow from "LLM@components/SettingsRow";
+import CurrencyIcon from "LLM@components/CurrencyIcon";
 import { getCurrencyHasSettings } from "./CurrencySettings";
-import { State } from "../../../../reducers/types";
-import { SettingsNavigatorStackParamList } from "../../../../components/RootNavigator/types/SettingsNavigator";
-import { StackNavigatorProps } from "../../../../components/RootNavigator/types/helpers";
+import { State } from "LLM@reducers/types";
+import { SettingsNavigatorStackParamList } from "LLM@components/RootNavigator/types/SettingsNavigator";
+import { StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
 
 type Props = {
   currencies: CryptoCurrency[];

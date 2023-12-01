@@ -1,12 +1,12 @@
 import React, { PureComponent } from "react";
 import { StyleSheet, View } from "react-native";
-import Scanner from "../../../../components/Scanner";
-import LText from "../../../../components/LText";
+import Scanner from "LLM@components/Scanner";
+import LText from "LLM@components/LText";
 import { rgba, Theme, withTheme } from "../../../../colors";
-import getWindowDimensions from "../../../../logic/getWindowDimensions";
-import { ScreenName } from "../../../../const";
-import { SettingsNavigatorStackParamList } from "../../../../components/RootNavigator/types/SettingsNavigator";
-import { StackNavigatorProps } from "../../../../components/RootNavigator/types/helpers";
+import getWindowDimensions from "LLM@logic/getWindowDimensions";
+import { ScreenName } from "LLM@const";
+import { SettingsNavigatorStackParamList } from "LLM@components/RootNavigator/types/SettingsNavigator";
+import { StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
 
 type Props = {
   colors: Theme["colors"];

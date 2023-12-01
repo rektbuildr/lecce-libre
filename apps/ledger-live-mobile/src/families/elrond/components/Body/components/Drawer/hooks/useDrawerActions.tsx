@@ -7,13 +7,13 @@ import type { StackNavigationProp } from "@react-navigation/stack";
 import type { ElrondAccount } from "@ledgerhq/live-common/families/elrond/types";
 import type { NavigationType } from "../../../../../types";
 import type { DrawerPropsType } from "../types";
-import type { Action, IconProps } from "../../../../../../../components/DelegationDrawer";
+import type { Action, IconProps } from "LLM@components/DelegationDrawer";
 
-import Circle from "../../../../../../../components/Circle";
-import ClaimRewardIcon from "../../../../../../../icons/ClaimReward";
-import UndelegateIcon from "../../../../../../../icons/Undelegate";
-import WithdrawIcon from "../../../../../../../icons/Withdraw";
-import { ScreenName, NavigatorName } from "../../../../../../../const";
+import Circle from "LLM@components/Circle";
+import ClaimRewardIcon from "LLM@icons/ClaimReward";
+import UndelegateIcon from "LLM@icons/Undelegate";
+import WithdrawIcon from "LLM@icons/Withdraw";
+import { ScreenName, NavigatorName } from "LLM@const";
 import { rgba } from "../../../../../../../colors";
 
 /*

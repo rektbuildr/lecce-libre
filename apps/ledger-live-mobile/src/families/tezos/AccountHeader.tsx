@@ -7,11 +7,11 @@ import { getMainAccount } from "@ledgerhq/live-common/account/index";
 import { getCurrencyColor } from "@ledgerhq/live-common/currencies/index";
 import { isAccountDelegating } from "@ledgerhq/live-common/families/tezos/bakers";
 import { Text } from "@ledgerhq/native-ui";
-import { NavigatorName, ScreenName } from "../../const";
+import { NavigatorName, ScreenName } from "LLM@const";
 import IlluStaking from "./IlluStaking";
-import Button from "../../components/wrappedUi/Button";
-import { BaseNavigatorStackParamList } from "../../components/RootNavigator/types/BaseNavigator";
-import { StackNavigatorProps } from "../../components/RootNavigator/types/helpers";
+import Button from "LLM@components/wrappedUi/Button";
+import { BaseNavigatorStackParamList } from "LLM@components/RootNavigator/types/BaseNavigator";
+import { StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
 
 type Navigation = StackNavigatorProps<BaseNavigatorStackParamList, ScreenName.Account>;
 

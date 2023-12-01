@@ -6,11 +6,11 @@ import { View } from "react-native";
 import { IconsLegacy } from "@ledgerhq/native-ui";
 import QueuedDrawer from "./QueuedDrawer";
 import ModalBottomAction from "./ModalBottomAction";
-import { languageSelector, languageIsSetByUserSelector } from "../reducers/settings";
-import { setLanguage } from "../actions/settings";
+import { languageSelector, languageIsSetByUserSelector } from "LLM@reducers/settings";
+import { setLanguage } from "LLM@actions/settings";
 import { getDefaultLanguageLocale } from "../languages";
-import { useLanguageAvailableChecked } from "../context/Locale";
-import { Track, updateIdentify } from "../analytics";
+import { useLanguageAvailableChecked } from "LLM@context/Locale";
+import { Track, updateIdentify } from "LLM@analytics";
 import Button from "./wrappedUi/Button";
 
 export default function CheckLanguageAvailability() {

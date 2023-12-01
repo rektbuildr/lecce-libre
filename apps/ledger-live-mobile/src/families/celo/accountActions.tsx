@@ -5,7 +5,7 @@ import invariant from "invariant";
 import type { Account } from "@ledgerhq/types-live";
 import { isAccountEmpty } from "@ledgerhq/live-common/account/index";
 import CeloIcon from "./components/CeloIcon";
-import { NavigatorName, ScreenName } from "../../const";
+import { NavigatorName, ScreenName } from "LLM@const";
 
 const getMainActions = ({
   account,

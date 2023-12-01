@@ -7,17 +7,17 @@ import { CompositeScreenProps, useTheme } from "@react-navigation/native";
 import React, { useCallback } from "react";
 import { Trans } from "react-i18next";
 import { Linking, StyleSheet, View } from "react-native";
-import CounterValue from "../../components/CounterValue";
-import CurrencyUnitValue from "../../components/CurrencyUnitValue";
-import { urls } from "@utils/urls";
-import ExternalLink from "../../icons/ExternalLink";
-import SummaryRow from "../../screens/SendFunds/SummaryRow";
-import type { BaseNavigatorStackParamList } from "../../components/RootNavigator/types/BaseNavigator";
-import type { StackNavigatorProps } from "../../components/RootNavigator/types/helpers";
-import type { SendFundsNavigatorStackParamList } from "../../components/RootNavigator/types/SendFundsNavigator";
-import { ScreenName } from "../../const";
-import { SignTransactionNavigatorParamList } from "../../components/RootNavigator/types/SignTransactionNavigator";
-import { SwapNavigatorParamList } from "../../components/RootNavigator/types/SwapNavigator";
+import CounterValue from "LLM@components/CounterValue";
+import CurrencyUnitValue from "LLM@components/CurrencyUnitValue";
+import { urls } from "LLM@utils/urls";
+import ExternalLink from "LLM@icons/ExternalLink";
+import SummaryRow from "LLM@screens/SendFunds/SummaryRow";
+import type { BaseNavigatorStackParamList } from "LLM@components/RootNavigator/types/BaseNavigator";
+import type { StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
+import type { SendFundsNavigatorStackParamList } from "LLM@components/RootNavigator/types/SendFundsNavigator";
+import { ScreenName } from "LLM@const";
+import { SignTransactionNavigatorParamList } from "LLM@components/RootNavigator/types/SignTransactionNavigator";
+import { SwapNavigatorParamList } from "LLM@components/RootNavigator/types/SwapNavigator";
 
 type Props = {
   account: AccountLike;

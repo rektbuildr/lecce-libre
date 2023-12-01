@@ -8,14 +8,14 @@ import { useAvailableLanguagesForDevice } from "@ledgerhq/live-common/manager/ho
 
 import { FwUpdateForegroundEvent } from "./types";
 
-import Track from "../../analytics/Track";
-import { useLocale } from "../../context/Locale";
+import Track from "LLM@analytics/Track";
+import { useLocale } from "LLM@context/Locale";
 import { localeIdToDeviceLanguage } from "../../languages";
 
 import ChangeDeviceLanguageAction from "../ChangeDeviceLanguageAction";
 import ChangeDeviceLanguagePrompt from "../ChangeDeviceLanguagePrompt";
 import DeviceActionProgress from "../DeviceActionProgress";
-import { track } from "../../analytics";
+import { track } from "LLM@analytics";
 
 type Props = {
   oldDeviceInfo?: DeviceInfo;

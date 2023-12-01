@@ -3,9 +3,9 @@ import { useNavigation } from "@react-navigation/native";
 import { Flex, Text, Button } from "@ledgerhq/native-ui";
 import { useTheme } from "styled-components/native";
 import { useTranslation } from "react-i18next";
-import WalletCoinsSupported from "../../icons/WalletCoinsSupported";
-import { NavigatorName, ScreenName } from "../../const";
-import { track, TrackScreen } from "../../analytics";
+import WalletCoinsSupported from "LLM@icons/WalletCoinsSupported";
+import { NavigatorName, ScreenName } from "LLM@const";
+import { track, TrackScreen } from "LLM@analytics";
 
 const PortfolioEmptyState = ({ openAddAccountModal }: { openAddAccountModal: () => void }) => {
   const { t } = useTranslation();

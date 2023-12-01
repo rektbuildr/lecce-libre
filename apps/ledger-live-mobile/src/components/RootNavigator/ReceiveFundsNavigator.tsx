@@ -4,34 +4,34 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { useTheme } from "styled-components/native";
 import { useTranslation } from "react-i18next";
 import { NavigationProp, useRoute } from "@react-navigation/native";
-import { ScreenName } from "../../const";
-import ReceiveConfirmation from "../../screens/ReceiveFunds/03-Confirmation";
+import { ScreenName } from "LLM@const";
+import ReceiveConfirmation from "LLM@screens/ReceiveFunds/03-Confirmation";
 import ReceiveConnectDevice, {
   connectDeviceHeaderOptions,
-} from "../../screens/ReceiveFunds/03a-ConnectDevice";
-import ReceiveVerifyAddress from "../../screens/ReceiveFunds/03b-VerifyAddress";
-import ReceiveSelectCrypto from "../../screens/ReceiveFunds/01-SelectCrypto";
-import ReceiveSelectNetwork from "../../screens/ReceiveFunds/02-SelectNetwork";
+} from "LLM@screens/ReceiveFunds/03a-ConnectDevice";
+import ReceiveVerifyAddress from "LLM@screens/ReceiveFunds/03b-VerifyAddress";
+import ReceiveSelectCrypto from "LLM@screens/ReceiveFunds/01-SelectCrypto";
+import ReceiveSelectNetwork from "LLM@screens/ReceiveFunds/02-SelectNetwork";
 import ReceiveAddAccountSelectDevice, {
   addAccountsSelectDeviceHeaderOptions,
-} from "../../screens/ReceiveFunds/02-AddAccountSelectDevice";
-import ReceiveSelectAccount from "../../screens/ReceiveFunds/02-SelectAccount";
-import ReceiveAddAccount from "../../screens/ReceiveFunds/02-AddAccount";
+} from "LLM@screens/ReceiveFunds/02-AddAccountSelectDevice";
+import ReceiveSelectAccount from "LLM@screens/ReceiveFunds/02-SelectAccount";
+import ReceiveAddAccount from "LLM@screens/ReceiveFunds/02-AddAccount";
 
-import { getStackNavigatorConfig } from "../../navigation/navigatorConfig";
+import { getStackNavigatorConfig } from "LLM@navigation/navigatorConfig";
 import StepHeader from "../StepHeader";
 import { NavigationHeaderCloseButtonAdvanced } from "../NavigationHeaderCloseButton";
-import { track } from "../../analytics";
+import { track } from "LLM@analytics";
 import { ReceiveFundsStackParamList } from "./types/ReceiveFundsNavigator";
 import { NavigationHeaderBackButton } from "../NavigationHeaderBackButton";
 import { Flex } from "@ledgerhq/native-ui";
-import HelpButton from "../../screens/ReceiveFunds/HelpButton";
+import HelpButton from "LLM@screens/ReceiveFunds/HelpButton";
 import useFeature from "@ledgerhq/live-common/featureFlags/useFeature";
 import { useSelector } from "react-redux";
 import {
   hasClosedNetworkBannerSelector,
   hasClosedWithdrawBannerSelector,
-} from "../../reducers/settings";
+} from "LLM@reducers/settings";
 
 export default function ReceiveFundsNavigator() {
   const { colors } = useTheme();

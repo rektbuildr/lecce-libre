@@ -7,12 +7,12 @@ import { useTranslation } from "react-i18next";
 import { useWindowDimensions } from "react-native";
 import { useTheme } from "@react-navigation/native";
 
-import CustomImageBottomModal from "../../components/CustomImage/CustomImageBottomModal";
-import BottomButtonsContainer from "../../components/CustomImage/BottomButtonsContainer";
-import Button from "../../components/wrappedUi/Button";
-import { ScreenName } from "../../const";
-import { CustomImageNavigatorParamList } from "../../components/RootNavigator/types/CustomImageNavigator";
-import { TrackScreen } from "../../analytics";
+import CustomImageBottomModal from "LLM@components/CustomImage/CustomImageBottomModal";
+import BottomButtonsContainer from "LLM@components/CustomImage/BottomButtonsContainer";
+import Button from "LLM@components/wrappedUi/Button";
+import { ScreenName } from "LLM@const";
+import { CustomImageNavigatorParamList } from "LLM@components/RootNavigator/types/CustomImageNavigator";
+import { TrackScreen } from "LLM@analytics";
 import videoSources from "../../../assets/videos";
 
 const videoDimensions = {

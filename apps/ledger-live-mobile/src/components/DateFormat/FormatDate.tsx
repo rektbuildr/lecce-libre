@@ -1,8 +1,8 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { createSelector } from "reselect";
-import compareDate from "../../logic/compareDate";
-import { dateFormatSelector, languageSelector } from "../../reducers/settings";
+import compareDate from "LLM@logic/compareDate";
+import { dateFormatSelector, languageSelector } from "LLM@reducers/settings";
 import { ddmmyyyyFormatter, Format, genericFormatter, mmddyyyyFormatter } from "./formatter.util";
 
 type Props = {

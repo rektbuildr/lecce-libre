@@ -3,10 +3,10 @@ import React, { memo, useCallback, useEffect, useReducer } from "react";
 import { Trans } from "react-i18next";
 import { ListRenderItem, SectionList, SectionListData } from "react-native";
 import styled from "styled-components/native";
-import Touchable from "../../../components/Touchable";
-import { Unpacked } from "../../../types/helpers";
+import Touchable from "LLM@components/Touchable";
+import { Unpacked } from "LLM@types/helpers";
 
-import { BaseButtonProps } from "../../../components/Button";
+import { BaseButtonProps } from "LLM@components/Button";
 import ActionModal from "./ActionModal";
 
 const filterSections = [

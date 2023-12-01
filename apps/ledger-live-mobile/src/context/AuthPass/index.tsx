@@ -6,14 +6,14 @@ import { connect } from "react-redux";
 import { withTranslation } from "react-i18next";
 import { createStructuredSelector } from "reselect";
 import { compose } from "redux";
-import { setPrivacy } from "../../actions/settings";
-import { privacySelector } from "../../reducers/settings";
-import { isPasswordLockBlocked } from "../../reducers/appstate";
-import { SkipLockContext } from "../../components/behaviour/SkipLock";
-import type { Privacy, State as GlobalState, AppState as EventState } from "../../reducers/types";
+import { setPrivacy } from "LLM@actions/settings";
+import { privacySelector } from "LLM@reducers/settings";
+import { isPasswordLockBlocked } from "LLM@reducers/appstate";
+import { SkipLockContext } from "LLM@components/behaviour/SkipLock";
+import type { Privacy, State as GlobalState, AppState as EventState } from "LLM@reducers/types";
 import AuthScreen from "./AuthScreen";
-import RequestBiometricAuth from "../../components/RequestBiometricAuth";
-import { resetQueuedDrawer } from "../../components/QueuedDrawer";
+import RequestBiometricAuth from "LLM@components/RequestBiometricAuth";
+import { resetQueuedDrawer } from "LLM@components/QueuedDrawer";
 
 const mapDispatchToProps = {
   setPrivacy,

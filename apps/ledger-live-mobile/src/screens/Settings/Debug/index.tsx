@@ -3,12 +3,12 @@ import { IconsLegacy, Alert as AlertBox, Flex } from "@ledgerhq/native-ui";
 import { Alert, TouchableWithoutFeedback, View } from "react-native";
 import { useFeatureFlags } from "@ledgerhq/live-common/featureFlags/FeatureFlagsContext";
 import { groupedFeatures } from "@ledgerhq/live-common/featureFlags/groupedFeatures";
-import { TrackScreen } from "../../../analytics";
-import SettingsRow from "../../../components/SettingsRow";
-import { ScreenName } from "../../../const";
+import { TrackScreen } from "LLM@analytics";
+import SettingsRow from "LLM@components/SettingsRow";
+import { ScreenName } from "LLM@const";
 import SettingsNavigationScrollView from "../SettingsNavigationScrollView";
-import { StackNavigatorProps } from "../../../components/RootNavigator/types/helpers";
-import { SettingsNavigatorStackParamList } from "../../../components/RootNavigator/types/SettingsNavigator";
+import { StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
+import { SettingsNavigatorStackParamList } from "LLM@components/RootNavigator/types/SettingsNavigator";
 import PoweredByLedger from "../PoweredByLedger";
 
 export default function DebugSettings({

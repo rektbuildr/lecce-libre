@@ -2,12 +2,12 @@ import React, { useMemo } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useTheme } from "styled-components/native";
 
-import { ScreenName } from "../../const";
-import { getStackNavigatorConfig } from "../../navigation/navigatorConfig";
+import { ScreenName } from "LLM@const";
+import { getStackNavigatorConfig } from "LLM@navigation/navigatorConfig";
 
-import PostOnboardingDebugScreen from "../../screens/PostOnboarding/PostOnboardingDebugScreen";
-import PostOnboardingHub from "../../screens/PostOnboarding/PostOnboardingHub";
-import PostOnboardingMockActionScreen from "../../screens/PostOnboarding/PostOnboardingMockActionScreen";
+import PostOnboardingDebugScreen from "LLM@screens/PostOnboarding/PostOnboardingDebugScreen";
+import PostOnboardingHub from "LLM@screens/PostOnboarding/PostOnboardingHub";
+import PostOnboardingMockActionScreen from "LLM@screens/PostOnboarding/PostOnboardingMockActionScreen";
 import { PostOnboardingNavigatorParamList } from "./types/PostOnboardingNavigator";
 import { NavigationHeaderBackButton } from "../NavigationHeaderBackButton";
 import { NavigationHeaderCloseButton } from "../NavigationHeaderCloseButton";

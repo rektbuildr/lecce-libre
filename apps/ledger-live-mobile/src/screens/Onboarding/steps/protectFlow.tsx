@@ -2,23 +2,17 @@ import React, { useCallback, useMemo, memo } from "react";
 import { useTheme } from "styled-components/native";
 import { useDispatch, useSelector } from "react-redux";
 import { useFeature } from "@ledgerhq/live-common/featureFlags/index";
-import { NavigatorName, ScreenName } from "../../../const";
+import { NavigatorName, ScreenName } from "LLM@const";
 import BaseStepperView, { RestoreWithProtect, PinCodeInstructions } from "./setupDevice/scenes";
-import { TrackScreen } from "../../../analytics";
+import { TrackScreen } from "LLM@analytics";
 
 import StepLottieAnimation from "./setupDevice/scenes/StepLottieAnimation";
-import { completeOnboarding } from "../../../actions/settings";
+import { completeOnboarding } from "LLM@actions/settings";
 import { useNavigationInterceptor } from "../onboardingContext";
-import {
-  BaseComposite,
-  StackNavigatorProps,
-} from "../../../components/RootNavigator/types/helpers";
-import { OnboardingNavigatorParamList } from "../../../components/RootNavigator/types/OnboardingNavigator";
+import { BaseComposite, StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
+import { OnboardingNavigatorParamList } from "LLM@components/RootNavigator/types/OnboardingNavigator";
 import { Step } from "./setupDevice/scenes/BaseStepperView";
-import {
-  hasCompletedOnboardingSelector,
-  lastConnectedDeviceSelector,
-} from "../../../reducers/settings";
+import { hasCompletedOnboardingSelector, lastConnectedDeviceSelector } from "LLM@reducers/settings";
 
 type Metadata = {
   id: string;

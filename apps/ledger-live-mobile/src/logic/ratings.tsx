@@ -3,22 +3,22 @@ import { useSelector, useDispatch } from "react-redux";
 import { add, isBefore, parseISO } from "date-fns";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import useFeature from "@ledgerhq/live-common/featureFlags/useFeature";
-import { accountsWithPositiveBalanceCountSelector } from "../reducers/accounts";
+import { accountsWithPositiveBalanceCountSelector } from "LLM@reducers/accounts";
 import {
   ratingsModalOpenSelector,
   ratingsModalLockedSelector,
   ratingsCurrentRouteNameSelector,
   ratingsHappyMomentSelector,
   ratingsDataOfUserSelector,
-} from "../reducers/ratings";
+} from "LLM@reducers/ratings";
 import {
   setRatingsModalOpen,
   setRatingsCurrentRouteName,
   setRatingsHappyMoment,
   setRatingsDataOfUser,
-} from "../actions/ratings";
-import { track } from "../analytics";
-import { setNotificationsModalLocked } from "../actions/notifications";
+} from "LLM@actions/ratings";
+import { track } from "LLM@analytics";
+import { setNotificationsModalLocked } from "LLM@actions/notifications";
 
 export type RatingsHappyMoment = {
   timeout?: number;

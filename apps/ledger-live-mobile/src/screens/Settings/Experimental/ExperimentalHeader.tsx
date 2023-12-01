@@ -16,12 +16,12 @@ import { useHasLocallyOverriddenFeatureFlags } from "@ledgerhq/live-common/featu
 import { Flex } from "@ledgerhq/native-ui";
 import { useSelector } from "react-redux";
 import { useExperimental } from "../../../experimental";
-import LText from "../../../components/LText";
-import ExperimentalIcon from "../../../icons/Experimental";
-import { rejections } from "../../../logic/debugReject";
-import { NavigatorName, ScreenName } from "../../../const";
-import { BaseNavigation } from "../../../components/RootNavigator/types/helpers";
-import { featureFlagsBannerVisibleSelector } from "../../../reducers/settings";
+import LText from "LLM@components/LText";
+import ExperimentalIcon from "LLM@icons/Experimental";
+import { rejections } from "LLM@logic/debugReject";
+import { NavigatorName, ScreenName } from "LLM@const";
+import { BaseNavigation } from "LLM@components/RootNavigator/types/helpers";
+import { featureFlagsBannerVisibleSelector } from "LLM@reducers/settings";
 
 export const HEIGHT = 30;
 

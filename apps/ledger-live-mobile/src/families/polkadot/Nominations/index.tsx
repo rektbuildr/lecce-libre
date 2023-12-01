@@ -25,13 +25,13 @@ import type {
 import { Box, Flex } from "@ledgerhq/native-ui";
 import { AccountLike } from "@ledgerhq/types-live";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { ScreenName, NavigatorName } from "../../../const";
-import AccountDelegationInfo from "../../../components/AccountDelegationInfo";
-import { urls } from "@utils/urls";
-import AccountSectionLabel from "../../../components/AccountSectionLabel";
-import Alert from "../../../components/Alert";
+import { ScreenName, NavigatorName } from "LLM@const";
+import AccountDelegationInfo from "LLM@components/AccountDelegationInfo";
+import { urls } from "LLM@utils/urls";
+import AccountSectionLabel from "LLM@components/AccountSectionLabel";
+import Alert from "LLM@components/Alert";
 
-import CollapsibleList from "../components/CollapsibleList";
+import CollapsibleList from "LLM@components/CollapsibleList";
 import NominationDrawer from "../components/NominationDrawer";
 import { NominateAction, RebondAction, SetControllerAction } from "./Actions";
 import { getDrawerInfo } from "./drawerInfo";
@@ -41,9 +41,9 @@ import {
   ExternalControllerUnsupportedWarning,
   ExternalStashUnsupportedWarning,
 } from "./UnsupportedWarning";
-import Illustration from "../../../images/illustration/Illustration";
-import EarnLight from "../../../images/illustration/Light/_003.png";
-import EarnDark from "../../../images/illustration/Dark/_003.png";
+import Illustration from "LLM@images/illustration/Illustration";
+import EarnLight from "LLM@images/illustration/Light/_003.png";
+import EarnDark from "LLM@images/illustration/Dark/_003.png";
 import FirstLetterIcon from "~/components/FirstLetterIcon";
 
 type Props = {

@@ -13,14 +13,14 @@ import { MIN_DELEGATION_AMOUNT } from "@ledgerhq/live-common/families/elrond/con
 
 import type { PickAmountPropsType, RatioType } from "./types";
 
-import { localeSelector } from "../../../../../../../reducers/settings";
-import { ScreenName } from "../../../../../../../const";
-import Button from "../../../../../../../components/Button";
-import CurrencyInput from "../../../../../../../components/CurrencyInput";
-import LText from "../../../../../../../components/LText";
-import Warning from "../../../../../../../icons/Warning";
-import Check from "../../../../../../../icons/Check";
-import KeyboardView from "../../../../../../../components/KeyboardView";
+import { localeSelector } from "LLM@reducers/settings";
+import { ScreenName } from "LLM@const";
+import Button from "LLM@components/Button";
+import CurrencyInput from "LLM@components/CurrencyInput";
+import LText from "LLM@components/LText";
+import Warning from "LLM@icons/Warning";
+import Check from "LLM@icons/Check";
+import KeyboardView from "LLM@components/KeyboardView";
 
 import styles from "./styles";
 

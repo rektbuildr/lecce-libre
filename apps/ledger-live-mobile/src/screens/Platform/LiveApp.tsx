@@ -7,13 +7,13 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { Flex, InfiniteLoader } from "@ledgerhq/native-ui";
-import TrackScreen from "../../analytics/TrackScreen";
-import WebPlatformPlayer from "../../components/WebPlatformPlayer";
-import GenericErrorView from "../../components/GenericErrorView";
-import { useLocale } from "../../context/Locale";
-import { ScreenName } from "../../const";
-import { BaseNavigatorStackParamList } from "../../components/RootNavigator/types/BaseNavigator";
-import { StackNavigatorProps } from "../../components/RootNavigator/types/helpers";
+import TrackScreen from "LLM@analytics/TrackScreen";
+import WebPlatformPlayer from "LLM@components/WebPlatformPlayer";
+import GenericErrorView from "LLM@components/GenericErrorView";
+import { useLocale } from "LLM@context/Locale";
+import { ScreenName } from "LLM@const";
+import { BaseNavigatorStackParamList } from "LLM@components/RootNavigator/types/BaseNavigator";
+import { StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
 
 const appManifestNotFoundError = new Error("App not found"); // FIXME move this elsewhere.
 

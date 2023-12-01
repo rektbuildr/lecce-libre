@@ -3,9 +3,9 @@ import { TouchableOpacity } from "react-native";
 import { Flex, IconsLegacy } from "@ledgerhq/native-ui";
 import { useNavigation } from "@react-navigation/native";
 import AddAccount from "../Accounts/AddAccount";
-import Touchable from "../../components/Touchable";
-import { ScreenName } from "../../const";
-import { track } from "../../analytics";
+import Touchable from "LLM@components/Touchable";
+import { ScreenName } from "LLM@const";
+import { track } from "LLM@analytics";
 
 type Props = {
   readOnly?: boolean;

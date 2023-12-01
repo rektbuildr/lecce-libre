@@ -8,13 +8,13 @@ import { useSelector } from "react-redux";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { useFeature } from "@ledgerhq/live-common/featureFlags/index";
-import { track } from "../../analytics";
+import { track } from "LLM@analytics";
 import { rgba } from "../../colors";
 import { WalletTabNavigatorScrollContext } from "./WalletTabNavigatorScrollManager";
 import WalletTabBackgroundGradient from "./WalletTabBackgroundGradient";
-import { readOnlyModeEnabledSelector } from "../../reducers/settings";
-import { hasNoAccountsSelector } from "../../reducers/accounts";
-import { NavigatorName, ScreenName } from "../../const";
+import { readOnlyModeEnabledSelector } from "LLM@reducers/settings";
+import { hasNoAccountsSelector } from "LLM@reducers/accounts";
+import { NavigatorName, ScreenName } from "LLM@const";
 
 const StyledTouchableOpacity = styled.TouchableOpacity`
   height: 32px;

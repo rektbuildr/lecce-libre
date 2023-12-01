@@ -2,14 +2,14 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { discoverDevices } from "@ledgerhq/live-common/hw/index";
 import type { Device } from "@ledgerhq/live-common/hw/actions/types";
-import { lastConnectedDeviceSelector } from "../reducers/settings";
-import { knownDevicesSelector } from "../reducers/ble";
-import { AddAccountsNavigatorParamList } from "../components/RootNavigator/types/AddAccountsNavigator";
-import { StackNavigatorProps } from "../components/RootNavigator/types/helpers";
-import { ReceiveFundsStackParamList } from "../components/RootNavigator/types/ReceiveFundsNavigator";
-import { ScreenName } from "../const";
-import { useDebouncedRequireBluetooth } from "../components/RequiresBLE/hooks/useRequireBluetooth";
-import RequiresBluetoothDrawer from "../components/RequiresBLE/RequiresBluetoothDrawer";
+import { lastConnectedDeviceSelector } from "LLM@reducers/settings";
+import { knownDevicesSelector } from "LLM@reducers/ble";
+import { AddAccountsNavigatorParamList } from "LLM@components/RootNavigator/types/AddAccountsNavigator";
+import { StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
+import { ReceiveFundsStackParamList } from "LLM@components/RootNavigator/types/ReceiveFundsNavigator";
+import { ScreenName } from "LLM@const";
+import { useDebouncedRequireBluetooth } from "LLM@components/RequiresBLE/hooks/useRequireBluetooth";
+import RequiresBluetoothDrawer from "LLM@components/RequiresBLE/RequiresBluetoothDrawer";
 
 type Navigation =
   | StackNavigatorProps<AddAccountsNavigatorParamList, ScreenName.AddAccountsSelectDevice>

@@ -15,27 +15,24 @@ import {
 } from "@ledgerhq/live-common/currencies/index";
 import { useCurrenciesByMarketcap } from "@ledgerhq/live-common/currencies/hooks";
 import { CryptoCurrency, Currency, TokenCurrency } from "@ledgerhq/types-cryptoassets";
-import { useRefreshAccountsOrdering } from "../../../actions/general";
-import { counterValueCurrencySelector, hasOrderedNanoSelector } from "../../../reducers/settings";
-import { usePortfolioAllAccounts } from "../../../hooks/portfolio";
+import { useRefreshAccountsOrdering } from "LLM@actions/general";
+import { counterValueCurrencySelector, hasOrderedNanoSelector } from "LLM@reducers/settings";
+import { usePortfolioAllAccounts } from "LLM@hooks/portfolio";
 
 import GraphCardContainer from "../GraphCardContainer";
-import TrackScreen from "../../../analytics/TrackScreen";
-import { NavigatorName, ScreenName } from "../../../const";
-import CheckLanguageAvailability from "../../../components/CheckLanguageAvailability";
-import CheckTermOfUseUpdate from "../../../components/CheckTermOfUseUpdate";
-import { TAB_BAR_SAFE_HEIGHT } from "../../../components/TabBar/TabBarSafeAreaView";
-import SetupDeviceBanner from "../../../components/SetupDeviceBanner";
-import BuyDeviceBanner, { IMAGE_PROPS_BIG_NANO } from "../../../components/BuyDeviceBanner";
+import TrackScreen from "LLM@analytics/TrackScreen";
+import { NavigatorName, ScreenName } from "LLM@const";
+import CheckLanguageAvailability from "LLM@components/CheckLanguageAvailability";
+import CheckTermOfUseUpdate from "LLM@components/CheckTermOfUseUpdate";
+import { TAB_BAR_SAFE_HEIGHT } from "LLM@components/TabBar/TabBarSafeAreaView";
+import SetupDeviceBanner from "LLM@components/SetupDeviceBanner";
+import BuyDeviceBanner, { IMAGE_PROPS_BIG_NANO } from "LLM@components/BuyDeviceBanner";
 import Assets from "../Assets";
-import { AnalyticsContext } from "../../../analytics/AnalyticsContext";
-import {
-  BaseComposite,
-  StackNavigatorProps,
-} from "../../../components/RootNavigator/types/helpers";
-import FirmwareUpdateBanner from "../../../components/FirmwareUpdateBanner";
-import CollapsibleHeaderFlatList from "../../../components/WalletTab/CollapsibleHeaderFlatList";
-import { WalletTabNavigatorStackParamList } from "../../../components/RootNavigator/types/WalletTabNavigator";
+import { AnalyticsContext } from "LLM@analytics/AnalyticsContext";
+import { BaseComposite, StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
+import FirmwareUpdateBanner from "LLM@components/FirmwareUpdateBanner";
+import CollapsibleHeaderFlatList from "LLM@components/WalletTab/CollapsibleHeaderFlatList";
+import { WalletTabNavigatorStackParamList } from "LLM@components/RootNavigator/types/WalletTabNavigator";
 import { UpdateStep } from "../../FirmwareUpdate";
 
 const maxAssetsToDisplay = 5;

@@ -5,16 +5,16 @@ import VersionNumber from "react-native-version-number";
 import { Platform } from "react-native";
 import styled from "styled-components/native";
 import { useSelector } from "react-redux";
-import { TrackScreen } from "../../analytics";
-import useNpsRatings from "../../logic/npsRatings";
-import getWindowDimensions from "../../logic/getWindowDimensions";
-import { screen } from "../../analytics/segment";
+import { TrackScreen } from "LLM@analytics";
+import useNpsRatings from "LLM@logic/npsRatings";
+import getWindowDimensions from "LLM@logic/getWindowDimensions";
+import { screen } from "LLM@analytics/segment";
 import {
   languageSelector,
   lastSeenDeviceSelector,
   notificationsSelector,
-} from "../../reducers/settings";
-import { knownDevicesSelector } from "../../reducers/ble";
+} from "LLM@reducers/settings";
+import { knownDevicesSelector } from "LLM@reducers/ble";
 
 const { height } = getWindowDimensions();
 

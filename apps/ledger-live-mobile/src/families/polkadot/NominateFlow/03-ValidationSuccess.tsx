@@ -5,18 +5,18 @@ import { Trans } from "react-i18next";
 import invariant from "invariant";
 import { useTheme } from "@react-navigation/native";
 import { usePolkadotPreloadData } from "@ledgerhq/live-common/families/polkadot/react";
-import { accountScreenSelector } from "../../../reducers/accounts";
-import { TrackScreen, track } from "../../../analytics";
-import { ScreenName } from "../../../const";
-import PreventNativeBack from "../../../components/PreventNativeBack";
-import ValidateSuccess from "../../../components/ValidateSuccess";
+import { accountScreenSelector } from "LLM@reducers/accounts";
+import { TrackScreen, track } from "LLM@analytics";
+import { ScreenName } from "LLM@const";
+import PreventNativeBack from "LLM@components/PreventNativeBack";
+import ValidateSuccess from "LLM@components/ValidateSuccess";
 import type {
   BaseComposite,
   StackNavigatorNavigation,
   StackNavigatorProps,
-} from "../../../components/RootNavigator/types/helpers";
+} from "LLM@components/RootNavigator/types/helpers";
 import { PolkadotNominateFlowParamList } from "./types";
-import { BaseNavigatorStackParamList } from "../../../components/RootNavigator/types/BaseNavigator";
+import { BaseNavigatorStackParamList } from "LLM@components/RootNavigator/types/BaseNavigator";
 
 type Props = BaseComposite<
   StackNavigatorProps<PolkadotNominateFlowParamList, ScreenName.PolkadotNominateValidationSuccess>

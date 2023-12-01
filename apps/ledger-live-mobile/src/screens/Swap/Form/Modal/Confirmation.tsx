@@ -20,19 +20,16 @@ import { Device } from "@ledgerhq/live-common/hw/actions/types";
 import { postSwapAccepted, postSwapCancelled } from "@ledgerhq/live-common/exchange/swap/index";
 import { InstalledItem } from "@ledgerhq/live-common/apps/types";
 import { useBroadcast } from "@ledgerhq/live-common/hooks/useBroadcast";
-import { renderLoading } from "../../../../components/DeviceAction/rendering";
-import { updateAccountWithUpdater } from "../../../../actions/accounts";
-import DeviceAction from "../../../../components/DeviceAction";
-import QueuedDrawer from "../../../../components/QueuedDrawer";
-import ModalBottomAction from "../../../../components/ModalBottomAction";
-import { UnionToIntersection } from "../../../../types/helpers";
-import type { StackNavigatorNavigation } from "../../../../components/RootNavigator/types/helpers";
-import { ScreenName } from "../../../../const";
-import type { SwapNavigatorParamList } from "../../../../components/RootNavigator/types/SwapNavigator";
-import {
-  useInitSwapDeviceAction,
-  useTransactionDeviceAction,
-} from "../../../../hooks/deviceActions";
+import { renderLoading } from "LLM@components/DeviceAction/rendering";
+import { updateAccountWithUpdater } from "LLM@actions/accounts";
+import DeviceAction from "LLM@components/DeviceAction";
+import QueuedDrawer from "LLM@components/QueuedDrawer";
+import ModalBottomAction from "LLM@components/ModalBottomAction";
+import { UnionToIntersection } from "LLM@types/helpers";
+import type { StackNavigatorNavigation } from "LLM@components/RootNavigator/types/helpers";
+import { ScreenName } from "LLM@const";
+import type { SwapNavigatorParamList } from "LLM@components/RootNavigator/types/SwapNavigator";
+import { useInitSwapDeviceAction, useTransactionDeviceAction } from "LLM@hooks/deviceActions";
 
 export type DeviceMeta = {
   result: { installed: InstalledItem[] } | null | undefined;

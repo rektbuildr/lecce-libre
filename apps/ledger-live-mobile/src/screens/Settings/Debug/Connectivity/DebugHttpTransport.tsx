@@ -6,11 +6,11 @@ import { useNavigation } from "@react-navigation/native";
 
 import { DeviceModelId } from "@ledgerhq/types-devices";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { addKnownDevice } from "../../../../actions/ble";
-import TextInput from "../../../../components/TextInput";
-import Button from "../../../../components/Button";
-import NavigationScrollView from "../../../../components/NavigationScrollView";
-import { NavigatorName, ScreenName } from "../../../../const";
+import { addKnownDevice } from "LLM@actions/ble";
+import TextInput from "LLM@components/TextInput";
+import Button from "LLM@components/Button";
+import NavigationScrollView from "LLM@components/NavigationScrollView";
+import { NavigatorName, ScreenName } from "LLM@const";
 
 const DebugHttpTransport = () => {
   const models = [DeviceModelId.nanoX, DeviceModelId.nanoSP, DeviceModelId.stax];

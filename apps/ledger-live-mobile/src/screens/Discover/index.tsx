@@ -5,32 +5,32 @@ import { useTranslation } from "react-i18next";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import useFeature from "@ledgerhq/live-common/featureFlags/useFeature";
 import { StackNavigationProp } from "@react-navigation/stack";
-import TabBarSafeAreaView from "../../components/TabBar/TabBarSafeAreaView";
-import Illustration from "../../images/illustration/Illustration";
-import { NavigatorName, ScreenName } from "../../const";
+import TabBarSafeAreaView from "LLM@components/TabBar/TabBarSafeAreaView";
+import Illustration from "LLM@images/illustration/Illustration";
+import { NavigatorName, ScreenName } from "LLM@const";
 import DiscoverCard from "./DiscoverCard";
-import { urls } from "@utils/urls";
-import { TrackScreen, track } from "../../analytics";
-import { AnalyticsContext } from "../../analytics/AnalyticsContext";
-import { BaseNavigatorStackParamList } from "../../components/RootNavigator/types/BaseNavigator";
-import { MainNavigatorParamList } from "../../components/RootNavigator/types/MainNavigator";
-import useDynamicContent from "../../dynamicContent/dynamicContent";
-import { useIsNewsfeedAvailable } from "../../hooks/newsfeed/useIsNewsfeedAvailable";
+import { urls } from "LLM@utils/urls";
+import { TrackScreen, track } from "LLM@analytics";
+import { AnalyticsContext } from "LLM@analytics/AnalyticsContext";
+import { BaseNavigatorStackParamList } from "LLM@components/RootNavigator/types/BaseNavigator";
+import { MainNavigatorParamList } from "LLM@components/RootNavigator/types/MainNavigator";
+import useDynamicContent from "LLM@dynamicContent/dynamicContent";
+import { useIsNewsfeedAvailable } from "LLM@hooks/newsfeed/useIsNewsfeedAvailable";
 
 const images = {
   light: {
-    learnImg: require("../../images/illustration/Light/_063.png"),
-    appsImg: require("../../images/illustration/Light/_086.png"),
-    earnImg: require("../../images/illustration/Light/_088.png"),
-    mintImg: require("../../images/illustration/Light/_087.png"),
-    referralImg: require("../../images/illustration/Light/_ReferralProgram.png"),
+    learnImg: require("LLM@images/illustration/Light/_063.png"),
+    appsImg: require("LLM@images/illustration/Light/_086.png"),
+    earnImg: require("LLM@images/illustration/Light/_088.png"),
+    mintImg: require("LLM@images/illustration/Light/_087.png"),
+    referralImg: require("LLM@images/illustration/Light/_ReferralProgram.png"),
   },
   dark: {
-    learnImg: require("../../images/illustration/Dark/_063.png"),
-    appsImg: require("../../images/illustration/Dark/_086.png"),
-    earnImg: require("../../images/illustration/Dark/_088.png"),
-    mintImg: require("../../images/illustration/Dark/_087.png"),
-    referralImg: require("../../images/illustration/Dark/_ReferralProgram.png"),
+    learnImg: require("LLM@images/illustration/Dark/_063.png"),
+    appsImg: require("LLM@images/illustration/Dark/_086.png"),
+    earnImg: require("LLM@images/illustration/Dark/_088.png"),
+    mintImg: require("LLM@images/illustration/Dark/_087.png"),
+    referralImg: require("LLM@images/illustration/Dark/_ReferralProgram.png"),
   },
 };
 

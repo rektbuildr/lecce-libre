@@ -7,19 +7,19 @@ import { DeviceNameInvalid } from "@ledgerhq/errors";
 import { useToasts } from "@ledgerhq/live-common/notifications/ToastProvider/index";
 import { Button, Text, IconsLegacy, Flex } from "@ledgerhq/native-ui";
 import getDeviceNameMaxLength from "@ledgerhq/live-common/hw/getDeviceNameMaxLength";
-import { TrackScreen } from "../analytics";
-import KeyboardBackgroundDismiss from "../components/KeyboardBackgroundDismiss";
-import TextInput from "../components/TextInput";
-import TranslatedError from "../components/TranslatedError";
-import DeviceActionModal from "../components/DeviceActionModal";
-import KeyboardView from "../components/KeyboardView";
-import { saveBleDeviceName } from "../actions/ble";
-import { RootComposite, StackNavigatorProps } from "../components/RootNavigator/types/helpers";
-import { BaseNavigatorStackParamList } from "../components/RootNavigator/types/BaseNavigator";
-import { ScreenName } from "../const";
-import { BaseOnboardingNavigatorParamList } from "../components/RootNavigator/types/BaseOnboardingNavigator";
-import { BleSaveDeviceNamePayload } from "../actions/types";
-import { useRenameDeviceAction } from "../hooks/deviceActions";
+import { TrackScreen } from "LLM@analytics";
+import KeyboardBackgroundDismiss from "LLM@components/KeyboardBackgroundDismiss";
+import TextInput from "LLM@components/TextInput";
+import TranslatedError from "LLM@components/TranslatedError";
+import DeviceActionModal from "LLM@components/DeviceActionModal";
+import KeyboardView from "LLM@components/KeyboardView";
+import { saveBleDeviceName } from "LLM@actions/ble";
+import { RootComposite, StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
+import { BaseNavigatorStackParamList } from "LLM@components/RootNavigator/types/BaseNavigator";
+import { ScreenName } from "LLM@const";
+import { BaseOnboardingNavigatorParamList } from "LLM@components/RootNavigator/types/BaseOnboardingNavigator";
+import { BleSaveDeviceNamePayload } from "LLM@actions/types";
+import { useRenameDeviceAction } from "LLM@hooks/deviceActions";
 
 const mapDispatchToProps = {
   saveBleDeviceName,

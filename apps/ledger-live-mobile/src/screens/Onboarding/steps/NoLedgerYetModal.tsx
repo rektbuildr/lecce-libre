@@ -4,19 +4,19 @@ import { useTranslation } from "react-i18next";
 import { useNavigation } from "@react-navigation/core";
 import { useDispatch } from "react-redux";
 import styled from "styled-components/native";
-import { setHasOrderedNano, setOnboardingHasDevice } from "../../../actions/settings";
-import { NavigatorName, ScreenName } from "../../../const";
-import QueuedDrawer from "../../../components/QueuedDrawer";
+import { setHasOrderedNano, setOnboardingHasDevice } from "LLM@actions/settings";
+import { NavigatorName, ScreenName } from "LLM@const";
+import QueuedDrawer from "LLM@components/QueuedDrawer";
 import {
   StackNavigatorNavigation,
   StackNavigatorProps,
-} from "../../../components/RootNavigator/types/helpers";
-import { OnboardingNavigatorParamList } from "../../../components/RootNavigator/types/OnboardingNavigator";
-import { BaseNavigatorStackParamList } from "../../../components/RootNavigator/types/BaseNavigator";
-import { TrackScreen, track, updateIdentify } from "../../../analytics";
-import Illustration from "../../../images/illustration/Illustration";
+} from "LLM@components/RootNavigator/types/helpers";
+import { OnboardingNavigatorParamList } from "LLM@components/RootNavigator/types/OnboardingNavigator";
+import { BaseNavigatorStackParamList } from "LLM@components/RootNavigator/types/BaseNavigator";
+import { TrackScreen, track, updateIdentify } from "LLM@analytics";
+import Illustration from "LLM@images/illustration/Illustration";
 
-import ImageLedger from "../../../images/double-ledger.png";
+import ImageLedger from "LLM@images/double-ledger.png";
 
 type Props = {
   onClose: () => void;

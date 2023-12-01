@@ -4,10 +4,10 @@ import { Alert } from "react-native";
 import { genAccount } from "@ledgerhq/live-common/mock/account";
 import { IconsLegacy } from "@ledgerhq/native-ui";
 import { listSupportedCurrencies } from "@ledgerhq/live-common/currencies/index";
-import SettingsRow from "../../../../components/SettingsRow";
-import accountModel from "../../../../logic/accountModel";
+import SettingsRow from "LLM@components/SettingsRow";
+import accountModel from "LLM@logic/accountModel";
 import { saveAccounts } from "../../../../db";
-import { useReboot } from "../../../../context/Reboot";
+import { useReboot } from "LLM@context/Reboot";
 
 const CURRENCIES_FOR_NFT = ["ethereum", "polygon"];
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { Text } from "@ledgerhq/native-ui";
-import SettingsRow from "../../../../components/SettingsRow";
+import SettingsRow from "LLM@components/SettingsRow";
 import EquipmentIdRow from "./EquipmentIdRow";
 
 import SettingsNavigationScrollView from "../../SettingsNavigationScrollView";

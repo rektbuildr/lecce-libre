@@ -3,17 +3,17 @@ import { View, Linking } from "react-native";
 import { Trans, useTranslation } from "react-i18next";
 import { useTheme } from "@react-navigation/native";
 
-import { ScreenName } from "../../../../../../../const";
-import Button from "../../../../../../../components/Button";
-import LText from "../../../../../../../components/LText";
-import ExternalLink from "../../../../../../../components/ExternalLink";
-import NavigationScrollView from "../../../../../../../components/NavigationScrollView";
-import IlluRewards from "../../../../../../../icons/images/Rewards";
-import Alert from "../../../../../../../components/Alert";
-import BulletList, { BulletGreenCheck } from "../../../../../../../components/BulletList";
+import { ScreenName } from "LLM@const";
+import Button from "LLM@components/Button";
+import LText from "LLM@components/LText";
+import ExternalLink from "LLM@components/ExternalLink";
+import NavigationScrollView from "LLM@components/NavigationScrollView";
+import IlluRewards from "LLM@icons/images/Rewards";
+import Alert from "LLM@components/Alert";
+import BulletList, { BulletGreenCheck } from "LLM@components/BulletList";
 
-import { urls } from "@utils/urls";
-import { TrackScreen } from "../../../../../../../analytics";
+import { urls } from "LLM@utils/urls";
+import { TrackScreen } from "LLM@analytics";
 
 import type { EarnRewardsPropsType } from "./types";
 

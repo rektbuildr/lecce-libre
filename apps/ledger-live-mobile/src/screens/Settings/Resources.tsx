@@ -11,8 +11,8 @@ import {
   ActivityMedium,
 } from "@ledgerhq/native-ui/assets/icons";
 import SettingsNavigationScrollView from "./SettingsNavigationScrollView";
-import SettingsCard from "../../components/SettingsCard";
-import { urls } from "@utils/urls";
+import SettingsCard from "LLM@components/SettingsCard";
+import { urls } from "LLM@utils/urls";
 
 const Resources = () => {
   const { t } = useTranslation();

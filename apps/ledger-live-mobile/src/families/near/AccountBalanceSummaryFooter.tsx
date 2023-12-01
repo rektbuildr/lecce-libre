@@ -6,10 +6,10 @@ import invariant from "invariant";
 import React, { useCallback, useMemo, useState } from "react";
 import { TFunction, useTranslation } from "react-i18next";
 import { ScrollView } from "react-native";
-import InfoItem from "../../components/BalanceSummaryInfoItem";
-import CurrencyUnitValue from "../../components/CurrencyUnitValue";
-import type { ModalInfo } from "../../modals/Info";
-import InfoModal from "../../modals/Info";
+import InfoItem from "LLM@components/BalanceSummaryInfoItem";
+import CurrencyUnitValue from "LLM@components/CurrencyUnitValue";
+import type { ModalInfo } from "LLM@modals/Info";
+import InfoModal from "LLM@modals/Info";
 
 type Props = {
   account: NearAccount;

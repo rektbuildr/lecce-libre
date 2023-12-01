@@ -7,9 +7,9 @@ import { IconsLegacy } from "@ledgerhq/native-ui";
 import { Trans } from "react-i18next";
 
 import type { Account } from "@ledgerhq/types-live";
-import type { ActionButtonEvent } from "../../components/FabActions";
+import type { ActionButtonEvent } from "LLM@components/FabActions";
 
-import { NavigatorName, ScreenName } from "../../const";
+import { NavigatorName, ScreenName } from "LLM@const";
 import { ParamListBase, RouteProp } from "@react-navigation/native";
 
 /*

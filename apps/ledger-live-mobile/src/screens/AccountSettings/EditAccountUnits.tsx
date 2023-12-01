@@ -3,14 +3,14 @@ import React, { useCallback } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Unit } from "@ledgerhq/types-cryptoassets";
-import { accountScreenSelector } from "../../reducers/accounts";
-import { updateAccount } from "../../actions/accounts";
-import SettingsRow from "../../components/SettingsRow";
-import Touchable from "../../components/Touchable";
-import NavigationScrollView from "../../components/NavigationScrollView";
-import { StackNavigatorProps } from "../../components/RootNavigator/types/helpers";
-import { AccountSettingsNavigatorParamList } from "../../components/RootNavigator/types/AccountSettingsNavigator";
-import { ScreenName } from "../../const";
+import { accountScreenSelector } from "LLM@reducers/accounts";
+import { updateAccount } from "LLM@actions/accounts";
+import SettingsRow from "LLM@components/SettingsRow";
+import Touchable from "LLM@components/Touchable";
+import NavigationScrollView from "LLM@components/NavigationScrollView";
+import { StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
+import { AccountSettingsNavigatorParamList } from "LLM@components/RootNavigator/types/AccountSettingsNavigator";
+import { ScreenName } from "LLM@const";
 
 type NavigationProps = StackNavigatorProps<
   AccountSettingsNavigatorParamList,

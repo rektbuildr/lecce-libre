@@ -8,8 +8,8 @@ import { StyleSheet, View } from "react-native";
 import { CeloValidatorGroup, CeloVote } from "@ledgerhq/live-common/families/celo/types";
 import { useTheme } from "@react-navigation/native";
 import BigNumber from "bignumber.js";
-import CurrencyUnitValue from "../../components/CurrencyUnitValue";
-import Touchable from "../../components/Touchable";
+import CurrencyUnitValue from "LLM@components/CurrencyUnitValue";
+import Touchable from "LLM@components/Touchable";
 import ValidatorImage from "./ValidatorImage";
 
 const ValidatorRow = ({

@@ -49,12 +49,12 @@ import powerOnRecoveryNanoSPLight from "../assets/nanoSP/powerOnRecovery/light.j
 import powerOnRecoveryNanoSPDark from "../assets/nanoSP/powerOnRecovery/dark.json";
 import powerOnRecoveryStaxLight from "../assets/stax/powerOnRecovery/light.json";
 import powerOnRecoveryStaxDark from "../assets/stax/powerOnRecovery/dark.json";
-import Check from "../../../icons/Check";
-import WarningOutline from "../../../icons/WarningOutline";
-import Close from "../../../icons/Close";
-import ArrowRight from "../../../icons/ArrowRight";
-import LText from "../../../components/LText";
-import { urls } from "@utils/urls";
+import Check from "LLM@icons/Check";
+import WarningOutline from "LLM@icons/WarningOutline";
+import Close from "LLM@icons/Close";
+import ArrowRight from "LLM@icons/ArrowRight";
+import LText from "LLM@components/LText";
+import { urls } from "LLM@utils/urls";
 
 export const lottieAnimations = {
   nanoS: {

@@ -6,13 +6,13 @@ import invariant from "invariant";
 import React, { useCallback, useState } from "react";
 import { FlatList, StyleSheet, View, SafeAreaView } from "react-native";
 import { useSelector } from "react-redux";
-import { TrackScreen } from "../../../analytics";
-import { ScreenName } from "../../../const";
-import { accountScreenSelector } from "../../../reducers/accounts";
+import { TrackScreen } from "LLM@analytics";
+import { ScreenName } from "LLM@const";
+import { accountScreenSelector } from "LLM@reducers/accounts";
 import ValidatorHead from "../shared/ValidatorHead";
 import ValidatorRow from "../shared/ValidatorRow";
 import SelectValidatorSearchBox from "../../tron/VoteFlow/01-SelectValidator/SearchBox";
-import { StackNavigatorProps } from "../../../components/RootNavigator/types/helpers";
+import { StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
 import { CosmosDelegationFlowParamList } from "./types";
 
 type Props = StackNavigatorProps<

@@ -6,13 +6,13 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "styled-components/native";
 import useFeature from "@ledgerhq/live-common/featureFlags/useFeature";
 import { StackNavigationProp } from "@react-navigation/stack";
-import Touchable from "../../components/Touchable";
-import { NavigatorName, ScreenName } from "../../const";
-import { withDiscreetMode } from "../../context/DiscreetModeContext";
-import DiscreetModeButton from "../../components/DiscreetModeButton";
-import { track } from "../../analytics";
-import useDynamicContent from "../../dynamicContent/dynamicContent";
-import Notifications from "../../icons/Notifications";
+import Touchable from "LLM@components/Touchable";
+import { NavigatorName, ScreenName } from "LLM@const";
+import { withDiscreetMode } from "LLM@context/DiscreetModeContext";
+import DiscreetModeButton from "LLM@components/DiscreetModeButton";
+import { track } from "LLM@analytics";
+import useDynamicContent from "LLM@dynamicContent/dynamicContent";
+import Notifications from "LLM@icons/Notifications";
 
 const NotificationsButton = () => {
   const navigation = useNavigation();

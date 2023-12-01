@@ -2,12 +2,12 @@ import React, { useCallback } from "react";
 import { Button, Flex } from "@ledgerhq/native-ui";
 import { ExternalLinkMedium } from "@ledgerhq/native-ui/assets/icons";
 import { useTranslation } from "react-i18next";
-import QueuedDrawer from "../../components/QueuedDrawer";
-import { TrackScreen, track } from "../../analytics";
+import QueuedDrawer from "LLM@components/QueuedDrawer";
+import { TrackScreen, track } from "LLM@analytics";
 import { Linking } from "react-native";
-import { urls } from "@utils/urls";
-import { useLocale } from "../../context/Locale";
-import { GenericInformationBody } from "../../components/GenericInformationBody";
+import { urls } from "LLM@utils/urls";
+import { useLocale } from "LLM@context/Locale";
+import { GenericInformationBody } from "LLM@components/GenericInformationBody";
 
 export type Props = {
   /**

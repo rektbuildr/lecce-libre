@@ -7,8 +7,8 @@ import { IconsLegacy } from "@ledgerhq/native-ui";
 import { CosmosAccount } from "@ledgerhq/live-common/families/cosmos/types";
 import { Account } from "@ledgerhq/types-live";
 
-import { NavigatorName, ScreenName } from "../../const";
-import { ActionButtonEvent } from "../../components/FabActions";
+import { NavigatorName, ScreenName } from "LLM@const";
+import { ActionButtonEvent } from "LLM@components/FabActions";
 
 type NavigationParamsType = readonly [name: string, options: object];
 

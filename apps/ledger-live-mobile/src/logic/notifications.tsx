@@ -5,7 +5,7 @@ import { add, isBefore, parseISO } from "date-fns";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import messaging from "@react-native-firebase/messaging";
 import useFeature from "@ledgerhq/live-common/featureFlags/useFeature";
-import { accountsWithPositiveBalanceCountSelector } from "../reducers/accounts";
+import { accountsWithPositiveBalanceCountSelector } from "LLM@reducers/accounts";
 import {
   notificationsModalOpenSelector,
   notificationsModalTypeSelector,
@@ -13,23 +13,23 @@ import {
   notificationsEventTriggeredSelector,
   notificationsDataOfUserSelector,
   notificationsModalLockedSelector,
-} from "../reducers/notifications";
+} from "LLM@reducers/notifications";
 import {
   setNotificationsModalOpen,
   setNotificationsModalType,
   setNotificationsCurrentRouteName,
   setNotificationsEventTriggered,
   setNotificationsDataOfUser,
-} from "../actions/notifications";
-import { setRatingsModalLocked } from "../actions/ratings";
-import { track } from "../analytics";
+} from "LLM@actions/notifications";
+import { setRatingsModalLocked } from "LLM@actions/ratings";
+import { track } from "LLM@analytics";
 import {
   notificationsSelector,
   INITIAL_STATE as settingsInitialState,
   neverClickedOnAllowNotificationsButtonSelector,
-} from "../reducers/settings";
-import { setNeverClickedOnAllowNotificationsButton, setNotifications } from "../actions/settings";
-import { NotificationsSettings } from "../reducers/types";
+} from "LLM@reducers/settings";
+import { setNeverClickedOnAllowNotificationsButton, setNotifications } from "LLM@actions/settings";
+import { NotificationsSettings } from "LLM@reducers/types";
 import Braze from "@braze/react-native-sdk";
 
 export type EventTrigger = {

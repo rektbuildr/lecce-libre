@@ -22,8 +22,8 @@ import useFeature from "@ledgerhq/live-common/featureFlags/useFeature";
 
 import { SeedPhraseType, StorylyInstanceID } from "@ledgerhq/types-live";
 import { DeviceModelId } from "@ledgerhq/types-devices";
-import { addKnownDevice } from "../../actions/ble";
-import { NavigatorName, ScreenName } from "../../const";
+import { addKnownDevice } from "LLM@actions/ble";
+import { NavigatorName, ScreenName } from "LLM@const";
 import HelpDrawer from "./HelpDrawer";
 import DesyncOverlay from "./DesyncOverlay";
 import {
@@ -31,10 +31,10 @@ import {
   setHasOrderedNano,
   setLastConnectedDevice,
   setReadOnlyMode,
-} from "../../actions/settings";
-import InstallSetOfApps from "../../components/DeviceAction/InstallSetOfApps";
-import Stories from "../../components/StorylyStories";
-import { TrackScreen, screen } from "../../analytics";
+} from "LLM@actions/settings";
+import InstallSetOfApps from "LLM@components/DeviceAction/InstallSetOfApps";
+import Stories from "LLM@components/StorylyStories";
+import { TrackScreen, screen } from "LLM@analytics";
 import ContinueOnStax from "./assets/ContinueOnStax";
 import type { SyncOnboardingScreenProps } from ".";
 

@@ -12,22 +12,22 @@ import {
   setCustomImageType,
   setLastConnectedDevice,
   setReadOnlyMode,
-} from "../../actions/settings";
-import { ScreenName } from "../../const";
-import CustomImageDeviceAction from "../../components/CustomImageDeviceAction";
-import TestImage from "../../components/CustomImage/TestImage";
-import SelectDevice from "../../components/SelectDevice";
-import SelectDevice2, { SetHeaderOptionsRequest } from "../../components/SelectDevice2";
-import { useCompleteActionCallback } from "../../logic/postOnboarding/useCompleteAction";
+} from "LLM@actions/settings";
+import { ScreenName } from "LLM@const";
+import CustomImageDeviceAction from "LLM@components/CustomImageDeviceAction";
+import TestImage from "LLM@components/CustomImage/TestImage";
+import SelectDevice from "LLM@components/SelectDevice";
+import SelectDevice2, { SetHeaderOptionsRequest } from "LLM@components/SelectDevice2";
+import { useCompleteActionCallback } from "LLM@logic/postOnboarding/useCompleteAction";
 import {
   BaseComposite,
   ReactNavigationHeaderOptions,
   StackNavigatorProps,
-} from "../../components/RootNavigator/types/helpers";
-import { CustomImageNavigatorParamList } from "../../components/RootNavigator/types/CustomImageNavigator";
-import { addKnownDevice } from "../../actions/ble";
-import { lastConnectedDeviceSelector } from "../../reducers/settings";
-import { NavigationHeaderBackButton } from "../../components/NavigationHeaderBackButton";
+} from "LLM@components/RootNavigator/types/helpers";
+import { CustomImageNavigatorParamList } from "LLM@components/RootNavigator/types/CustomImageNavigator";
+import { addKnownDevice } from "LLM@actions/ble";
+import { lastConnectedDeviceSelector } from "LLM@reducers/settings";
+import { NavigationHeaderBackButton } from "LLM@components/NavigationHeaderBackButton";
 
 const deviceModelIds = [DeviceModelId.stax];
 

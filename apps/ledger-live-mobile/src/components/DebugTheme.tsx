@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import useEnv from "@ledgerhq/live-common/hooks/useEnv";
 import { setEnv } from "@ledgerhq/live-env";
 import { IconsLegacy } from "@ledgerhq/native-ui";
-import { themeSelector } from "../reducers/settings";
-import { setTheme } from "../actions/settings";
+import { themeSelector } from "LLM@reducers/settings";
+import { setTheme } from "LLM@actions/settings";
 import FloatingDebugButton from "./FloatingDebugButton";
 
 const DebugTheme = () => {

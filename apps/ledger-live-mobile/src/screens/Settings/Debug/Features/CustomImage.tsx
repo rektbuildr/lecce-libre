@@ -2,8 +2,8 @@ import React, { useCallback } from "react";
 import { FeatureToggle } from "@ledgerhq/live-common/featureFlags/index";
 import { useNavigation } from "@react-navigation/native";
 import { IconsLegacy } from "@ledgerhq/native-ui";
-import SettingsRow from "../../../../components/SettingsRow";
-import { NavigatorName, ScreenName } from "../../../../const";
+import SettingsRow from "LLM@components/SettingsRow";
+import { NavigatorName, ScreenName } from "LLM@const";
 
 export default function CustomImage() {
   const navigation = useNavigation();

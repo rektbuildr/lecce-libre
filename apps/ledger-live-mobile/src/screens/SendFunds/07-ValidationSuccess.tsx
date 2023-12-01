@@ -3,18 +3,18 @@ import { View, StyleSheet } from "react-native";
 import { useSelector } from "react-redux";
 import { CompositeScreenProps, useTheme } from "@react-navigation/native";
 import { getAccountCurrency } from "@ledgerhq/live-common/account/helpers";
-import { accountScreenSelector } from "../../reducers/accounts";
-import { TrackScreen } from "../../analytics";
-import { ScreenName } from "../../const";
-import PreventNativeBack from "../../components/PreventNativeBack";
-import ValidateSuccess from "../../components/ValidateSuccess";
-import type { SendFundsNavigatorStackParamList } from "../../components/RootNavigator/types/SendFundsNavigator";
+import { accountScreenSelector } from "LLM@reducers/accounts";
+import { TrackScreen } from "LLM@analytics";
+import { ScreenName } from "LLM@const";
+import PreventNativeBack from "LLM@components/PreventNativeBack";
+import ValidateSuccess from "LLM@components/ValidateSuccess";
+import type { SendFundsNavigatorStackParamList } from "LLM@components/RootNavigator/types/SendFundsNavigator";
 
 import {
   StackNavigatorNavigation,
   StackNavigatorProps,
-} from "../../components/RootNavigator/types/helpers";
-import { BaseNavigatorStackParamList } from "../../components/RootNavigator/types/BaseNavigator";
+} from "LLM@components/RootNavigator/types/helpers";
+import { BaseNavigatorStackParamList } from "LLM@components/RootNavigator/types/BaseNavigator";
 
 type Props = CompositeScreenProps<
   StackNavigatorProps<SendFundsNavigatorStackParamList, ScreenName.SendValidationSuccess>,

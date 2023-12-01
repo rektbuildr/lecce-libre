@@ -23,18 +23,18 @@ import useLatestFirmware from "@ledgerhq/live-common/hooks/useLatestFirmware";
 import { useBatteryStatuses } from "@ledgerhq/live-common/deviceSDK/hooks/useBatteryStatuses";
 import { BatteryStatusFlags } from "@ledgerhq/types-devices";
 
-import { ScreenName, NavigatorName } from "../const";
+import { ScreenName, NavigatorName } from "LLM@const";
 import {
   lastSeenDeviceSelector,
   hasCompletedOnboardingSelector,
   lastConnectedDeviceSelector,
-} from "../reducers/settings";
-import { hasConnectedDeviceSelector } from "../reducers/appstate";
+} from "LLM@reducers/settings";
+import { hasConnectedDeviceSelector } from "LLM@reducers/appstate";
 import Button from "./Button";
 import QueuedDrawer from "./QueuedDrawer";
 import { renderConnectYourDevice } from "./DeviceAction/rendering";
 import { DeviceActionError } from "./DeviceAction/common";
-import { UpdateStep } from "../screens/FirmwareUpdate";
+import { UpdateStep } from "LLM@screens/FirmwareUpdate";
 
 export type FirmwareUpdateBannerProps = {
   onBackFromUpdate: (updateState: UpdateStep) => void;

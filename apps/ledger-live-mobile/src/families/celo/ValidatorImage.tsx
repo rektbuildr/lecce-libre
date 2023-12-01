@@ -1,8 +1,8 @@
 import { useTheme } from "@react-navigation/native";
 import React from "react";
-import Circle from "../../components/Circle";
-import FirstLetterIcon from "../../components/FirstLetterIcon";
-import LedgerLogo from "../../icons/LiveLogo";
+import Circle from "LLM@components/Circle";
+import FirstLetterIcon from "LLM@components/FirstLetterIcon";
+import LedgerLogo from "LLM@icons/LiveLogo";
 
 type Props = {
   size?: number;

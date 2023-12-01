@@ -5,10 +5,10 @@ import { View, StyleSheet } from "react-native";
 import type { Account } from "@ledgerhq/types-live";
 import { getAccountCurrency, getAccountUnit } from "@ledgerhq/live-common/account/index";
 import { useTheme } from "@react-navigation/native";
-import CurrencyUnitValue from "../../../components/CurrencyUnitValue";
-import CounterValue from "../../../components/CounterValue";
-import LText from "../../../components/LText";
-import DateFromNow from "../../../components/DateFromNow";
+import CurrencyUnitValue from "LLM@components/CurrencyUnitValue";
+import CounterValue from "LLM@components/CounterValue";
+import LText from "LLM@components/LText";
+import DateFromNow from "LLM@components/DateFromNow";
 import { WithdrawAction } from "./Actions";
 
 type Props = {

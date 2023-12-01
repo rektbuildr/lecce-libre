@@ -6,15 +6,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { getMainAccount } from "@ledgerhq/live-common/account/index";
 import useBridgeTransaction from "@ledgerhq/live-common/bridge/useBridgeTransaction";
 import { useTheme } from "@react-navigation/native";
-import { accountScreenSelector } from "../../reducers/accounts";
-import DeviceAction from "../../components/DeviceAction";
-import { TrackScreen } from "../../analytics";
-import { useSignedTxHandlerWithoutBroadcast } from "../../logic/screenTransactionHooks";
+import { accountScreenSelector } from "LLM@reducers/accounts";
+import DeviceAction from "LLM@components/DeviceAction";
+import { TrackScreen } from "LLM@analytics";
+import { useSignedTxHandlerWithoutBroadcast } from "LLM@logic/screenTransactionHooks";
 import { navigateToSelectDevice } from "../ConnectDevice";
-import { SignTransactionNavigatorParamList } from "../../components/RootNavigator/types/SignTransactionNavigator";
-import { ScreenName } from "../../const";
-import { StackNavigatorProps } from "../../components/RootNavigator/types/helpers";
-import { useTransactionDeviceAction } from "../../hooks/deviceActions";
+import { SignTransactionNavigatorParamList } from "LLM@components/RootNavigator/types/SignTransactionNavigator";
+import { ScreenName } from "LLM@const";
+import { StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
+import { useTransactionDeviceAction } from "LLM@hooks/deviceActions";
 
 function ConnectDevice({
   navigation,

@@ -11,13 +11,13 @@ import GenerateMockAccount from "./GenerateMockAccountsSelect";
 import GenerateAnnouncement from "./GenerateAnnouncementMockData";
 import SettingsNavigationScrollView from "../../SettingsNavigationScrollView";
 import ToggleServiceStatusIncident from "./ToggleServiceStatus";
-import SettingsRow from "../../../../components/SettingsRow";
-import { dangerouslyOverrideState } from "../../../../actions/settings";
-import { useReboot } from "../../../../context/Reboot";
+import SettingsRow from "LLM@components/SettingsRow";
+import { dangerouslyOverrideState } from "LLM@actions/settings";
+import { useReboot } from "LLM@context/Reboot";
 
-import { INITIAL_STATE as INITIAL_SETTINGS_STATE } from "../../../../reducers/settings";
-import { INITIAL_STATE as INITIAL_ACCOUNTS_STATE } from "../../../../reducers/accounts";
-import { INITIAL_STATE as INITIAL_BLE_STATE } from "../../../../reducers/ble";
+import { INITIAL_STATE as INITIAL_SETTINGS_STATE } from "LLM@reducers/settings";
+import { INITIAL_STATE as INITIAL_ACCOUNTS_STATE } from "LLM@reducers/accounts";
+import { INITIAL_STATE as INITIAL_BLE_STATE } from "LLM@reducers/ble";
 
 export default function Generators() {
   const dispatch = useDispatch();

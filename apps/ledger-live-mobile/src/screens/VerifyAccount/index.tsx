@@ -7,20 +7,20 @@ import { getMainAccount, getReceiveFlowError } from "@ledgerhq/live-common/accou
 import type { Device } from "@ledgerhq/live-common/hw/actions/types";
 import { useFeature } from "@ledgerhq/live-common/featureFlags/index";
 import { Flex } from "@ledgerhq/native-ui";
-import { accountScreenSelector } from "../../reducers/accounts";
-import { TrackScreen } from "../../analytics";
-import SelectDevice from "../../components/SelectDevice";
-import SelectDevice2 from "../../components/SelectDevice2";
-import DeviceActionModal from "../../components/DeviceActionModal";
-import NavigationScrollView from "../../components/NavigationScrollView";
-import GenericErrorView from "../../components/GenericErrorView";
+import { accountScreenSelector } from "LLM@reducers/accounts";
+import { TrackScreen } from "LLM@analytics";
+import SelectDevice from "LLM@components/SelectDevice";
+import SelectDevice2 from "LLM@components/SelectDevice2";
+import DeviceActionModal from "LLM@components/DeviceActionModal";
+import NavigationScrollView from "LLM@components/NavigationScrollView";
+import GenericErrorView from "LLM@components/GenericErrorView";
 import SkipDeviceVerification from "./SkipDeviceVerification";
 import VerifyAddress from "./VerifyAddress";
-import QueuedDrawer from "../../components/QueuedDrawer";
-import { RootComposite, StackNavigatorProps } from "../../components/RootNavigator/types/helpers";
-import { BaseNavigatorStackParamList } from "../../components/RootNavigator/types/BaseNavigator";
-import { ScreenName } from "../../const";
-import { useAppDeviceAction } from "../../hooks/deviceActions";
+import QueuedDrawer from "LLM@components/QueuedDrawer";
+import { RootComposite, StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
+import { BaseNavigatorStackParamList } from "LLM@components/RootNavigator/types/BaseNavigator";
+import { ScreenName } from "LLM@const";
+import { useAppDeviceAction } from "LLM@hooks/deviceActions";
 
 type NavigationProps = RootComposite<
   StackNavigatorProps<BaseNavigatorStackParamList, ScreenName.VerifyAccount>

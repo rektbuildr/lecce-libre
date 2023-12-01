@@ -6,23 +6,23 @@ import { useFeature } from "@ledgerhq/live-common/featureFlags/index";
 import { useIsFocused, useTheme } from "@react-navigation/native";
 import { isTokenCurrency } from "@ledgerhq/live-common/currencies/index";
 import { Flex } from "@ledgerhq/native-ui";
-import { prepareCurrency } from "../../bridge/cache";
-import { ScreenName } from "../../const";
-import { TrackScreen } from "../../analytics";
-import SelectDevice from "../../components/SelectDevice";
-import SelectDevice2, { SetHeaderOptionsRequest } from "../../components/SelectDevice2";
-import NavigationScrollView from "../../components/NavigationScrollView";
-import DeviceActionModal from "../../components/DeviceActionModal";
+import { prepareCurrency } from "LLM@bridge/cache";
+import { ScreenName } from "LLM@const";
+import { TrackScreen } from "LLM@analytics";
+import SelectDevice from "LLM@components/SelectDevice";
+import SelectDevice2, { SetHeaderOptionsRequest } from "LLM@components/SelectDevice2";
+import NavigationScrollView from "LLM@components/NavigationScrollView";
+import DeviceActionModal from "LLM@components/DeviceActionModal";
 import type {
   ReactNavigationHeaderOptions,
   StackNavigatorProps,
-} from "../../components/RootNavigator/types/helpers";
-import type { AddAccountsNavigatorParamList } from "../../components/RootNavigator/types/AddAccountsNavigator";
+} from "LLM@components/RootNavigator/types/helpers";
+import type { AddAccountsNavigatorParamList } from "LLM@components/RootNavigator/types/AddAccountsNavigator";
 import SkipSelectDevice from "../SkipSelectDevice";
-import { setLastConnectedDevice, setReadOnlyMode } from "../../actions/settings";
+import { setLastConnectedDevice, setReadOnlyMode } from "LLM@actions/settings";
 import AddAccountsHeaderRightClose from "./AddAccountsHeaderRightClose";
-import { NavigationHeaderBackButton } from "../../components/NavigationHeaderBackButton";
-import { useAppDeviceAction } from "../../hooks/deviceActions";
+import { NavigationHeaderBackButton } from "LLM@components/NavigationHeaderBackButton";
+import { useAppDeviceAction } from "LLM@hooks/deviceActions";
 
 type Props = StackNavigatorProps<AddAccountsNavigatorParamList, ScreenName.AddAccountsSelectDevice>;
 

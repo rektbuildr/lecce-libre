@@ -2,15 +2,15 @@ import { useTheme } from "@react-navigation/native";
 import React, { useCallback } from "react";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { TrackScreen } from "../../../analytics";
-import { BaseNavigatorStackParamList } from "../../../components/RootNavigator/types/BaseNavigator";
+import { TrackScreen } from "LLM@analytics";
+import { BaseNavigatorStackParamList } from "LLM@components/RootNavigator/types/BaseNavigator";
 import type {
   BaseComposite,
   StackNavigatorNavigation,
   StackNavigatorProps,
-} from "../../../components/RootNavigator/types/helpers";
-import ValidateError from "../../../components/ValidateError";
-import { ScreenName } from "../../../const";
+} from "LLM@components/RootNavigator/types/helpers";
+import ValidateError from "LLM@components/ValidateError";
+import { ScreenName } from "LLM@const";
 import type { CeloRevokeFlowFlowParamList } from "./types";
 
 type Props = BaseComposite<

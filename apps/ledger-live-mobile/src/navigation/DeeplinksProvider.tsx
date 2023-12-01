@@ -13,17 +13,17 @@ import { LiveAppManifest } from "@ledgerhq/live-common/platform/types";
 import useFeature from "@ledgerhq/live-common/featureFlags/useFeature";
 import * as Sentry from "@sentry/react-native";
 
-import { hasCompletedOnboardingSelector } from "../reducers/settings";
+import { hasCompletedOnboardingSelector } from "LLM@reducers/settings";
 import { navigationRef, isReadyRef } from "../rootnavigation";
-import { ScreenName, NavigatorName } from "../const";
-import { setWallectConnectUri } from "../actions/walletconnect";
-import { useGeneralTermsAccepted } from "../logic/terms";
-import { Writeable } from "../types/helpers";
+import { ScreenName, NavigatorName } from "LLM@const";
+import { setWallectConnectUri } from "LLM@actions/walletconnect";
+import { useGeneralTermsAccepted } from "LLM@logic/terms";
+import { Writeable } from "LLM@types/helpers";
 import { lightTheme, darkTheme, Theme } from "../colors";
-import { track } from "../analytics";
-import { setEarnInfoModal } from "../actions/earn";
+import { track } from "LLM@analytics";
+import { setEarnInfoModal } from "LLM@actions/earn";
 import { OptionalFeatureMap } from "@ledgerhq/types-live";
-import { blockPasswordLock } from "../actions/appstate";
+import { blockPasswordLock } from "LLM@actions/appstate";
 
 const routingInstrumentation = new Sentry.ReactNavigationInstrumentation();
 

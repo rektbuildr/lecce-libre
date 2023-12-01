@@ -16,21 +16,21 @@ import {
   PolkadotOperation,
   PolkadotValidator,
 } from "@ledgerhq/live-common/families/polkadot/types";
-import CurrencyUnitValue from "../../components/CurrencyUnitValue";
-import CounterValue from "../../components/CounterValue";
-import Section from "../../screens/OperationDetails/Section";
-import { discreetModeSelector, localeSelector } from "../../reducers/settings";
-import { urls } from "@utils/urls";
+import CurrencyUnitValue from "LLM@components/CurrencyUnitValue";
+import CounterValue from "LLM@components/CounterValue";
+import Section from "LLM@screens/OperationDetails/Section";
+import { discreetModeSelector, localeSelector } from "LLM@reducers/settings";
+import { urls } from "LLM@utils/urls";
 
-import BondIcon from "../../icons/LinkIcon";
-import UnbondIcon from "../../icons/Undelegate";
-import WithdrawUnbondedIcon from "../../icons/Coins";
-import RewardIcon from "../../icons/ClaimReward";
-import NominateIcon from "../../icons/Vote";
-import ChillIcon from "../../icons/VoteNay";
-import SetControllerIcon from "../../icons/Manager";
+import BondIcon from "LLM@icons/LinkIcon";
+import UnbondIcon from "LLM@icons/Undelegate";
+import WithdrawUnbondedIcon from "LLM@icons/Coins";
+import RewardIcon from "LLM@icons/ClaimReward";
+import NominateIcon from "LLM@icons/Vote";
+import ChillIcon from "LLM@icons/VoteNay";
+import SetControllerIcon from "LLM@icons/Manager";
 
-import OperationStatusWrapper from "../../icons/OperationStatusIcon/Wrapper";
+import OperationStatusWrapper from "LLM@icons/OperationStatusIcon/Wrapper";
 
 import NominationInfo from "./components/NominationInfo";
 

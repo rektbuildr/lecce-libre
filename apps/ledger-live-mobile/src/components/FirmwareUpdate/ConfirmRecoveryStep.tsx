@@ -12,9 +12,9 @@ import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Device } from "@ledgerhq/live-common/hw/actions/types";
 import { Linking, ScrollView } from "react-native";
-import { track } from "../../analytics";
-import Track from "../../analytics/Track";
-import { urls } from "@utils/urls";
+import { track } from "LLM@analytics";
+import Track from "LLM@analytics/Track";
+import { urls } from "LLM@utils/urls";
 import SafeMarkdown from "../SafeMarkdown";
 
 type Props = {

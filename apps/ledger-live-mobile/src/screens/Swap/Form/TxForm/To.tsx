@@ -10,11 +10,11 @@ import {
 } from "@ledgerhq/live-common/exchange/swap/hooks/index";
 import { Selector } from "./Selector";
 import { CurrencyValue } from "./CurrencyValue";
-import { ScreenName } from "../../../../const";
-import { useAnalytics } from "../../../../analytics";
+import { ScreenName } from "LLM@const";
+import { useAnalytics } from "LLM@analytics";
 import { sharedSwapTracking } from "../../utils";
-import { SwapNavigatorParamList } from "../../../../components/RootNavigator/types/SwapNavigator";
-import { StackNavigatorNavigation } from "../../../../components/RootNavigator/types/helpers";
+import { SwapNavigatorParamList } from "LLM@components/RootNavigator/types/SwapNavigator";
+import { StackNavigatorNavigation } from "LLM@components/RootNavigator/types/helpers";
 
 interface Props {
   swapTx: SwapTransactionType;

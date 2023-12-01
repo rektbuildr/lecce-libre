@@ -5,12 +5,12 @@ import { BigNumber } from "bignumber.js";
 import type { AccountLike } from "@ledgerhq/types-live";
 import { useSendAmount } from "@ledgerhq/live-common/countervalues/react";
 import { useTranslation } from "react-i18next";
-import { track } from "../../analytics";
-import { counterValueCurrencySelector } from "../../reducers/settings";
-import LText from "../../components/LText/index";
+import { track } from "LLM@analytics";
+import { counterValueCurrencySelector } from "LLM@reducers/settings";
+import LText from "LLM@components/LText/index";
 import CounterValuesSeparator from "./CounterValuesSeparator";
-import CurrencyInput from "../../components/CurrencyInput";
-import TranslatedError from "../../components/TranslatedError";
+import CurrencyInput from "LLM@components/CurrencyInput";
+import TranslatedError from "LLM@components/TranslatedError";
 
 type Props = {
   account: AccountLike;

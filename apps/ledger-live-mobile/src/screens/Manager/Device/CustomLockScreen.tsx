@@ -13,9 +13,9 @@ import { useSelector } from "react-redux";
 import {
   hasCompletedCustomImageFlowSelector,
   lastSeenCustomImageSelector,
-} from "../../../reducers/settings";
-import { NavigatorName, ScreenName } from "../../../const";
-import CustomImageBottomModal from "../../../components/CustomImage/CustomImageBottomModal";
+} from "LLM@reducers/settings";
+import { NavigatorName, ScreenName } from "LLM@const";
+import CustomImageBottomModal from "LLM@components/CustomImage/CustomImageBottomModal";
 import DeviceOptionRow from "./DeviceOptionRow";
 
 const CustomLockScreen: React.FC<{ device: Device; disabled: boolean }> = ({

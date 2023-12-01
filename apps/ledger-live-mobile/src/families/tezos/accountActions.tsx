@@ -7,8 +7,8 @@ import {
 } from "@ledgerhq/live-common/families/tezos/bakers";
 import { ParamListBase, RouteProp } from "@react-navigation/native";
 import { IconsLegacy } from "@ledgerhq/native-ui";
-import { NavigatorName, ScreenName } from "../../const";
-import { ActionButtonEvent } from "../../components/FabActions";
+import { NavigatorName, ScreenName } from "LLM@const";
+import { ActionButtonEvent } from "LLM@components/FabActions";
 
 type NavigationParamsType = readonly [name: string, options: object];
 

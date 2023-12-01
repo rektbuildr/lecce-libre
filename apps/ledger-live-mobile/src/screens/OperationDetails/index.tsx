@@ -7,15 +7,15 @@ import { getAccountCurrency, getMainAccount } from "@ledgerhq/live-common/accoun
 import { Operation } from "@ledgerhq/types-live";
 
 import byFamiliesOperationDetails from "../../generated/operationDetails";
-import { accountScreenSelector } from "../../reducers/accounts";
-import { TrackScreen } from "../../analytics";
-import NavigationScrollView from "../../components/NavigationScrollView";
+import { accountScreenSelector } from "LLM@reducers/accounts";
+import { TrackScreen } from "LLM@analytics";
+import NavigationScrollView from "LLM@components/NavigationScrollView";
 import Footer from "./Footer";
 import Content from "./Content";
-import { withDiscreetMode } from "../../context/DiscreetModeContext";
-import { RootComposite, StackNavigatorProps } from "../../components/RootNavigator/types/helpers";
-import { BaseNavigatorStackParamList } from "../../components/RootNavigator/types/BaseNavigator";
-import { ScreenName } from "../../const";
+import { withDiscreetMode } from "LLM@context/DiscreetModeContext";
+import { RootComposite, StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
+import { BaseNavigatorStackParamList } from "LLM@components/RootNavigator/types/BaseNavigator";
+import { ScreenName } from "LLM@const";
 
 type NavigatorProps = RootComposite<
   StackNavigatorProps<BaseNavigatorStackParamList, ScreenName.OperationDetails>

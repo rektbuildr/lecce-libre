@@ -10,12 +10,12 @@ import invariant from "invariant";
 import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, View } from "react-native";
-import { ScreenName } from "../../const";
-import SummaryRow from "../../screens/SendFunds/SummaryRow";
-import { BaseComposite, StackNavigatorProps } from "../../components/RootNavigator/types/helpers";
-import { SendFundsNavigatorStackParamList } from "../../components/RootNavigator/types/SendFundsNavigator";
-import { SignTransactionNavigatorParamList } from "../../components/RootNavigator/types/SignTransactionNavigator";
-import { SwapNavigatorParamList } from "../../components/RootNavigator/types/SwapNavigator";
+import { ScreenName } from "LLM@const";
+import SummaryRow from "LLM@screens/SendFunds/SummaryRow";
+import { BaseComposite, StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
+import { SendFundsNavigatorStackParamList } from "LLM@components/RootNavigator/types/SendFundsNavigator";
+import { SignTransactionNavigatorParamList } from "LLM@components/RootNavigator/types/SignTransactionNavigator";
+import { SwapNavigatorParamList } from "LLM@components/RootNavigator/types/SwapNavigator";
 
 type Navigation = BaseComposite<
   | StackNavigatorProps<SendFundsNavigatorStackParamList, ScreenName.SendSummary>

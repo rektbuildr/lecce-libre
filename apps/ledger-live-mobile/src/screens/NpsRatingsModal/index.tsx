@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState, useMemo } from "react";
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
-import useNpsRatings from "../../logic/npsRatings";
-import QueuedDrawer from "../../components/QueuedDrawer";
-import { track } from "../../analytics";
+import useNpsRatings from "LLM@logic/npsRatings";
+import QueuedDrawer from "LLM@components/QueuedDrawer";
+import { track } from "LLM@analytics";
 
 import Form from "./Form";
 

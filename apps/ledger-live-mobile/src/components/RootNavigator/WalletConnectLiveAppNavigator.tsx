@@ -5,13 +5,13 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { Flex, IconsLegacy } from "@ledgerhq/native-ui";
 import { useRoute } from "@react-navigation/native";
-import { ScreenName } from "../../const";
-import { getStackNavigatorConfig } from "../../navigation/navigatorConfig";
-import styles from "../../navigation/styles";
+import { ScreenName } from "LLM@const";
+import { getStackNavigatorConfig } from "LLM@navigation/navigatorConfig";
+import styles from "LLM@navigation/styles";
 
-import { LiveApp } from "../../screens/Platform";
-import { uriSelector } from "../../reducers/walletconnect";
-import { setWallectConnectUri } from "../../actions/walletconnect";
+import { LiveApp } from "LLM@screens/Platform";
+import { uriSelector } from "LLM@reducers/walletconnect";
+import { setWallectConnectUri } from "LLM@actions/walletconnect";
 import { WalletConnectLiveAppNavigatorParamList } from "./types/WalletConnectLiveAppNavigator";
 import { StackNavigatorProps } from "./types/helpers";
 

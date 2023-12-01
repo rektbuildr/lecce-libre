@@ -1,7 +1,7 @@
 import React from "react";
 import { Image } from "react-native";
-import Circle from "../../../components/Circle";
-import FirstLetterIcon from "../../../components/FirstLetterIcon";
+import Circle from "LLM@components/Circle";
+import FirstLetterIcon from "LLM@components/FirstLetterIcon";
 
 type Props = {
   size?: number;

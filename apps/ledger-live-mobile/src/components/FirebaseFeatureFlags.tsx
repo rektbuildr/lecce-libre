@@ -9,9 +9,9 @@ import { FeatureId, Feature, Features } from "@ledgerhq/types-live";
 import { getEnv } from "@ledgerhq/live-env";
 
 import { formatToFirebaseFeatureId } from "./FirebaseRemoteConfig";
-import { languageSelector, overriddenFeatureFlagsSelector } from "../reducers/settings";
-import { setOverriddenFeatureFlag, setOverriddenFeatureFlags } from "../actions/settings";
-import { setAnalyticsFeatureFlagMethod } from "../analytics/segment";
+import { languageSelector, overriddenFeatureFlagsSelector } from "LLM@reducers/settings";
+import { setOverriddenFeatureFlag, setOverriddenFeatureFlags } from "LLM@actions/settings";
+import { setAnalyticsFeatureFlagMethod } from "LLM@analytics/segment";
 
 type Props = PropsWithChildren<unknown>;
 

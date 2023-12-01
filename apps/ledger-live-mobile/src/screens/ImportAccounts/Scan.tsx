@@ -2,15 +2,15 @@ import React, { PureComponent } from "react";
 import { StyleSheet, View } from "react-native";
 import { parseFramesReducer, framesToData, areFramesComplete, progressOfFrames } from "qrloop";
 import { Result as ImportAccountsResult, decode } from "@ledgerhq/live-common/cross";
-import { TrackScreen } from "../../analytics";
-import { ScreenName } from "../../const";
-import Scanner from "../../components/Scanner";
-import GenericErrorBottomModal from "../../components/GenericErrorBottomModal";
-import getWindowDimensions from "../../logic/getWindowDimensions";
+import { TrackScreen } from "LLM@analytics";
+import { ScreenName } from "LLM@const";
+import Scanner from "LLM@components/Scanner";
+import GenericErrorBottomModal from "LLM@components/GenericErrorBottomModal";
+import getWindowDimensions from "LLM@logic/getWindowDimensions";
 import { withTheme } from "../../colors";
 import type { Theme } from "../../colors";
-import type { ImportAccountsNavigatorParamList } from "../../components/RootNavigator/types/ImportAccountsNavigator";
-import type { StackNavigatorProps } from "../../components/RootNavigator/types/helpers";
+import type { ImportAccountsNavigatorParamList } from "LLM@components/RootNavigator/types/ImportAccountsNavigator";
+import type { StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
 
 type NavigationProps = StackNavigatorProps<
   ImportAccountsNavigatorParamList,

@@ -4,19 +4,19 @@ import { Flex } from "@ledgerhq/native-ui";
 import { Device } from "@ledgerhq/live-common/hw/actions/types";
 import { useFeature } from "@ledgerhq/live-common/featureFlags/index";
 import { Result } from "@ledgerhq/live-common/hw/actions/manager";
-import DeviceActionModal from "../../../../../components/DeviceActionModal";
-import SelectDevice from "../../../../../components/SelectDevice";
-import SelectDevice2 from "../../../../../components/SelectDevice2";
-import { TrackScreen } from "../../../../../analytics";
-import Button from "../../../../../components/PreventDoubleClickButton";
+import DeviceActionModal from "LLM@components/DeviceActionModal";
+import SelectDevice from "LLM@components/SelectDevice";
+import SelectDevice2 from "LLM@components/SelectDevice2";
+import { TrackScreen } from "LLM@analytics";
+import Button from "LLM@components/PreventDoubleClickButton";
 
 import {
   setHasInstalledAnyApp,
   setHasOrderedNano,
   setLastConnectedDevice,
   setReadOnlyMode,
-} from "../../../../../actions/settings";
-import { useManagerDeviceAction } from "../../../../../hooks/deviceActions";
+} from "LLM@actions/settings";
+import { useManagerDeviceAction } from "LLM@hooks/deviceActions";
 
 const ConnectNanoScene = ({
   onNext,

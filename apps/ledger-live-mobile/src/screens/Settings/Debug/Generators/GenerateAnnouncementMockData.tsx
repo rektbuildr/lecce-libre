@@ -5,11 +5,11 @@ import { useAnnouncements } from "@ledgerhq/live-common/notifications/Announceme
 import { useTheme } from "@react-navigation/native";
 import { IconsLegacy } from "@ledgerhq/native-ui";
 import { addMockAnnouncement } from "../__mocks__/announcements";
-import SettingsRow from "../../../../components/SettingsRow";
-import QueuedDrawer from "../../../../components/QueuedDrawer";
-import TextInput from "../../../../components/TextInput";
-import Touchable from "../../../../components/Touchable";
-import LText from "../../../../components/LText";
+import SettingsRow from "LLM@components/SettingsRow";
+import QueuedDrawer from "LLM@components/QueuedDrawer";
+import TextInput from "LLM@components/TextInput";
+import Touchable from "LLM@components/Touchable";
+import LText from "LLM@components/LText";
 
 const formatInputValue = (inputValue: string): string[] | null | undefined => {
   const val: string[] = inputValue.replace(/\s/g, "").split(",").filter(Boolean);

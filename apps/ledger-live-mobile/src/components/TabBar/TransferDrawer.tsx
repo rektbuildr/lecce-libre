@@ -9,16 +9,16 @@ import { snakeCase } from "lodash";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { IconType } from "@ledgerhq/native-ui/components/Icon/type";
 import useFeature from "@ledgerhq/live-common/featureFlags/useFeature";
-import { NavigatorName } from "../../const";
-import { hasOrderedNanoSelector, readOnlyModeEnabledSelector } from "../../reducers/settings";
+import { NavigatorName } from "LLM@const";
+import { hasOrderedNanoSelector, readOnlyModeEnabledSelector } from "LLM@reducers/settings";
 import { Props as ModalProps } from "../QueuedDrawer";
 import TransferButton from "../TransferButton";
 import BuyDeviceBanner, { IMAGE_PROPS_SMALL_NANO } from "../BuyDeviceBanner";
 import SetupDeviceBanner from "../SetupDeviceBanner";
-import { track, useAnalytics } from "../../analytics";
+import { track, useAnalytics } from "LLM@analytics";
 import { useToasts } from "@ledgerhq/live-common/notifications/ToastProvider/index";
-import useQuickActions from "../../hooks/useQuickActions";
-import { PTX_SERVICES_TOAST_ID } from "@utils/constants";
+import useQuickActions from "LLM@hooks/useQuickActions";
+import { PTX_SERVICES_TOAST_ID } from "LLM@utils/constants";
 
 import { useQuickAccessURI } from "@ledgerhq/live-common/hooks/recoverFeatureFlag";
 

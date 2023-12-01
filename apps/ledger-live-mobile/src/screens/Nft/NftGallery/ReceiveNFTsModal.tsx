@@ -4,10 +4,10 @@ import { Button, Text } from "@ledgerhq/native-ui";
 import { useNavigation } from "@react-navigation/native";
 import { Linking, View } from "react-native";
 import Svg, { G, Path, Rect, Mask } from "react-native-svg";
-import { NavigatorName, ScreenName } from "../../../const";
-import { track, TrackScreen } from "../../../analytics";
-import { urls } from "@utils/urls";
-import QueuedDrawer from "../../../components/QueuedDrawer";
+import { NavigatorName, ScreenName } from "LLM@const";
+import { track, TrackScreen } from "LLM@analytics";
+import { urls } from "LLM@utils/urls";
+import QueuedDrawer from "LLM@components/QueuedDrawer";
 
 type Props = {
   isOpened: boolean;

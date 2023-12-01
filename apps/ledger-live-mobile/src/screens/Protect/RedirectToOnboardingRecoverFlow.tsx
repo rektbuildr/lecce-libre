@@ -18,16 +18,16 @@ import {
 } from "@ledgerhq/live-common/hw/extractOnboardingState";
 import { first } from "rxjs/operators";
 import { from } from "rxjs";
-import { TrackScreen } from "../../analytics";
-import { SetHeaderOptionsRequest } from "../../components/SelectDevice2";
-import { RootComposite, StackNavigatorProps } from "../../components/RootNavigator/types/helpers";
-import { BaseNavigatorStackParamList } from "../../components/RootNavigator/types/BaseNavigator";
-import BleDevicePairingFlow from "../../components/BleDevicePairingFlow";
-import { NavigatorName, ScreenName } from "../../const";
+import { TrackScreen } from "LLM@analytics";
+import { SetHeaderOptionsRequest } from "LLM@components/SelectDevice2";
+import { RootComposite, StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
+import { BaseNavigatorStackParamList } from "LLM@components/RootNavigator/types/BaseNavigator";
+import BleDevicePairingFlow from "LLM@components/BleDevicePairingFlow";
+import { NavigatorName, ScreenName } from "LLM@const";
 import { useNavigationInterceptor } from "../Onboarding/onboardingContext";
-import GenericErrorView from "../../components/GenericErrorView";
-import { NavigationHeaderBackButton } from "../../components/NavigationHeaderBackButton";
-import { urls } from "@utils/urls";
+import GenericErrorView from "LLM@components/GenericErrorView";
+import { NavigationHeaderBackButton } from "LLM@components/NavigationHeaderBackButton";
+import { urls } from "LLM@utils/urls";
 
 type NavigationProps = RootComposite<
   StackNavigatorProps<BaseNavigatorStackParamList, ScreenName.RedirectToOnboardingRecoverFlow>

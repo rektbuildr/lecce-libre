@@ -8,8 +8,8 @@ import { Device } from "@ledgerhq/live-common/hw/actions/types";
 import { getDeviceModel } from "@ledgerhq/devices";
 import { TouchableOpacity } from "react-native";
 import { DeviceInfo } from "@ledgerhq/types-live";
-import { deviceNameByDeviceIdSelectorCreator } from "../../../reducers/ble";
-import { ScreenName } from "../../../const";
+import { deviceNameByDeviceIdSelectorCreator } from "LLM@reducers/ble";
+import { ScreenName } from "LLM@const";
 
 type Props = {
   device: Device;

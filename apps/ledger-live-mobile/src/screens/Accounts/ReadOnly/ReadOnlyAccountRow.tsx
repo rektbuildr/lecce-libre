@@ -1,11 +1,11 @@
 import React, { useCallback } from "react";
 import { CryptoCurrency, TokenCurrency } from "@ledgerhq/types-cryptoassets";
 import { BigNumber } from "bignumber.js";
-import { ScreenName } from "../../../const";
-import AccountRowLayout from "../../../components/AccountRowLayout";
-import { track } from "../../../analytics";
-import { StackNavigatorNavigation } from "../../../components/RootNavigator/types/helpers";
-import { AccountsNavigatorParamList } from "../../../components/RootNavigator/types/AccountsNavigator";
+import { ScreenName } from "LLM@const";
+import AccountRowLayout from "LLM@components/AccountRowLayout";
+import { track } from "LLM@analytics";
+import { StackNavigatorNavigation } from "LLM@components/RootNavigator/types/helpers";
+import { AccountsNavigatorParamList } from "LLM@components/RootNavigator/types/AccountsNavigator";
 
 type Props = {
   currency: CryptoCurrency | TokenCurrency;

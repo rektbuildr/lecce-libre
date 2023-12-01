@@ -4,17 +4,17 @@ import { BigNumber } from "bignumber.js";
 import { isEqual } from "lodash";
 import { GestureResponderEvent } from "react-native";
 import { useStartProfiler } from "@shopify/react-native-performance";
-import { NavigatorName, ScreenName } from "../../const";
-import { usePortfolioForAccounts } from "../../hooks/portfolio";
-import AssetRowLayout from "../../components/AssetRowLayout";
-import { track } from "../../analytics";
+import { NavigatorName, ScreenName } from "LLM@const";
+import { usePortfolioForAccounts } from "LLM@hooks/portfolio";
+import AssetRowLayout from "LLM@components/AssetRowLayout";
+import { track } from "LLM@analytics";
 import {
   BaseNavigationComposite,
   StackNavigatorNavigation,
-} from "../../components/RootNavigator/types/helpers";
-import { AccountsNavigatorParamList } from "../../components/RootNavigator/types/AccountsNavigator";
-import { PortfolioNavigatorStackParamList } from "../../components/RootNavigator/types/PortfolioNavigator";
-import { Asset } from "../../types/asset";
+} from "LLM@components/RootNavigator/types/helpers";
+import { AccountsNavigatorParamList } from "LLM@components/RootNavigator/types/AccountsNavigator";
+import { PortfolioNavigatorStackParamList } from "LLM@components/RootNavigator/types/PortfolioNavigator";
+import { Asset } from "LLM@types/asset";
 
 export type NavigationProp = BaseNavigationComposite<
   | StackNavigatorNavigation<AccountsNavigatorParamList, ScreenName.Assets>

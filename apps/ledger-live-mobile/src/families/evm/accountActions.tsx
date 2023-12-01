@@ -4,7 +4,7 @@ import { IconsLegacy } from "@ledgerhq/native-ui";
 import { Trans } from "react-i18next";
 import { isAccountEmpty } from "@ledgerhq/live-common/account/index";
 import { ParamListBase, RouteProp } from "@react-navigation/native";
-import { NavigatorName, ScreenName } from "../../const";
+import { NavigatorName, ScreenName } from "LLM@const";
 
 type Props = {
   account: Account;

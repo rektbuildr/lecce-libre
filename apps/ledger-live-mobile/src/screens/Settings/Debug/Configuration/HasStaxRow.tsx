@@ -1,9 +1,9 @@
 import React, { useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Switch } from "@ledgerhq/native-ui";
-import SettingsRow from "../../../../components/SettingsRow";
-import { unsafe_setKnownDeviceModelIds } from "../../../../actions/settings";
-import { knownDeviceModelIdsSelector } from "../../../../reducers/settings";
+import SettingsRow from "LLM@components/SettingsRow";
+import { unsafe_setKnownDeviceModelIds } from "LLM@actions/settings";
+import { knownDeviceModelIdsSelector } from "LLM@reducers/settings";
 import { DeviceModelId } from "@ledgerhq/types-devices";
 
 const HasStaxRow = () => {

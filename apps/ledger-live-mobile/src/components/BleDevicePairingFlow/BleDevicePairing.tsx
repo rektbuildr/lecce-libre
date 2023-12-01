@@ -16,14 +16,14 @@ import {
 } from "@ledgerhq/native-ui";
 
 import { LockedDeviceError, PeerRemovedPairing } from "@ledgerhq/errors";
-import { getDeviceAnimation } from "../../helpers/getDeviceAnimation";
+import { getDeviceAnimation } from "LLM@helpers/getDeviceAnimation";
 import Animation from "../Animation";
-import { TrackScreen } from "../../analytics";
+import { TrackScreen } from "LLM@analytics";
 import GenericErrorView from "../GenericErrorView";
 import { GenericInformationBody } from "../GenericInformationBody";
 import ExternalLink from "../ExternalLink";
 import UnlockDeviceDrawer from "../UnlockDeviceDrawer";
-import { urls } from "@utils/urls";
+import { urls } from "LLM@utils/urls";
 
 export type BleDevicePairingProps = {
   onPaired: (device: Device) => void;

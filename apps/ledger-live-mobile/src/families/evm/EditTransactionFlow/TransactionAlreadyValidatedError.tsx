@@ -6,17 +6,17 @@ import { BoxedIcon, Flex, Text } from "@ledgerhq/native-ui";
 import { CloseMedium } from "@ledgerhq/native-ui/assets/icons";
 import { CompositeScreenProps } from "@react-navigation/core";
 
-import TranslatedError from "../../../components/TranslatedError";
-import SupportLinkError from "../../../components/SupportLinkError";
-import Button from "../../../components/Button";
-import NeedHelp from "../../../components/NeedHelp";
+import TranslatedError from "LLM@components/TranslatedError";
+import SupportLinkError from "LLM@components/SupportLinkError";
+import Button from "LLM@components/Button";
+import NeedHelp from "LLM@components/NeedHelp";
 import {
   StackNavigatorNavigation,
   StackNavigatorProps,
-} from "../../../components/RootNavigator/types/helpers";
-import { BaseNavigatorStackParamList } from "../../../components/RootNavigator/types/BaseNavigator";
+} from "LLM@components/RootNavigator/types/helpers";
+import { BaseNavigatorStackParamList } from "LLM@components/RootNavigator/types/BaseNavigator";
 import { EditTransactionParamList } from "./EditTransactionParamList";
-import { ScreenName } from "../../../const";
+import { ScreenName } from "LLM@const";
 
 type Props = CompositeScreenProps<
   StackNavigatorProps<EditTransactionParamList, ScreenName.TransactionAlreadyValidatedError>,

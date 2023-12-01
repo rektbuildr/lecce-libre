@@ -7,33 +7,27 @@ import { useTranslation } from "react-i18next";
 import { useSingleCoinMarketData } from "@ledgerhq/live-common/market/MarketDataProvider";
 import { AccountLike, SubAccount } from "@ledgerhq/types-live";
 
-import {
-  readOnlyModeEnabledSelector,
-  starredMarketCoinsSelector,
-} from "../../../reducers/settings";
-import SafeAreaView from "../../../components/SafeAreaView";
-import { useLocale } from "../../../context/Locale";
-import CircleCurrencyIcon from "../../../components/CircleCurrencyIcon";
+import { readOnlyModeEnabledSelector, starredMarketCoinsSelector } from "LLM@reducers/settings";
+import SafeAreaView from "LLM@components/SafeAreaView";
+import { useLocale } from "LLM@context/Locale";
+import CircleCurrencyIcon from "LLM@components/CircleCurrencyIcon";
 import { IconContainer } from "../MarketRowItem";
 import { counterValueFormatter, getDateFormatter } from "../utils";
 import DeltaVariation from "../DeltaVariation";
-import { addStarredMarketCoins, removeStarredMarketCoins } from "../../../actions/settings";
+import { addStarredMarketCoins, removeStarredMarketCoins } from "LLM@actions/settings";
 import MarketStats from "./MarketStats";
-import { flattenAccountsByCryptoCurrencyScreenSelector } from "../../../reducers/accounts";
+import { flattenAccountsByCryptoCurrencyScreenSelector } from "LLM@reducers/accounts";
 import AccountRow from "../../Accounts/AccountRow";
-import { screen, track } from "../../../analytics";
-import Button from "../../../components/wrappedUi/Button";
+import { screen, track } from "LLM@analytics";
+import Button from "LLM@components/wrappedUi/Button";
 import MarketGraph from "./MarketGraph";
-import { ScreenName } from "../../../const";
-import { withDiscreetMode } from "../../../context/DiscreetModeContext";
-import useNotifications from "../../../logic/notifications";
-import { FabMarketActions } from "../../../components/FabActions/actionsList/market";
-import {
-  BaseComposite,
-  StackNavigatorProps,
-} from "../../../components/RootNavigator/types/helpers";
-import { MarketNavigatorStackParamList } from "../../../components/RootNavigator/types/MarketNavigator";
-import { Item } from "../../../components/Graph/types";
+import { ScreenName } from "LLM@const";
+import { withDiscreetMode } from "LLM@context/DiscreetModeContext";
+import useNotifications from "LLM@logic/notifications";
+import { FabMarketActions } from "LLM@components/FabActions/actionsList/market";
+import { BaseComposite, StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
+import { MarketNavigatorStackParamList } from "LLM@components/RootNavigator/types/MarketNavigator";
+import { Item } from "LLM@components/Graph/types";
 
 type NavigationProps = BaseComposite<
   StackNavigatorProps<MarketNavigatorStackParamList, ScreenName.MarketDetail>

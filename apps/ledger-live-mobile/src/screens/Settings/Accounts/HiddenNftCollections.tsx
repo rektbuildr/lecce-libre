@@ -13,12 +13,12 @@ import {
   NFTResource,
   NFTResourceLoaded,
 } from "@ledgerhq/live-common/nft/NftMetadataProvider/types";
-import { hiddenNftCollectionsSelector } from "../../../reducers/settings";
-import { accountSelector } from "../../../reducers/accounts";
-import NftMedia from "../../../components/Nft/NftMedia";
-import Skeleton from "../../../components/Skeleton";
-import { unhideNftCollection } from "../../../actions/settings";
-import { State } from "../../../reducers/types";
+import { hiddenNftCollectionsSelector } from "LLM@reducers/settings";
+import { accountSelector } from "LLM@reducers/accounts";
+import NftMedia from "LLM@components/Nft/NftMedia";
+import Skeleton from "LLM@components/Skeleton";
+import { unhideNftCollection } from "LLM@actions/settings";
+import { State } from "LLM@reducers/types";
 
 const CollectionFlatList = styled(FlatList)`
   min-height: 100%;

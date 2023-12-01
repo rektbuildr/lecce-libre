@@ -12,12 +12,12 @@ import type { TronOperation, Vote } from "@ledgerhq/live-common/families/tron/ty
 import type { Account, Operation } from "@ledgerhq/types-live";
 import type { Currency, Unit } from "@ledgerhq/types-cryptoassets";
 import { useSelector } from "react-redux";
-import LText from "../../components/LText";
-import CurrencyUnitValue from "../../components/CurrencyUnitValue";
-import CounterValue from "../../components/CounterValue";
-import DelegationInfo from "../../components/DelegationInfo";
-import Section from "../../screens/OperationDetails/Section";
-import { discreetModeSelector, localeSelector } from "../../reducers/settings";
+import LText from "LLM@components/LText";
+import CurrencyUnitValue from "LLM@components/CurrencyUnitValue";
+import CounterValue from "LLM@components/CounterValue";
+import DelegationInfo from "LLM@components/DelegationInfo";
+import Section from "LLM@screens/OperationDetails/Section";
+import { discreetModeSelector, localeSelector } from "LLM@reducers/settings";
 
 const helpURL = "https://support.ledger.com/hc/en-us/articles/360013062139";
 

@@ -8,13 +8,13 @@ import type { AccountLike } from "@ledgerhq/types-live";
 import { useTheme } from "@react-navigation/native";
 import DelegatingContainer from "../../tezos/DelegatingContainer";
 import { rgba } from "../../../colors";
-import getWindowDimensions from "../../../logic/getWindowDimensions";
-import QueuedDrawer from "../../../components/QueuedDrawer";
-import Circle from "../../../components/Circle";
-import LText from "../../../components/LText";
-import CurrencyIcon from "../../../components/CurrencyIcon";
-import IconHelp from "../../../icons/Info";
-import { normalize } from "../../../helpers/normalizeSize";
+import getWindowDimensions from "LLM@logic/getWindowDimensions";
+import QueuedDrawer from "LLM@components/QueuedDrawer";
+import Circle from "LLM@components/Circle";
+import LText from "LLM@components/LText";
+import CurrencyIcon from "LLM@components/CurrencyIcon";
+import IconHelp from "LLM@icons/Info";
+import { normalize } from "LLM@helpers/normalizeSize";
 
 const { height } = getWindowDimensions();
 type Props = {

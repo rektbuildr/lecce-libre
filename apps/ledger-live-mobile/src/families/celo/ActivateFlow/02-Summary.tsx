@@ -10,11 +10,11 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import { Trans } from "react-i18next";
 import { SafeAreaView, StyleSheet, View } from "react-native";
 import { useSelector } from "react-redux";
-import { TrackScreen } from "../../../analytics";
-import Button from "../../../components/Button";
-import Touchable from "../../../components/Touchable";
-import { ScreenName } from "../../../const";
-import { accountScreenSelector } from "../../../reducers/accounts";
+import { TrackScreen } from "LLM@analytics";
+import Button from "LLM@components/Button";
+import Touchable from "LLM@components/Touchable";
+import { ScreenName } from "LLM@const";
+import { accountScreenSelector } from "LLM@reducers/accounts";
 import Selectable from "../components/Selectable";
 import Line from "../components/Line";
 import Words from "../components/Words";
@@ -22,7 +22,7 @@ import ErrorAndWarning from "../components/ErrorAndWarning";
 import type {
   BaseComposite,
   StackNavigatorProps,
-} from "../../../components/RootNavigator/types/helpers";
+} from "LLM@components/RootNavigator/types/helpers";
 import type { CeloActivateFlowParamList } from "./types";
 
 type Props = BaseComposite<

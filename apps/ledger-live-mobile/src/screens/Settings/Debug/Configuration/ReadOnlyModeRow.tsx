@@ -1,13 +1,13 @@
 import React, { PureComponent } from "react";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
-import SettingsRow from "../../../../components/SettingsRow";
-import { setReadOnlyMode } from "../../../../actions/settings";
-import { readOnlyModeEnabledSelector } from "../../../../reducers/settings";
-import Track from "../../../../analytics/Track";
-import { withReboot } from "../../../../context/Reboot";
-import Switch from "../../../../components/Switch";
-import type { State } from "../../../../reducers/types";
+import SettingsRow from "LLM@components/SettingsRow";
+import { setReadOnlyMode } from "LLM@actions/settings";
+import { readOnlyModeEnabledSelector } from "LLM@reducers/settings";
+import Track from "LLM@analytics/Track";
+import { withReboot } from "LLM@context/Reboot";
+import Switch from "LLM@components/Switch";
+import type { State } from "LLM@reducers/types";
 
 type Props = {
   readOnlyModeEnabled: boolean;

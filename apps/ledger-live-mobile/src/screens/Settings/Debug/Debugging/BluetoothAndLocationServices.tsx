@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Flex, Alert, Switch } from "@ledgerhq/native-ui";
-import NavigationScrollView from "../../../../components/NavigationScrollView";
-import RequiresBLE from "../../../../components/RequiresBLE";
-import { useDebouncedRequireBluetooth } from "../../../../components/RequiresBLE/hooks/useRequireBluetooth";
-import RequiresBluetoothDrawer from "../../../../components/RequiresBLE/RequiresBluetoothDrawer";
+import NavigationScrollView from "LLM@components/NavigationScrollView";
+import RequiresBLE from "LLM@components/RequiresBLE";
+import { useDebouncedRequireBluetooth } from "LLM@components/RequiresBLE/hooks/useRequireBluetooth";
+import RequiresBluetoothDrawer from "LLM@components/RequiresBLE/RequiresBluetoothDrawer";
 
 /**
  * Debugging screen to test:

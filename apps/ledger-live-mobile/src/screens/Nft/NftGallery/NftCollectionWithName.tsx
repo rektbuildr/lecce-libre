@@ -8,11 +8,11 @@ import {
   NFTResource,
   NFTResourceLoaded,
 } from "@ledgerhq/live-common/nft/NftMetadataProvider/types";
-import NftCard from "../../../components/Nft/NftCard";
-import Touchable from "../../../components/Touchable";
-import Skeleton from "../../../components/Skeleton";
-import LText from "../../../components/LText";
-import NftCollectionOptionsMenu from "../../../components/Nft/NftCollectionOptionsMenu";
+import NftCard from "LLM@components/Nft/NftCard";
+import Touchable from "LLM@components/Touchable";
+import Skeleton from "LLM@components/Skeleton";
+import LText from "LLM@components/LText";
+import NftCollectionOptionsMenu from "LLM@components/Nft/NftCollectionOptionsMenu";
 
 const renderItem = ({ item, index }: { item: ProtoNFT; index: number }) => (
   <NftCard

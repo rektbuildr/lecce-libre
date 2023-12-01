@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { IconsLegacy } from "@ledgerhq/native-ui";
-import Touchable from "../../components/Touchable";
+import Touchable from "LLM@components/Touchable";
 import AccountOrderModal from "./AccountOrderModal";
-import { useRefreshAccountsOrderingEffect } from "../../actions/general";
+import { useRefreshAccountsOrderingEffect } from "LLM@actions/general";
 
 export default function AccountOrder() {
   const [isOpened, setIsOpened] = useState(false);

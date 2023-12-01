@@ -2,13 +2,13 @@ import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useTheme } from "@react-navigation/native";
-import { ScreenName } from "../../../const";
-import { getStackNavigatorConfig } from "../../../navigation/navigatorConfig";
-import StepHeader from "../../../components/StepHeader";
+import { ScreenName } from "LLM@const";
+import { getStackNavigatorConfig } from "LLM@navigation/navigatorConfig";
+import StepHeader from "LLM@components/StepHeader";
 
 import UnlockAmount from "./01-Amount";
-import SelectDevice from "../../../screens/SelectDevice";
-import ConnectDevice from "../../../screens/ConnectDevice";
+import SelectDevice from "LLM@screens/SelectDevice";
+import ConnectDevice from "LLM@screens/ConnectDevice";
 import ValidationSuccess from "./ValidationSuccess";
 import ValidationError from "./ValidationError";
 import { CeloUnlockFlowParamList } from "./types";

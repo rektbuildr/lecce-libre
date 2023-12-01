@@ -4,11 +4,11 @@ import styled, { useTheme } from "styled-components/native";
 import { Flex, Text } from "@ledgerhq/native-ui";
 import { useTranslation } from "react-i18next";
 import RingChart from "./RingChart";
-import { useDistribution } from "../../actions/general";
+import { useDistribution } from "LLM@actions/general";
 import DistributionCard, { DistributionItem } from "./DistributionCard";
-import { TrackScreen } from "../../analytics";
-import { withDiscreetMode } from "../../context/DiscreetModeContext";
-import { normalize } from "../../helpers/normalizeSize";
+import { TrackScreen } from "LLM@analytics";
+import { withDiscreetMode } from "LLM@context/DiscreetModeContext";
+import { normalize } from "LLM@helpers/normalizeSize";
 
 const Container = styled(Flex).attrs({
   paddingVertical: 20,

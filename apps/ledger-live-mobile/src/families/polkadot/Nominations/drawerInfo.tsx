@@ -8,11 +8,11 @@ import {
   PolkadotNomination,
   PolkadotValidator,
 } from "@ledgerhq/live-common/families/polkadot/types";
-import Touchable from "../../../components/Touchable";
-import LText from "../../../components/LText";
-import CurrencyUnitValue from "../../../components/CurrencyUnitValue";
-import CounterValue from "../../../components/CounterValue";
-import ExternalLink from "../../../icons/ExternalLink";
+import Touchable from "LLM@components/Touchable";
+import LText from "LLM@components/LText";
+import CurrencyUnitValue from "LLM@components/CurrencyUnitValue";
+import CounterValue from "LLM@components/CounterValue";
+import ExternalLink from "LLM@icons/ExternalLink";
 import NominationDrawer from "../components/NominationDrawer";
 
 type NominationDrawerData = React.ComponentProps<typeof NominationDrawer>["data"];

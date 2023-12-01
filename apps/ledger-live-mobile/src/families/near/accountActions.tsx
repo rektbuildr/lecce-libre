@@ -5,7 +5,7 @@ import { NearAccount } from "@ledgerhq/live-common/families/near/types";
 import { IconsLegacy } from "@ledgerhq/native-ui";
 import { Trans } from "react-i18next";
 import type { Account } from "@ledgerhq/types-live";
-import { NavigatorName, ScreenName } from "../../const";
+import { NavigatorName, ScreenName } from "LLM@const";
 import { ParamListBase, RouteProp } from "@react-navigation/native";
 
 const getMainActions = ({

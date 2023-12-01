@@ -1,8 +1,8 @@
 import React from "react";
-import TouchID from "../icons/TouchID";
-import FaceID from "../icons/FaceID";
-import FaceIDFailed from "../icons/FaceIDFailed";
-import Fingerprint from "../icons/Fingerprint";
+import TouchID from "LLM@icons/TouchID";
+import FaceID from "LLM@icons/FaceID";
+import FaceIDFailed from "LLM@icons/FaceIDFailed";
+import Fingerprint from "LLM@icons/Fingerprint";
 
 type Props = {
   biometricsType?: string | null;

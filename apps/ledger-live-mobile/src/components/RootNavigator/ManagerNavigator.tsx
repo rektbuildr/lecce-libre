@@ -5,15 +5,15 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { useSelector } from "react-redux";
 import { Box, IconsLegacy, Flex, Button } from "@ledgerhq/native-ui";
 import { DeviceModelId } from "@ledgerhq/types-devices";
-import { ScreenName } from "../../const";
-import { hasAvailableUpdateSelector, lastSeenDeviceSelector } from "../../reducers/settings";
-import Manager, { managerHeaderOptions } from "../../screens/Manager";
-import ManagerMain from "../../screens/Manager/Manager";
-import { getStackNavigatorConfig } from "../../navigation/navigatorConfig";
+import { ScreenName } from "LLM@const";
+import { hasAvailableUpdateSelector, lastSeenDeviceSelector } from "LLM@reducers/settings";
+import Manager, { managerHeaderOptions } from "LLM@screens/Manager";
+import ManagerMain from "LLM@screens/Manager/Manager";
+import { getStackNavigatorConfig } from "LLM@navigation/navigatorConfig";
 import TabIcon from "../TabIcon";
 import { useIsNavLocked } from "./CustomBlockRouterNavigator";
 import { ManagerNavigatorStackParamList } from "./types/ManagerNavigator";
-import FirmwareUpdateScreen from "../../screens/FirmwareUpdate";
+import FirmwareUpdateScreen from "LLM@screens/FirmwareUpdate";
 
 const BadgeContainer = styled(Flex).attrs({
   position: "absolute",

@@ -1,5 +1,5 @@
 import React from "react";
-import AccountSubHeader from "../../components/AccountSubHeader";
+import AccountSubHeader from "LLM@components/AccountSubHeader";
 
 function HederaAccountSubHeader() {
   return <AccountSubHeader family="Hedera" team="Hedera" />;

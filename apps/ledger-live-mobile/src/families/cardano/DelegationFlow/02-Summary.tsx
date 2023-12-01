@@ -27,22 +27,22 @@ import { fetchPoolDetails } from "@ledgerhq/live-common/families/cardano/api/get
 import { Box, Text } from "@ledgerhq/native-ui";
 import { AccountLike } from "@ledgerhq/types-live";
 import { TransactionStatus } from "@ledgerhq/live-common/families/cardano/types";
-import Button from "../../../components/Button";
-import Skeleton from "../../../components/Skeleton";
-import Circle from "../../../components/Circle";
-import CurrencyIcon from "../../../components/CurrencyIcon";
-import CurrencyUnitValue from "../../../components/CurrencyUnitValue";
-import Touchable from "../../../components/Touchable";
-import LText from "../../../components/LText";
-import { accountScreenSelector } from "../../../reducers/accounts";
+import Button from "LLM@components/Button";
+import Skeleton from "LLM@components/Skeleton";
+import Circle from "LLM@components/Circle";
+import CurrencyIcon from "LLM@components/CurrencyIcon";
+import CurrencyUnitValue from "LLM@components/CurrencyUnitValue";
+import Touchable from "LLM@components/Touchable";
+import LText from "LLM@components/LText";
+import { accountScreenSelector } from "LLM@reducers/accounts";
 import PoolImage from "../shared/PoolImage";
-import { ScreenName } from "../../../const";
-import ArrowRight from "../../../icons/ArrowRight";
-import { TrackScreen } from "../../../analytics";
+import { ScreenName } from "LLM@const";
+import ArrowRight from "LLM@icons/ArrowRight";
+import { TrackScreen } from "LLM@analytics";
 import { rgba } from "../../../colors";
-import { StackNavigatorProps } from "../../../components/RootNavigator/types/helpers";
+import { StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
 import { CardanoDelegationFlowParamList } from "./types";
-import TranslatedError from "../../../components/TranslatedError";
+import TranslatedError from "LLM@components/TranslatedError";
 
 type Props = StackNavigatorProps<
   CardanoDelegationFlowParamList,

@@ -17,14 +17,14 @@ import { useNavigation } from "@react-navigation/native";
 import { useFeatureFlags } from "@ledgerhq/live-common/featureFlags/FeatureFlagsContext";
 import useFeature from "@ledgerhq/live-common/featureFlags/useFeature";
 
-import Stories from "../../../../components/StorylyStories";
+import Stories from "LLM@components/StorylyStories";
 import FeatureFlagDetails from "../../../FeatureFlagsSettings/FeatureFlagDetails";
-import { useLocale } from "../../../../context/Locale";
-import { ScreenName } from "../../../../const";
+import { useLocale } from "LLM@context/Locale";
+import { ScreenName } from "LLM@const";
 import { languages } from "../../../../languages";
-import StoriesConfig from "../../../../components/StorylyStories/StoriesConfig";
-import { StackNavigatorProps } from "../../../../components/RootNavigator/types/helpers";
-import { SettingsNavigatorStackParamList } from "../../../../components/RootNavigator/types/SettingsNavigator";
+import StoriesConfig from "LLM@components/StorylyStories/StoriesConfig";
+import { StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
+import { SettingsNavigatorStackParamList } from "LLM@components/RootNavigator/types/SettingsNavigator";
 
 const appLanguageParagraphs = [
   "App language affects which story groups are displayed in the app.",

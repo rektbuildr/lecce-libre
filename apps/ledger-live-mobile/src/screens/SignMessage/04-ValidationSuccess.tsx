@@ -2,17 +2,17 @@ import React, { useCallback, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
 import { CompositeScreenProps, useTheme } from "@react-navigation/native";
-import { TrackScreen } from "../../analytics";
-import PreventNativeBack from "../../components/PreventNativeBack";
-import ValidateSuccess from "../../components/ValidateSuccess";
+import { TrackScreen } from "LLM@analytics";
+import PreventNativeBack from "LLM@components/PreventNativeBack";
+import ValidateSuccess from "LLM@components/ValidateSuccess";
 
-import { ScreenName } from "../../const";
-import type { BaseNavigatorStackParamList } from "../../components/RootNavigator/types/BaseNavigator";
-import type { SignMessageNavigatorStackParamList } from "../../components/RootNavigator/types/SignMessageNavigator";
+import { ScreenName } from "LLM@const";
+import type { BaseNavigatorStackParamList } from "LLM@components/RootNavigator/types/BaseNavigator";
+import type { SignMessageNavigatorStackParamList } from "LLM@components/RootNavigator/types/SignMessageNavigator";
 import type {
   StackNavigatorNavigation,
   StackNavigatorProps,
-} from "../../components/RootNavigator/types/helpers";
+} from "LLM@components/RootNavigator/types/helpers";
 
 export default function ValidationSuccess({
   navigation,

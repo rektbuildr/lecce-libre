@@ -14,13 +14,13 @@ import {
 import { IconsLegacy } from "@ledgerhq/native-ui";
 import { PolkadotAccount } from "@ledgerhq/live-common/families/polkadot/types";
 import { ParamListBase, RouteProp } from "@react-navigation/native";
-import BondIcon from "../../icons/LinkIcon";
-import UnbondIcon from "../../icons/Undelegate";
-import WithdrawUnbondedIcon from "../../icons/Coins";
-import NominateIcon from "../../icons/Vote";
-import ChillIcon from "../../icons/VoteNay";
-import { NavigatorName, ScreenName } from "../../const";
-import { ActionButtonEvent } from "../../components/FabActions";
+import BondIcon from "LLM@icons/LinkIcon";
+import UnbondIcon from "LLM@icons/Undelegate";
+import WithdrawUnbondedIcon from "LLM@icons/Coins";
+import NominateIcon from "LLM@icons/Vote";
+import ChillIcon from "LLM@icons/VoteNay";
+import { NavigatorName, ScreenName } from "LLM@const";
+import { ActionButtonEvent } from "LLM@components/FabActions";
 
 type NavigationParamsType = readonly [name: string, options: object];
 

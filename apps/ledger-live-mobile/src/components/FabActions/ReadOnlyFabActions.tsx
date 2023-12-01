@@ -5,9 +5,9 @@ import { useNavigation } from "@react-navigation/native";
 
 import Button from "../wrappedUi/Button";
 
-import { ScreenName } from "../../const";
-import useCurrency from "../../helpers/useCurrency";
-import { track } from "../../analytics";
+import { ScreenName } from "LLM@const";
+import useCurrency from "LLM@helpers/useCurrency";
+import { track } from "LLM@analytics";
 
 const iconBuy = IconsLegacy.PlusMedium;
 const iconReceive = IconsLegacy.ArrowBottomMedium;

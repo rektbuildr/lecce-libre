@@ -8,11 +8,11 @@ import { Camera } from "expo-camera";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import { Svg, Defs, Rect, Mask } from "react-native-svg";
 import { useIsFocused } from "@react-navigation/native";
-import { TrackScreen } from "../../analytics";
-import { useNavigateToPostOnboardingHubCallback } from "../../logic/postOnboarding/useNavigateToPostOnboardingHubCallback";
-import { urls } from "@utils/urls";
-import RequiresCameraPermissions from "../../components/RequiresCameraPermissions";
-import CameraPermissionContext from "../../components/RequiresCameraPermissions/CameraPermissionContext";
+import { TrackScreen } from "LLM@analytics";
+import { useNavigateToPostOnboardingHubCallback } from "LLM@logic/postOnboarding/useNavigateToPostOnboardingHubCallback";
+import { urls } from "LLM@utils/urls";
+import RequiresCameraPermissions from "LLM@components/RequiresCameraPermissions";
+import CameraPermissionContext from "LLM@components/RequiresCameraPermissions/CameraPermissionContext";
 
 const cameraBoxDimensions = {
   width: Dimensions.get("screen").width,

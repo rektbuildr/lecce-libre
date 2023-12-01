@@ -5,14 +5,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import Button from "../components/wrappedUi/Button";
-import { NavigatorName, ScreenName } from "../const";
-import { setHasOrderedNano, setSensitiveAnalytics } from "../actions/settings";
+import Button from "LLM@components/wrappedUi/Button";
+import { NavigatorName, ScreenName } from "LLM@const";
+import { setHasOrderedNano, setSensitiveAnalytics } from "LLM@actions/settings";
 import {
   RootNavigationComposite,
   StackNavigatorNavigation,
-} from "../components/RootNavigator/types/helpers";
-import { BaseNavigatorStackParamList } from "../components/RootNavigator/types/BaseNavigator";
+} from "LLM@components/RootNavigator/types/helpers";
+import { BaseNavigatorStackParamList } from "LLM@components/RootNavigator/types/BaseNavigator";
 
 const StyledSafeAreaView = styled(SafeAreaView)`
   flex: 1;

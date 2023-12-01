@@ -17,28 +17,28 @@ import { Trans } from "react-i18next";
 
 import { compose } from "redux";
 import { Flex } from "@ledgerhq/native-ui";
-import { importDesktopSettings } from "../../actions/settings";
-import { importAccounts } from "../../actions/accounts";
-import { accountsSelector } from "../../reducers/accounts";
-import { TrackScreen } from "../../analytics";
-import { NavigatorName, ScreenName } from "../../const";
-import LText from "../../components/LText";
-import Button from "../../components/Button";
-import StyledStatusBar from "../../components/StyledStatusBar";
+import { importDesktopSettings } from "LLM@actions/settings";
+import { importAccounts } from "LLM@actions/accounts";
+import { accountsSelector } from "LLM@reducers/accounts";
+import { TrackScreen } from "LLM@analytics";
+import { NavigatorName, ScreenName } from "LLM@const";
+import LText from "LLM@components/LText";
+import Button from "LLM@components/Button";
+import StyledStatusBar from "LLM@components/StyledStatusBar";
 import DisplayResultItem from "./DisplayResultItem";
 import DisplayResultSettingsSection from "./DisplayResultSettingsSection";
 import ResultSection from "./ResultSection";
-import { blacklistedTokenIdsSelector } from "../../reducers/settings";
-import type { State as StoreState } from "../../reducers/types";
-import type { ImportAccountsNavigatorParamList } from "../../components/RootNavigator/types/ImportAccountsNavigator";
-import { bridgeCache } from "../../bridge/cache";
+import { blacklistedTokenIdsSelector } from "LLM@reducers/settings";
+import type { State as StoreState } from "LLM@reducers/types";
+import type { ImportAccountsNavigatorParamList } from "LLM@components/RootNavigator/types/ImportAccountsNavigator";
+import { bridgeCache } from "LLM@bridge/cache";
 import type {
   BaseComposite,
   StackNavigatorNavigation,
   StackNavigatorProps,
-} from "../../components/RootNavigator/types/helpers";
-import { SettingsImportDesktopPayload } from "../../actions/types";
-import { NavigationHeaderBackImage } from "../../components/NavigationHeaderBackButton";
+} from "LLM@components/RootNavigator/types/helpers";
+import { SettingsImportDesktopPayload } from "LLM@actions/types";
+import { NavigationHeaderBackImage } from "LLM@components/NavigationHeaderBackButton";
 
 type NavigationProps = BaseComposite<
   StackNavigatorProps<ImportAccountsNavigatorParamList, ScreenName.DisplayResult>

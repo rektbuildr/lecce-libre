@@ -9,13 +9,13 @@ import Delta from "./Delta";
 import { TransactionsPendingConfirmationWarningAllAccounts } from "./TransactionsPendingConfirmationWarning";
 import CurrencyUnitValue from "./CurrencyUnitValue";
 
-import { useTimeRange } from "../actions/settings";
-import getWindowDimensions from "../logic/getWindowDimensions";
+import { useTimeRange } from "LLM@actions/settings";
+import getWindowDimensions from "LLM@logic/getWindowDimensions";
 import Graph from "./Graph";
 import FormatDate from "./DateFormat/FormatDate";
-import { track } from "../analytics";
-import { readOnlyModeEnabledSelector } from "../reducers/settings";
-import EmptyGraph from "../icons/EmptyGraph";
+import { track } from "LLM@analytics";
+import { readOnlyModeEnabledSelector } from "LLM@reducers/settings";
+import EmptyGraph from "LLM@icons/EmptyGraph";
 import { Item } from "./Graph/types";
 
 const { width } = getWindowDimensions();

@@ -6,16 +6,16 @@ import { useTranslation } from "react-i18next";
 import { PasswordsDontMatchError } from "@ledgerhq/errors";
 
 import { CompositeScreenProps } from "@react-navigation/native";
-import { setPrivacy } from "../../../actions/settings";
+import { setPrivacy } from "LLM@actions/settings";
 import PasswordForm from "./PasswordForm";
-import { VIBRATION_PATTERN_ERROR } from "@utils/constants";
-import { ScreenName } from "../../../const";
-import type { PasswordAddFlowParamList } from "../../../components/RootNavigator/types/PasswordAddFlowNavigator";
-import type { BaseNavigatorStackParamList } from "../../../components/RootNavigator/types/BaseNavigator";
+import { VIBRATION_PATTERN_ERROR } from "LLM@utils/constants";
+import { ScreenName } from "LLM@const";
+import type { PasswordAddFlowParamList } from "LLM@components/RootNavigator/types/PasswordAddFlowNavigator";
+import type { BaseNavigatorStackParamList } from "LLM@components/RootNavigator/types/BaseNavigator";
 import {
   StackNavigatorNavigation,
   StackNavigatorProps,
-} from "../../../components/RootNavigator/types/helpers";
+} from "LLM@components/RootNavigator/types/helpers";
 
 type Props = CompositeScreenProps<
   StackNavigatorProps<PasswordAddFlowParamList, ScreenName.ConfirmPassword>,

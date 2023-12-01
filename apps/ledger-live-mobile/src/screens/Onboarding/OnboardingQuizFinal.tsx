@@ -1,15 +1,15 @@
 import React, { useCallback, useMemo, memo } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { ScreenName } from "../../const";
+import { ScreenName } from "LLM@const";
 import BaseStepperView, { QuizzFinal, Metadata } from "./steps/setupDevice/scenes";
-import { TrackScreen } from "../../analytics";
-import quizProSuccessLight from "../../images/illustration/Light/_065.png";
-import quizProFailLight from "../../images/illustration/Light/_063.png";
-import quizProSuccessDark from "../../images/illustration/Dark/_065.png";
-import quizProFailDark from "../../images/illustration/Dark/_063.png";
-import Illustration from "../../images/illustration/Illustration";
-import { RootComposite, StackNavigatorProps } from "../../components/RootNavigator/types/helpers";
-import { OnboardingNavigatorParamList } from "../../components/RootNavigator/types/OnboardingNavigator";
+import { TrackScreen } from "LLM@analytics";
+import quizProSuccessLight from "LLM@images/illustration/Light/_065.png";
+import quizProFailLight from "LLM@images/illustration/Light/_063.png";
+import quizProSuccessDark from "LLM@images/illustration/Dark/_065.png";
+import quizProFailDark from "LLM@images/illustration/Dark/_063.png";
+import Illustration from "LLM@images/illustration/Illustration";
+import { RootComposite, StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
+import { OnboardingNavigatorParamList } from "LLM@components/RootNavigator/types/OnboardingNavigator";
 import { Step } from "./steps/setupDevice/scenes/BaseStepperView";
 
 const scenes = [QuizzFinal, QuizzFinal] as Step[];

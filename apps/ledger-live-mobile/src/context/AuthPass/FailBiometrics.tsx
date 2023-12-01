@@ -2,9 +2,9 @@ import React from "react";
 import { StyleSheet, View, TouchableWithoutFeedback } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@react-navigation/native";
-import LText from "../../components/LText";
-import BiometricsIcon from "../../components/BiometricsIcon";
-import type { Privacy } from "../../reducers/types";
+import LText from "LLM@components/LText";
+import BiometricsIcon from "LLM@components/BiometricsIcon";
+import type { Privacy } from "LLM@reducers/types";
 
 type Props = {
   privacy: Privacy;

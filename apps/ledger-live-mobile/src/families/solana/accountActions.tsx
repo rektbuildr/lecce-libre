@@ -4,7 +4,7 @@ import { IconsLegacy } from "@ledgerhq/native-ui";
 import { Trans } from "react-i18next";
 import { ParamListBase, RouteProp } from "@react-navigation/native";
 import { SolanaAccount } from "@ledgerhq/live-common/families/solana/types";
-import { NavigatorName, ScreenName } from "../../const";
+import { NavigatorName, ScreenName } from "LLM@const";
 
 const getMainActions = ({
   account,

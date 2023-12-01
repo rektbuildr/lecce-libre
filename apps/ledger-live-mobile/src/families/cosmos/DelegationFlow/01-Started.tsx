@@ -8,19 +8,19 @@ import { Alert, Button, Flex, Text } from "@ledgerhq/native-ui";
 import cryptoFactory from "@ledgerhq/live-common/families/cosmos/chain/chain";
 import { getAccountCurrency } from "@ledgerhq/live-common/account/index";
 import { getMainAccount } from "@ledgerhq/live-common/account/helpers";
-import { ScreenName } from "../../../const";
-import LText from "../../../components/LText";
+import { ScreenName } from "LLM@const";
+import LText from "LLM@components/LText";
 
-import ExternalLink from "../../../components/ExternalLink";
-import BulletList, { BulletGreenCheck } from "../../../components/BulletList";
-import NavigationScrollView from "../../../components/NavigationScrollView";
-import { TrackScreen } from "../../../analytics";
-import Illustration from "../../../images/illustration/Illustration";
-import EarnLight from "../../../images/illustration/Light/_003.png";
-import EarnDark from "../../../images/illustration/Dark/_003.png";
-import { StackNavigatorProps } from "../../../components/RootNavigator/types/helpers";
+import ExternalLink from "LLM@components/ExternalLink";
+import BulletList, { BulletGreenCheck } from "LLM@components/BulletList";
+import NavigationScrollView from "LLM@components/NavigationScrollView";
+import { TrackScreen } from "LLM@analytics";
+import Illustration from "LLM@images/illustration/Illustration";
+import EarnLight from "LLM@images/illustration/Light/_003.png";
+import EarnDark from "LLM@images/illustration/Dark/_003.png";
+import { StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
 import { CosmosDelegationFlowParamList } from "./types";
-import { accountScreenSelector } from "../../../reducers/accounts";
+import { accountScreenSelector } from "LLM@reducers/accounts";
 
 type Props = StackNavigatorProps<CosmosDelegationFlowParamList, ScreenName.CosmosDelegationStarted>;
 

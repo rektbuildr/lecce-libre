@@ -2,11 +2,11 @@ import { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { useLocale } from "../context/Locale";
-import { urls } from "@utils/urls";
-import { generalTermsVersionAcceptedSelector } from "../reducers/settings";
-import { setGeneralTermsVersionAccepted } from "../actions/settings";
-import { StoreType } from "../context/LedgerStore";
+import { useLocale } from "LLM@context/Locale";
+import { urls } from "LLM@utils/urls";
+import { generalTermsVersionAcceptedSelector } from "LLM@reducers/settings";
+import { setGeneralTermsVersionAccepted } from "LLM@actions/settings";
+import { StoreType } from "LLM@context/LedgerStore";
 
 const generalTermsVersionRequired = "2022-05-10";
 

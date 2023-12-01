@@ -11,15 +11,15 @@ import {
 import { useTheme } from "@react-navigation/native";
 import { IconType } from "@ledgerhq/native-ui/components/Icon/type";
 import { rgba } from "../../colors";
-import Styles from "../../navigation/styles";
-import getWindowDimensions from "../../logic/getWindowDimensions";
+import Styles from "LLM@navigation/styles";
+import getWindowDimensions from "LLM@logic/getWindowDimensions";
 import LText from "../LText";
-import Close from "../../icons/Close";
-import { infoModalScenes } from "../../screens/Onboarding/shared/infoPagesData";
-import { UnionToIntersection } from "../../types/helpers";
+import Close from "LLM@icons/Close";
+import { infoModalScenes } from "LLM@screens/Onboarding/shared/infoPagesData";
+import { UnionToIntersection } from "LLM@types/helpers";
 import { StackNavigatorProps } from "../RootNavigator/types/helpers";
 import { OnboardingNavigatorParamList } from "../RootNavigator/types/OnboardingNavigator";
-import { ScreenName } from "../../const";
+import { ScreenName } from "LLM@const";
 
 export type SceneInfoProp = {
   title?: React.ReactNode;

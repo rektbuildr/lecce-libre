@@ -2,17 +2,17 @@ import React, { useMemo } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "styled-components/native";
-import { NavigatorName, ScreenName } from "../../const";
-import AddAccountsSelectCrypto from "../../screens/AddAccounts/01-SelectCrypto";
+import { NavigatorName, ScreenName } from "LLM@const";
+import AddAccountsSelectCrypto from "LLM@screens/AddAccounts/01-SelectCrypto";
 import AddAccountsSelectDevice, {
   addAccountsSelectDeviceHeaderOptions,
-} from "../../screens/AddAccounts/02-SelectDevice";
-import AddAccountsTokenCurrencyDisclaimer from "../../screens/AddAccounts/02-TokenCurrencyDisclaimer";
-import AddAccountsAccounts from "../../screens/AddAccounts/03-Accounts";
-import AddAccountsSuccess from "../../screens/AddAccounts/04-Success";
-import AddAccountsHeaderRightClose from "../../screens/AddAccounts/AddAccountsHeaderRightClose";
-import EditAccountName from "../../screens/AccountSettings/EditAccountName";
-import { getStackNavigatorConfig } from "../../navigation/navigatorConfig";
+} from "LLM@screens/AddAccounts/02-SelectDevice";
+import AddAccountsTokenCurrencyDisclaimer from "LLM@screens/AddAccounts/02-TokenCurrencyDisclaimer";
+import AddAccountsAccounts from "LLM@screens/AddAccounts/03-Accounts";
+import AddAccountsSuccess from "LLM@screens/AddAccounts/04-Success";
+import AddAccountsHeaderRightClose from "LLM@screens/AddAccounts/AddAccountsHeaderRightClose";
+import EditAccountName from "LLM@screens/AccountSettings/EditAccountName";
+import { getStackNavigatorConfig } from "LLM@navigation/navigatorConfig";
 import StepHeader from "../StepHeader";
 import type { AddAccountsNavigatorParamList } from "./types/AddAccountsNavigator";
 import type { BaseNavigatorStackParamList } from "./types/BaseNavigator";

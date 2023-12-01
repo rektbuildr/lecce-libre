@@ -1,4 +1,4 @@
-import { ScreenName } from "../../../const";
+import { ScreenName } from "LLM@const";
 
 export type ClaimNftNavigatorParamList = {
   [ScreenName.ClaimNftWelcome]: undefined;

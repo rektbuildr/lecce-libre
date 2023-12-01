@@ -1,12 +1,12 @@
 import { useSelector } from "react-redux";
 import { CardStyleInterpolators, StackNavigationOptions } from "@react-navigation/stack";
-import BuyDeviceNavigator from "../components/RootNavigator/BuyDeviceNavigator";
+import BuyDeviceNavigator from "LLM@components/RootNavigator/BuyDeviceNavigator";
 import {
   hasCompletedOnboardingSelector,
   hasOrderedNanoSelector,
   readOnlyModeEnabledSelector,
-} from "../reducers/settings";
-import PostBuyDeviceSetupNanoWallScreen from "../screens/PostBuyDeviceSetupNanoWallScreen";
+} from "LLM@reducers/settings";
+import PostBuyDeviceSetupNanoWallScreen from "LLM@screens/PostBuyDeviceSetupNanoWallScreen";
 
 /**
  * Get options to spread in a Stack.Screen you want to have a wall preventing

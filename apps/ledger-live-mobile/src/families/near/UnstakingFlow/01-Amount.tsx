@@ -7,13 +7,13 @@ import { getMaxAmount } from "@ledgerhq/live-common/families/near/logic";
 import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
 import { getMainAccount } from "@ledgerhq/live-common/account/index";
 import useBridgeTransaction from "@ledgerhq/live-common/bridge/useBridgeTransaction";
-import { accountScreenSelector } from "../../../reducers/accounts";
+import { accountScreenSelector } from "LLM@reducers/accounts";
 import SelectAmount from "../shared/02-SelectAmount";
-import { ScreenName } from "../../../const";
+import { ScreenName } from "LLM@const";
 import type {
   BaseComposite,
   StackNavigatorProps,
-} from "../../../components/RootNavigator/types/helpers";
+} from "LLM@components/RootNavigator/types/helpers";
 import type { NearUnstakingFlowParamList } from "./types";
 
 type Props = BaseComposite<

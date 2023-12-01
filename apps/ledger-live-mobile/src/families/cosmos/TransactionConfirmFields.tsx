@@ -8,9 +8,9 @@ import type { Transaction } from "@ledgerhq/live-common/families/cosmos/types";
 import { useCosmosFamilyPreloadData } from "@ledgerhq/live-common/families/cosmos/react";
 import { mapDelegationInfo } from "@ledgerhq/live-common/families/cosmos/logic";
 import { useTheme } from "@react-navigation/native";
-import LText from "../../components/LText";
-import { DataRow, TextValueField } from "../../components/ValidateOnDeviceDataRow";
-import Info from "../../icons/Info";
+import LText from "LLM@components/LText";
+import { DataRow, TextValueField } from "LLM@components/ValidateOnDeviceDataRow";
+import Info from "LLM@icons/Info";
 
 type FieldProps = {
   account: Account;

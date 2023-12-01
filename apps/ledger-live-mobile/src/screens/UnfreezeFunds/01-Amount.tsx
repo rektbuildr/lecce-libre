@@ -14,27 +14,27 @@ import type {
   TronAccount,
   Transaction as TronTransaction,
 } from "@ledgerhq/live-common/families/tron/types";
-import { accountScreenSelector } from "../../reducers/accounts";
-import { ScreenName } from "../../const";
-import { TrackScreen } from "../../analytics";
-import LText from "../../components/LText";
-import Button from "../../components/Button";
-import RetryButton from "../../components/RetryButton";
-import CancelButton from "../../components/CancelButton";
-import GenericErrorBottomModal from "../../components/GenericErrorBottomModal";
-import CurrencyUnitValue from "../../components/CurrencyUnitValue";
-import TranslatedError from "../../components/TranslatedError";
-import Info from "../../icons/Info";
-import CheckBox from "../../components/CheckBox";
-import Bandwidth from "../../icons/Bandwidth";
-import Bolt from "../../icons/Bolt";
-import ClockIcon from "../../icons/Clock";
-import DateFromNow from "../../components/DateFromNow";
+import { accountScreenSelector } from "LLM@reducers/accounts";
+import { ScreenName } from "LLM@const";
+import { TrackScreen } from "LLM@analytics";
+import LText from "LLM@components/LText";
+import Button from "LLM@components/Button";
+import RetryButton from "LLM@components/RetryButton";
+import CancelButton from "LLM@components/CancelButton";
+import GenericErrorBottomModal from "LLM@components/GenericErrorBottomModal";
+import CurrencyUnitValue from "LLM@components/CurrencyUnitValue";
+import TranslatedError from "LLM@components/TranslatedError";
+import Info from "LLM@icons/Info";
+import CheckBox from "LLM@components/CheckBox";
+import Bandwidth from "LLM@icons/Bandwidth";
+import Bolt from "LLM@icons/Bolt";
+import ClockIcon from "LLM@icons/Clock";
+import DateFromNow from "LLM@components/DateFromNow";
 import {
   StackNavigatorNavigation,
   StackNavigatorProps,
-} from "../../components/RootNavigator/types/helpers";
-import { UnfreezeNavigatorParamList } from "../../components/RootNavigator/types/UnfreezeNavigator";
+} from "LLM@components/RootNavigator/types/helpers";
+import { UnfreezeNavigatorParamList } from "LLM@components/RootNavigator/types/UnfreezeNavigator";
 
 /** @TODO move this to common */
 const getUnfreezeData = (

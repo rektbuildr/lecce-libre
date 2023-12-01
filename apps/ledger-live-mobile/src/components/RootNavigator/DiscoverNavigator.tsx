@@ -2,10 +2,10 @@ import React, { useMemo } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useTheme } from "styled-components/native";
 import useFeature from "@ledgerhq/live-common/featureFlags/useFeature";
-import { ScreenName } from "../../const";
-import { getStackNavigatorConfig } from "../../navigation/navigatorConfig";
-import Discover from "../../screens/Discover";
-import { Catalog } from "../../screens/Platform";
+import { ScreenName } from "LLM@const";
+import { getStackNavigatorConfig } from "LLM@navigation/navigatorConfig";
+import Discover from "LLM@screens/Discover";
+import { Catalog } from "LLM@screens/Platform";
 import { DiscoverNavigatorStackParamList } from "./types/DiscoverNavigator";
 
 export default function DiscoverNavigator() {

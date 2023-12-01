@@ -1,8 +1,8 @@
 import React from "react";
 import { StyleSheet, Text } from "react-native";
 import { Trans } from "react-i18next";
-import { urls } from "@utils/urls";
-import Alert from "../../../components/Alert";
+import { urls } from "LLM@utils/urls";
+import Alert from "LLM@components/Alert";
 
 export const ExternalControllerUnsupportedWarning = ({
   address,

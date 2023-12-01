@@ -16,19 +16,19 @@ import { Linking, TouchableOpacity } from "react-native";
 import { useFeature } from "@ledgerhq/live-common/featureFlags/index";
 import { useSelector } from "react-redux";
 
-import Button from "../components/wrappedUi/Button";
-import { urls } from "@utils/urls";
+import Button from "LLM@components/wrappedUi/Button";
+import { urls } from "LLM@utils/urls";
 import { useNavigationInterceptor } from "./Onboarding/onboardingContext";
-import { NavigatorName, ScreenName } from "../const";
-import useIsAppInBackground from "../components/useIsAppInBackground";
-import { hasCompletedOnboardingSelector, readOnlyModeEnabledSelector } from "../reducers/settings";
-import { track, TrackScreen } from "../analytics";
+import { NavigatorName, ScreenName } from "LLM@const";
+import useIsAppInBackground from "LLM@components/useIsAppInBackground";
+import { hasCompletedOnboardingSelector, readOnlyModeEnabledSelector } from "LLM@reducers/settings";
+import { track, TrackScreen } from "LLM@analytics";
 import {
   BaseNavigationComposite,
   StackNavigatorNavigation,
-} from "../components/RootNavigator/types/helpers";
-import { BuyDeviceNavigatorParamList } from "../components/RootNavigator/types/BuyDeviceNavigator";
-import { OnboardingNavigatorParamList } from "../components/RootNavigator/types/OnboardingNavigator";
+} from "LLM@components/RootNavigator/types/helpers";
+import { BuyDeviceNavigatorParamList } from "LLM@components/RootNavigator/types/BuyDeviceNavigator";
+import { OnboardingNavigatorParamList } from "LLM@components/RootNavigator/types/OnboardingNavigator";
 import videoSources from "../../assets/videos";
 
 const sourceDark = videoSources.nanoXDark;

@@ -5,16 +5,16 @@ import type { CryptoOrTokenCurrency } from "@ledgerhq/types-cryptoassets";
 import { CompositeScreenProps, useTheme } from "@react-navigation/native";
 import { getCurrencyColor } from "@ledgerhq/live-common/currencies/color";
 import { IconsLegacy } from "@ledgerhq/native-ui";
-import { ScreenName, NavigatorName } from "../../const";
+import { ScreenName, NavigatorName } from "LLM@const";
 import { rgba } from "../../colors";
-import { TrackScreen } from "../../analytics";
-import LText from "../../components/LText";
-import Button from "../../components/Button";
-import IconCheck from "../../icons/Check";
-import ParentCurrencyIcon from "../../components/ParentCurrencyIcon";
-import type { StackNavigatorProps } from "../../components/RootNavigator/types/helpers";
-import type { AddAccountsNavigatorParamList } from "../../components/RootNavigator/types/AddAccountsNavigator";
-import { BaseNavigatorStackParamList } from "../../components/RootNavigator/types/BaseNavigator";
+import { TrackScreen } from "LLM@analytics";
+import LText from "LLM@components/LText";
+import Button from "LLM@components/Button";
+import IconCheck from "LLM@icons/Check";
+import ParentCurrencyIcon from "LLM@components/ParentCurrencyIcon";
+import type { StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
+import type { AddAccountsNavigatorParamList } from "LLM@components/RootNavigator/types/AddAccountsNavigator";
+import { BaseNavigatorStackParamList } from "LLM@components/RootNavigator/types/BaseNavigator";
 
 type Props = CompositeScreenProps<
   StackNavigatorProps<AddAccountsNavigatorParamList, ScreenName.AddAccountsSuccess>,

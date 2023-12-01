@@ -2,12 +2,12 @@ import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Text } from "@ledgerhq/native-ui";
 import { useSelector } from "react-redux";
-import SettingsRow from "../../../components/SettingsRow";
+import SettingsRow from "LLM@components/SettingsRow";
 import { DateFormatDrawer } from "./DateFormatDrawer";
-import { track } from "../../../analytics";
-import { ScreenName } from "../../../const";
-import { dateFormatSelector } from "../../../reducers/settings";
-import { Format } from "../../../components/DateFormat/formatter.util";
+import { track } from "LLM@analytics";
+import { ScreenName } from "LLM@const";
+import { dateFormatSelector } from "LLM@reducers/settings";
+import { Format } from "LLM@components/DateFormat/formatter.util";
 
 const DateFormatRow = () => {
   const [isOpen, setModalOpen] = useState<boolean>(false);

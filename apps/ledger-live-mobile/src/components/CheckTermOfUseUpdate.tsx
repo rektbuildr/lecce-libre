@@ -8,7 +8,7 @@ import {
   useAcceptGeneralTerms,
   useGeneralTermsAccepted,
   useLocalizedTermsUrl,
-} from "../logic/terms";
+} from "LLM@logic/terms";
 import Button from "./Button";
 import Alert from "./Alert";
 import QueuedDrawer from "./QueuedDrawer";

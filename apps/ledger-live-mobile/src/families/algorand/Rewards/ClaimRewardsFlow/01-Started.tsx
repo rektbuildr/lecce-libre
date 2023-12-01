@@ -13,17 +13,17 @@ import type {
 } from "@ledgerhq/live-common/families/algorand/types";
 import { useTheme } from "@react-navigation/native";
 import { Flex } from "@ledgerhq/native-ui";
-import { ScreenName } from "../../../../const";
-import Button from "../../../../components/Button";
-import LText from "../../../../components/LText";
-import { accountScreenSelector } from "../../../../reducers/accounts";
-import { localeSelector } from "../../../../reducers/settings";
-import NavigationScrollView from "../../../../components/NavigationScrollView";
-import { TrackScreen } from "../../../../analytics";
-import Alert from "../../../../components/Alert";
-import TranslatedError from "../../../../components/TranslatedError";
-import Illustration from "../../../../images/illustration/Illustration";
-import type { StackNavigatorProps } from "../../../../components/RootNavigator/types/helpers";
+import { ScreenName } from "LLM@const";
+import Button from "LLM@components/Button";
+import LText from "LLM@components/LText";
+import { accountScreenSelector } from "LLM@reducers/accounts";
+import { localeSelector } from "LLM@reducers/settings";
+import NavigationScrollView from "LLM@components/NavigationScrollView";
+import { TrackScreen } from "LLM@analytics";
+import Alert from "LLM@components/Alert";
+import TranslatedError from "LLM@components/TranslatedError";
+import Illustration from "LLM@images/illustration/Illustration";
+import type { StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
 import type { AlgorandClaimRewardsFlowParamList } from "./type";
 
 type Props = StackNavigatorProps<
@@ -83,8 +83,8 @@ export default function DelegationStarted({ navigation, route }: Props) {
         <Flex alignItems="center" justifyContent="center" mb={6}>
           <Illustration
             size={200}
-            lightSource={require("../../../../images/illustration/Light/_003.png")}
-            darkSource={require("../../../../images/illustration/Dark/_003.png")}
+            lightSource={require("LLM@images/illustration/Light/_003.png")}
+            darkSource={require("LLM@images/illustration/Dark/_003.png")}
           />
         </Flex>
         <LText semiBold style={styles.description}>

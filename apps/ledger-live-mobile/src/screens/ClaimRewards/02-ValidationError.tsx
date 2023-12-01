@@ -2,15 +2,15 @@ import React, { useCallback } from "react";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CompositeScreenProps, useTheme } from "@react-navigation/native";
-import { TrackScreen } from "../../analytics";
-import { ScreenName } from "../../const";
-import ValidateError from "../../components/ValidateError";
+import { TrackScreen } from "LLM@analytics";
+import { ScreenName } from "LLM@const";
+import ValidateError from "LLM@components/ValidateError";
 import type {
   StackNavigatorNavigation,
   StackNavigatorProps,
-} from "../../components/RootNavigator/types/helpers";
-import type { ClaimRewardsNavigatorParamList } from "../../components/RootNavigator/types/ClaimRewardsNavigator";
-import type { BaseNavigatorStackParamList } from "../../components/RootNavigator/types/BaseNavigator";
+} from "LLM@components/RootNavigator/types/helpers";
+import type { ClaimRewardsNavigatorParamList } from "LLM@components/RootNavigator/types/ClaimRewardsNavigator";
+import type { BaseNavigatorStackParamList } from "LLM@components/RootNavigator/types/BaseNavigator";
 
 type Props = CompositeScreenProps<
   StackNavigatorProps<ClaimRewardsNavigatorParamList, ScreenName.ClaimRewardsValidationError>,

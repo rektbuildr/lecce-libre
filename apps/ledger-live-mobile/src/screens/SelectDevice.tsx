@@ -8,16 +8,16 @@ import { useTheme } from "@react-navigation/native";
 import { Flex } from "@ledgerhq/native-ui";
 import { StackScreenProps } from "@react-navigation/stack";
 
-import { TrackScreen } from "../analytics";
-import SelectDeviceComp from "../components/SelectDevice";
-import SelectDeviceComp2 from "../components/SelectDevice2";
-import NavigationScrollView from "../components/NavigationScrollView";
-import { setLastConnectedDevice, setReadOnlyMode } from "../actions/settings";
+import { TrackScreen } from "LLM@analytics";
+import SelectDeviceComp from "LLM@components/SelectDevice";
+import SelectDeviceComp2 from "LLM@components/SelectDevice2";
+import NavigationScrollView from "LLM@components/NavigationScrollView";
+import { setLastConnectedDevice, setReadOnlyMode } from "LLM@actions/settings";
 import SkipSelectDevice from "./SkipSelectDevice";
-import { AddAccountsNavigatorParamList } from "../components/RootNavigator/types/AddAccountsNavigator";
-import { StackNavigatorProps } from "../components/RootNavigator/types/helpers";
-import { ReceiveFundsStackParamList } from "../components/RootNavigator/types/ReceiveFundsNavigator";
-import { ScreenName } from "../const";
+import { AddAccountsNavigatorParamList } from "LLM@components/RootNavigator/types/AddAccountsNavigator";
+import { StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
+import { ReceiveFundsStackParamList } from "LLM@components/RootNavigator/types/ReceiveFundsNavigator";
+import { ScreenName } from "LLM@const";
 
 // TODO: FIX THE StackScreenProps<{ [key: string]: object }>
 type SelectDeviceNav =

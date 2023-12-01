@@ -2,10 +2,10 @@ import React, { useCallback } from "react";
 import { BridgeSync } from "@ledgerhq/live-common/bridge/react/index";
 import { useSelector, useDispatch } from "react-redux";
 import logger from "../logger";
-import { updateAccountWithUpdater } from "../actions/accounts";
-import { accountsSelector } from "../reducers/accounts";
-import { blacklistedTokenIdsSelector } from "../reducers/settings";
-import { track } from "../analytics/segment";
+import { updateAccountWithUpdater } from "LLM@actions/accounts";
+import { accountsSelector } from "LLM@reducers/accounts";
+import { blacklistedTokenIdsSelector } from "LLM@reducers/settings";
+import { track } from "LLM@analytics/segment";
 import { prepareCurrency, hydrateCurrency } from "./cache";
 import { Account } from "@ledgerhq/types-live";
 

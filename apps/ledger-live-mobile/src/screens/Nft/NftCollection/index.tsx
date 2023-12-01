@@ -14,23 +14,20 @@ import { useNavigation, useTheme } from "@react-navigation/native";
 import { groupAccountOperationsByDay } from "@ledgerhq/live-common/account/index";
 import { Account, DailyOperationsSection, Operation, ProtoNFT } from "@ledgerhq/types-live";
 import useFeature from "@ledgerhq/live-common/featureFlags/useFeature";
-import NoMoreOperationFooter from "../../../components/NoMoreOperationFooter";
-import { accountScreenSelector } from "../../../reducers/accounts";
-import LoadingFooter from "../../../components/LoadingFooter";
-import SectionHeader from "../../../components/SectionHeader";
-import OperationRow from "../../../components/OperationRow";
-import { NavigatorName, ScreenName } from "../../../const";
-import NftCard from "../../../components/Nft/NftCard";
-import Button from "../../../components/Button";
-import SendIcon from "../../../icons/Send";
-import { withDiscreetMode } from "../../../context/DiscreetModeContext";
-import TabBarSafeAreaView from "../../../components/TabBar/TabBarSafeAreaView";
-import {
-  BaseComposite,
-  StackNavigatorProps,
-} from "../../../components/RootNavigator/types/helpers";
-import { AccountsNavigatorParamList } from "../../../components/RootNavigator/types/AccountsNavigator";
-import InfoModal from "../../../modals/Info";
+import NoMoreOperationFooter from "LLM@components/NoMoreOperationFooter";
+import { accountScreenSelector } from "LLM@reducers/accounts";
+import LoadingFooter from "LLM@components/LoadingFooter";
+import SectionHeader from "LLM@components/SectionHeader";
+import OperationRow from "LLM@components/OperationRow";
+import { NavigatorName, ScreenName } from "LLM@const";
+import NftCard from "LLM@components/Nft/NftCard";
+import Button from "LLM@components/Button";
+import SendIcon from "LLM@icons/Send";
+import { withDiscreetMode } from "LLM@context/DiscreetModeContext";
+import TabBarSafeAreaView from "LLM@components/TabBar/TabBarSafeAreaView";
+import { BaseComposite, StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
+import { AccountsNavigatorParamList } from "LLM@components/RootNavigator/types/AccountsNavigator";
+import InfoModal from "LLM@modals/Info";
 import { notAvailableModalInfo } from "../NftInfoNotAvailable";
 
 const MAX_NFT_FIRST_RENDER = 12;

@@ -16,13 +16,13 @@ import { useDispatch } from "react-redux";
 import { Swipeable } from "react-native-gesture-handler";
 import { TrashMedium } from "@ledgerhq/native-ui/assets/icons";
 
-import useDynamicContent from "../../dynamicContent/dynamicContent";
+import useDynamicContent from "LLM@dynamicContent/dynamicContent";
 import SettingsNavigationScrollView from "../Settings/SettingsNavigationScrollView";
-import { NotificationContentCard } from "../../dynamicContent/types";
+import { NotificationContentCard } from "LLM@dynamicContent/types";
 import { getTime } from "./helper";
-import { setDynamicContentNotificationCards } from "../../actions/dynamicContent";
-import { useDynamicContentLogic } from "../../dynamicContent/useDynamicContentLogic";
-import getWindowDimensions from "../../logic/getWindowDimensions";
+import { setDynamicContentNotificationCards } from "LLM@actions/dynamicContent";
+import { useDynamicContentLogic } from "LLM@dynamicContent/useDynamicContentLogic";
+import getWindowDimensions from "LLM@logic/getWindowDimensions";
 
 const { height } = getWindowDimensions();
 

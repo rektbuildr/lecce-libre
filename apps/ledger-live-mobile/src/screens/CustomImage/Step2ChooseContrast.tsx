@@ -9,21 +9,21 @@ import { ImagePreviewError } from "@ledgerhq/live-common/customImage/errors";
 import useResizedImage, {
   Params as ImageResizerParams,
   ResizeResult,
-} from "../../components/CustomImage/useResizedImage";
+} from "LLM@components/CustomImage/useResizedImage";
 import ImageProcessor, {
   Props as ImageProcessorProps,
   ProcessorPreviewResult,
   ProcessorRawResult,
-} from "../../components/CustomImage/ImageProcessor";
+} from "LLM@components/CustomImage/ImageProcessor";
 import { targetDisplayDimensions } from "./shared";
-import Button from "../../components/wrappedUi/Button";
-import BottomButtonsContainer from "../../components/CustomImage/BottomButtonsContainer";
-import ContrastChoice from "../../components/CustomImage/ContrastChoice";
-import { ScreenName } from "../../const";
-import { CustomImageNavigatorParamList } from "../../components/RootNavigator/types/CustomImageNavigator";
-import { BaseComposite, StackNavigatorProps } from "../../components/RootNavigator/types/helpers";
-import ForceTheme from "../../components/theme/ForceTheme";
-import { TrackScreen } from "../../analytics";
+import Button from "LLM@components/wrappedUi/Button";
+import BottomButtonsContainer from "LLM@components/CustomImage/BottomButtonsContainer";
+import ContrastChoice from "LLM@components/CustomImage/ContrastChoice";
+import { ScreenName } from "LLM@const";
+import { CustomImageNavigatorParamList } from "LLM@components/RootNavigator/types/CustomImageNavigator";
+import { BaseComposite, StackNavigatorProps } from "LLM@components/RootNavigator/types/helpers";
+import ForceTheme from "LLM@components/theme/ForceTheme";
+import { TrackScreen } from "LLM@analytics";
 
 export const PreviewImage = styled.Image.attrs({
   resizeMode: "contain",

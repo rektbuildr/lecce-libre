@@ -7,10 +7,10 @@ import { Box, Button, Flex, Text } from "@ledgerhq/native-ui";
 import { InfoMedium } from "@ledgerhq/native-ui/assets/icons";
 import { AlgorandAccount } from "@ledgerhq/live-common/families/algorand/types";
 import type { AccountLike } from "@ledgerhq/types-live";
-import AccountSectionLabel from "../../../components/AccountSectionLabel";
-import CurrencyUnitValue from "../../../components/CurrencyUnitValue";
-import CounterValue from "../../../components/CounterValue";
-import { ScreenName, NavigatorName } from "../../../const";
+import AccountSectionLabel from "LLM@components/AccountSectionLabel";
+import CurrencyUnitValue from "LLM@components/CurrencyUnitValue";
+import CounterValue from "LLM@components/CounterValue";
+import { ScreenName, NavigatorName } from "LLM@const";
 
 type Props = {
   account: AccountLike;

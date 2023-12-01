@@ -3,25 +3,25 @@ import { useSelector } from "react-redux";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { Flex, Text, Button, IconsLegacy } from "@ledgerhq/native-ui";
 import { RefreshMedium } from "@ledgerhq/native-ui/assets/icons";
-import SafeAreaView from "../../components/SafeAreaView";
+import SafeAreaView from "LLM@components/SafeAreaView";
 import { useTranslation } from "react-i18next";
 import { useGlobalSyncState } from "@ledgerhq/live-common/bridge/react/index";
 import { FlatList, FlatListProps } from "react-native";
 import useEnv from "@ledgerhq/live-common/hooks/useEnv";
 import { ReactNavigationPerformanceView } from "@shopify/react-native-performance-navigation";
-import { useDistribution, useRefreshAccountsOrdering } from "../../actions/general";
-import { isUpToDateSelector } from "../../reducers/accounts";
-import TrackScreen from "../../analytics/TrackScreen";
-import { withDiscreetMode } from "../../context/DiscreetModeContext";
+import { useDistribution, useRefreshAccountsOrdering } from "LLM@actions/general";
+import { isUpToDateSelector } from "LLM@reducers/accounts";
+import TrackScreen from "LLM@analytics/TrackScreen";
+import { withDiscreetMode } from "LLM@context/DiscreetModeContext";
 import AssetRow, { NavigationProp } from "../WalletCentricAsset/AssetRow";
 
-import Spinning from "../../components/Spinning";
+import Spinning from "LLM@components/Spinning";
 import AssetsNavigationHeader from "./AssetsNavigationHeader";
-import globalSyncRefreshControl from "../../components/globalSyncRefreshControl";
+import globalSyncRefreshControl from "LLM@components/globalSyncRefreshControl";
 import AddAccountsModal from "../AddAccounts/AddAccountsModal";
-import { BaseNavigation } from "../../components/RootNavigator/types/helpers";
-import { Asset } from "../../types/asset";
-import { ScreenName } from "../../const";
+import { BaseNavigation } from "LLM@components/RootNavigator/types/helpers";
+import { Asset } from "LLM@types/asset";
+import { ScreenName } from "LLM@const";
 
 const List = globalSyncRefreshControl<FlatListProps<Asset>>(FlatList);
 

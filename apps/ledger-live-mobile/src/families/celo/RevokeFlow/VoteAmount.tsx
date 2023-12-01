@@ -16,21 +16,21 @@ import { useTheme } from "@react-navigation/native";
 import { getAccountUnit } from "@ledgerhq/live-common/account/index";
 import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
 import { Transaction as CeloTransaction } from "@ledgerhq/live-common/families/celo/types";
-import { accountScreenSelector } from "../../../reducers/accounts";
-import { ScreenName } from "../../../const";
-import { TrackScreen } from "../../../analytics";
-import LText from "../../../components/LText";
-import CurrencyUnitValue from "../../../components/CurrencyUnitValue";
-import Button from "../../../components/Button";
-import KeyboardView from "../../../components/KeyboardView";
-import CurrencyInput from "../../../components/CurrencyInput";
-import TranslatedError from "../../../components/TranslatedError";
+import { accountScreenSelector } from "LLM@reducers/accounts";
+import { ScreenName } from "LLM@const";
+import { TrackScreen } from "LLM@analytics";
+import LText from "LLM@components/LText";
+import CurrencyUnitValue from "LLM@components/CurrencyUnitValue";
+import Button from "LLM@components/Button";
+import KeyboardView from "LLM@components/KeyboardView";
+import CurrencyInput from "LLM@components/CurrencyInput";
+import TranslatedError from "LLM@components/TranslatedError";
 import SendRowsFee from "../SendRowsFee";
 import { getFirstStatusError } from "../../helpers";
 import type {
   BaseComposite,
   StackNavigatorProps,
-} from "../../../components/RootNavigator/types/helpers";
+} from "LLM@components/RootNavigator/types/helpers";
 import { CeloRevokeFlowFlowParamList } from "./types";
 
 type Props = BaseComposite<
