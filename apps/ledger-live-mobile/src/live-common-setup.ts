@@ -132,10 +132,10 @@ registerTransportModule({
   id: "hid",
   // prettier-ignore
   // eslint-disable-next-line consistent-return
-  open: id => {
+  open: (id: string, timeoutMs?: number, context?: TraceContext) => {
     if (id.startsWith("usb|")) {
       const devicePath = JSON.parse(id.slice(4));
-      return retry(() => HIDTransport.open(devicePath), {
+      return retry(() => HIDTransport.open(devicePath, timeoutMs, context), {
         maxRetry: 2
       });
     }
