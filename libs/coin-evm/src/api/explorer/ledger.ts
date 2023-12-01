@@ -9,8 +9,6 @@ import {
   ledgerERC721EventToOperations,
   ledgerOperationToOperations,
 } from "../../adapters/index";
-import { LedgerExplorerUsedIncorrectly } from "../../errors";
-import { LedgerExplorerOperation } from "../../types";
 import { ExplorerApi, isLedgerExplorerConfig } from "./types";
 
 export const BATCH_SIZE = 10_000;

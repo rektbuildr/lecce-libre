@@ -82,7 +82,11 @@ export const getAccountShape: GetAccountShape = async infos => {
         currency,
         error: e,
       });
-      throw e;
+      return {
+        lastCoinOperations: [],
+        lastNftOperations: [],
+        lastTokenOperations: [],
+      };
     }
   })();
 

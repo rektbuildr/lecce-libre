@@ -62,6 +62,7 @@
     "coin:evm": "pnpm --filter coin-evm",
     "coin:framework": "pnpm --filter coin-framework",
     "evm-tools": "pnpm --filter evm-tools",
+    "coin:evm:tester": "pnpm --filter coin-evm-deterministic-tester",
     "domain": "pnpm --filter domain-service",
     "doc": "pnpm --filter docs",
     "mobile": "pnpm --filter live-mobile",
