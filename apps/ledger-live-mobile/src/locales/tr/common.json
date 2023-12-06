@@ -467,6 +467,18 @@
     "ElrondDelegationBelowMinimumError" : {
       "title" : "Kalan yetki devri miktarı en az {{formattedAmount}} olmalıdır"
     },
+    "NotEnoughVTHO" : {
+      "title" : "Üzgünüz, VTHO fon miktarı yetersiz",
+      "description" : "Hesabınızdaki VTHO miktarının yeterli olduğundan lütfen emin olun."
+    },
+    "MustBeVechain" : {
+      "title" : "VeChain hesabı değil",
+      "description" : "Coin'in VTHO veya VET olduğundan lütfen emin olun"
+    },
+    "ImpossibleToCalculateAmountAndFees" : {
+      "title" : "Miktarı ve ücretleri hesaplamak mümkün değil",
+      "description" : "Miktarı ve ücretleri hesaplamak mümkün değil"
+    },
     "NotEnoughEGLDForFees" : {
       "title" : "İşlem ücretlerini ödemek için yeterli EGLD yok",
       "description" : "İşlem ücretlerini ödemek için lütfen hesabınıza bir miktar EGLD gönderin."
@@ -1006,7 +1018,8 @@
     "week" : "1H",
     "month" : "1A",
     "year" : "1Y",
-    "all" : "TÜMÜ"
+    "all" : "TÜMÜ",
+    "graphNotSupported" : "Grafik bu token için mevcut değil"
   },
   "carousel" : {
     "title" : "Afiş kapansın mı?",
@@ -1069,7 +1082,7 @@
         "description" : "Compound Protocol'da varlık borç verin"
       },
       "blackfriday" : {
-        "title" : "EFSANE CUMA",
+        "title" : "BLACK FRIDAY",
         "description" : "BLACKFRIDAY20 promosyon koduyla %40'lık indirimden yararlanın"
       },
       "lido" : {
@@ -1396,7 +1409,7 @@
       "2" : {
         "label" : "Temel Bilgiler",
         "title" : "Çevrim dışı kalın",
-        "desc" : "Ledger Live ile güvenliğinizden ödün vermeden kripto alıp satabilir, yönetebilir, takas edebilir ve kazanabilirsiniz. Tüm kripto işlemlerinizi Nano cihazınızla onaylıyor olacaksınız."
+        "desc" : "Ledger Live ile güvenliğinizden ödün vermeden kripto alıp satabilir, yönetebilir, takas edebilir ve kazanabilirsiniz. Tüm kripto işlemlerinizi Nano cihazınızla onaylayacaksınız."
       },
       "3" : {
         "label" : "Temel Bilgiler",
@@ -1874,7 +1887,7 @@
         }
       },
       "final" : {
-        "successTitle" : "İşin uzmanı oldunuz bile!",
+        "successTitle" : "İŞİN UZMANI OLDUNUZ BİLE!",
         "successText" : "Kriptolarınızı güvenli bir şekilde yönetmeye hazırsınız. Sadece küçük bir adım kaldı!",
         "failTitle" : "Yakında bu işin uzmanı olacaksınız.",
         "failText" : "Merak etmeyin! Ledger, yolculuğunuz boyunca size rehberlik etmek için burada. Yakında kripto güvenliğiniz konusunda çok daha rahat hissedeceksiniz. Sadece küçük bir adım kaldı!",
@@ -2209,6 +2222,20 @@
       "send" : "Gönder",
       "deposit" : "Al",
       "stake" : "Stake et"
+    },
+    "recoverBanner" : {
+      "subscribeDone" : {
+        "title" : "Ödeme kartınızı eklemeyi bitirin",
+        "description" : "Ledger Recover ile güvenilir bir şekilde geri yükleyin."
+      },
+      "verifyIdentity" : {
+        "title" : "Kimliğinizi doğrulamayı bitirin",
+        "description" : "Ledger Recover ile güvenilir bir şekilde geri yükleyin."
+      },
+      "connectDevice" : {
+        "title" : "Son adım: Ledger cihazınızı bağlayın",
+        "description" : "Ledger Recover'a erişiminizin 1 adım uzağındasınız."
+      }
     }
   },
   "addAccountsModal" : {
@@ -2959,7 +2986,7 @@
       },
       "selectNetwork" : {
         "title" : "Seçilen kripto için ağ seçin",
-        "account" : "{{count}} hesabı",
+        "account" : "{{count}} hesap",
         "account_plural" : "{{count}} hesapları",
         "subtitle" : "Kriptoyu aktaran cüzdan veya borsada seçilen ağ ile aynı olmalıdır.",
         "bannerTitle" : "Doğru ağı seçtiğinizden emin olun. Bunu nasıl yapacağınızı öğrenin.",
@@ -2970,7 +2997,7 @@
         "connectDevice" : "Cihazı Bağlayın"
       },
       "selectAccount" : {
-        "title" : "Yeni hesap seçin veya oluşturun",
+        "title" : "Hesap seçin veya yeni hesap oluşturun",
         "subtitle" : "{{currencyTicker}} varlıklarınız bu hesaba yatırılacak.",
         "cta" : "Yeni bir hesap oluşturun"
       },
@@ -3004,7 +3031,7 @@
       },
       "securityVerify" : {
         "title" : "Adres doğrulaması, bu işlemi güvenceye almak için çok önemlidir",
-        "subtitle1" : "Yapıştırılan adresi (Ledger Live'dan kopyaladıktan sonra) sadece Ledger'ınızın Güvenilir Ekranında (Ledger cihazı ekranı) beliren adresle karşılaştırdığınızdan emin olun. İkisi de aynı olmalıdır.",
+        "subtitle1" : "Adresi Ledger Live'dan kopyalayıp hedefe yapıştırdıktan sonra, Ledger cihazınızın Güvenilir Ekranında gösterilen adresle eşleştiğini mutlaka doğrulayın. İki adres de aynı olmalıdır.",
         "subtitle2" : "Bu doğrulama, adres değiştirme saldırılarının önlenmesine yardımcı olacaktır.",
         "verifyCta" : "Adresimi doğrula",
         "dontVerifyCta" : "Adresi doğrulamadan göster"
@@ -3188,7 +3215,7 @@
         "exportFilename" : "Takas işlemleri",
         "empty" : {
           "title" : "Önceki takas işlemleriniz burada görünecek",
-          "desc" : "Ya henüz herhangi bir takas işlemi yapmadınız ya da bu süre zarfında Ledger Live sıfırlandı."
+          "desc" : "Henüz herhangi bir takas işlemi yapmadınız ya da Ledger Live sıfırlandı."
         }
       }
     },
@@ -3789,6 +3816,11 @@
         "title" : "Token Ekle",
         "disclaimer" : "{{tokenName}} bir BEP-20 Token'ıdır.\nToken'ları doğrudan bir Tron hesabına alabilirsiniz.",
         "learnMore" : "BEP-20 hakkında daha fazla bilgi edinin"
+      },
+      "vip180" : {
+        "title" : "Token ekle",
+        "disclaimer" : "{{tokenName}} bir VIP180 Token'ıdır.\nToken'ları doğrudan bir VET hesabına alabilirsiniz.",
+        "learnMore" : "VIP180 hakkında daha fazla bilgi edinin"
       }
     },
     "showMoreChainType" : "Daha fazla adres türü",
@@ -3957,7 +3989,7 @@
       "title2" : "Doğrulayın"
     },
     "GenuineCheck" : {
-      "title" : "Orijinal cihaz doğrulaması",
+      "title" : "Cihaz orijinallik denetimi",
       "accept" : "Lütfen Nano X'inizi kapatmayın. <1>Ledger Yöneticisine</1>izin verdiğinizden emin olun.",
       "info" : "Bu adım, Nano cihazınızın orijinal olduğundan emin olmak içindir."
     },
@@ -3994,6 +4026,8 @@
       "addALedger" : "Ledger ekle",
       "addWithBluetooth" : "Bluetooth ile ekle",
       "addNewCTA" : "Yeni ekle",
+      "showAllCTA" : "{{count}} Ledger cihazının hepsini göster",
+      "showLessCTA" : "Daha az göster",
       "otgBanner" : "Ledger Nano S ya da Ledger Nano S Plus kullanmak için USB kablosuyla bağlanın.",
       "connectExistingLedger" : "Mevcut bir Ledger'ı bağlayın",
       "connectExistingLedgerDescription" : "Ledger cihazınızın kurulumunu yaptıysanız",
@@ -4249,7 +4283,7 @@
           "titleInactive" : "Ayarlarınız geri yükleniyor",
           "description" : "Ayarlarınız geri yüklenecek."
         },
-        "titleInactive" : "Uygulama ve ayarları geri yükle",
+        "titleInactive" : "Uygulama ve ayarları geri yükleyin",
         "description" : "Ayarlarınız ve blok zinciri uygulamalarınız geri yüklenecek.",
         "restoreLockScreenPicture" : "Kilit ekranı resmi geri yükleniyor",
         "restoreLanguage" : "Dil geri yükleniyor",
@@ -6344,6 +6378,12 @@
         "titleCompleted" : "Varlıklar Ledger’a taşındı",
         "description" : "Coinbase'den veya diğer herhangi bir borsa veya cüzdandan varlıkları kolayca aktarabilirsiniz.",
         "popupLabel" : "Varlıklar aktarıldı"
+      },
+      "buyCrypto" : {
+        "title" : "Kripto Satın Alın",
+        "titleCompleted" : "Varlıklar Ledger’a taşındı",
+        "description" : "500'ün üzerinde coin ve tercihlerinize uygun en iyi teklifleri sunan satın alım sağlayıcıları arasından seçim yapın.",
+        "popupLabel" : "Kripto satın alındı"
       }
     }
   },
