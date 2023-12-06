@@ -27,6 +27,7 @@ import DelegateIcon from "~/renderer/icons/Delegate";
 import TableContainer, { TableHeader } from "~/renderer/components/TableContainer";
 import { CosmosAccount } from "@ledgerhq/live-common/families/cosmos/types";
 import { DelegationActionsModalName } from "../modals";
+import { StakingCoin, useStakingUrl } from "~/config/urls-staking";
 
 const Wrapper = styled(Box).attrs(() => ({
   p: 3,
@@ -44,6 +45,9 @@ const Delegation = ({ account }: { account: CosmosAccount }) => {
     /** $FlowFixMe */
     unbondings,
   } = cosmosResources;
+
+  const stakingUrl = useStakingUrl(StakingCoin.cosmos);
+
   const delegationEnabled = canDelegate(account);
   const mappedDelegations = useCosmosFamilyMappedDelegations(account);
   const currencyId = account.currency.id;
@@ -184,7 +188,7 @@ const Delegation = ({ account }: { account: CosmosAccount }) => {
               <Box mt={2}>
                 <LinkWithExternalIcon
                   label={<Trans i18nKey="cosmos.delegation.emptyState.info" />}
-                  onClick={() => openURL(urls.stakingCosmos)}
+                  onClick={() => openURL(stakingUrl)}
                 />
               </Box>
             </Box>
