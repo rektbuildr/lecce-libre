@@ -31,10 +31,6 @@ describe("receiveOnAccountLogic", () => {
   const mockPlatformReceiveRequested = jest.fn();
   const mockPlatformReceiveFail = jest.fn();
   const context = createContextContainingAccountId(
-    {
-      platformReceiveRequested: mockPlatformReceiveRequested,
-      platformReceiveFail: mockPlatformReceiveFail,
-    },
     "11",
     "12",
   );
@@ -111,9 +107,6 @@ describe("completeExchangeLogic", () => {
   // Given
   const mockPlatformCompleteExchangeRequested = jest.fn();
   const context = createContextContainingAccountId(
-    {
-      platformCompleteExchangeRequested: mockPlatformCompleteExchangeRequested,
-    },
     "11",
     "12",
   );
@@ -339,9 +332,6 @@ describe("broadcastTransactionLogic", () => {
   // Given
   const mockplatformBroadcastFail = jest.fn();
   const context = createContextContainingAccountId(
-    {
-      platformBroadcastFail: mockplatformBroadcastFail,
-    },
     "11",
     "12",
   );
@@ -439,10 +429,6 @@ describe("signMessageLogic", () => {
   const mockPlatformSignMessageRequested = jest.fn();
   const mockPlatformSignMessageFail = jest.fn();
   const context = createContextContainingAccountId(
-    {
-      platformSignMessageRequested: mockPlatformSignMessageRequested,
-      platformSignMessageFail: mockPlatformSignMessageFail,
-    },
     "11",
     "12",
   );
@@ -615,13 +601,11 @@ function createAppManifest(id = "1"): LiveAppManifest {
 }
 
 function createContextContainingAccountId(
-  tracking: Record<string, jest.Mock>,
   ...accountIds: string[]
 ): WebPlatformContext {
   return {
     manifest: createAppManifest(),
-    accounts: [...accountIds.map(val => createFixtureAccount(val)), createFixtureAccount()],
-    tracking,
+    accounts: [...accountIds.map(val => createFixtureAccount(val)), createFixtureAccount()]
   };
 }
 

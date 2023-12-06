@@ -5,7 +5,6 @@ import {
   deserializePlatformTransaction,
   deserializePlatformSignedTransaction,
 } from "./serializers";
-import type { TrackFunction } from "./tracking";
 import { LiveAppManifest, TranslatableString } from "./types";
 import { isTokenAccount, getMainAccount, isAccount } from "../account/index";
 import { getAccountBridge } from "../bridge/index";
@@ -21,7 +20,6 @@ export function translateContent(content: string | TranslatableString, locale = 
 export type WebPlatformContext = {
   manifest: LiveAppManifest;
   accounts: AccountLike[];
-  tracking: Record<string, TrackFunction>;
 };
 
 function getParentAccount(account: AccountLike, fromAccounts: AccountLike[]): Account | undefined {
@@ -31,7 +29,7 @@ function getParentAccount(account: AccountLike, fromAccounts: AccountLike[]): Ac
 }
 
 export function receiveOnAccountLogic(
-  { manifest, accounts, tracking }: WebPlatformContext,
+  { manifest, accounts }: WebPlatformContext,
   accountId: string,
   uiNavigation: (
     account: AccountLike,
@@ -39,12 +37,10 @@ export function receiveOnAccountLogic(
     accountAddress: string,
   ) => Promise<string>,
 ): Promise<string> {
-  tracking.platformReceiveRequested(manifest);
 
   const account = accounts.find(account => account.id === accountId);
 
   if (!account) {
-    tracking.platformReceiveFail(manifest);
     return Promise.reject(new Error("Account required"));
   }
 
@@ -55,7 +51,7 @@ export function receiveOnAccountLogic(
 }
 
 export function signTransactionLogic(
-  { manifest, accounts, tracking }: WebPlatformContext,
+  { manifest, accounts }: WebPlatformContext,
   accountId: string,
   transaction: RawPlatformTransaction,
   uiNavigation: (
@@ -68,10 +64,8 @@ export function signTransactionLogic(
     },
   ) => Promise<RawPlatformSignedTransaction>,
 ): Promise<RawPlatformSignedTransaction> {
-  tracking.platformSignTransactionRequested(manifest);
 
   if (!transaction) {
-    tracking.platformSignTransactionFail(manifest);
     return Promise.reject(new Error("Transaction required"));
   }
 
@@ -79,7 +73,6 @@ export function signTransactionLogic(
   const account = accounts.find(account => account.id === accountId);
 
   if (!account) {
-    tracking.platformSignTransactionFail(manifest);
     return Promise.reject(new Error("Account required"));
   }
 
@@ -108,7 +101,7 @@ export function signTransactionLogic(
 }
 
 export function broadcastTransactionLogic(
-  { manifest, accounts, tracking }: WebPlatformContext,
+  { manifest, accounts }: WebPlatformContext,
   accountId: string,
   signedTransaction: RawPlatformSignedTransaction,
   uiNavigation: (
@@ -118,13 +111,11 @@ export function broadcastTransactionLogic(
   ) => Promise<string>,
 ): Promise<string> {
   if (!signedTransaction) {
-    tracking.platformBroadcastFail(manifest);
     return Promise.reject(new Error("Transaction required"));
   }
 
   const account = accounts.find(account => account.id === accountId);
   if (!account) {
-    tracking.platformBroadcastFail(manifest);
     return Promise.reject(new Error("Account required"));
   }
 
@@ -157,7 +148,7 @@ export type CompleteExchangeUiRequest = {
   rate?: number;
 };
 export function completeExchangeLogic(
-  { manifest, accounts, tracking }: WebPlatformContext,
+  { manifest, accounts }: WebPlatformContext,
   {
     provider,
     fromAccountId,
@@ -170,7 +161,6 @@ export function completeExchangeLogic(
   }: CompleteExchangeRequest,
   uiNavigation: (request: CompleteExchangeUiRequest) => Promise<Operation>,
 ): Promise<Operation> {
-  tracking.platformCompleteExchangeRequested(manifest);
 
   // Nb get a hold of the actual accounts, and parent accounts
   const fromAccount = accounts.find(a => a.id === fromAccountId);
@@ -246,16 +236,14 @@ export function completeExchangeLogic(
 }
 
 export function signMessageLogic(
-  { manifest, accounts, tracking }: WebPlatformContext,
+  { manifest, accounts }: WebPlatformContext,
   accountId: string,
   message: string,
   uiNavigation: (account: AccountLike, message: AnyMessage) => Promise<string>,
 ): Promise<string> {
-  tracking.platformSignMessageRequested(manifest);
 
   const account = accounts.find(account => account.id === accountId);
   if (account === undefined) {
-    tracking.platformSignMessageFail(manifest);
     return Promise.reject(new Error(`account with id "${accountId}" not found`));
   }
 
@@ -267,7 +255,6 @@ export function signMessageLogic(
       throw new Error("account provided should be the main one");
     }
   } catch (error) {
-    tracking.platformSignMessageFail(manifest);
     return Promise.reject(error);
   }
 

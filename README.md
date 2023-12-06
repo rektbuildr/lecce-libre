@@ -1,3 +1,10 @@
+# REKT's Ledger Libre Fork
+
+A Ledger Live version without user tracking 
+
+Aiming for fully anonymous operation 
+
+# Ledger Content Below
 <h3 align="center">
   <image src="https://user-images.githubusercontent.com/3428394/165078916-06fe0b1b-c11d-4c6f-9c1a-ac9291333852.png" alt="ledger-logo" height="100" />
   &nbsp;
