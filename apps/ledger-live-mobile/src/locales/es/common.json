@@ -467,6 +467,18 @@
     "ElrondDelegationBelowMinimumError" : {
       "title" : "La delegación restante no puede ser menor a {{formattedAmount}}"
     },
+    "NotEnoughVTHO" : {
+      "title" : "Lo sentimos, fondos de VTHO insuficientes",
+      "description" : "Asegúrate de que la cuenta tenga VTHO suficientes."
+    },
+    "MustBeVechain" : {
+      "title" : "No es una cuenta de VeChain",
+      "description" : "Asegúrate de que la moneda es VTHO o VET"
+    },
+    "ImpossibleToCalculateAmountAndFees" : {
+      "title" : "No es posible calcular la cantidad y las tarifas",
+      "description" : "No es posible calcular la cantidad y las tarifas"
+    },
     "NotEnoughEGLDForFees" : {
       "title" : "EGLD insuficientes para pagar las tarifas de transacción",
       "description" : "Envía EGLD a tu cuenta para pagar las transacciones."
@@ -1006,7 +1018,8 @@
     "week" : "1S",
     "month" : "1M",
     "year" : "1A",
-    "all" : "TODO"
+    "all" : "TODO",
+    "graphNotSupported" : "El gráfico no está disponible para este token"
   },
   "carousel" : {
     "title" : "¿Cerrar el banner?",
@@ -1106,7 +1119,7 @@
     },
     "enjoy" : {
       "title" : "¿Te gusta Ledger Live?\n¡Dale un poco de amor!",
-      "description" : "Déjanos una valoración positiva en App Store.",
+      "description" : "Déjanos una reseña positiva en App Store.",
       "cta" : {
         "rate" : "Evaluar Ledger Live",
         "notNow" : "Ahora no"
@@ -1475,7 +1488,7 @@
           "0" : {
             "title" : "Elige un código PIN",
             "label" : "Presiona el botón izquierdo o derecho para cambiar números. Presiona ambos botones para confirmar un número. Selecciona <0></0> para confirmar tu código PIN. Selecciona <1></1> para borrar un número.",
-            "desc" : "Presiona el botón izquierdo o derecho para cambiar números. Presiona ambos botones para confirmar un número. Selecciona <validIcon></validIcon>para confirmar tu código PIN. Selecciona <cancelIcon></cancelIcon>para borrar un número."
+            "desc" : "Presiona el botón izquierdo o derecho para desplazarte por los números. Presiona ambos botones para confirmar un número. Selecciona <validIcon></validIcon>para confirmar tu código PIN. Selecciona <cancelIcon></cancelIcon>para borrar un número."
           },
           "1" : {
             "title" : "Confirma código PIN",
@@ -1566,7 +1579,7 @@
         "desc" : "Tu Frase de recuperación es la única manera de recuperar tus cripto, en caso de no ser posible utilizar tu Nano. Debes conservarla en un lugar seguro.",
         "bullets" : {
           "0" : {
-            "label" : "Ingresa estas Palabras únicamente en una billetera de hardware, no en PCs, ni en teléfonos."
+            "label" : "Ingresa estas Palabras únicamente en una billetera de hardware, no la ingreses en una PC, ni en otros dispositivos como un smartphone."
           },
           "1" : {
             "label" : "Nunca compartas tus 24 Palabras con nadie, ni siquiera con Ledger."
@@ -1936,7 +1949,7 @@
   "earlySecurityCheck" : {
     "title" : "Verificación de Autenticidad y de actualización del SO",
     "idle" : {
-      "description" : "La Verificación de Autenticidad confirma que tu Ledger Stax es un dispositivo Ledger genuino.Las actualizaciones de SO garantizan de que el SO Ledger Stax está actualizado.",
+      "description" : "La Verificación de Autenticidad verifica si tu Ledger Stax es un dispositivo Ledger genuino.Las actualizaciones de SO garantizan de que el SO Ledger Stax está actualizado.",
       "learnMore" : "Más información sobre la Verificación de Autenticidad",
       "checkCta" : "Verificar Ledger Stax"
     },
@@ -1972,15 +1985,15 @@
       "learnMore" : "Más información sobre la Verificación de Autenticidad",
       "inactive" : {
         "title" : "Verificación de autenticidad",
-        "description" : "La Verificación de Autenticidad confirma que tu {{productName}} es un Ledger genuino."
+        "description" : "La Verificación de Autenticidad verifica que tu {{productName}} sea un Ledger genuino."
       },
       "active" : {
         "title" : "Verificación de autenticidad",
-        "description" : "La Verificación de Autenticidad confirma que tu {{productName}} es un Ledger genuino."
+        "description" : "La Verificación de Autenticidad verifica que tu {{productName}} sea un Ledger genuino."
       },
       "completed" : {
         "title" : "Tu {{productName}} es auténtico",
-        "description" : "La Verificación de Autenticidad confirma que tu {{productName}} es un Ledger genuino."
+        "description" : "La Verificación de Autenticidad verifica que tu {{productName}} sea un Ledger genuino."
       },
       "refused" : {
         "title" : "Verificación de Autenticidad rechazada",
@@ -1989,7 +2002,7 @@
       },
       "error" : {
         "title" : "Verificación de autenticidad",
-        "description" : "La Verificación de Autenticidad confirma que tu {{productName}} es un Ledger genuino."
+        "description" : "La Verificación de Autenticidad verifica que tu {{productName}} sea un Ledger genuino."
       }
     },
     "firmwareUpdateCheckStep" : {
@@ -2209,6 +2222,20 @@
       "send" : "Enviar",
       "deposit" : "Recibir",
       "stake" : "Participar"
+    },
+    "recoverBanner" : {
+      "subscribeDone" : {
+        "title" : "Termina de agregar tu tarjeta de pago",
+        "description" : "Restauración fiable con Ledger Recover."
+      },
+      "verifyIdentity" : {
+        "title" : "Termina de verificar tu identidad",
+        "description" : "Restauración fiable con Ledger Recover."
+      },
+      "connectDevice" : {
+        "title" : "Último paso: conecta tu Ledger",
+        "description" : "Solo te queda un paso para disfrutar de Ledger Recover."
+      }
     }
   },
   "addAccountsModal" : {
@@ -3789,6 +3816,11 @@
         "title" : "Agregar token",
         "disclaimer" : "{{tokenName}} es un token BEP-20.\nPuedes recibir tokens directamente en una cuenta de BNB.",
         "learnMore" : "Más información acerca de BEP-20"
+      },
+      "vip180" : {
+        "title" : "Agregar token",
+        "disclaimer" : "{{tokenName}} es un token VIP180.\nPuedes recibir tokens directamente en una cuenta de VET.",
+        "learnMore" : "Obtén más información sobre VIP180"
       }
     },
     "showMoreChainType" : "Más tipos de direcciones",
@@ -3887,7 +3919,7 @@
     },
     "deviceNotFoundPairNewDevice" : "Emparejar con bluetooth",
     "headerDescription" : "Asegúrate de que tu {{productName}} esté desbloqueado y el Bluetooth habilitado",
-    "usb" : "... o conecta el cable USB",
+    "usb" : "... o conectar mediante el cable USB",
     "usbLabel" : "Conecta el cable USB e ingresa el código PIN en el dispositivo",
     "withoutDeviceHeader" : "No llevo el dispositivo conmigo",
     "withoutDevice" : "Continuar sin mi dispositivo",
@@ -3959,7 +3991,7 @@
     "GenuineCheck" : {
       "title" : "Verificación de autenticidad del dispositivo",
       "accept" : "No apagues tu Nano X. Asegúrate de permitir una <1>Conexión Segura con Ledger</1>.",
-      "info" : "Este paso confirma que tu Nano es auténtico."
+      "info" : "Este paso verifica que tu Nano sea auténtico."
     },
     "ScanningHeader" : {
       "title" : "Buscando dispositivos",
@@ -3994,6 +4026,8 @@
       "addALedger" : "Agregar un Ledger",
       "addWithBluetooth" : "Agregar con Bluetooth",
       "addNewCTA" : "Agregar nueva",
+      "showAllCTA" : "Mostrar todos los {{count}} Ledgers",
+      "showLessCTA" : "Mostrar menos",
       "otgBanner" : "Para usar un Ledger Nano S o Ledger Nano S Plus, conéctalo con el cable USB.",
       "connectExistingLedger" : "Conectar un Ledger existente",
       "connectExistingLedgerDescription" : "Si tu Ledger ya está configurado",
@@ -6344,6 +6378,12 @@
         "titleCompleted" : "Activos transferidos al Ledger",
         "description" : "Transfiere fácilmente activos desde Coinbase o cualquier otro exchange o billetera.",
         "popupLabel" : "Activos transferidos"
+      },
+      "buyCrypto" : {
+        "title" : "Comprar cripto",
+        "titleCompleted" : "Activos transferidos al Ledger",
+        "description" : "Elige entre más de 500 monedas y las mejores ofertas de proveedores de compras, adaptadas a tus preferencias.",
+        "popupLabel" : "Cripto comprada"
       }
     }
   },
