@@ -27,7 +27,7 @@ import DelegateIcon from "~/renderer/icons/Delegate";
 import TableContainer, { TableHeader } from "~/renderer/components/TableContainer";
 import { CosmosAccount } from "@ledgerhq/live-common/families/cosmos/types";
 import { DelegationActionsModalName } from "../modals";
-import { StakingCoin, useStakingUrl } from "~/config/urls-staking";
+import { StakingCoin, useStakingUrl } from "~/config/urls-localized";
 
 const Wrapper = styled(Box).attrs(() => ({
   p: 3,
