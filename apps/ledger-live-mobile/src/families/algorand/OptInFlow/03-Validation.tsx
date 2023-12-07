@@ -8,7 +8,7 @@ import { Account } from "@ledgerhq/types-live";
 import { useSignWithDevice } from "../../../logic/screenTransactionHooks";
 import { updateAccountWithUpdater } from "../../../actions/accounts";
 import { accountScreenSelector } from "../../../reducers/accounts";
-import { TrackScreen } from "../../../analytics";
+
 import PreventNativeBack from "../../../components/PreventNativeBack";
 import ValidateOnDevice from "../../../components/ValidateOnDevice";
 import SkipLock from "../../../components/behaviour/SkipLock";
@@ -47,7 +47,7 @@ export default function Validation({ route }: Props) {
         },
       ]}
     >
-      <TrackScreen category="AlgorandOptIn" name="Validation" signed={signed} />
+      
       {signing && (
         <>
           <PreventNativeBack />

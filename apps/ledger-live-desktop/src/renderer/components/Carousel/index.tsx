@@ -12,7 +12,6 @@ import { getTransitions, useDefaultSlides } from "~/renderer/components/Carousel
 import { setCarouselVisibility } from "~/renderer/actions/settings";
 import { carouselVisibilitySelector } from "~/renderer/reducers/settings";
 import { Trans } from "react-i18next";
-import { track } from "~/renderer/analytics/segment";
 
 const CarouselWrapper = styled(Card)`
   position: relative;

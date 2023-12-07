@@ -72,18 +72,7 @@ const Handle = React.memo(function Handle({
     </div>
   );
 });
-const Track = React.memo(function Track({ x, colors }: { x: number; colors: OldTheme["colors"] }) {
-  return (
-    <div
-      style={{
-        width: `${(100 * x).toPrecision(3)}%`,
-        height: 6,
-        borderRadius: 6,
-        backgroundColor: colors.primary,
-      }}
-    />
-  );
-});
+
 const Slider = ({ steps, value, onChange, error, theme }: Props) => {
   const [down, setDown] = useState<{
     touchId: number;
@@ -206,7 +195,7 @@ const Slider = ({ steps, value, onChange, error, theme }: Props) => {
           position: "relative",
         }}
       >
-        <Track colors={colors} x={x} />
+        
         <div
           style={{
             width: "100%",

@@ -12,7 +12,6 @@ import {
 } from "styled-system";
 import noop from "lodash/noop";
 import get from "lodash/get";
-import { track } from "~/renderer/analytics/segment";
 import { isGlobalTabEnabled } from "~/config/global-tab";
 import { darken, lighten, rgba } from "~/renderer/styles/helpers";
 import fontFamily from "~/renderer/styles/styled/fontFamily";
@@ -373,7 +372,7 @@ class ButtonInner extends PureComponent<
     const onClickHandler = (e: React.MouseEvent) => {
       if (onClick) {
         if (event) {
-          track(event, eventProperties);
+          
         }
         onClick(e);
       }

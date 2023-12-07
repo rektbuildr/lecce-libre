@@ -1,5 +1,4 @@
 import { createMachine, assign, actions, EventObject } from "xstate";
-import { track } from "~/renderer/analytics/segment";
 // Solutions
 import ChangeUSBCable from "./solutions/ChangeUSBCable";
 import DifferentPort from "./solutions/DifferentPort";
@@ -105,11 +104,7 @@ export default createMachine(
       }),
       // Tracking actions
       log: (context, event) =>
-        track(`USBTroubleshooting ${event.type}`, {
-          event,
-          detectedPlatform,
-          currentIndex: context.currentIndex,
-        }),
+        ,
     },
   },
 );

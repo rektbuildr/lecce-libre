@@ -17,7 +17,7 @@ import BluetoothEmpty from "./BluetoothEmpty";
 import USBEmpty from "./USBEmpty";
 import LText from "../LText";
 import Animation from "../Animation";
-import { track } from "../../analytics";
+
 import { setLastConnectedDevice, setReadOnlyMode } from "../../actions/settings";
 import Button from "../wrappedUi/Button";
 
@@ -85,10 +85,7 @@ export default function SelectDevice({
       const { modelId, wired } = device;
 
       if (wired) {
-        track("Device selection", {
-          modelId,
-          connectionType: "USB",
-        });
+        
 
         dispatch(setLastConnectedDevice(device));
         dispatch(setHasConnectedDevice(true));
@@ -112,10 +109,7 @@ export default function SelectDevice({
         return;
       }
 
-      track("Device selection", {
-        modelId,
-        connectionType: "BLE",
-      });
+      
 
       dispatch(setLastConnectedDevice(device));
       dispatch(setHasConnectedDevice(true));
@@ -148,10 +142,7 @@ export default function SelectDevice({
       const { modelId, wired } = device;
 
       if (wired) {
-        track("Device selection", {
-          modelId,
-          connectionType: "USB",
-        });
+        
 
         dispatch(setLastConnectedDevice(device));
         dispatch(setHasConnectedDevice(true));
@@ -160,10 +151,7 @@ export default function SelectDevice({
         return;
       }
 
-      track("Device selection", {
-        modelId,
-        connectionType: "BLE",
-      });
+      
 
       dispatch(setLastConnectedDevice(device));
       dispatch(setHasConnectedDevice(true));
@@ -174,10 +162,7 @@ export default function SelectDevice({
   );
 
   const onPairNewDevice = useCallback(() => {
-    track("button_clicked", {
-      button: "Pair with bluetooth",
-      page: route.name,
-    });
+    
 
     // We should not pass non-serializable param like onDone when navigating.
     // Fixed in the new SelectDevice2.

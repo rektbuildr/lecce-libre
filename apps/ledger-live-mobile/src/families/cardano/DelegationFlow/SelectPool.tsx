@@ -5,7 +5,7 @@ import { FlatList, StyleSheet, View, SafeAreaView } from "react-native";
 import { useSelector } from "react-redux";
 import type { StakePool } from "@ledgerhq/live-common/families/cardano/api/api-types";
 import { useCardanoFamilyPools } from "@ledgerhq/live-common/families/cardano/react";
-import { TrackScreen } from "../../../analytics";
+
 import { ScreenName } from "../../../const";
 import { accountScreenSelector } from "../../../reducers/accounts";
 import PoolHead from "../shared/PoolHead";
@@ -47,7 +47,7 @@ export default function SelectPool({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
-      <TrackScreen category="DelegationFlow" name="SelectValidator" />
+      
       <SelectPoolSearchBox searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <View style={styles.header}>
         <PoolHead />

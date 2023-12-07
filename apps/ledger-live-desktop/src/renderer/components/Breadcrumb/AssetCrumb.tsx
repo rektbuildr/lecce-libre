@@ -10,7 +10,7 @@ import IconAngleUp from "~/renderer/icons/AngleUp";
 import { useDistribution } from "~/renderer/actions/general";
 import CryptoCurrencyIcon from "~/renderer/components/CryptoCurrencyIcon";
 import { Separator, Item, TextLink, AngleDown, Check } from "./common";
-import { setTrackingSource } from "~/renderer/analytics/TrackPage";
+
 import { DistributionItem } from "@ledgerhq/types-live";
 import { CryptoCurrency, TokenCurrency } from "@ledgerhq/types-cryptoassets";
 import { hideEmptyTokenAccountsSelector } from "~/renderer/reducers/settings";
@@ -50,7 +50,7 @@ export default function AssetCrumb() {
         return;
       }
       const { currency } = item;
-      setTrackingSource("asset breadcrumb");
+      
       history.push({
         pathname: `/asset/${currency.id}`,
       });
@@ -80,7 +80,7 @@ export default function AssetCrumb() {
       <TextLink>
         <Button
           onClick={() => {
-            setTrackingSource("asset breadcrumb");
+            
             history.push({
               pathname: "/",
             });

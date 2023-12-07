@@ -6,7 +6,6 @@ import { Language } from "@ledgerhq/types-live";
 import { DeviceModel, DeviceModelId } from "@ledgerhq/types-devices";
 import { urls } from "@utils/urls";
 import Illustration from "../images/illustration/Illustration";
-import { TrackScreen } from "../analytics";
 import Button from "./wrappedUi/Button";
 
 type Props = {
@@ -41,7 +40,7 @@ const ChangeDeviceLanguagePrompt: React.FC<Props> = ({
 
   return (
     <Flex alignItems="center" px={3}>
-      <TrackScreen category="Change device language" refreshSource={false} />
+      
       {illustration ? (
         <Illustration size={200} darkSource={illustration.dark} lightSource={illustration.light} />
       ) : null}

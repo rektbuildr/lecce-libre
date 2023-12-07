@@ -5,7 +5,7 @@ import { Trans } from "react-i18next";
 import { useTheme } from "@react-navigation/native";
 import { getAccountCurrency } from "@ledgerhq/live-common/account/index";
 import { accountScreenSelector } from "../../../reducers/accounts";
-import { TrackScreen, track } from "../../../analytics";
+
 import { ScreenName } from "../../../const";
 import PreventNativeBack from "../../../components/PreventNativeBack";
 import ValidateSuccess from "../../../components/ValidateSuccess";
@@ -49,13 +49,7 @@ export default function ValidationSuccess({ navigation, route }: Props) {
 
   useEffect(() => {
     if (delegation)
-      track("staking_completed", {
-        currency: ticker,
-        validator,
-        source,
-        delegation,
-        flow: "stake",
-      });
+      
   }, [source, validator, delegation, ticker, account]);
   return (
     <View
@@ -66,13 +60,7 @@ export default function ValidationSuccess({ navigation, route }: Props) {
         },
       ]}
     >
-      <TrackScreen
-        category="CosmosRedelegation"
-        name="ValidationSuccess"
-        flow="stake"
-        action="redelegation"
-        currency={ticker}
-      />
+      
       <PreventNativeBack />
       <ValidateSuccess
         onClose={onClose}

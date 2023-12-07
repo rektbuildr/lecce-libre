@@ -4,7 +4,7 @@ import React, { useCallback } from "react";
 import { Trans } from "react-i18next";
 import { Linking, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { TrackScreen } from "../../../analytics";
+
 import BulletList, { BulletGreenCheck } from "../../../components/BulletList";
 import Button from "../../../components/Button";
 import ExternalLink from "../../../components/ExternalLink";
@@ -32,13 +32,7 @@ export default function DelegationStarted({ navigation, route }: Props) {
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
       <NavigationScrollView style={styles.scroll} contentContainerStyle={styles.scrollContainer}>
-        <TrackScreen
-          category="DelegationFlow"
-          name="Started"
-          flow="stake"
-          action="delegation"
-          currency="sol"
-        />
+        
         <IlluStaking />
         <Text fontWeight="semiBold" style={styles.title}>
           <Trans i18nKey="delegation.started.title" />

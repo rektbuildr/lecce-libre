@@ -11,7 +11,7 @@ import Button from "../../../components/Button";
 import IconCheck from "../../../icons/Check";
 import IconClock from "../../../icons/Clock";
 import { rgba } from "../../../colors";
-import { TrackScreen } from "../../../analytics";
+
 import { PendingOperationParamList } from "../types";
 import { flattenAccountsSelector } from "../../../reducers/accounts";
 import { ScreenName } from "../../../const";
@@ -41,13 +41,7 @@ export function PendingOperation({ route, navigation }: PendingOperationParamLis
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
-      <TrackScreen
-        category="Swap Form"
-        name="Confirmation Success"
-        providerName={provider}
-        targetCurrency={targetCurrency}
-        sourceCurrency={sourceCurrency?.id}
-      />
+      
       <View style={styles.wrapper}>
         <View style={styles.content}>
           <View style={[styles.iconWrapper, { backgroundColor: rgba(colors.success, 0.1) }]}>

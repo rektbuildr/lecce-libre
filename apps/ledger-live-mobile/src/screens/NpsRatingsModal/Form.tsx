@@ -5,10 +5,9 @@ import VersionNumber from "react-native-version-number";
 import { Platform } from "react-native";
 import styled from "styled-components/native";
 import { useSelector } from "react-redux";
-import { TrackScreen } from "../../analytics";
+
 import useNpsRatings from "../../logic/npsRatings";
 import getWindowDimensions from "../../logic/getWindowDimensions";
-import { screen } from "../../analytics/segment";
 import {
   languageSelector,
   lastSeenDeviceSelector,
@@ -92,21 +91,6 @@ const Form = ({ setStep }: Props) => {
       if (data.startsWith("nps-submit")) {
         const rate = parseInt(data.split("-")[2], 10);
         setSelectedRate(rate);
-        if (rate <= 8) {
-          screen(
-            "",
-            "NPS Step 2 not Happy",
-            { page: "NPS Step 2 not Happy", source: ratingsHappyMoment?.route_name, flow: "NPS" },
-            true,
-          );
-        } else {
-          screen(
-            "",
-            "NPS Step 2 Happy",
-            { page: "NPS Step 2 Happy", source: ratingsHappyMoment?.route_name, flow: "NPS" },
-            true,
-          );
-        }
       }
       if (data === "form-submit") {
         updateNpsRating(selectedRate as number);
@@ -134,13 +118,7 @@ const Form = ({ setStep }: Props) => {
 
   return (
     <Flex flex={1} height={height * (1 / 2)}>
-      <TrackScreen
-        flow="NPS"
-        name="NPS Step 1 Rating"
-        page="NPS Step 1 Rating"
-        source={ratingsHappyMoment?.route_name}
-        category="NPS"
-      />
+
       <Flex flex={1} overflow="hidden" mt={-50}>
         <StyledWebview
           source={{ uri: encodeURI(formUrl) }}

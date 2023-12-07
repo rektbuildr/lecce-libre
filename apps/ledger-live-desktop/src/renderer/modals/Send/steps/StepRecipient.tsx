@@ -1,7 +1,7 @@
 import React, { PureComponent } from "react";
 import { getStuckAccountAndOperation } from "@ledgerhq/live-common/operation";
 import { getMainAccount } from "@ledgerhq/live-common/account/index";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import CurrencyDownStatusAlert from "~/renderer/components/CurrencyDownStatusAlert";
@@ -41,12 +41,7 @@ const StepRecipient = ({
 
   return (
     <Box flow={4}>
-      <TrackPage
-        category="Send Flow"
-        name="Step Recipient"
-        currencyName={currencyName}
-        isNFTSend={isNFTSend}
-      />
+      
       {mainAccount ? <CurrencyDownStatusAlert currencies={[mainAccount.currency]} /> : null}
       {error ? <ErrorBanner error={error} /> : null}
       {isNFTSend ? (

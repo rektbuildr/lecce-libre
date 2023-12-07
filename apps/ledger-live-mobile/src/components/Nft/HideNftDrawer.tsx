@@ -6,7 +6,7 @@ import { Button, IconsLegacy } from "@ledgerhq/native-ui";
 import { useDispatch, useSelector } from "react-redux";
 import { Account } from "@ledgerhq/types-live";
 import { decodeNftId } from "@ledgerhq/live-common/nft/index";
-import { track, TrackScreen } from "../../analytics";
+
 import { hideNftCollection } from "../../actions/settings";
 import { accountSelector } from "../../reducers/accounts";
 import { State } from "../../reducers/types";
@@ -30,10 +30,7 @@ const HideNftDrawer = ({ nftId, nftContract, collection, isOpened, onClose }: Pr
   );
 
   const onClickContinue = useCallback(() => {
-    track("button_clicked", {
-      button: "Hide NFT Collection",
-      drawer: "Hide NFT Confirmation",
-    });
+    
 
     dispatch(hideNftCollection(`${account?.id}|${nftContract}`));
     onClose();
@@ -41,18 +38,12 @@ const HideNftDrawer = ({ nftId, nftContract, collection, isOpened, onClose }: Pr
   }, [account?.id, dispatch, navigation, nftContract, onClose]);
 
   const onPressClose = useCallback(() => {
-    track("button_clicked", {
-      button: "Close 'x'",
-      drawer: "Hide NFT Confirmation",
-    });
+    
     onClose();
   }, [onClose]);
 
   const onPressCancel = useCallback(() => {
-    track("button_clicked", {
-      button: "Cancel",
-      drawer: "Hide NFT Confirmation",
-    });
+    
     onClose();
   }, [onClose]);
   return (
@@ -65,7 +56,7 @@ const HideNftDrawer = ({ nftId, nftContract, collection, isOpened, onClose }: Pr
         collectionName: collection,
       })}
     >
-      <TrackScreen category="Hide NFT Confirmation" type="drawer" refreshSource={false} />
+      
 
       <Button type="main" size="large" alignSelf="stretch" onPress={onClickContinue} mt={4} mb={2}>
         {t("wallet.nftGallery.hideNftModal.cta")}

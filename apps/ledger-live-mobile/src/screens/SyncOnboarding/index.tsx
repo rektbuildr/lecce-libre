@@ -21,7 +21,7 @@ import { EarlySecurityCheck } from "./EarlySecurityCheck";
 import DesyncDrawer from "./DesyncDrawer";
 import EarlySecurityCheckMandatoryDrawer from "./EarlySecurityCheckMandatoryDrawer";
 import { PlainOverlay } from "./DesyncOverlay";
-import { track } from "../../analytics";
+
 import { NavigationHeaderCloseButton } from "../../components/NavigationHeaderCloseButton";
 import UnlockDeviceDrawer from "../../components/UnlockDeviceDrawer";
 import AutoRepairDrawer from "./AutoRepairDrawer";
@@ -258,10 +258,7 @@ export const SyncOnboarding = ({ navigation, route }: SyncOnboardingScreenProps)
   }, []);
 
   const handleDesyncRetry = useCallback(() => {
-    track("button_clicked", {
-      button: "Try again",
-      drawer: "Could not connect to Stax",
-    });
+    
     // handleDesyncClose is then called once the drawer is fully closed
     setIsDesyncDrawerOpen(false);
   }, []);

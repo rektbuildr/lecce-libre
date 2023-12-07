@@ -7,7 +7,7 @@ import { DeviceNameInvalid } from "@ledgerhq/errors";
 import { useToasts } from "@ledgerhq/live-common/notifications/ToastProvider/index";
 import { Button, Text, IconsLegacy, Flex } from "@ledgerhq/native-ui";
 import getDeviceNameMaxLength from "@ledgerhq/live-common/hw/getDeviceNameMaxLength";
-import { TrackScreen } from "../analytics";
+
 import KeyboardBackgroundDismiss from "../components/KeyboardBackgroundDismiss";
 import TextInput from "../components/TextInput";
 import TranslatedError from "../components/TranslatedError";
@@ -134,7 +134,7 @@ function EditDeviceName({ navigation, route, saveBleDeviceName }: Props) {
     <KeyboardBackgroundDismiss>
       <SafeAreaView style={{ flex: 1 }}>
         <KeyboardView style={{ flex: 1 }}>
-          <TrackScreen category="EditDeviceName" />
+          
           <Flex flex={1} p={6} bg="background.main">
             <TextInput
               ref={textInputRef}

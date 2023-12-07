@@ -4,8 +4,7 @@ import { StakeCreateAccountTransaction } from "@ledgerhq/live-common/families/so
 import React, { useEffect } from "react";
 import { Trans } from "react-i18next";
 import styled from "styled-components";
-import TrackPage from "~/renderer/analytics/TrackPage";
-import { track } from "~/renderer/analytics/segment";
+
 import Box from "~/renderer/components/Box";
 import BroadcastErrorDisclaimer from "~/renderer/components/BroadcastErrorDisclaimer";
 import Button from "~/renderer/components/Button";
@@ -55,13 +54,7 @@ function StepConfirmation({
   if (optimisticOperation) {
     return (
       <Container>
-        <TrackPage
-          category="Solana Delegation"
-          name="Step Confirmation"
-          flow="stake"
-          action="delegation"
-          currency="sol"
-        />
+        
         <SyncOneAccountOnMount
           reason="transaction-flow-confirmation"
           priority={10}
@@ -77,13 +70,7 @@ function StepConfirmation({
   if (error) {
     return (
       <Container shouldSpace={signed}>
-        <TrackPage
-          category="Delegation Solana"
-          name="Step Confirmation Error"
-          flow="stake"
-          action="delegation"
-          currency="sol"
-        />
+        
         {signed ? (
           <BroadcastErrorDisclaimer title={<Trans i18nKey="solana.common.broadcastError" />} />
         ) : null}

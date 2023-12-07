@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import { useLocation, useHistory } from "react-router-dom";
-import { track } from "~/renderer/analytics/segment";
 import TabBar from "~/renderer/components/TabBar";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
@@ -33,11 +32,7 @@ const Navbar = () => {
     [t],
   );
   const onWrappedTabChange = (nextIndex: number) => {
-    track("button_clicked", {
-      button: `${swapRoutes[nextIndex].name} Tab`,
-      page: "Page Swap Form",
-      ...swapDefaultTrack,
-    });
+    
     if (currentIndex === nextIndex) return;
     const nextPathname = swapRoutes[nextIndex].path;
     history.push({

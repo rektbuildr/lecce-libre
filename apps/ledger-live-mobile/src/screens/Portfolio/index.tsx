@@ -32,7 +32,7 @@ import PortfolioEmptyState from "./PortfolioEmptyState";
 import SectionTitle from "../WalletCentricSections/SectionTitle";
 import SectionContainer from "../WalletCentricSections/SectionContainer";
 import AllocationsSection from "../WalletCentricSections/Allocations";
-import { track } from "../../analytics";
+
 import {
   BaseComposite,
   BaseNavigation,
@@ -118,9 +118,7 @@ function PortfolioScreen({ navigation }: NavigationProps) {
   ]);
 
   const openAddModal = useCallback(() => {
-    track("button_clicked", {
-      button: "Add Account",
-    });
+    
     setAddModalOpened(true);
   }, [setAddModalOpened]);
 

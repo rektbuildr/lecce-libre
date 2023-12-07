@@ -6,7 +6,7 @@ import { getMainAccount } from "@ledgerhq/live-common/account/helpers";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { accountScreenSelector } from "../../reducers/accounts";
 import { deleteAccount } from "../../actions/accounts";
-import { TrackScreen } from "../../analytics";
+
 import { NavigatorName, ScreenName } from "../../const";
 
 import AccountNameRow from "./AccountNameRow";
@@ -84,7 +84,7 @@ class AccountSettings extends PureComponent<Props, State> {
 
     return (
       <SettingsNavigationScrollView>
-        <TrackScreen category="Account Settings" />
+        
         <AccountNameRow account={mainAccount} navigation={navigation} />
         <AccountUnitsRow account={mainAccount} navigation={navigation} />
         <AccountAdvancedLogsRow account={mainAccount} navigation={navigation} />

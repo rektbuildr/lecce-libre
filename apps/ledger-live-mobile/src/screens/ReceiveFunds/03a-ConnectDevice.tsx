@@ -12,7 +12,7 @@ import { Flex } from "@ledgerhq/native-ui";
 
 import { accountScreenSelector } from "../../reducers/accounts";
 import { ScreenName } from "../../const";
-import { TrackScreen, track } from "../../analytics";
+
 import SelectDevice from "../../components/SelectDevice";
 import SelectDevice2, { SetHeaderOptionsRequest } from "../../components/SelectDevice2";
 import NavigationScrollView from "../../components/NavigationScrollView";
@@ -95,10 +95,7 @@ export default function ConnectDevice({
   }, []);
 
   const onHeaderBackButtonPress = useCallback(() => {
-    track("button_clicked", {
-      button: "Back arrow",
-      page: ScreenName.ReceiveConnectDevice,
-    });
+    
     navigation.goBack();
   }, [navigation]);
 
@@ -149,7 +146,7 @@ export default function ConnectDevice({
 
   return (
     <>
-      <TrackScreen category="Deposit" name="Device Selection" />
+      
       <SkipSelectDevice route={route} onResult={setDevice} />
       {newDeviceSelectionFeatureFlag?.enabled ? (
         <Flex px={16} py={5} flex={1}>

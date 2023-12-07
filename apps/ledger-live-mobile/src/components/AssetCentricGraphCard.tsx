@@ -15,7 +15,6 @@ import { TransactionsPendingConfirmationWarningAllAccounts } from "./Transaction
 import ParentCurrencyIcon from "./ParentCurrencyIcon";
 import FormatDate from "./DateFormat/FormatDate";
 import { ensureContrast } from "../colors";
-import { track } from "../analytics";
 import { Item } from "./Graph/types";
 import { Merge } from "../types/helpers";
 import { GraphPlaceholder } from "./Graph/Placeholder";
@@ -90,9 +89,6 @@ function AssetCentricGraphCard({
 
   const updateTimeRange = useCallback(
     (index: number) => {
-      track("timeframe_clicked", {
-        timeframe: timeRangeItems[index],
-      });
       setTimeRange(timeRangeItems[index]);
     },
     [setTimeRange, timeRangeItems],

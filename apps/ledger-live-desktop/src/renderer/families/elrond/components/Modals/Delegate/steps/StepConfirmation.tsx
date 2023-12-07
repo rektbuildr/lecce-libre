@@ -2,8 +2,7 @@ import React, { useEffect } from "react";
 import { Trans } from "react-i18next";
 import { SyncOneAccountOnMount } from "@ledgerhq/live-common/bridge/react/index";
 import styled from "styled-components";
-import { track } from "~/renderer/analytics/segment";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import RetryButton from "~/renderer/components/RetryButton";
@@ -51,13 +50,7 @@ const StepConfirmation = (props: StepProps) => {
   if (optimisticOperation) {
     return (
       <Container>
-        <TrackPage
-          category="Delegation Cosmos"
-          name="Step Confirmed"
-          flow="stake"
-          action="delegate"
-          currency="egld"
-        />
+        
         {account ? <SyncOneAccountOnMount priority={10} accountId={account.id} /> : null}
 
         <SuccessDisplay
@@ -70,13 +63,7 @@ const StepConfirmation = (props: StepProps) => {
   if (error) {
     return (
       <Container shouldSpace={signed}>
-        <TrackPage
-          category="Delegation Elrond"
-          name="Step Confirmation Error"
-          flow="stake"
-          action="delegate"
-          currency="egld"
-        />
+        
 
         {signed ? (
           <BroadcastErrorDisclaimer

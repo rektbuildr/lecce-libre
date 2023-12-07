@@ -34,7 +34,7 @@ import { accountScreenSelector } from "../../../reducers/accounts";
 import PoolImage from "../shared/PoolImage";
 import { ScreenName } from "../../../const";
 import ArrowRight from "../../../icons/ArrowRight";
-import { TrackScreen } from "../../../analytics";
+
 import { rgba } from "../../../colors";
 import { StackNavigatorProps } from "../../../components/RootNavigator/types/helpers";
 import { CardanoDelegationFlowParamList } from "./types";
@@ -143,7 +143,7 @@ export default function DelegationSummary({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
-      <TrackScreen category="DelegationFlow" name="Summary" />
+      
       <View style={styles.body}>
         <View style={styles.delegatingAccount}>
           <Circle size={50} bg={rgba(color, 0.2)}>

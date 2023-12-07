@@ -17,7 +17,7 @@ import {
   setRatingsHappyMoment,
   setRatingsDataOfUser,
 } from "../actions/ratings";
-import { track } from "../analytics";
+
 import { setNotificationsModalLocked } from "../actions/notifications";
 import { setUserNps } from "../actions/settings";
 
@@ -242,11 +242,7 @@ const useNpsRatings = () => {
         route_name: "Settings",
       }),
     );
-    track("button_clicked", {
-      flow: "NPS",
-      button: "Feedback",
-      page: "Settings",
-    });
+    
     setRatingsModalOpenCallback(true);
   }, [isRatingsModalLocked, dispatch, setRatingsModalOpenCallback]);
 

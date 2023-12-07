@@ -1,6 +1,6 @@
 import test from "../../fixtures/common";
 import { expect } from "@playwright/test";
-import { Analytics } from "../../models/Analytics";
+
 import { Drawer } from "../../models/Drawer";
 import { Modal } from "../../models/Modal";
 import { PortfolioPage } from "../../models/PortfolioPage";

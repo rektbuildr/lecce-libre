@@ -25,7 +25,7 @@ import SwapOperationDetails from "~/renderer/drawers/SwapOperationDetails";
 import HistoryLoading from "./HistoryLoading";
 import HistoryPlaceholder from "./HistoryPlaceholder";
 import { useHistory } from "react-router-dom";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 const Head = styled(Box)`
   border-bottom: 1px solid ${p => p.theme.colors.palette.divider};
 `;
@@ -152,7 +152,7 @@ const History = () => {
   );
   return (
     <>
-      <TrackPage category="Swap" name="Device History" />
+      
       <Box p={20}>
         <Box horizontal flow={2} alignItems="center" justifyContent="flex-end">
           <ExportOperationsWrapper horizontal>

@@ -1,7 +1,6 @@
 import { useTranslation } from "react-i18next";
 import useFeature from "@ledgerhq/live-config/featureFlags/useFeature";
 import { AccountBanner } from "~/renderer/screens/account/AccountBanner";
-import { track } from "~/renderer/analytics/segment";
 import { stakeDefaultTrack } from "~/renderer/screens/stake/constants";
 import React from "react";
 import { StakeAccountBannerParams } from "~/renderer/screens/account/types";
@@ -43,14 +42,7 @@ const StakeBanner: React.FC<{ account: NearAccount }> = ({ account }) => {
     ? "https://support.ledger.com/hc/en-us/articles/7658561043613-How-to-stake-NEAR-through-Ledger-Live-and-earn-rewards"
     : "https://www.ledger.com/staking/staking-near";
   const onClick = () => {
-    track("button_clicked", {
-      ...stakeDefaultTrack,
-      delegation: "stake",
-      page: "Page Account",
-      button: "delegate",
-      redelegate,
-      currency: "NEAR",
-    });
+    
     if (redelegate) {
       dispatch(
         openModal("MODAL_NEAR_UNSTAKE", {

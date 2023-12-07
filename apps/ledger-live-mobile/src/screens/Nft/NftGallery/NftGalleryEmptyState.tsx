@@ -8,7 +8,7 @@ import { urls } from "@utils/urls";
 import Link from "../../../components/wrappedUi/Link";
 import ReceiveNFTsModal from "./ReceiveNFTsModal";
 import { useReceiveNFTsModal } from "./ReceiveNFTsModal.hook";
-import { track, TrackScreen } from "../../../analytics";
+
 import { readOnlyModeEnabledSelector } from "../../../reducers/settings";
 
 const NftGalleryEmptyState = () => {
@@ -19,18 +19,13 @@ const NftGalleryEmptyState = () => {
 
   const readOnlyModeEnabled = useSelector(readOnlyModeEnabledSelector);
   const openSupportLink = useCallback(() => {
-    track("url_clicked", {
-      name: "How to deposit from Metamask",
-      url: urls.nft.howToSecure,
-    });
+    
     Linking.openURL(urls.nft.howToSecure);
   }, []);
 
   return (
     <Flex flex={1} alignItems="center" justifyContent="center">
-      <TrackScreen
-        category={readOnlyModeEnabled ? "NFT Gallery Start Read-only" : "NFT Gallery Start"}
-      />
+      
       <Text variant={"h1Inter"} fontWeight={"semiBold"} color={"neutral.c100"} mb={6}>
         {t("wallet.nftGallery.empty.title")}
       </Text>

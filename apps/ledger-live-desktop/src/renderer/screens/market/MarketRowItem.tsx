@@ -5,8 +5,7 @@ import { accountsSelector } from "~/renderer/reducers/accounts";
 import styled from "styled-components";
 import { Flex, Text, Icon } from "@ledgerhq/react-ui";
 import FormattedVal from "~/renderer/components/FormattedVal";
-import { setTrackingSource } from "~/renderer/analytics/TrackPage";
-import { track } from "~/renderer/analytics/segment";
+
 import { useGetSwapTrackingProperties } from "~/renderer/screens/exchange/Swap2/utils/index";
 import counterValueFormatter from "@ledgerhq/live-common/market/utils/countervalueFormatter";
 import CryptoCurrencyIcon from "~/renderer/components/CryptoCurrencyIcon";
@@ -90,7 +89,7 @@ function MarketRowItem({
   const onCurrencyClick = useCallback(() => {
     if (currency) {
       selectCurrency(currency.id);
-      setTrackingSource("Page Market");
+      
       history.push({
         pathname: `/market/${currency.id}`,
         state: currency,
@@ -102,7 +101,7 @@ function MarketRowItem({
     (e: React.SyntheticEvent<HTMLButtonElement>) => {
       e.preventDefault();
       e.stopPropagation();
-      setTrackingSource("Page Market");
+      
       // PTX smart routing redirect to live app or to native implementation
 
       history.push({
@@ -127,13 +126,8 @@ function MarketRowItem({
       if (currency?.internalCurrency?.id) {
         e.preventDefault();
         e.stopPropagation();
-        track("button_clicked", {
-          button: "swap",
-          currency: currency?.ticker,
-          page: "Page Market",
-          ...swapDefaultTrack,
-        });
-        setTrackingSource("Page Market");
+        
+        
 
         const currencyId = currency?.internalCurrency?.id;
 
@@ -170,17 +164,12 @@ function MarketRowItem({
     (e: React.SyntheticEvent<HTMLButtonElement>) => {
       e.preventDefault();
       e.stopPropagation();
-      track("button_clicked", {
-        button: "stake",
-        currency: currency?.ticker,
-        page: "Page Market",
-        ...stakeDefaultTrack,
-      });
+      
       startStakeFlow({
         currencies: currency?.internalCurrency ? [currency.internalCurrency.id] : undefined,
         source: "Page Market",
       });
-      setTrackingSource("Page Market");
+      
     },
     [currency?.internalCurrency, currency?.ticker, startStakeFlow],
   );

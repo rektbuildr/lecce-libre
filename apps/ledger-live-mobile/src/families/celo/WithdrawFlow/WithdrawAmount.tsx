@@ -16,7 +16,7 @@ import { CeloAccount } from "@ledgerhq/live-common/families/celo/types";
 import Icon from "react-native-vector-icons/Feather";
 import { accountScreenSelector } from "../../../reducers/accounts";
 import { ScreenName } from "../../../const";
-import { TrackScreen } from "../../../analytics";
+
 import Button from "../../../components/Button";
 import Touchable from "../../../components/Touchable";
 import SendRowsFee from "../SendRowsFee";
@@ -114,13 +114,7 @@ export default function WithdrawAmount({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
-      <TrackScreen
-        category="CeloWithdraw"
-        name="Amount"
-        flow="stake"
-        action="withdraw"
-        currency="celo"
-      />
+      
       <View style={styles.body}>
         <View style={styles.amount}>
           <Line>

@@ -1,7 +1,7 @@
 import React from "react";
 import { Trans } from "react-i18next";
 import styled from "styled-components";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import { useGetSwapTrackingProperties } from "../../utils/index";
 import { Text } from "@ledgerhq/react-ui";
@@ -55,7 +55,7 @@ export default function WebviewErrorDrawer(error?: SwapLiveError) {
   const swapDefaultTrack = useGetSwapTrackingProperties();
   return (
     <ContentBox>
-      <TrackPage category="Swap" name="Webview error drawer" {...swapDefaultTrack} {...error} />
+      
 
       <Box mt={3} flow={4} mx={5}>
         <Logo>

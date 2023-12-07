@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
-import { TrackScreen } from "../../../analytics";
+
 import { ScreenName } from "../../../const";
 import ValidateError from "../../../components/ValidateError";
 import type {
@@ -35,13 +35,7 @@ export default function ValidationError({ navigation, route }: Props) {
         },
       ]}
     >
-      <TrackScreen
-        category="NearWithdrawing"
-        name="ValidationError"
-        flow="stake"
-        action="withdrawing"
-        currency="near"
-      />
+      
       <ValidateError error={error} onRetry={retry} onClose={onClose} />
     </SafeAreaView>
   );

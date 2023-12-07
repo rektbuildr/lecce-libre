@@ -15,7 +15,7 @@ import BottomContainer from "../../components/CustomImage/BottomButtonsContainer
 import Touchable from "../../components/Touchable";
 import { BaseComposite, StackNavigatorProps } from "../../components/RootNavigator/types/helpers";
 import { CustomImageNavigatorParamList } from "../../components/RootNavigator/types/CustomImageNavigator";
-import { TrackScreen } from "../../analytics";
+
 import { LayoutChangeEvent } from "react-native";
 
 type NavigationProps = BaseComposite<
@@ -95,7 +95,7 @@ const Step1Cropping = ({ navigation, route }: NavigationProps) => {
        */
       paddingBottom={bottom}
     >
-      <TrackScreen category={analyticsScreenName} />
+      
       <Flex
         flex={1}
         onLayout={baseImageFile ? onContainerLayout : undefined}

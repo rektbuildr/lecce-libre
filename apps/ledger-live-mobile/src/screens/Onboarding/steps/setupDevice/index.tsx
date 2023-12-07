@@ -14,7 +14,7 @@ import BaseStepperView, {
   RecoveryPhraseSetup,
   HideRecoveryPhrase,
 } from "./scenes";
-import { TrackScreen } from "../../../../analytics";
+
 import StepLottieAnimation from "./scenes/StepLottieAnimation";
 import { StackNavigatorProps } from "../../../../components/RootNavigator/types/helpers";
 import { OnboardingNavigatorParamList } from "../../../../components/RootNavigator/types/OnboardingNavigator";
@@ -197,7 +197,7 @@ function OnboardingStepNewDevice() {
 
   return (
     <>
-      <TrackScreen category="Onboarding" name="SetupNewDevice" />
+      
       <BaseStepperView
         onNext={nextPage}
         steps={scenes}

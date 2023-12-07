@@ -4,7 +4,6 @@ import { Flex, Text } from "@ledgerhq/native-ui";
 import { CryptoCurrency, TokenCurrency } from "@ledgerhq/types-cryptoassets";
 import { TFunction, useTranslation } from "react-i18next";
 import { useCurrenciesByMarketcap } from "@ledgerhq/live-common/currencies/hooks";
-import { TrackScreen, useAnalytics } from "../../../analytics";
 import FilteredSearchBar from "../../../components/FilteredSearchBar";
 import KeyboardView from "../../../components/KeyboardView";
 import CurrencyRow from "../../../components/CurrencyRow";
@@ -34,11 +33,7 @@ export function SelectCurrency({
 
   const onSelect = useCallback(
     (currency: CryptoCurrency | TokenCurrency) => {
-      track("button_clicked", {
-        ...sharedSwapTracking,
-        button: "new target currency",
-        currency: currency.name,
-      });
+      
       // @ts-expect-error navigation type is only partially declared
       navigation.navigate(ScreenName.SwapForm, { currency });
     },
@@ -75,7 +70,7 @@ export function SelectCurrency({
   return (
     <KeyboardView>
       <Flex>
-        <TrackScreen category="Swap Form" name="Edit Target Currency" provider={provider} />
+        
 
         <FilteredSearchBar
           keys={getEnv("CRYPTO_ASSET_SEARCH_KEYS")}

@@ -20,7 +20,6 @@ import BigNumber from "bignumber.js";
 import * as converters from "./converters";
 import * as signMessage from "../hw/signMessage/index";
 import { CryptoCurrency, TokenCurrency } from "@ledgerhq/types-cryptoassets";
-import { TrackingAPI } from "./tracking";
 import { cryptocurrenciesById } from "@ledgerhq/cryptoassets/currencies";
 import { setSupportedCurrencies } from "../currencies";
 
@@ -811,16 +810,15 @@ function createContextContainingAccountId({
   tracking,
   accountsParams,
 }: {
-  tracking: Partial<TrackingAPI>;
+  tracking: any
   accountsParams: Array<{ id: string; currency?: CryptoCurrency }>;
 }): WalletAPIContext {
   return {
     manifest: createAppManifest(),
     accounts: accountsParams
       .map(({ id, currency }) => createFixtureAccount(id, currency))
-      .concat([createFixtureAccount()]),
-    tracking: tracking as TrackingAPI,
-  };
+      .concat([createFixtureAccount()])
+      };
 }
 
 function createSignedOperation(): SignedOperation {

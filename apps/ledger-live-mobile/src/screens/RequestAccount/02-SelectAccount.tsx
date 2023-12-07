@@ -7,7 +7,7 @@ import { CompositeScreenProps, useTheme } from "@react-navigation/native";
 import { CryptoOrTokenCurrency } from "@ledgerhq/types-cryptoassets";
 import { useGetAccountIds } from "@ledgerhq/live-common/wallet-api/react";
 import { accountsByCryptoCurrencyScreenSelector } from "../../reducers/accounts";
-import { TrackScreen } from "../../analytics";
+
 import LText from "../../components/LText";
 import FilteredSearchBar from "../../components/FilteredSearchBar";
 import AccountCard from "../../components/AccountCard";
@@ -177,7 +177,7 @@ function SelectAccount({ navigation, route }: Props) {
         },
       ]}
     >
-      <TrackScreen category="RequestAccount" name="SelectAccount" />
+      
       <KeyboardView style={styles.root}>
         <View style={styles.searchContainer}>
           {accounts.length > 0 ? (

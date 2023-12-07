@@ -28,7 +28,7 @@ import { ScreenName } from "../../const";
 import OperationRowDate from "../OperationRowDate";
 import OperationRowNftName from "../OperationRowNftName";
 import perFamilyOperationDetails from "../../generated/operationDetails";
-import { track } from "../../analytics";
+
 import { UnionToIntersection } from "../../types/helpers";
 import { BaseNavigation } from "../RootNavigator/types/helpers";
 import { currencySettingsForAccountSelector } from "../../reducers/settings";
@@ -102,9 +102,7 @@ function OperationRow({
   const navigation = useNavigation<BaseNavigation>();
 
   const goToOperationDetails = debounce(() => {
-    track("transaction_clicked", {
-      transaction: operation.type,
-    });
+    
     const params = [
       ScreenName.OperationDetails,
       {

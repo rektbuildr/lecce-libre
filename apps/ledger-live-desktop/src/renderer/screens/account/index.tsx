@@ -23,7 +23,7 @@ import {
   countervalueFirstSelector,
   hiddenNftCollectionsSelector,
 } from "~/renderer/reducers/settings";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import OperationsList from "~/renderer/components/OperationsList";
 import useTheme from "~/renderer/hooks/useTheme";
@@ -117,11 +117,7 @@ const AccountPage = ({
   const color = getCurrencyColor(currency, bgColor);
   return (
     <Box key={account.id}>
-      <TrackPage
-        category="Account"
-        currency={currency.id}
-        operationsLength={account.operations.length}
-      />
+      
       <SyncOneAccountOnMount reason="view-account" priority={10} accountId={mainAccount.id} />
       <Box
         horizontal

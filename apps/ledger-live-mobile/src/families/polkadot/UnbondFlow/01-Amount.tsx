@@ -19,7 +19,7 @@ import { getAccountUnit, getMainAccount } from "@ledgerhq/live-common/account/in
 import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
 import { accountScreenSelector } from "../../../reducers/accounts";
 import { ScreenName } from "../../../const";
-import { TrackScreen } from "../../../analytics";
+
 import LText from "../../../components/LText";
 import CurrencyUnitValue from "../../../components/CurrencyUnitValue";
 import Button from "../../../components/Button";
@@ -111,13 +111,7 @@ export default function PolkadotUnbondAmount({ navigation, route }: Props) {
   const hasErrors = hasStatusError(status);
   return (
     <>
-      <TrackScreen
-        category="UnbondFlow"
-        name="Amount"
-        flow="stake"
-        action="withdraw_unbonded"
-        currency="dot"
-      />
+      
       <SafeAreaView
         style={[
           styles.root,

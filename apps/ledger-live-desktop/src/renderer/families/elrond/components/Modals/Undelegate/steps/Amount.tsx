@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState, Fragment } from "react";
 import { useTranslation, Trans } from "react-i18next";
 import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
 import { BigNumber } from "bignumber.js";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import Text from "~/renderer/components/Text";
@@ -60,13 +60,7 @@ const StepAmount = (props: StepProps) => {
   if (!account) return null;
   return (
     <Box flow={1}>
-      <TrackPage
-        category="Undelegation Flow"
-        name="Step 1"
-        flow="stake"
-        action="undelegate"
-        currency="egld"
-      />
+      
       {error && <ErrorBanner error={error} />}
 
       <Box horizontal={true} justifyContent="center" mb={2}>

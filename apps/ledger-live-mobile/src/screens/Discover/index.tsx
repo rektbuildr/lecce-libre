@@ -10,7 +10,7 @@ import Illustration from "../../images/illustration/Illustration";
 import { NavigatorName, ScreenName } from "../../const";
 import DiscoverCard from "./DiscoverCard";
 import { urls } from "@utils/urls";
-import { TrackScreen, track } from "../../analytics";
+
 import { AnalyticsContext } from "../../analytics/AnalyticsContext";
 import { BaseNavigatorStackParamList } from "../../components/RootNavigator/types/BaseNavigator";
 import { MainNavigatorParamList } from "../../components/RootNavigator/types/MainNavigator";
@@ -45,14 +45,8 @@ function Discover() {
   const isNFTDisabled = useFeature("disableNftLedgerMarket")?.enabled && Platform.OS === "ios";
 
   const readOnlyTrack = useCallback((bannerName: string) => {
-    track("banner_clicked", {
-      banner: `Dapp_${bannerName}`,
-      screen: "Discover",
-    });
-    track("Discover Banner Clicked", {
-      banner: `Dapp_${bannerName}`,
-      screen: "Discover",
-    });
+    
+    
   }, []);
 
   const { learnCards } = useDynamicContent();
@@ -115,10 +109,8 @@ function Discover() {
                 title: t("discover.sections.learn.title"),
                 subTitle: t("discover.sections.learn.desc"),
                 onPress: () => {
-                  readOnlyTrack("Learn");
-                  track("Discover - Learn - OpenUrl", {
-                    url: urls.discover.academy,
-                  });
+                  readOnly
+                  
                   Linking.openURL(urls.discover.academy);
                 },
                 disabled: false,
@@ -141,9 +133,7 @@ function Discover() {
                   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                   // @ts-ignore
                   navigation.navigate(NavigatorName.ExploreTab);
-                  track("banner_clicked", {
-                    banner: "News",
-                  });
+                  
                 },
                 disabled: false,
                 Image: (
@@ -160,8 +150,8 @@ function Discover() {
           title: t("discover.sections.earn.title"),
           subTitle: t("discover.sections.earn.desc"),
           onPress: () => {
-            readOnlyTrack("Earn");
-            track("Discover - Earn - OpenUrl", { url: urls.discover.earn });
+            readOnly
+            
             Linking.openURL(urls.discover.earn);
           },
           disabled: false,
@@ -180,10 +170,8 @@ function Discover() {
                 title: t("discover.sections.mint.title"),
                 subTitle: t("discover.sections.mint.desc"),
                 onPress: () => {
-                  readOnlyTrack("Mint");
-                  track("Discover - Mint - OpenUrl", {
-                    url: urls.discover.mint,
-                  });
+                  readOnly
+                  
                   Linking.openURL(urls.discover.mint);
                 },
                 disabled: false,
@@ -202,10 +190,8 @@ function Discover() {
                 title: t("discover.sections.referralProgram.title"),
                 subTitle: t("discover.sections.referralProgram.desc"),
                 onPress: () => {
-                  readOnlyTrack("referralProgram");
-                  track("Discover - Refer Program - OpenUrl", {
-                    url: referralProgramConfig?.params?.url,
-                  });
+                  readOnly
+                  
                   // @ts-expect-error TYPINGS
                   Linking.openURL(referralProgramConfig?.params?.url);
                 },
@@ -249,7 +235,7 @@ function Discover() {
 
   return (
     <TabBarSafeAreaView>
-      <TrackScreen category="Discover" />
+      
       <Flex px={6} pb={6} flexDirection="row">
         <Flex flex={1} justifyContent="flex-start" alignItems="flex-start">
           <Text my={3} variant="h4" fontWeight="semiBold">

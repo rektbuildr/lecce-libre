@@ -11,7 +11,7 @@ import {
 import { accountToWalletAPIAccount } from "@ledgerhq/live-common/wallet-api/converters";
 import { useTheme } from "styled-components/native";
 import { Flex, InfiniteLoader } from "@ledgerhq/native-ui";
-import TrackScreen from "../../../analytics/TrackScreen";
+
 import GenericErrorView from "../../../components/GenericErrorView";
 import { useLocale } from "../../../context/Locale";
 import { WebPTXPlayer } from "../../../components/WebPTXPlayer";
@@ -84,7 +84,7 @@ export function BuyAndSellScreen({ route }: Props) {
 
   return manifest ? (
     <>
-      <TrackScreen category="Platform" name="App" />
+      
       <WebPTXPlayer
         manifest={manifest}
         inputs={{

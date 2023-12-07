@@ -11,7 +11,7 @@ import ExternalLink from "../../../../components/ExternalLink";
 import BulletList, { BulletGreenCheck } from "../../../../components/BulletList";
 import NavigationScrollView from "../../../../components/NavigationScrollView";
 import { urls } from "@utils/urls";
-import { TrackScreen } from "../../../../analytics";
+
 import Illustration from "../../../../images/illustration/Illustration";
 import {
   BaseComposite,
@@ -45,13 +45,7 @@ export default function ClaimRewardsStarted({ navigation, route }: Props) {
       ]}
     >
       <NavigationScrollView style={styles.scroll} contentContainerStyle={styles.scrollContainer}>
-        <TrackScreen
-          category="ClaimRewardsFlow"
-          name="Started"
-          flow="stake"
-          action="claim_rewards"
-          currency="algo"
-        />
+
         <Flex alignItems="center" justifyContent="center" mb={6}>
           <Illustration
             size={200}

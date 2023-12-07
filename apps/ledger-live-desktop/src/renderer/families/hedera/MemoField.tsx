@@ -1,7 +1,6 @@
 import React, { useCallback } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
-import { track } from "~/renderer/analytics/segment";
 import { SendAmountProps } from "./types";
 import Box from "~/renderer/components/Box";
 import Label from "~/renderer/components/Label";
@@ -20,11 +19,7 @@ const MemoField = ({
   const bridge = getAccountBridge(account);
   const onMemoChange = useCallback(
     (memo: string) => {
-      track("button_clicked", {
-        ...trackProperties,
-        button: "input",
-        memo,
-      });
+      
       onChange(
         bridge.updateTransaction(transaction, {
           memo,

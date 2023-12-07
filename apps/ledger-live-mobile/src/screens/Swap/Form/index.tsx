@@ -21,7 +21,6 @@ import { accountToWalletAPIAccount } from "@ledgerhq/live-common/wallet-api/conv
 import { log } from "@ledgerhq/logs";
 import { shallowAccountsSelector } from "../../../reducers/accounts";
 import { rateSelector, updateRateAction, updateTransactionAction } from "../../../actions/swap";
-import { TrackScreen, useAnalytics } from "../../../analytics";
 import { Loading } from "../Loading";
 import { TxForm } from "./TxForm";
 import { Summary } from "./Summary";
@@ -68,12 +67,7 @@ export function SwapForm({
 
   const onNoRates: OnNoRatesCallback = useCallback(
     ({ toState, fromState }) => {
-      track("error_message", {
-        ...sharedSwapTracking,
-        message: "no_rates",
-        sourceCurrency: fromState.currency?.name,
-        targetCurrency: toState.currency?.name,
-      });
+      
     },
     [track],
   );
@@ -137,14 +131,7 @@ export function SwapForm({
 
   useEffect(() => {
     if (pageState === "loaded") {
-      track("Swap Form - Edit Rates", {
-        ...sharedSwapTracking,
-        provider,
-        partnersList,
-        exchangeRateList,
-        sourceCurrency: swapTransaction.swap.from.currency?.id,
-        targetCurrency: swapTransaction.swap.from.currency?.id,
-      });
+      
     }
     /*
      * By stringify-ing editRatesTrackingProps we are guaranteeing that the useEffect will
@@ -200,17 +187,7 @@ export function SwapForm({
   const onSubmit = useCallback(() => {
     if (!exchangeRate) return;
     const { provider, providerURL, providerType } = exchangeRate;
-    track(
-      "button_clicked",
-      {
-        ...sharedSwapTracking,
-        sourceCurrency: swapTransaction.swap.from.currency?.name,
-        targetCurrency: swapTransaction.swap.to.currency?.name,
-        provider,
-        button: "exchange",
-      },
-      undefined,
-    );
+    
 
     if (providerType === "DEX") {
       const from = swapTransaction.swap.from;
@@ -281,14 +258,7 @@ export function SwapForm({
       const account = flattenAccounts(enhancedAccounts).find(a => a.id === accountId);
 
       if (target === "from") {
-        track(
-          "Page Swap Form - New Source Account",
-          {
-            ...sharedSwapTracking,
-            provider,
-          },
-          undefined,
-        );
+        
         swapTransaction.setFromAccount(account);
       }
 
@@ -328,7 +298,7 @@ export function SwapForm({
       <KeyboardAwareScrollView testID="exchange-scrollView">
         <Flex flex={1} justifyContent="space-between" padding={6}>
           <Flex flex={1}>
-            <TrackScreen category="Swap" providerName={provider} {...sharedSwapTracking} />
+            
             <TxForm
               swapTx={swapTransaction}
               provider={provider}

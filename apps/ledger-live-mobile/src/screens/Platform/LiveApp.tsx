@@ -7,7 +7,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "styled-components/native";
 import { Flex, InfiniteLoader } from "@ledgerhq/native-ui";
-import TrackScreen from "../../analytics/TrackScreen";
+
 import WebPlatformPlayer from "../../components/WebPlatformPlayer";
 import GenericErrorView from "../../components/GenericErrorView";
 import { useLocale } from "../../context/Locale";
@@ -46,7 +46,7 @@ export function LiveApp({ route }: Props) {
   }
   return manifest ? (
     <>
-      <TrackScreen category="Platform" name="App" />
+      
       <WebPlatformPlayer
         manifest={manifest}
         inputs={{

@@ -12,7 +12,7 @@ import EarnLight from "../../../images/illustration/Light/_003.png";
 import EarnDark from "../../../images/illustration/Dark/_003.png";
 import { urls } from "@utils/urls";
 import { ScreenName } from "../../../const";
-import { TrackScreen } from "../../../analytics";
+
 import { StackNavigatorProps } from "../../../components/RootNavigator/types/helpers";
 import { CardanoDelegationFlowParamList } from "./types";
 
@@ -36,7 +36,7 @@ export default function DelegationStarted({ navigation, route }: Props) {
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
       <NavigationScrollView style={styles.scroll} contentContainerStyle={styles.scrollContainer}>
-        <TrackScreen category="DelegationFlow" name="Started" />
+        
         <Flex alignItems="center" mb={6}>
           <Illustration lightSource={EarnLight} darkSource={EarnDark} size={150} />
         </Flex>

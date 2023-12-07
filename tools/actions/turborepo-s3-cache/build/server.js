@@ -35603,8 +35603,7 @@ var de_GetObjectCommand = async (output, context) => {
       () => expectNonNull(parseRfc3339DateTimeWithOffset(output.headers["x-amz-object-lock-retain-until-date"]))
     ],
     ObjectLockLegalHoldStatus: [, output.headers["x-amz-object-lock-legal-hold"]],
-    Metadata: [
-      ,
+    Metadata: [ null,
       Object.keys(output.headers).filter((header) => header.startsWith("x-amz-meta-")).reduce((acc, header) => {
         acc[header.substring(11)] = output.headers[header];
         return acc;

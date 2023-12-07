@@ -17,7 +17,7 @@ import {
   setRatingsHappyMoment,
   setRatingsDataOfUser,
 } from "../actions/ratings";
-import { track } from "../analytics";
+
 import { setNotificationsModalLocked } from "../actions/notifications";
 
 export type RatingsHappyMoment = {
@@ -244,12 +244,7 @@ const useRatings = () => {
         route_name: "Settings",
       }),
     );
-    track("button_clicked", {
-      flow: "review",
-      button: "manual_review",
-      source: "Settings",
-      params: ratingsFeature?.params,
-    });
+    
     setRatingsModalOpenCallback(true);
   }, [isRatingsModalLocked, dispatch, ratingsFeature?.params, setRatingsModalOpenCallback]);
 

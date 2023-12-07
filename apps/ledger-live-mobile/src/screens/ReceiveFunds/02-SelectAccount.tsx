@@ -8,7 +8,7 @@ import { Account, AccountLike, SubAccount, TokenAccount } from "@ledgerhq/types-
 import { makeEmptyTokenAccount } from "@ledgerhq/live-common/account/index";
 import { flattenAccountsByCryptoCurrencyScreenSelector } from "../../reducers/accounts";
 import { NavigatorName, ScreenName } from "../../const";
-import { track, TrackScreen } from "../../analytics";
+
 
 import { ReceiveFundsStackParamList } from "../../components/RootNavigator/types/ReceiveFundsNavigator";
 import { BaseComposite, StackNavigatorProps } from "../../components/RootNavigator/types/helpers";
@@ -82,10 +82,7 @@ function ReceiveSelectAccount({
   const selectAccount = useCallback(
     (account: AccountLike) => {
       if (currency) {
-        track("account_clicked", {
-          asset: currency.name,
-          page: "Select account to deposit to",
-        });
+        
         navigation.navigate(ScreenName.ReceiveConfirmation, {
           ...route.params,
           accountId: (account as SubAccountEnhanced)?.parentId || account.id,
@@ -122,10 +119,7 @@ function ReceiveSelectAccount({
   );
 
   const createNewAccount = useCallback(() => {
-    track("button_clicked", {
-      button: "Create a new account",
-      page: "Select account to deposit to",
-    });
+    
     if (currency && currency.type === "TokenCurrency") {
       navigationAccount.navigate(NavigatorName.AddAccounts, {
         screen: undefined,
@@ -145,7 +139,7 @@ function ReceiveSelectAccount({
 
   return currency && aggregatedAccounts && aggregatedAccounts.length > 0 ? (
     <>
-      <TrackScreen category="Deposit" name="Select account to deposit to" asset={currency.name} />
+      
       <Flex p={6}>
         <Text
           variant="h4"

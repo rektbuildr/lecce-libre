@@ -12,7 +12,7 @@ import logger from "../../logger";
 import { BLE_SCANNING_NOTHING_TIMEOUT } from "@utils/constants";
 import { knownDevicesSelector } from "../../reducers/ble";
 import TransportBLE from "../../react-native-hw-transport-ble";
-import { TrackScreen } from "../../analytics";
+
 import DeviceItem from "../../components/SelectDevice/DeviceItem";
 import ScanningHeader from "./ScanningHeader";
 import Config from "react-native-config";
@@ -95,7 +95,7 @@ export default function Scanning({ onTimeout, onError, onSelect, deviceModelIds 
 
   return (
     <>
-      <TrackScreen category="PairDevices" name="Scanning" />
+      
       <Flex flex={1} px={6}>
         <FlatList
           data={filteredDevices}

@@ -12,7 +12,7 @@ import debounce from "lodash/debounce";
 import { Flex, InfiniteLoader, Text } from "@ledgerhq/native-ui";
 import { useSelector } from "react-redux";
 import { ScreenName } from "../../const";
-import { track, TrackScreen } from "../../analytics";
+
 import FilteredSearchBar from "../../components/FilteredSearchBar";
 import BigCurrencyRow from "../../components/BigCurrencyRow";
 import { flattenAccountsSelector } from "../../reducers/accounts";
@@ -56,10 +56,7 @@ export default function AddAccountsSelectCrypto({ navigation, route }: Props) {
 
   const onPressItem = useCallback(
     (curr: CryptoCurrency | TokenCurrency) => {
-      track("asset_clicked", {
-        asset: curr.name,
-        page: "Choose a crypto to secure",
-      });
+      
 
       const provider = currenciesByProvider.find(elem =>
         elem.currenciesByNetwork.some(
@@ -107,7 +104,7 @@ export default function AddAccountsSelectCrypto({ navigation, route }: Props) {
   }, [onPressItem, paramsCurrency]);
 
   const debounceTrackOnSearchChange = debounce((newQuery: string) => {
-    track("asset_searched", { page: "Choose a crypto to secure", asset: newQuery });
+    
   }, 1500);
 
   const renderList = useCallback(
@@ -141,7 +138,7 @@ export default function AddAccountsSelectCrypto({ navigation, route }: Props) {
 
   return (
     <>
-      <TrackScreen category="Deposit" name="Choose a crypto to secure" />
+      
       <Text variant="h4" fontWeight="semiBold" mx={6} mb={3} testID="receive-header-step1-title">
         {t("transfer.receive.selectCrypto.title")}
       </Text>

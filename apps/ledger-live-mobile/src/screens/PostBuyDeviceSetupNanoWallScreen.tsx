@@ -8,7 +8,7 @@ import { ModalHeaderCloseButton } from "@ledgerhq/native-ui/components/Layout/Mo
 import Button from "../components/wrappedUi/Button";
 import { NavigatorName, ScreenName } from "../const";
 import { useNavigationInterceptor } from "./Onboarding/onboardingContext";
-import { TrackScreen } from "../analytics";
+
 import {
   RootNavigationComposite,
   StackNavigatorNavigation,
@@ -43,7 +43,7 @@ export default function PostBuyDeviceSetupNanoWallScreen() {
         justifyContent: "flex-end",
       }}
     >
-      <TrackScreen category="ReadOnly" name="Have you Received Device?" type="drawer" />
+      
       {/* A transparent clickable overlay filling the remaining space on the screen */}
       <Pressable
         style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(0, 0, 0, 0.5)" }]}

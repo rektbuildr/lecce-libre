@@ -8,7 +8,6 @@ import starAnim from "~/renderer/images/starAnim.png";
 import starAnim2 from "~/renderer/images/starAnim2.png";
 import { useRefreshAccountsOrdering } from "~/renderer/actions/general";
 import { Transition } from "react-transition-group";
-import { track } from "~/renderer/analytics/segment";
 import { State } from "~/renderer/reducers";
 type Props = {
   accountId: string;
@@ -26,7 +25,7 @@ export default function Star({ accountId, parentId, yellow, rounded }: Props) {
   const refreshAccountsOrdering = useRefreshAccountsOrdering();
   const toggleStar: React.MouseEventHandler<HTMLInputElement> = useCallback(
     e => {
-      track(isAccountStarred ? "Account Unstar" : "Account Star");
+      
       e.stopPropagation();
       dispatch(toggleStarAction(accountId, parentId));
       refreshAccountsOrdering();

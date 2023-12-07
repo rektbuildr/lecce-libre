@@ -5,7 +5,7 @@ import { PlusMedium } from "@ledgerhq/native-ui/assets/icons";
 import { findCryptoCurrencyById, findTokenById } from "@ledgerhq/live-common/currencies/index";
 import Touchable from "../../components/Touchable";
 import AddAccountsModal from "../AddAccounts/AddAccountsModal";
-import { track } from "../../analytics";
+
 import { BaseNavigation } from "../../components/RootNavigator/types/helpers";
 
 function AddAccount({ currencyId }: { currencyId?: string }) {
@@ -16,9 +16,7 @@ function AddAccount({ currencyId }: { currencyId?: string }) {
   const [isAddModalOpened, setIsAddModalOpened] = useState(false);
 
   function openAddModal() {
-    track("button_clicked", {
-      button: "Add Account",
-    });
+    
     setIsAddModalOpened(true);
   }
 

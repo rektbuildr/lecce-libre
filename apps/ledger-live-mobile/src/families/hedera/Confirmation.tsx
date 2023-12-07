@@ -14,7 +14,7 @@ import {
 import { CompositeScreenProps, useTheme } from "@react-navigation/native";
 import getWindowDimensions from "../../logic/getWindowDimensions";
 import { accountScreenSelector } from "../../reducers/accounts";
-import { TrackScreen } from "../../analytics";
+
 import PreventNativeBack from "../../components/PreventNativeBack";
 import LText from "../../components/LText/index";
 import DisplayAddress from "../../components/DisplayAddress";
@@ -118,13 +118,7 @@ export default function ReceiveConfirmation({ navigation, route }: Props) {
         },
       ]}
     >
-      <TrackScreen
-        category="ReceiveFunds"
-        name="Confirmation"
-        unsafe={unsafe}
-        verified={verified}
-        currencyName={currency.name}
-      />
+      
       {allowNavigation ? null : (
         <>
           <PreventNativeBack />

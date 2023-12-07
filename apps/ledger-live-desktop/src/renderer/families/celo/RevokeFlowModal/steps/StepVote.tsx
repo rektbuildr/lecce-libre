@@ -2,7 +2,7 @@ import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
 import invariant from "invariant";
 import React, { useCallback, useMemo } from "react";
 import { Trans } from "react-i18next";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import ErrorBanner from "~/renderer/components/ErrorBanner";
@@ -81,13 +81,7 @@ const StepVote = ({
   const unit = getAccountUnit(account);
   return (
     <Box flow={1}>
-      <TrackPage
-        category="Celo Revoke"
-        name="Step 1"
-        flow="stake"
-        action="revoke"
-        currency="celo"
-      />
+      
       {error ? <ErrorBanner error={error} /> : null}
       <Alert type="primary" mb={4} learnMoreUrl={urls.celo.learnMore}>
         <Trans i18nKey="celo.revoke.steps.vote.info" />

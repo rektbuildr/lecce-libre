@@ -19,7 +19,7 @@ import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useSelector } from "react-redux";
-import { TrackScreen, track } from "../../analytics";
+
 import Alert from "../../components/Alert";
 import Button from "../../components/Button";
 import CancelButton from "../../components/CancelButton";
@@ -101,7 +101,7 @@ export default function SendSelectRecipient({ navigation, route }: Props) {
   }, [transaction.recipient, value]);
 
   const onRecipientFieldFocus = useCallback(() => {
-    track("SendRecipientFieldFocused");
+    
   }, []);
 
   const onPressScan = useCallback(() => {
@@ -203,7 +203,7 @@ export default function SendSelectRecipient({ navigation, route }: Props) {
           },
         ]}
       >
-        <TrackScreen category="SendFunds" name="SelectRecipient" currencyName={currency.name} />
+        
         <SyncSkipUnderPriority priority={100} />
         <SyncOneAccountOnMount
           reason="transaction-flow-init"

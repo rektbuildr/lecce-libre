@@ -25,7 +25,7 @@ import { NavigatorName, ScreenName } from "../../const";
 import EmptyAccountCard from "../Account/EmptyAccountCard";
 import CurrencyBackgroundGradient from "../../components/CurrencyBackgroundGradient";
 import Header from "./Header";
-import { track, TrackScreen } from "../../analytics";
+
 import { FabAssetActions } from "../../components/FabActions/actionsList/asset";
 import { AccountsNavigatorParamList } from "../../components/RootNavigator/types/AccountsNavigator";
 import { BaseComposite, StackNavigatorProps } from "../../components/RootNavigator/types/helpers";
@@ -80,9 +80,7 @@ const AssetScreen = ({ route }: NavigationProps) => {
   );
 
   const onAddAccount = useCallback(() => {
-    track("button_clicked", {
-      button: "Add new",
-    });
+    
     if (currency && currency.type === "TokenCurrency") {
       navigation.navigate(NavigatorName.AddAccounts, {
         screen: undefined,
@@ -175,7 +173,7 @@ const AssetScreen = ({ route }: NavigationProps) => {
   return (
     <ReactNavigationPerformanceView screenName={ScreenName.Asset} interactive>
       <SafeAreaView edges={["bottom", "left", "right"]} isFlex>
-        <TrackScreen category="Asset" currency={currency.name} />
+        
         <CurrencyBackgroundGradient
           currentPositionY={currentPositionY}
           graphCardEndPosition={graphCardEndPosition}

@@ -44,7 +44,6 @@ import AuthPass from "./context/AuthPass";
 import LedgerStoreProvider from "./context/LedgerStore";
 import LoadingApp from "./components/LoadingApp";
 import StyledStatusBar from "./components/StyledStatusBar";
-import AnalyticsConsole from "./components/AnalyticsConsole";
 import DebugTheme from "./components/DebugTheme";
 import { BridgeSyncProvider } from "./bridge/BridgeSyncContext";
 import useDBSaveEffect from "./components/DBSave";
@@ -52,7 +51,6 @@ import useAppStateListener from "./components/useAppStateListener";
 import SyncNewAccounts from "./bridge/SyncNewAccounts";
 import { OnboardingContextProvider } from "./screens/Onboarding/onboardingContext";
 
-import SegmentSetup from "./analytics/SegmentSetup";
 import HookSentry from "./components/HookSentry";
 import HookNotifications from "./notifications/HookNotifications";
 import RootNavigator from "./components/RootNavigator";
@@ -85,7 +83,6 @@ import {
   useFetchCurrencyFrom,
 } from "@ledgerhq/live-common/exchange/swap/hooks/index";
 import useAccountsWithFundsListener from "@ledgerhq/live-common/hooks/useAccountsWithFundsListener";
-import { updateIdentify } from "./analytics";
 import { LiveConfig } from "@ledgerhq/live-config/featureFlags/index";
 import VersionNumber from "react-native-version-number";
 import { Platform } from "react-native";
@@ -116,7 +113,6 @@ LiveConfig.init({
 function App() {
   const accounts = useSelector(accountsSelector);
 
-  useAccountsWithFundsListener(accounts, updateIdentify);
   useAppStateListener();
   useFetchCurrencyAll();
   useFetchCurrencyFrom();

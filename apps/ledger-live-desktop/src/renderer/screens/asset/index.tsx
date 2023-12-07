@@ -18,7 +18,7 @@ import {
 } from "~/renderer/reducers/settings";
 import { useFlattenSortAccounts } from "~/renderer/actions/general";
 import AssetHeader from "./AssetHeader";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 type Props = {
   match: {
     params: {
@@ -53,7 +53,7 @@ export default function AssetPage({ match }: Props) {
   const color = getCurrencyColor(currency, paperColor);
   return (
     <Box>
-      <TrackPage category="Portfolio" name="Asset allocation" currencyName={currency.name} />
+      
       <Box mb={24}>
         <AssetHeader account={accounts[0]} parentAccount={parentAccount} />
       </Box>

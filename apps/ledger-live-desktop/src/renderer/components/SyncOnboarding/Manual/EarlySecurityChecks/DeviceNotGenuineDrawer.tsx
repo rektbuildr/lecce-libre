@@ -10,8 +10,7 @@ import { openURL } from "~/renderer/linking";
 import { useSelector } from "react-redux";
 import { localeSelector } from "~/renderer/reducers/settings";
 import { urls } from "~/config/urls";
-import TrackPage from "~/renderer/analytics/TrackPage";
-import { track } from "~/renderer/analytics/segment";
+
 import { ErrorBody } from "~/renderer/components/DeviceAction/rendering";
 
 export type Props = {
@@ -40,7 +39,7 @@ const GenuineCheckErrorDrawer: React.FC<Props> = ({ productName }) => {
 
   return (
     <Flex flexDirection="column" alignItems="center" justifyContent="space-between" height="100%">
-      <TrackPage category={analyticsDrawerName} type="drawer" refreshSource={false} />
+      
       <Flex
         px={13}
         flex={1}
@@ -68,10 +67,7 @@ const GenuineCheckErrorDrawer: React.FC<Props> = ({ productName }) => {
           size="large"
           variant="main"
           onClick={() => {
-            track("button_clicked", {
-              button: "Contact Ledger support",
-              drawer: analyticsDrawerName,
-            });
+            
             openURL(supportUrl);
           }}
           Icon={IconsLegacy.ExternalLinkMedium}

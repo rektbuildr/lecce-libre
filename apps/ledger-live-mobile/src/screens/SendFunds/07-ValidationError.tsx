@@ -5,7 +5,7 @@ import { CompositeScreenProps, useTheme } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { getAccountCurrency } from "@ledgerhq/live-common/account/helpers";
 
-import { TrackScreen } from "../../analytics";
+
 import ValidateError from "../../components/ValidateError";
 import { accountScreenSelector } from "../../reducers/accounts";
 import { ScreenName } from "../../const";
@@ -45,7 +45,7 @@ export default function ValidationError({ navigation, route }: Props) {
         },
       ]}
     >
-      <TrackScreen category="SendFunds" name="ValidationError" currencyName={currency?.name} />
+      
       {error && <ValidateError error={error} onRetry={retry} onClose={onClose} />}
     </SafeAreaView>
   );

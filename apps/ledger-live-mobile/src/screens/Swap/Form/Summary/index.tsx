@@ -28,7 +28,7 @@ import {
 } from "../../../../components/RootNavigator/types/helpers";
 import type { SwapNavigatorParamList } from "../../../../components/RootNavigator/types/SwapNavigator";
 import type { SwapFormNavigatorParamList } from "../../../../components/RootNavigator/types/SwapFormNavigator";
-import { useAnalytics } from "../../../../analytics";
+
 import { sharedSwapTracking } from "../../utils";
 
 interface Props {
@@ -58,10 +58,7 @@ export function Summary({ provider, swapTx: { swap, status, transaction } }: Pro
   const estimatedFees = useMemo(() => status?.estimatedFees ?? "", [status]);
 
   const onEditProvider = useCallback(() => {
-    track("button_clicked", {
-      ...sharedSwapTracking,
-      button: "provider",
-    });
+    
     navigation.navigate(ScreenName.SwapSelectProvider, {
       swap,
       provider,
@@ -70,10 +67,7 @@ export function Summary({ provider, swapTx: { swap, status, transaction } }: Pro
   }, [navigation, swap, provider, exchangeRate, track]);
 
   const onAddAccount = useCallback(() => {
-    track("button_clicked", {
-      ...sharedSwapTracking,
-      button: "add account",
-    });
+    
     if (!to.currency) return;
 
     const params = {
@@ -124,10 +118,7 @@ export function Summary({ provider, swapTx: { swap, status, transaction } }: Pro
   }, [effectiveUnit, exchangeRate?.magnitudeAwareRate, rawCounterValue]);
 
   const onEditNetworkFees = useCallback(() => {
-    track("button_clicked", {
-      ...sharedSwapTracking,
-      button: "change network fees",
-    });
+    
     navigation.navigate(ScreenName.SwapSelectFees, {
       ...route.params,
       swap,
@@ -136,10 +127,7 @@ export function Summary({ provider, swapTx: { swap, status, transaction } }: Pro
   }, [track, navigation, route.params, swap, transaction]);
 
   const onEditTargetAccount = useCallback(() => {
-    track("button_clicked", {
-      ...sharedSwapTracking,
-      button: "change target account",
-    });
+    
     const selectableCurrencyIds =
       to.currency?.type === "TokenCurrency"
         ? [to.currency.id, to.currency.parentCurrency.id]

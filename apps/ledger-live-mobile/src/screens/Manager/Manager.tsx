@@ -11,7 +11,7 @@ import useLatestFirmware from "@ledgerhq/live-common/hooks/useLatestFirmware";
 import { useApps } from "./shared";
 import AppsScreen from "./AppsScreen";
 import GenericErrorBottomModal from "../../components/GenericErrorBottomModal";
-import { TrackScreen } from "../../analytics";
+
 import QuitManagerModal from "./Modals/QuitManagerModal";
 import StorageWarningModal from "./Modals/StorageWarningModal";
 import InstallAppDependenciesModal from "./Modals/InstallAppDependenciesModal";
@@ -223,13 +223,7 @@ const Manager = ({ navigation, route }: NavigationProps) => {
 
   return (
     <>
-      <TrackScreen
-        category="Manager"
-        name="AppsList"
-        deviceModelId={modelId}
-        deviceVersion={deviceInfo.version}
-        appLength={result ? result.installed.length : 0}
-      />
+      
       <SyncSkipUnderPriority priority={100} />
       <AppsInstallUninstallWithDependenciesContextProvider
         value={appsInstallUninstallWithDependenciesContextValue}

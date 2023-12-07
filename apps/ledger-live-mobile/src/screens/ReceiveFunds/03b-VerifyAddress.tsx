@@ -11,7 +11,7 @@ import type { Device } from "@ledgerhq/live-common/hw/actions/types";
 import styled, { useTheme } from "styled-components/native";
 import { Flex } from "@ledgerhq/native-ui";
 import { SyncSkipUnderPriority } from "@ledgerhq/live-common/bridge/react/index";
-import { track, TrackScreen } from "../../analytics";
+
 import { accountScreenSelector } from "../../reducers/accounts";
 import PreventNativeBack from "../../components/PreventNativeBack";
 import SkipLock from "../../components/behaviour/SkipLock";
@@ -98,9 +98,7 @@ export default function ReceiveVerifyAddress({ navigation, route }: Props) {
   const currency = route.params?.currency || (account && getAccountCurrency(account));
 
   const onRetry = useCallback(() => {
-    track("button_clicked", {
-      button: "Retry",
-    });
+    
     onModalClose();
     if (device) {
       verifyOnDevice(device);
@@ -108,9 +106,7 @@ export default function ReceiveVerifyAddress({ navigation, route }: Props) {
   }, [device, onModalClose, verifyOnDevice]);
 
   const goBack = useCallback(() => {
-    track("button_clicked", {
-      button: "Cancel",
-    });
+    
     navigation.navigate(ScreenName.ReceiveConfirmation, {
       ...route.params,
       verified: false,
@@ -118,10 +114,7 @@ export default function ReceiveVerifyAddress({ navigation, route }: Props) {
   }, [navigation, route.params]);
 
   const redirectToSupport = useCallback(() => {
-    track("message_clicked", {
-      message: "contact us asap",
-      url: urls.receiveVerifyAddress,
-    });
+    
     Linking.openURL(urls.receiveVerifyAddress);
   }, []);
 
@@ -140,7 +133,7 @@ export default function ReceiveVerifyAddress({ navigation, route }: Props) {
       <SyncSkipUnderPriority priority={100} />
       {error ? (
         <>
-          <TrackScreen category="Deposit" name="Address Verification Denied" />
+          
           <Flex flex={1} alignItems="center" justifyContent="center" p={6}>
             <Illustration
               lightSource={illustrations.light}
@@ -173,7 +166,7 @@ export default function ReceiveVerifyAddress({ navigation, route }: Props) {
         </>
       ) : (
         <Flex flex={1} alignItems="center" justifyContent="center" p={6}>
-          <TrackScreen category="Deposit" name="Verify Address" />
+          
           <LText variant="h4" textAlign="center" mb={6} testID={"receive-verifyAddress-title"}>
             {t("transfer.receive.verifyAddress.title")}
           </LText>

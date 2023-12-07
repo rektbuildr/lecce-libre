@@ -12,7 +12,7 @@ import { getEnv } from "@ledgerhq/live-env";
 import { getNotifications, saveNotifications } from "../../db";
 import { useLocale } from "../../context/Locale";
 import { cryptoCurrenciesSelector } from "../../reducers/accounts";
-import { track } from "../../analytics";
+
 import { lastSeenDeviceSelector } from "../../reducers/settings";
 import fetchApi from "../Settings/Debug/__mocks__/announcements";
 import networkApi from "../Settings/Debug/__mocks__/serviceStatus";
@@ -100,10 +100,7 @@ export default function NotificationsProvider({ children }: Props) {
         utm_campaign: utmCampaign,
         published_at: publishedAt,
       } = announcement;
-      track("Announcement Received", {
-        uuid,
-        utm_campaign: utmCampaign,
-      });
+      
       const publishedTime = new Date(publishedAt).getTime();
       if (publishedTime && initDateRef.current && publishedTime > initDateRef.current)
         pushToast({
@@ -117,10 +114,7 @@ export default function NotificationsProvider({ children }: Props) {
     [pushToast, initDateRef],
   );
   const onAnnouncementRead = useCallback(({ uuid, utm_campaign: utmCampaign }: Announcement) => {
-    track("Announcement Viewed", {
-      uuid,
-      utm_campaign: utmCampaign,
-    });
+    
   }, []);
   return (
     <AnnouncementProvider

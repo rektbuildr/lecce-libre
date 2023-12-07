@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { CompositeScreenProps, useTheme } from "@react-navigation/native";
 import { getAccountCurrency } from "@ledgerhq/live-common/account/helpers";
 import { accountScreenSelector } from "../../reducers/accounts";
-import { TrackScreen } from "../../analytics";
+
 import { ScreenName } from "../../const";
 import PreventNativeBack from "../../components/PreventNativeBack";
 import ValidateSuccess from "../../components/ValidateSuccess";
@@ -58,7 +58,7 @@ export default function ValidationSuccess({ navigation, route }: Props) {
         },
       ]}
     >
-      <TrackScreen category="SendFunds" name="ValidationSuccess" currencyName={currency?.name} />
+      
       <PreventNativeBack />
       <ValidateSuccess onClose={onClose} onViewDetails={goToOperationDetails} />
     </View>

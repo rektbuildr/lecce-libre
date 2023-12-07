@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Device } from "@ledgerhq/live-common/hw/actions/types";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
 import QueuedDrawer from "../../components/QueuedDrawer";
-import { TrackScreen } from "../../analytics";
+
 import { AutoRepair } from "../../components/DeviceAction/rendering";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { Flex } from "@ledgerhq/native-ui";
@@ -23,11 +23,7 @@ const AutoRepairDrawer = ({ isOpen, onDone, device }: Props) => {
 
   return (
     <QueuedDrawer isRequestingToBeOpened={isOpen} preventBackdropClick noCloseButton>
-      <TrackScreen
-        category="Repairing device in bootloader mode"
-        type="drawer"
-        refreshSource={false}
-      />
+      
       <Flex flexDirection="row">
         <AutoRepair device={device} onDone={onDone} t={t} navigation={navigation} />
       </Flex>

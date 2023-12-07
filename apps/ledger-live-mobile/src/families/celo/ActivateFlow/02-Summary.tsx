@@ -10,7 +10,7 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import { Trans } from "react-i18next";
 import { SafeAreaView, StyleSheet, View } from "react-native";
 import { useSelector } from "react-redux";
-import { TrackScreen } from "../../../analytics";
+
 import Button from "../../../components/Button";
 import Touchable from "../../../components/Touchable";
 import { ScreenName } from "../../../const";
@@ -109,13 +109,7 @@ export default function ActivateSummary({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
-      <TrackScreen
-        category="ActivateFlow"
-        name="Summary"
-        flow="stake"
-        action="activate"
-        currency="celo"
-      />
+      
       <View style={styles.body}>
         <View style={styles.summary}>
           <SummaryWords onChangeValidator={onChangeDelegator} validator={chosenValidator} />

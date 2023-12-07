@@ -2,7 +2,7 @@ import React from "react";
 import { Icons, Button, Flex, Link } from "@ledgerhq/native-ui";
 import { useTranslation } from "react-i18next";
 import QueuedDrawer from "../../components/QueuedDrawer";
-import { TrackScreen } from "../../analytics";
+
 import { GenericInformationBody } from "../../components/GenericInformationBody";
 
 export type Props = {
@@ -53,11 +53,7 @@ const EarlySecurityCheckMandatoryDrawer: React.FC<Props> = ({
       preventBackdropClick
       noCloseButton
     >
-      <TrackScreen
-        category="User tries to skip early security check"
-        type="drawer"
-        refreshSource={false}
-      />
+      
       <Flex flexDirection="column" alignItems={"center"} mt={10}>
         <GenericInformationBody
           title={t("earlySecurityCheck.earlySecurityCheckMandatoryDrawer.title")}

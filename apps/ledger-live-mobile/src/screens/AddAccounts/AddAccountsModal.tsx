@@ -7,7 +7,7 @@ import { NavigatorName } from "../../const";
 import { readOnlyModeEnabledSelector } from "../../reducers/settings";
 
 import QueuedDrawer from "../../components/QueuedDrawer";
-import { track, TrackScreen } from "../../analytics";
+
 import AddAccountsModalCard from "./AddAccountsModalCard";
 import { BaseNavigation } from "../../components/RootNavigator/types/helpers";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -28,10 +28,7 @@ export default function AddAccountsModal({ navigation, onClose, isOpened, curren
   const readOnlyModeEnabled = useSelector(readOnlyModeEnabledSelector);
 
   const onClickAdd = useCallback(() => {
-    track("button_clicked", {
-      button: "With your Ledger",
-      drawer: "AddAccountsModal",
-    });
+    
     navigation.navigate(NavigatorName.AddAccounts);
     if (currency?.type === "TokenCurrency") {
       navigation.navigate(NavigatorName.AddAccounts, {
@@ -46,25 +43,19 @@ export default function AddAccountsModal({ navigation, onClose, isOpened, curren
   }, [navigation, currency, onClose]);
 
   const onClickImport = useCallback(() => {
-    track("button_clicked", {
-      button: "Import from Desktop",
-      drawer: "AddAccountsModal",
-    });
+    
     navigation.navigate(NavigatorName.ImportAccounts);
     onClose();
   }, [navigation, onClose]);
 
   const onPressClose = useCallback(() => {
-    track("button_clicked", {
-      button: "Close 'x'",
-      drawer: "AddAccountsModal",
-    });
+    
     onClose();
   }, [onClose]);
 
   return (
     <QueuedDrawer isRequestingToBeOpened={isOpened} onClose={onPressClose}>
-      <TrackScreen category="Add/Import accounts" type="drawer" />
+      
       <Text variant="h4" fontWeight="semiBold" fontSize="24px" mb={2}>
         {t("addAccountsModal.title")}
       </Text>

@@ -22,7 +22,7 @@ import {
   setNotificationsDataOfUser,
 } from "../actions/notifications";
 import { setRatingsModalLocked } from "../actions/ratings";
-import { track } from "../analytics";
+
 import {
   notificationsSelector,
   INITIAL_STATE as settingsInitialState,
@@ -356,11 +356,7 @@ const useNotifications = () => {
   );
 
   const modalAllowNotifications = useCallback(() => {
-    track("button_clicked", {
-      button: "Allow",
-      page: pushNotificationsOldRoute,
-      drawer: "Notif",
-    });
+    
     setPushNotificationsModalOpenCallback(false);
     handlePushNotificationsPermission();
     if (pushNotificationsFeature?.params?.conditions?.default_delay_between_two_prompts) {
@@ -377,11 +373,7 @@ const useNotifications = () => {
   ]);
 
   const modalDelayLater = useCallback(() => {
-    track("button_clicked", {
-      button: "Maybe Later",
-      page: pushNotificationsOldRoute,
-      drawer: "Notif",
-    });
+    
     setPushNotificationsModalOpenCallback(false);
     if (pushNotificationsDataOfUser?.alreadyDelayedToLater) {
       updatePushNotificationsDataOfUserInStateAndStore({

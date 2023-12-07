@@ -8,7 +8,7 @@ import { useTheme } from "@react-navigation/native";
 import { Flex } from "@ledgerhq/native-ui";
 import { StackScreenProps } from "@react-navigation/stack";
 
-import { TrackScreen } from "../analytics";
+
 import SelectDeviceComp from "../components/SelectDevice";
 import SelectDeviceComp2 from "../components/SelectDevice2";
 import NavigationScrollView from "../components/NavigationScrollView";
@@ -69,7 +69,7 @@ export default function SelectDevice({
       ]}
     >
       <SkipSelectDevice route={route as SelectDeviceNav["route"]} onResult={onNavigate} />
-      <TrackScreen category={route.name.replace("SelectDevice", "")} name="SelectDevice" />
+      
       {newDeviceSelectionFeatureFlag?.enabled ? (
         <Flex px={16} pb={8} flex={1}>
           <SelectDeviceComp2

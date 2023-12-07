@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useEffect } from "react";
 import { EnvName, getEnvDefault } from "@ledgerhq/live-env";
-import Track from "~/renderer/analytics/Track";
+
 import Switch from "~/renderer/components/Switch";
 import Input from "~/renderer/components/Input";
 import Box from "~/renderer/components/Box";
@@ -65,7 +65,7 @@ const ExperimentalFloat = ({
   );
   return (
     <>
-      <Track onUpdate event={enabled ? `${name}Enabled` : `${name}Disabled`} />
+      
 
       <Box grow horizontal flow={2} alignItems="center">
         {enabled ? (

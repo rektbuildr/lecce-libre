@@ -11,11 +11,10 @@ import ModalChoice from "./ModalChoice";
 import { importImageFromPhoneGallery } from "./imageUtils";
 import { BaseNavigatorStackParamList } from "../RootNavigator/types/BaseNavigator";
 import { StackNavigatorNavigation } from "../RootNavigator/types/helpers";
-import { TrackScreen } from "../../analytics";
 import DeviceAction from "../DeviceAction";
 import { useStaxRemoveImageDeviceAction } from "../../hooks/deviceActions";
 
-const analyticsDrawerName = "Choose an image to set as your device lockscreen";
+const analyticsDrawerName = "notrack";
 
 const analyticsButtonChoosePhoneGalleryEventProps = {
   button: "Choose from my picture gallery",
@@ -123,7 +122,7 @@ const CustomImageBottomModal: React.FC<Props> = props => {
       onClose={wrappedOnClose}
       preventBackdropClick={isRemovingCustomImage}
     >
-      <TrackScreen category={analyticsDrawerName} type="drawer" refreshSource={false} />
+    
       {isRemovingCustomImage && device ? (
         <Flex alignItems="center">
           <Flex flexDirection="row">

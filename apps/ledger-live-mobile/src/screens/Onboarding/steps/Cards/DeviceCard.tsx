@@ -3,7 +3,6 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Image, ImageSourcePropType } from "react-native";
 import { useTheme } from "styled-components/native";
-import { track } from "../../../../analytics";
 import Touchable from "../../../../components/Touchable";
 
 type DeviceCardProps = {
@@ -47,7 +46,7 @@ const DeviceCard = ({
   const { t } = useTranslation();
 
   const pressAndTrack = () => {
-    track(event, eventProperties);
+    
     onPress?.();
   };
 

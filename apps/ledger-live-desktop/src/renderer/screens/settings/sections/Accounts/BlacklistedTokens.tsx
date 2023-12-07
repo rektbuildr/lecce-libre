@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { showToken } from "~/renderer/actions/settings";
 import { blacklistedTokenIdsSelector } from "~/renderer/reducers/settings";
 import { useBridgeSync } from "@ledgerhq/live-common/bridge/react/index";
-import Track from "~/renderer/analytics/Track";
+
 import IconAngleDown from "~/renderer/icons/AngleDown";
 export default function BlacklistedTokens() {
   const { t } = useTranslation();
@@ -61,7 +61,7 @@ export default function BlacklistedTokens() {
         flowDirection: "column",
       }}
     >
-      <Track onUpdate event="BlacklistedTokens dropdown" opened={sectionVisible} />
+      
       <Row
         title={t("settings.accounts.tokenBlacklist.title")}
         desc={t("settings.accounts.tokenBlacklist.desc")}

@@ -20,7 +20,7 @@ import { counterValueCurrencySelector, hasOrderedNanoSelector } from "../../../r
 import { usePortfolioAllAccounts } from "../../../hooks/portfolio";
 
 import GraphCardContainer from "../GraphCardContainer";
-import TrackScreen from "../../../analytics/TrackScreen";
+
 import { NavigatorName, ScreenName } from "../../../const";
 import CheckLanguageAvailability from "../../../components/CheckLanguageAvailability";
 import CheckTermOfUseUpdate from "../../../components/CheckTermOfUseUpdate";
@@ -181,7 +181,7 @@ function ReadOnlyPortfolio({ navigation }: NavigationProps) {
       </Flex>
       <CheckLanguageAvailability />
       <CheckTermOfUseUpdate />
-      <TrackScreen category="Wallet" source={source} />
+      
       <CollapsibleHeaderFlatList<JSX.Element>
         data={data}
         contentContainerStyle={{ paddingBottom: TAB_BAR_SAFE_HEIGHT }}

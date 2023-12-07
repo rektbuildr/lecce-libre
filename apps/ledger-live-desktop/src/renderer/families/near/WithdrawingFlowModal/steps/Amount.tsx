@@ -5,7 +5,7 @@ import { useTranslation, Trans } from "react-i18next";
 import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
 import { StepProps } from "../types";
 import { NearMappedStakingPosition } from "@ledgerhq/live-common/families/near/types";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import { ValidatorField, AmountField } from "../fields";
@@ -62,13 +62,7 @@ export default function StepAmount({
   const amount = useMemo(() => (validator ? validator.amount : new BigNumber(0)), [validator]);
   return (
     <Box flow={1}>
-      <TrackPage
-        category="Withdrawing Flow"
-        name="Step 1"
-        flow="stake"
-        action="withdrawing"
-        currency="near"
-      />
+      
       {error && <ErrorBanner error={error} />}
       <ValidatorField account={account} transaction={transaction} onChange={onChangeValidator} />
       <AmountField

@@ -7,7 +7,7 @@ import { getCurrencyColor } from "@ledgerhq/live-common/currencies/color";
 import { IconsLegacy } from "@ledgerhq/native-ui";
 import { ScreenName, NavigatorName } from "../../const";
 import { rgba } from "../../colors";
-import { TrackScreen } from "../../analytics";
+
 import LText from "../../components/LText";
 import Button from "../../components/Button";
 import IconCheck from "../../icons/Check";
@@ -45,7 +45,7 @@ export default function AddAccountsSuccess({ navigation, route }: Props) {
         },
       ]}
     >
-      <TrackScreen category="AddAccounts" name="Success" currencyName={currency?.name} />
+      
       {currency ? <CurrencySuccess currency={currency} /> : null}
       <LText secondary semiBold style={styles.title}>
         <Trans i18nKey="addAccounts.imported" />

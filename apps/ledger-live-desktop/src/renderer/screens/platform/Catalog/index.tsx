@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { useHistory } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { dismissedBannersSelector } from "~/renderer/reducers/settings";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import { openPlatformAppDisclaimerDrawer } from "~/renderer/actions/UI";
 import { AppCard } from "~/renderer/components/Platform/AppCard";
@@ -71,7 +71,7 @@ export function Catalog() {
 
   return (
     <>
-      <TrackPage category="Platform" name="Catalog" />
+      
       <Header>
         <Title data-test-id="discover-title">{t("platform.catalog.title")}</Title>
       </Header>

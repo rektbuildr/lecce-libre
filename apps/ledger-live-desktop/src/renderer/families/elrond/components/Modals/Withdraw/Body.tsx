@@ -13,7 +13,7 @@ import { updateAccountWithUpdater } from "~/renderer/actions/accounts";
 import { getCurrentDevice } from "~/renderer/reducers/devices";
 import { OpenModal, openModal } from "~/renderer/actions/modals";
 
-import Track from "~/renderer/analytics/Track";
+
 import Stepper from "~/renderer/components/Stepper";
 import StepWithdraw, { StepWithdrawFooter } from "./steps/StepWithdraw";
 import GenericStepConnectDevice from "~/renderer/modals/Send/steps/GenericStepConnectDevice";
@@ -165,7 +165,7 @@ const Body = (props: Props) => {
   return (
     <Stepper {...stepperProps}>
       <SyncSkipUnderPriority priority={100} />
-      <Track onUnmount={true} event="CloseModalWithdraw" />
+      
     </Stepper>
   );
 };

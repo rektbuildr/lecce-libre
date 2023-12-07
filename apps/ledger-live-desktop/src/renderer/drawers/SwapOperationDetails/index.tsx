@@ -16,7 +16,7 @@ import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 import { urls } from "~/config/urls";
-import { setTrackingSource } from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import CopyWithFeedback from "~/renderer/components/CopyWithFeedback";
 import CryptoCurrencyIcon from "~/renderer/components/CryptoCurrencyIcon";
@@ -132,7 +132,7 @@ const SwapOperationDetails = ({
         account.type !== "Account" ? accounts.find(a => a.id === account.parentId) : null;
       const mainAccount = getMainAccount(account, parentAccount);
       const url = `/account/${mainAccount.id}/${parentAccount ? account.id : ""}`;
-      setTrackingSource("swap operation details");
+      
       history.push({
         pathname: url,
       });

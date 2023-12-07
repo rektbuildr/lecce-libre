@@ -6,9 +6,7 @@ import { useTheme } from "styled-components";
 import { DeviceModelId } from "@ledgerhq/devices";
 import Animation from "~/renderer/animations";
 import { getDeviceAnimation } from "~/renderer/components/DeviceAction/animations";
-import { track } from "~/renderer/analytics/segment";
-import { analyticsFlowName } from "./shared";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import { withV3StyleProvider } from "~/renderer/styles/StyleProviderV3";
 
 export type Props = {
@@ -26,11 +24,7 @@ const TroubleshootingDrawer: React.FC<Props> = ({ onClose, lastKnownDeviceId }) 
 
   const handleFixClicked = useCallback(() => {
     history.replace("/USBTroubleshooting");
-    track("button_clicked", {
-      button: "fix it",
-      page: "drawer troubleshoot USB connection",
-      flow: analyticsFlowName,
-    });
+    
   }, [history]);
 
   return (
@@ -38,7 +32,7 @@ const TroubleshootingDrawer: React.FC<Props> = ({ onClose, lastKnownDeviceId }) 
       <TrackPage
         category="drawer troubleshoot USB connection"
         type="drawer"
-        flow={analyticsFlowName}
+        flow={""}
         error="troubleshoot USB connection"
         refreshSource={false}
       />

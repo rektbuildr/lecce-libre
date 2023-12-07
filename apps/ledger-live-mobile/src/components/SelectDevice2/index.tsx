@@ -11,7 +11,7 @@ import { usePostOnboardingEntryPointVisibleOnWallet } from "@ledgerhq/live-commo
 import { DeviceModelId } from "@ledgerhq/types-devices";
 import SafeAreaView from "../SafeAreaView";
 import TransportBLE from "../../react-native-hw-transport-ble";
-import { TrackScreen, track } from "../../analytics";
+
 import { NavigatorName, ScreenName } from "../../const";
 import { knownDevicesSelector } from "../../reducers/ble";
 import Touchable from "../Touchable";
@@ -119,10 +119,7 @@ export default function SelectDevice({
       dispatch(updateMainNavigatorVisibility(true));
 
       const { modelId, wired, deviceId } = device;
-      track("Device selection", {
-        modelId,
-        connectionType: wired ? "USB" : "BLE",
-      });
+      
 
       // If neither wired nor proxy-debug device, bluetooth is required
       if (!wired && !deviceId.includes("httpdebug")) {
@@ -297,18 +294,9 @@ export default function SelectDevice({
     [withMyLedgerTracking],
   );
 
-  const trackScreenProps = useMemo(
-    () => ({
-      category: "My Ledger",
-      "number of devices connected": deviceList.length,
-      "model of devices connected": deviceList.map(d => d.modelId).sort(),
-    }),
-    [deviceList],
-  );
-
   return (
     <SafeAreaView edges={["left", "right"]} isFlex>
-      {withMyLedgerTracking ? <TrackScreen {...trackScreenProps} /> : null}
+      {withMyLedgerTracking ?  : null}
       <RequiresBluetoothDrawer
         isOpenedOnIssue={isBleRequired}
         onUserClose={onUserCloseRequireBluetoothDrawer}
@@ -419,7 +407,7 @@ export default function SelectDevice({
           >
             <Flex>
               {withMyLedgerTracking ? (
-                <TrackScreen category={"Add a Ledger device"} type="drawer" refreshSource={false} />
+                
               ) : null}
               <Touchable
                 onPress={onSetUpNewDevice}

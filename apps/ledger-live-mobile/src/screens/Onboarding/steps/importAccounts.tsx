@@ -6,7 +6,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import Illustration from "../../../images/illustration/Illustration";
 import { NavigatorName, ScreenName } from "../../../const";
 import BaseStepperView, { SyncDesktop, Metadata } from "./setupDevice/scenes";
-import { TrackScreen } from "../../../analytics";
+
 
 import { completeOnboarding, setHasOrderedNano, setReadOnlyMode } from "../../../actions/settings";
 import { useNavigationInterceptor } from "../onboardingContext";
@@ -80,7 +80,7 @@ function OnboardingStepPairNew() {
 
   return (
     <>
-      <TrackScreen category="Onboarding" name="PairNew" />
+      
       <BaseStepperView
         onNext={nextPage}
         steps={scenes}

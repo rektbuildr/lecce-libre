@@ -20,7 +20,7 @@ import { Trans } from "react-i18next";
 import { Animated, SafeAreaView, StyleSheet, View, TextStyle, StyleProp } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { useSelector } from "react-redux";
-import { TrackScreen } from "../../../analytics";
+
 import { rgba } from "../../../colors";
 import Button from "../../../components/Button";
 import Circle from "../../../components/Circle";
@@ -179,13 +179,7 @@ export default function StakingSummary({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
-      <TrackScreen
-        category="DelegationFlow"
-        name="Summary"
-        flow="stake"
-        action="staking"
-        currency="near"
-      />
+      
 
       <View style={styles.body}>
         <DelegatingContainer

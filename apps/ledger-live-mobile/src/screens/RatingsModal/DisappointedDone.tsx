@@ -3,7 +3,7 @@ import { Linking } from "react-native";
 import { Trans } from "react-i18next";
 import { Flex, Text, Button, Link } from "@ledgerhq/native-ui";
 import useRatings from "../../logic/ratings";
-import { track, TrackScreen } from "../../analytics";
+
 
 type Props = {
   closeModal: () => void;
@@ -17,25 +17,12 @@ const DisappointedDone = ({ closeModal }: Props) => {
 
   const onEmailClick = useCallback(() => {
     Linking.openURL(`mailto:${ratingsFeatureParams?.support_email}`);
-    track("button_clicked", {
-      flow: "review",
-      page: "review_disappointedstep2",
-      button: "mailto",
-      source: ratingsHappyMoment?.route_name,
-      params: ratingsFeatureParams,
-    });
+    
   }, [ratingsFeatureParams, ratingsHappyMoment?.route_name]);
 
   return (
     <Flex flex={1} alignItems="center" justifyContent="center" mt={3}>
-      <TrackScreen
-        category="Review"
-        name="page_viewed"
-        flow="review"
-        page="review_disappointedstep3"
-        source={ratingsHappyMoment?.route_name}
-        params={ratingsFeatureParams}
-      />
+      
       <Text
         variant="h4"
         fontWeight="semiBold"

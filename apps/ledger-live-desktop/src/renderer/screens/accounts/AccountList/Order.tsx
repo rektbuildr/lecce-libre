@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useRefreshAccountsOrdering } from "~/renderer/actions/general";
 import { saveSettings } from "~/renderer/actions/settings";
-import Track from "~/renderer/analytics/Track";
+
 import BoldToggle from "~/renderer/components/BoldToggle";
 import Box from "~/renderer/components/Box";
 import DropDownSelector, {
@@ -61,7 +61,7 @@ export default function Order() {
       {({ isOpen, value }) =>
         value ? (
           <Box id="accounts-order-select-button" horizontal flow={1}>
-            <Track onUpdate event="ChangeSort" orderAccounts={orderAccounts} />
+            
             <Text ff="Inter|SemiBold" fontSize={4}>
               {t("common.sortBy")}
             </Text>

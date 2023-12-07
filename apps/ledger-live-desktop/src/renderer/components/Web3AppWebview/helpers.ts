@@ -11,7 +11,6 @@ import { getInitialURL } from "@ledgerhq/live-common/wallet-api/helpers";
 import { safeGetRefValue } from "@ledgerhq/live-common/wallet-api/react";
 import { LiveAppManifest } from "@ledgerhq/live-common/platform/types";
 import { WebviewAPI, WebviewState, WebviewTag } from "./types";
-import { track } from "~/renderer/analytics/segment";
 
 export const initialWebviewState: WebviewState = {
   url: "",
@@ -177,7 +176,7 @@ export function useWebviewState(
         url: fullURL.hostname,
       };
       console.error("Web3AppView handleFailLoad", { errorInfo, isMainFrame });
-      track("useWebviewState", errorInfo);
+      
 
       if (isMainFrame) {
         setState(oldState => ({

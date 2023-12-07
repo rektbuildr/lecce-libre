@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { reduce } from "rxjs/operators";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import DeviceAction from "~/renderer/components/DeviceAction";
 import Button from "~/renderer/components/Button";
 import Box from "~/renderer/components/Box";
@@ -64,7 +64,7 @@ const StepConnectDevice = ({
   }, [device, numberOfAccountsToScan, setError, setScannedDescriptors]);
   return (
     <>
-      <TrackPage category="FullNode" name="Step3" currencyName={currency.name} />
+      
       {scanStatus === connectionStatus.IDLE ? (
         <DeviceAction
           action={action}

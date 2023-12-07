@@ -2,7 +2,7 @@ import React, { Component, useCallback } from "react";
 import { FlatList, StyleSheet } from "react-native";
 import { Box } from "@ledgerhq/native-ui";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { track } from "../analytics";
+
 import SettingsRow from "../components/SettingsRow";
 
 type EntryProps<Item> = {
@@ -70,7 +70,7 @@ export default function makeGenericSelectScreen<Item extends { value: string; la
       if (!cancelNavigateBack) {
         navigation.goBack();
       }
-      track(id, itemEventProperties(item));
+      );
     };
 
     renderItem = ({ item }: { item: Item }) => (

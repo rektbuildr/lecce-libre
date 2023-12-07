@@ -19,7 +19,7 @@ import Button from "~/renderer/components/Button";
 import Ellipsis from "~/renderer/components/Ellipsis";
 import CryptoCurrencyIcon from "~/renderer/components/CryptoCurrencyIcon";
 import { Separator, Item, TextLink, AngleDown, Check } from "./common";
-import { setTrackingSource } from "~/renderer/analytics/TrackPage";
+
 
 type ItemShape = {
   key: string;
@@ -81,7 +81,7 @@ const AccountCrumb = () => {
       if (!item) {
         return;
       }
-      setTrackingSource("account breadcrumb");
+      
       if (parentId) {
         history.push({
           pathname: `/account/${parentId}/${item.key}`,
@@ -98,7 +98,7 @@ const AccountCrumb = () => {
   const openActiveAccount = useCallback(
     (e: React.SyntheticEvent<HTMLButtonElement>) => {
       e.stopPropagation();
-      setTrackingSource("account breadcrumb");
+      
       if (parentId) {
         if (id) {
           history.push({
@@ -137,7 +137,7 @@ const AccountCrumb = () => {
       <TextLink>
         <Button
           onClick={() => {
-            setTrackingSource("account breadcrumb");
+            
             history.push({
               pathname: "/accounts/",
             });

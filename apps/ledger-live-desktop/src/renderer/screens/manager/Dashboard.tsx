@@ -9,7 +9,7 @@ import { distribute, initState } from "@ledgerhq/live-common/apps/logic";
 import { mockExecWithInstalledContext } from "@ledgerhq/live-common/apps/mock";
 import { Device } from "@ledgerhq/live-common/hw/actions/types";
 import AppsList from "./AppsList";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import FirmwareUpdate from "./FirmwareUpdate";
 import { getCurrentDevice } from "~/renderer/reducers/devices";
@@ -80,14 +80,7 @@ const Dashboard = ({
   }, [result]);
   return (
     <Box flow={4} selectable>
-      <TrackPage
-        category="Manager"
-        name="Dashboard"
-        deviceModelId={device.modelId}
-        deviceVersion={deviceInfo.version}
-        appsStoragePercentage={appsStoragePercentage}
-        appLength={result ? result.installed.length : 0}
-      />
+      
       {result ? (
         <AppsList
           device={device}

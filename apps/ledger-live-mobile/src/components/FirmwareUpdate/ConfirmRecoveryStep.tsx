@@ -12,8 +12,8 @@ import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Device } from "@ledgerhq/live-common/hw/actions/types";
 import { Linking, ScrollView } from "react-native";
-import { track } from "../../analytics";
-import Track from "../../analytics/Track";
+
+
 import { urls } from "@utils/urls";
 import SafeMarkdown from "../SafeMarkdown";
 
@@ -29,7 +29,7 @@ const ConfirmRecoveryStep = ({ firmwareVersion, firmwareNotes, onContinue, devic
   const [confirmRecoveryPhraseBackup, setConfirmRecoveryPhraseBackup] = useState(false);
 
   const toggleConfirmRecoveryPhraseBackup = useCallback(() => {
-    track("FirmwareUpdateSeedDisclaimerChecked");
+    
     setConfirmRecoveryPhraseBackup(!confirmRecoveryPhraseBackup);
   }, [confirmRecoveryPhraseBackup]);
 
@@ -45,7 +45,7 @@ const ConfirmRecoveryStep = ({ firmwareVersion, firmwareNotes, onContinue, devic
 
   return (
     <Flex height="100%">
-      <Track event="FirmwareUpdateChangelog" onMount />
+      
       <ScrollView persistentScrollbar>
         <Flex px={3}>
           <Text variant="h2" fontWeight="semiBold" mb={4}>

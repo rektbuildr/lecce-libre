@@ -12,7 +12,7 @@ import BaseStepperView, {
   ExistingRecoveryStep1,
   ExistingRecoveryStep2,
 } from "./setupDevice/scenes";
-import { TrackScreen } from "../../../analytics";
+
 import StepLottieAnimation from "./setupDevice/scenes/StepLottieAnimation";
 import SeedWarning from "../shared/SeedWarning";
 import { StackNavigatorProps } from "../../../components/RootNavigator/types/helpers";
@@ -179,7 +179,7 @@ function OnboardingStepRecoveryPhrase() {
 
   return (
     <>
-      <TrackScreen category="Onboarding" name="RecoveryPhrase" />
+      
       <BaseStepperView
         onNext={nextPage}
         steps={scenes}

@@ -5,8 +5,7 @@ import { Trans } from "react-i18next";
 import { SyncOneAccountOnMount } from "@ledgerhq/live-common/bridge/react/index";
 import { multiline } from "~/renderer/styles/helpers";
 import { urls } from "~/config/urls";
-import TrackPage from "~/renderer/analytics/TrackPage";
-import { track } from "~/renderer/analytics/segment";
+
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import RetryButton from "~/renderer/components/RetryButton";
@@ -59,13 +58,7 @@ const StepConfirmation = ({
   if (optimisticOperation) {
     return (
       <Container>
-        <TrackPage
-          category={`Delegation Flow${eventType ? ` (${eventType})` : ""}`}
-          name="Step Confirmed"
-          flow="stake"
-          action="delegation"
-          currency="xtz"
-        />
+        
         <SyncOneAccountOnMount
           reason="transaction-flow-confirmation"
           priority={10}
@@ -93,13 +86,7 @@ const StepConfirmation = ({
   if (error) {
     return (
       <Container shouldSpace={signed}>
-        <TrackPage
-          category="Delegation Flow"
-          name="Step Confirmation Error"
-          flow="stake"
-          action="delegation"
-          currency="xtz"
-        />
+        
         {signed ? (
           <BroadcastErrorDisclaimer
             title={<Trans i18nKey="delegation.flow.steps.confirmation.broadcastError" />}

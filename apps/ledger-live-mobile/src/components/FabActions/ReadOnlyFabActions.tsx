@@ -7,7 +7,7 @@ import Button from "../wrappedUi/Button";
 
 import { ScreenName } from "../../const";
 import useCurrency from "../../helpers/useCurrency";
-import { track } from "../../analytics";
+
 
 const iconBuy = IconsLegacy.PlusMedium;
 const iconReceive = IconsLegacy.ArrowBottomMedium;
@@ -21,11 +21,7 @@ function ReadOnlyFabActions() {
 
   const handleOnPress = useCallback(
     (buttonTitle: string) => {
-      track("button_clicked", {
-        button: buttonTitle,
-        page: "Account",
-        currency,
-      });
+      
       buyDevice();
     },
     [buyDevice, currency],

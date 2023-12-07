@@ -17,7 +17,7 @@ import { useTheme } from "@react-navigation/native";
 import useFeature from "@ledgerhq/live-config/featureFlags/useFeature";
 import useEnv from "@ledgerhq/live-common/hooks/useEnv";
 import { ScreenName } from "../../const";
-import { TrackScreen } from "../../analytics";
+
 import FilteredSearchBar from "../../components/FilteredSearchBar";
 import CurrencyRow from "../../components/CurrencyRow";
 import LText from "../../components/LText";
@@ -260,7 +260,7 @@ export default function AddAccountsSelectCrypto({ navigation, route }: Props) {
         },
       ]}
     >
-      <TrackScreen category="AddAccounts" name="SelectCrypto" />
+      
       <View style={styles.searchContainer}>
         <FilteredSearchBar
           keys={SEARCH_KEYS}

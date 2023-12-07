@@ -18,7 +18,7 @@ import { accountsSelector } from "~/renderer/reducers/accounts";
 import Bar from "~/renderer/screens/dashboard/AssetDistribution/Bar";
 import ToolTip from "~/renderer/components/Tooltip";
 import useTheme from "~/renderer/hooks/useTheme";
-import { setTrackingSource } from "~/renderer/analytics/TrackPage";
+
 import { IconsLegacy } from "@ledgerhq/react-ui";
 export type AccountDistributionItem = {
   account: AccountLike;
@@ -40,7 +40,7 @@ export default function Row({
   const history = useHistory();
   const onAccountClick = useCallback(
     (account: Account | SubAccount) => {
-      setTrackingSource("account allocation");
+      
       history.push({
         pathname:
           account.type !== "Account"

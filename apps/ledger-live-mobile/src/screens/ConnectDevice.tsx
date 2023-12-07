@@ -12,7 +12,7 @@ import { accountScreenSelector } from "../reducers/accounts";
 import DeviceAction from "../components/DeviceAction";
 import { renderLoading } from "../components/DeviceAction/rendering";
 import { useSignedTxHandler } from "../logic/screenTransactionHooks";
-import { TrackScreen } from "../analytics";
+
 import type { SendFundsNavigatorStackParamList } from "../components/RootNavigator/types/SendFundsNavigator";
 import { ScreenName } from "../const";
 import type { StackNavigatorProps } from "../components/RootNavigator/types/helpers";
@@ -159,7 +159,7 @@ export default function ConnectDevice({ route, navigation }: Props) {
             },
           ]}
         >
-          <TrackScreen category={route.name.replace("ConnectDevice", "")} name="ConnectDevice" />
+          
           <DeviceAction
             // @ts-expect-error what is going on with this
             action={action}

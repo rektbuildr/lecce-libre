@@ -21,7 +21,7 @@ import { addStarredMarketCoins, removeStarredMarketCoins } from "../../../action
 import MarketStats from "./MarketStats";
 import { flattenAccountsByCryptoCurrencyScreenSelector } from "../../../reducers/accounts";
 import AccountRow from "../../Accounts/AccountRow";
-import { screen, track } from "../../../analytics";
+
 import Button from "../../../components/wrappedUi/Button";
 import MarketGraph from "./MarketGraph";
 import { ScreenName } from "../../../const";
@@ -148,11 +148,7 @@ function MarketDetail({ navigation, route }: NavigationProps) {
 
   useEffect(() => {
     if (name) {
-      track("Page Market Coin", {
-        currencyName: name,
-        starred: isStarred,
-        timeframe: chartRequestParams.range,
-      });
+      
     }
   }, [name, isStarred, chartRequestParams.range]);
 

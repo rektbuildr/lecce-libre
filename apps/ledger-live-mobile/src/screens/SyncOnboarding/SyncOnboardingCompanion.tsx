@@ -34,7 +34,6 @@ import {
 } from "../../actions/settings";
 import InstallSetOfApps from "../../components/DeviceAction/InstallSetOfApps";
 import Stories from "../../components/StorylyStories";
-import { TrackScreen, screen } from "../../analytics";
 import ContinueOnStax from "./assets/ContinueOnStax";
 import type { SyncOnboardingScreenProps } from ".";
 
@@ -500,7 +499,7 @@ export const SyncOnboardingCompanion: React.FC<SyncOnboardingCompanionProps> = (
           title: t("syncOnboarding.earlySecurityCheckCompletedStep.title", { productName }),
           renderBody: () => (
             <>
-              <TrackScreen category={"Set up device: Step 1 device paired"} />
+              
               <Text variant="body" color="neutral.c80" mb={6}>
                 {t("syncOnboarding.earlySecurityCheckCompletedStep.subtitle", {
                   productName,
@@ -522,7 +521,7 @@ export const SyncOnboardingCompanion: React.FC<SyncOnboardingCompanionProps> = (
           doneTitle: t("syncOnboarding.pinStep.doneTitle"),
           renderBody: () => (
             <Flex>
-              <TrackScreen category={"Set up device: Step 2 PIN"} />
+              
               <BodyText>{t("syncOnboarding.pinStep.description", { productName })}</BodyText>
               <ContinueOnDeviceWithAnim
                 deviceModelId={device.modelId}
@@ -539,7 +538,7 @@ export const SyncOnboardingCompanion: React.FC<SyncOnboardingCompanionProps> = (
           doneTitle: t("syncOnboarding.seedStep.doneTitle"),
           renderBody: () => (
             <Flex>
-              <TrackScreen category={"Set up device: Step 3 Seed Intro"} />
+              
               {seedPathStatus === "new_seed" ? (
                 <Flex pb={1}>
                   <BodyText mb={6}>
@@ -686,7 +685,7 @@ export const SyncOnboardingCompanion: React.FC<SyncOnboardingCompanionProps> = (
             }
           />
           {companionStepKey === CompanionStepKey.Exit ? (
-            <TrackScreen category="Set up device: Final Step Your device is ready" />
+            
           ) : null}
         </Flex>
       </Flex>

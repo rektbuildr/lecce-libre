@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import SettingsRow from "../../../components/SettingsRow";
 import { ScreenName } from "../../../const";
 import { developerFeatures } from "../../../experimental";
-import { TrackScreen } from "../../../analytics";
+
 import FeatureRow from "../Experimental/FeatureRow";
 import { SettingsNavigatorStackParamList } from "../../../components/RootNavigator/types/SettingsNavigator";
 import { StackNavigatorProps } from "../../../components/RootNavigator/types/helpers";
@@ -17,7 +17,7 @@ export default function DeveloperSettings({
   const { t } = useTranslation();
   return (
     <ScrollView>
-      <TrackScreen category="Settings" name="Developer" />
+      
 
       {developerFeatures.map(
         feat =>

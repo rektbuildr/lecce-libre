@@ -18,7 +18,7 @@ import StepDelegation, { StepDelegationFooter } from "./steps/StepDelegation";
 import StepAmount, { StepAmountFooter } from "./steps/StepAmount";
 import GenericStepConnectDevice from "~/renderer/modals/Send/steps/GenericStepConnectDevice";
 import StepConfirmation, { StepConfirmationFooter } from "./steps/StepConfirmation";
-import Track from "~/renderer/analytics/Track";
+
 import logger from "~/renderer/logger";
 import { ELROND_LEDGER_VALIDATOR_ADDRESS } from "@ledgerhq/live-common/families/elrond/constants";
 import { Account, AccountBridge, Operation } from "@ledgerhq/types-live";
@@ -180,7 +180,7 @@ const Body = (props: Props) => {
   return (
     <Stepper {...stepperProps}>
       <SyncSkipUnderPriority priority={100} />
-      <Track onUnmount={true} event="CloseModalDelegation" />
+      
     </Stepper>
   );
 };

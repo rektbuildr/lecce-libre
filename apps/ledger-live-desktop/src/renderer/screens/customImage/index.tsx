@@ -28,9 +28,9 @@ import StepContainer from "./StepContainer";
 import StepFooter from "./StepFooter";
 import { analyticsDrawerContext, setDrawer } from "~/renderer/drawers/Provider";
 import { useNavigateToPostOnboardingHubCallback } from "~/renderer/components/PostOnboardingHub/logic/useNavigateToPostOnboardingHubCallback";
-import { analyticsPageNames, analyticsFlowName, analyticsDrawerName } from "./shared";
-import TrackPage, { setTrackingSource } from "~/renderer/analytics/TrackPage";
-import { useTrack } from "~/renderer/analytics/segment";
+import { analyticsDrawerName } from "./shared";
+
+
 
 type Props = {
   imageUri?: string;
@@ -52,7 +52,6 @@ const CustomImage: React.FC<Props> = props => {
   const { imageUri, isFromNFTEntryPoint, reopenPreviousDrawer, isFromPostOnboardingEntryPoint } =
     props;
   const { t } = useTranslation();
-  const track = useTrack();
   const { setAnalyticsDrawerName } = useContext(analyticsDrawerContext);
 
   useEffect(() => setAnalyticsDrawerName(analyticsDrawerName), [setAnalyticsDrawerName]);
@@ -163,9 +162,9 @@ const CustomImage: React.FC<Props> = props => {
   const error = stepError[step];
 
   const handleErrorRetryClicked = useCallback(() => {
-    error?.name && track("button_clicked", { button: "Retry" });
+    
     setStepWrapper(Step.chooseImage);
-  }, [error?.name, setStepWrapper, track]);
+  }, [error?.name, setStepWrapper, null]);
 
   const previousStep: Step | undefined = orderedSteps[orderedSteps.findIndex(s => s === step) - 1];
 
@@ -176,7 +175,6 @@ const CustomImage: React.FC<Props> = props => {
     exit();
     dispatch(setPostOnboardingActionCompleted({ actionId: PostOnboardingActionId.customImage }));
     if (isFromPostOnboardingEntryPoint) {
-      setTrackingSource(analyticsPageNames.success);
       openPostOnboarding();
     }
   }, [exit, dispatch, isFromPostOnboardingEntryPoint, openPostOnboarding]);
@@ -198,12 +196,7 @@ const CustomImage: React.FC<Props> = props => {
                   />
                 }
               >
-                <TrackPage
-                  category={analyticsPageNames.error + error.name}
-                  type="drawer"
-                  flow={analyticsFlowName}
-                  refreshSource={false}
-                />
+               
                 <ErrorDisplayV2 error={error} onRetry={handleErrorRetryClicked} />
               </StepContainer>
             );
@@ -297,12 +290,6 @@ const CustomImage: React.FC<Props> = props => {
             />
           }
         >
-          <TrackPage
-            category={analyticsPageNames.success}
-            type="drawer"
-            flow={analyticsFlowName}
-            refreshSource={false}
-          />
           <Flex flex={1} flexDirection="column" justifyContent="center" alignItems="center">
             <BoxedIcon
               Icon={IconsLegacy.CheckAloneMedium}

@@ -4,7 +4,7 @@ import { TFunction } from "i18next";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { CryptoCurrency } from "@ledgerhq/types-cryptoassets";
-import Track from "~/renderer/analytics/Track";
+
 import { saveSettings } from "~/renderer/actions/settings";
 import {
   currencySettingsSelector,
@@ -72,7 +72,7 @@ class CurrencyRows extends PureComponent<Props> {
             desc={t("settings.currencies.confirmationsNbDesc")}
             inset
           >
-            <Track onUpdate event="ConfirmationsNb" confirmationsNb={confirmationsNb} />
+            
             {defaults.confirmationsNb ? (
               <StepperNumber
                 min={defaults.confirmationsNb.min}

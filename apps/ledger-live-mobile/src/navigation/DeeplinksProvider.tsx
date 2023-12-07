@@ -20,7 +20,7 @@ import { setWallectConnectUri } from "../actions/walletconnect";
 import { useGeneralTermsAccepted } from "../logic/terms";
 import { Writeable } from "../types/helpers";
 import { lightTheme, darkTheme, Theme } from "../colors";
-import { track } from "../analytics";
+
 import { setEarnInfoModal } from "../actions/earn";
 import { OptionalFeatureMap } from "@ledgerhq/types-live";
 import { blockPasswordLock } from "../actions/appstate";
@@ -500,14 +500,7 @@ export const DeeplinksProvider = ({
 
           // Track deeplink only when ajsPropSource attribute exists.
           if (ajsPropSource) {
-            track("deeplink_clicked", {
-              deeplinkSource: ajsPropSource,
-              deeplinkCampaign: ajsPropCampaign,
-              url: hostname,
-              currency,
-              installApp,
-              appName,
-              ...(ajsPropTrackData ? JSON.parse(ajsPropTrackData) : {}),
+             : {}),
             });
           }
           const platform = pathname.split("/")[1];
@@ -551,7 +544,7 @@ export const DeeplinksProvider = ({
             return getStateFromPath(url.href?.split("://")[1], config);
           }
           if (path === "linkdrop-nft-claim/qr-scanning") {
-            track("deeplink", { action: "Claim NFT scan QR code again" });
+            
           }
 
           return getStateFromPath(path, config);

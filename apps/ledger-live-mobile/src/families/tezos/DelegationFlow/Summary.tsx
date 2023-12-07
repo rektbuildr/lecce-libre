@@ -23,7 +23,7 @@ import { Alert } from "@ledgerhq/native-ui";
 import { accountScreenSelector } from "../../../reducers/accounts";
 import { rgba } from "../../../colors";
 import { ScreenName } from "../../../const";
-import { TrackScreen } from "../../../analytics";
+
 import { useTransactionChangeFromNavigation } from "../../../logic/screenTransactionHooks";
 import Button from "../../../components/Button";
 import LText from "../../../components/LText";
@@ -208,13 +208,7 @@ export default function DelegationSummary({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
-      <TrackScreen
-        category="DelegationFlow"
-        name="Summary"
-        flow="stake"
-        action="delegation"
-        currency="xtz"
-      />
+      
 
       <View style={styles.body}>
         <DelegatingContainer

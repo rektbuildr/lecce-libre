@@ -10,7 +10,7 @@ import { Trans } from "react-i18next";
 import { FlatList, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
-import { TrackScreen } from "../../../analytics";
+
 import CurrencyUnitValue from "../../../components/CurrencyUnitValue";
 import Touchable from "../../../components/Touchable";
 import { ScreenName } from "../../../const";
@@ -56,13 +56,7 @@ export default function SelectValidator({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
-      <TrackScreen
-        category="DelegationFlow"
-        name="SelectValidator"
-        flow="stake"
-        action="delegation"
-        currency="sol"
-      />
+      
       <SelectValidatorSearchBox searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <View style={styles.header}>
         <ValidatorHead />

@@ -18,7 +18,7 @@ import Share from "react-native-share";
 import { useDispatch, useSelector } from "react-redux";
 import type { Account } from "@ledgerhq/types-live";
 import { updateAccountWithUpdater } from "../../../actions/accounts";
-import { TrackScreen } from "../../../analytics";
+
 import Alert from "../../../components/Alert";
 import Button from "../../../components/Button";
 import LText from "../../../components/LText";
@@ -125,7 +125,7 @@ const History = () => {
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
-      <TrackScreen category="Swap" name="Device History" />
+      
       {sections.length ? (
         <View style={styles.alertWrapper}>
           <Alert type="primary">

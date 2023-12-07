@@ -7,7 +7,7 @@ import type { Device } from "@ledgerhq/live-common/hw/actions/types";
 import { AppResult } from "@ledgerhq/live-common/hw/actions/app";
 import { useFeature } from "@ledgerhq/live-config/featureFlags/index";
 import { Flex } from "@ledgerhq/native-ui";
-import { TrackScreen } from "../../analytics";
+
 import SelectDevice2, { SetHeaderOptionsRequest } from "../../components/SelectDevice2";
 import SelectDevice from "../../components/SelectDevice";
 import RemoveDeviceMenu from "../../components/SelectDevice2/RemoveDeviceMenu";
@@ -107,7 +107,7 @@ export default function DeviceConnect({ navigation, route }: NavigationProps) {
         },
       ]}
     >
-      <TrackScreen category="DeviceConnect" name="ConnectDevice" />
+      
       {newDeviceSelectionFeatureFlag?.enabled ? (
         <Flex px={16} py={5} flex={1}>
           <SelectDevice2

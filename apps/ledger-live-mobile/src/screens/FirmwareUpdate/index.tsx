@@ -47,7 +47,7 @@ import {
   UpdateStep,
   useUpdateFirmwareAndRestoreSettings,
 } from "./useUpdateFirmwareAndRestoreSettings";
-import { TrackScreen } from "../../analytics";
+
 import ImageHexProcessor from "../../components/CustomImage/ImageHexProcessor";
 import { targetDataDimensions } from "../CustomImage/shared";
 import { ProcessorPreviewResult } from "../../components/CustomImage/ImageProcessor";
@@ -114,7 +114,7 @@ const CloseWarning = ({
 
   return (
     <Flex alignItems="center" justifyContent="center" px={1} mt={7}>
-      <TrackScreen category="Error: update not complete yet" type="drawer" refreshSource={false} />
+      
       <IconBadge iconColor="warning.c100" iconSize={32} Icon={IconsLegacy.WarningSolidMedium} />
       <Text fontSize={24} fontWeight="semiBold" textAlign="center" mt={6}>
         {t("FirmwareUpdate.updateNotYetComplete")}
@@ -332,7 +332,7 @@ export const FirmwareUpdate = ({
           : t("FirmwareUpdate.steps.prepareUpdate.titleBackingUp"),
         renderBody: () => (
           <>
-            <TrackScreen category={"Update device - Step 1: preparing updates for install"} />
+            
             <Text variant="bodyLineHeight" color="neutral.c80">
               {isBeforeOnboarding
                 ? t("FirmwareUpdate.steps.prepareUpdate.earlySecurityCheck.description", {
@@ -350,7 +350,7 @@ export const FirmwareUpdate = ({
         title: t("FirmwareUpdate.steps.installUpdate.titleInactive"),
         renderBody: () => (
           <>
-            <TrackScreen category={"Update device - Step 2: installing updates"} avoidDuplicates />
+            
             <Text variant="bodyLineHeight" color="neutral.c80">
               {t("FirmwareUpdate.steps.installUpdate.description", {
                 deviceName: productName,
@@ -366,7 +366,7 @@ export const FirmwareUpdate = ({
           : t("FirmwareUpdate.steps.restoreSettings.titleInactive"),
         renderBody: () => (
           <Flex>
-            <TrackScreen category={"Update device - Step 3: restore apps and settings"} />
+            
             <Text variant="bodyLineHeight" color="neutral.c80">
               {isBeforeOnboarding
                 ? t("FirmwareUpdate.steps.restoreSettings.earlySecurityCheck.description")
@@ -618,11 +618,7 @@ export const FirmwareUpdate = ({
           errorName={userSolvableError.name}
           translationContext="FirmwareUpdate"
         >
-          <TrackScreen
-            category={`Error: ${userSolvableError.name}`}
-            refreshSource={false}
-            type="drawer"
-          />
+          
           <Button
             event="button_clicked"
             eventProperties={{
@@ -748,7 +744,7 @@ export const FirmwareUpdate = ({
         />
       ) : fullUpdateComplete ? (
         <Flex flex={1} px={6} pb={7}>
-          <TrackScreen category={"device OS successfully updated"} />
+          
           <Flex flex={1} justifyContent="center">
             <GenericInformationBody
               Icon={Icons.CheckmarkCircleFill}
@@ -801,16 +797,13 @@ export const FirmwareUpdate = ({
         />
       </QueuedDrawer>
       {updateStep === "languageRestore" ? (
-        <TrackScreen key="a" category={"Update device - Step 3a: restore language"} />
+        
       ) : updateStep === "imageRestore" ? (
-        <TrackScreen key="b" category={"Update device - Step 3b: restore lock screen picture"} />
+        
       ) : updateStep === "appsRestore" ? (
-        <TrackScreen key="c" category={"Update device - Step 3b: reinstall apps"} />
+        
       ) : updateStep === "completed" ? (
-        <TrackScreen
-          key="d"
-          category={"Update device - Step 3d: apps and settings successfully restored"}
-        />
+        
       ) : null}
       {staxFetchImageState.hexImage ? (
         <ImageHexProcessor

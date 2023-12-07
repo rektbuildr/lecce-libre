@@ -12,7 +12,7 @@ import NotificationCenter from "../../screens/NotificationCenter/Notifications";
 import { NavigatorName, ScreenName } from "../../const";
 import type { NotificationCenterNavigatorParamList } from "./types/NotificationCenterNavigator";
 import { getStackNavigatorConfig } from "../../navigation/navigatorConfig";
-import { track } from "../../analytics";
+
 import FullNodeWarning from "../../icons/FullNodeWarning";
 import StatusCenter from "../../screens/NotificationCenter/Status";
 
@@ -27,20 +27,14 @@ export default function NotificationCenterNavigator() {
   const { incidents } = useFilteredServiceStatus();
 
   const goToNotificationsSettings = useCallback(() => {
-    track("button_clicked", {
-      button: "Settings",
-      page: ScreenName.NotificationCenter,
-    });
+    
     navigation.navigate(NavigatorName.Settings, {
       screen: ScreenName.NotificationsSettings,
     });
   }, [navigation]);
 
   const goToStatusCenter = useCallback(() => {
-    track("button_clicked", {
-      button: "Notification Center Status",
-      page: ScreenName.NotificationCenterStatus,
-    });
+    
     navigation.navigate(NavigatorName.NotificationCenter, {
       screen: ScreenName.NotificationCenterStatus,
     });

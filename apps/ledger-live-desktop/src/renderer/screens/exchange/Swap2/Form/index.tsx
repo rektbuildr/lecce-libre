@@ -16,8 +16,7 @@ import { useHistory, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { getParentAccount, isTokenAccount } from "@ledgerhq/live-common/account/index";
 import { rateSelector, updateRateAction, updateTransactionAction } from "~/renderer/actions/swap";
-import { track } from "~/renderer/analytics/segment";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import ButtonBase from "~/renderer/components/Button";
 import { context } from "~/renderer/drawers/Provider";
@@ -81,12 +80,7 @@ const SwapForm = () => {
 
   const onNoRates: OnNoRatesCallback = useCallback(
     ({ toState }) => {
-      track("error_message", {
-        message: "no_rates",
-        page: "Page Swap Form",
-        ...swapDefaultTrack,
-        sourceCurrency: toState.currency?.name,
-      });
+      
     },
     [swapDefaultTrack],
   );
@@ -348,14 +342,7 @@ const SwapForm = () => {
   const onSubmit = () => {
     if (!exchangeRate) return;
 
-    track("button_clicked", {
-      button: "Request",
-      page: "Page Swap Form",
-      ...swapDefaultTrack,
-      sourceCurrency: sourceCurrency?.name,
-      targetCurrency: targetCurrency?.name,
-      partner: provider,
-    });
+    
 
     if (provider && DAPP_PROVIDERS.includes(provider)) {
       redirectToProviderApp(provider);
@@ -437,7 +424,7 @@ const SwapForm = () => {
 
   return (
     <Wrapper>
-      <TrackPage category="Swap" name="Form" provider={provider} {...swapDefaultTrack} />
+      
       <SwapFormSelectors
         fromAccount={sourceAccount}
         toAccount={swapTransaction.swap.to.account}

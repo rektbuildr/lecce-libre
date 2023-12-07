@@ -4,7 +4,6 @@ import { createStructuredSelector } from "reselect";
 import SettingsRow from "../../../../components/SettingsRow";
 import { setReadOnlyMode } from "../../../../actions/settings";
 import { readOnlyModeEnabledSelector } from "../../../../reducers/settings";
-import Track from "../../../../analytics/Track";
 import { withReboot } from "../../../../context/Reboot";
 import Switch from "../../../../components/Switch";
 import type { State } from "../../../../reducers/types";
@@ -37,10 +36,6 @@ class ReadOnlyModeRow extends PureComponent<Props> {
         title="ReadOnly mode"
         desc="Readonly mode for testing, relaunch to refresh topbar"
       >
-        <Track
-          event={readOnlyModeEnabled ? "EnableReadOnlyMode" : "DisableReadOnlyMode"}
-          onUpdate
-        />
         <Switch value={readOnlyModeEnabled} onValueChange={this.setReadOnlyModeAndReset} />
       </SettingsRow>
     );

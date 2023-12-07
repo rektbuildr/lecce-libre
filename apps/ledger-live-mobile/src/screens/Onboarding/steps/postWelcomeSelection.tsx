@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useTheme } from "styled-components/native";
 import { setOnboardingHasDevice, setReadOnlyMode } from "../../../actions/settings";
-import { track, updateIdentify } from "../../../analytics";
 import { OnboardingNavigatorParamList } from "../../../components/RootNavigator/types/OnboardingNavigator";
 import { StackNavigatorProps } from "../../../components/RootNavigator/types/helpers";
 import { ScreenName } from "../../../const";
@@ -37,7 +36,6 @@ function PostWelcomeSelection() {
 
   const identifyUser = (hasDevice: boolean) => {
     dispatch(setOnboardingHasDevice(hasDevice));
-    updateIdentify();
   };
 
   const setupLedger = () => {

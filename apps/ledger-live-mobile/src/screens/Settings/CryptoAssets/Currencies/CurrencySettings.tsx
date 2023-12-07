@@ -10,7 +10,7 @@ import { confirmationsNbForCurrencySelector } from "../../../../reducers/setting
 import { State } from "../../../../reducers/types";
 import { updateCurrencySettings } from "../../../../actions/settings";
 import { withTheme } from "../../../../colors";
-import { TrackScreen } from "../../../../analytics";
+
 import { currencySettingsDefaults } from "../../../../helpers/CurrencySettingsDefaults";
 import CurrencyIcon from "../../../../components/CurrencyIcon";
 import { ScreenName } from "../../../../const";
@@ -67,7 +67,7 @@ function EachCurrencySettings({
 
   return (
     <Box backgroundColor={"background.main"} height={"100%"} px={6} pt={4}>
-      <TrackScreen category="Settings" name="Currency" currency={currency.id} />
+      
       {defaults.confirmationsNb ? (
         <>
           <SettingsRow

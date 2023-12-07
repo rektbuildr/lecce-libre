@@ -18,7 +18,7 @@ import Button from "~/renderer/components/Button";
 import styled from "styled-components";
 import { useHistory, withRouter } from "react-router-dom";
 import { getAccountCurrency } from "@ledgerhq/live-common/account/helpers";
-import { setTrackingSource } from "~/renderer/analytics/TrackPage";
+
 import { useRampCatalog } from "@ledgerhq/live-common/platform/providers/RampCatalogProvider/useRampCatalog";
 const mapDispatchToProps = {
   openModal,
@@ -45,7 +45,7 @@ function EmptyStateAccount({ t, account, parentAccount, openModal }: Props) {
     mainAccount.subAccounts.length &&
     mainAccount.subAccounts[0].type === "TokenAccount";
   const onBuy = useCallback(() => {
-    setTrackingSource("empty state account");
+    
     history.push({
       pathname: "/exchange",
       state: {

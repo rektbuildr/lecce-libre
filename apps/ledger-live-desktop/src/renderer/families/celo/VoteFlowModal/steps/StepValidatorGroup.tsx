@@ -2,7 +2,7 @@ import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
 import invariant from "invariant";
 import React from "react";
 import { Trans } from "react-i18next";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import ErrorBanner from "~/renderer/components/ErrorBanner";
@@ -64,13 +64,7 @@ const StepValidatorGroup = ({
   const chosenValidatorGroupAddress = transaction.recipient;
   return (
     <Box flow={1}>
-      <TrackPage
-        category="Celo Vote"
-        name="Step ValidatorGroup"
-        flow="stake"
-        action="vote"
-        currency="celo"
-      />
+      
       {error && <ErrorBanner error={error} />}
       <ValidatorGroupsField
         account={account}

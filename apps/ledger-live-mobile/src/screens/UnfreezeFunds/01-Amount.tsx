@@ -16,7 +16,7 @@ import type {
 } from "@ledgerhq/live-common/families/tron/types";
 import { accountScreenSelector } from "../../reducers/accounts";
 import { ScreenName } from "../../const";
-import { TrackScreen } from "../../analytics";
+
 import LText from "../../components/LText";
 import Button from "../../components/Button";
 import RetryButton from "../../components/RetryButton";
@@ -165,7 +165,7 @@ function UnfreezeAmountInner({ account }: InnerProps) {
   const warning = status.warnings.amount;
   return (
     <>
-      <TrackScreen category="UnfreezeFunds" name="Amount" />
+      
       <SafeAreaView
         style={[
           styles.root,

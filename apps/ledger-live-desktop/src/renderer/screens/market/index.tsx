@@ -9,7 +9,7 @@ import CounterValueSelect from "./CountervalueSelect";
 import MarketList from "./MarketList";
 import SideDrawerFilter from "./SideDrawerFilter";
 import { rangeDataTable } from "@ledgerhq/live-common/market/utils/rangeDataTable";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import { useInitSupportedCounterValues } from "~/renderer/hooks/useInitSupportedCounterValues";
 
 const Container = styled(Flex).attrs({
@@ -113,12 +113,7 @@ export default function Market() {
 
   return (
     <Container>
-      <TrackPage
-        category="Market"
-        sort={order !== "desc"}
-        timeframe={range}
-        countervalue={counterCurrency}
-      />
+      
       <Title>{t("market.title")}</Title>
       <Flex flexDirection="row" pr="6px" my={2} alignItems="center" justifyContent="space-between">
         <SearchContainer>

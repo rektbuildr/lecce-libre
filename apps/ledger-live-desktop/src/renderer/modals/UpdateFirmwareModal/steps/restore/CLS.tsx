@@ -4,7 +4,7 @@ import CustomImageDeviceAction from "~/renderer/components/CustomImage/CustomIma
 import { getCurrentDevice } from "~/renderer/reducers/devices";
 import { useSelector } from "react-redux";
 import { reconstructImage } from "~/renderer/components/CustomImage/TestImage";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 
 type Props = Partial<StepProps> & { onDone: () => void; setError: (arg0: Error) => void };
 const CLS = ({ onDone, setError, CLSBackup }: Props) => {
@@ -35,7 +35,7 @@ const CLS = ({ onDone, setError, CLSBackup }: Props) => {
         onTryAnotherImage={onVoid}
         blockNavigation={onVoid}
       />
-      <TrackPage category="Allow lock screen picture restoration on the device" />
+      
     </>
   ) : null;
 };

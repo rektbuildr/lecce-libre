@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Flex, InfiniteLoader, Alert } from "@ledgerhq/react-ui";
-import TrackPage from "~/renderer/analytics/TrackPage";
-import { analyticsFlowName } from "./shared";
 
 type Props = {
   isOpen: boolean;
@@ -44,13 +42,7 @@ export const DesyncOverlay = ({ isOpen, delay = 0, productName }: Props) => {
       flexDirection="column"
       backgroundColor="constant.overlay"
     >
-      <TrackPage
-        category="device connection lost"
-        type="modal"
-        flow={analyticsFlowName}
-        error="device connection lost"
-        refreshSource={false}
-      />
+      
       <Flex alignItems="flex-end" justifyContent="center" flex={1} padding={4}>
         <Alert
           type="warning"

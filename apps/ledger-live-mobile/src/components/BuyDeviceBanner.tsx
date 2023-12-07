@@ -10,7 +10,6 @@ import ForceTheme from "./theme/ForceTheme";
 
 import buyImgSource from "../images/illustration/Shared/_NanoXTop.png";
 import setupImgSource from "../images/illustration/Shared/_NanoXBoxTop.png";
-import { track } from "../analytics";
 import { RootNavigationComposite, StackNavigatorNavigation } from "./RootNavigator/types/helpers";
 import { BaseNavigatorStackParamList } from "./RootNavigator/types/BaseNavigator";
 
@@ -99,19 +98,11 @@ export default function BuyDeviceBanner({
       handleSetupCtaOnPress();
     } else {
       handleOnPress();
-      track("button_clicked", {
-        button: "Discover the Nano",
-        page: screen,
-      });
     }
   }, [handleOnPress, handleSetupCtaOnPress, screen, variant]);
 
   const pressMessage = useCallback(() => {
-    track("message_clicked", {
-      message: "I already have a device, set it up",
-      page: screen,
-      currency: eventProperties?.currency,
-    });
+
     handleSetupCtaOnPress();
   }, [screen, eventProperties?.currency, handleSetupCtaOnPress]);
 

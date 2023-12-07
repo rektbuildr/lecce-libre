@@ -8,7 +8,7 @@ import { privacySelector } from "../../../reducers/settings";
 import SettingsRow from "../../../components/SettingsRow";
 import { useBiometricAuth } from "../../../components/RequestBiometricAuth";
 import { ScreenName } from "../../../const";
-import { track } from "../../../analytics";
+
 
 type Props = {
   iconLeft?: React.ReactNode;
@@ -30,11 +30,7 @@ export default function BiometricsRow({ iconLeft }: Props) {
 
   const onValueChange = useCallback(
     async (biometricsEnabled: boolean) => {
-      track("toggle_clicked", {
-        toggle: "biometrics",
-        page: ScreenName.GeneralSettings,
-        enabled: biometricsEnabled,
-      });
+      
 
       if (validationPending) return;
       setValidationPending(true);

@@ -19,7 +19,7 @@ import Swipeable from "react-native-gesture-handler/Swipeable";
 
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ScreenName } from "../const";
-import { track } from "../analytics";
+
 import AccountCard from "./AccountCard";
 import CheckBox from "./CheckBox";
 import swipedAccountSubject from "../screens/AddAccounts/swipedAccountSubject";
@@ -75,12 +75,12 @@ const SelectableAccountsList = ({
     >();
 
   const onSelectAll = useCallback(() => {
-    track("SelectAllAccounts");
+    
     onSelectAllProp && onSelectAllProp(accounts);
   }, [accounts, onSelectAllProp]);
 
   const onUnselectAll = useCallback(() => {
-    track("UnselectAllAccounts");
+    
     onUnselectAllProp && onUnselectAllProp(accounts);
   }, [accounts, onUnselectAllProp]);
 
@@ -184,7 +184,7 @@ const SelectableAccount = ({
   );
 
   const handlePress = () => {
-    track(isSelected ? "UnselectAccount" : "SelectAccount");
+    
     if (onPress) {
       onPress(account);
     }

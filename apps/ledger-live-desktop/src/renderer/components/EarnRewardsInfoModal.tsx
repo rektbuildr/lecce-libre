@@ -2,7 +2,6 @@ import React, { useCallback } from "react";
 import { Trans } from "react-i18next";
 import styled from "styled-components";
 import Check from "../icons/CheckFull";
-import TrackPage from "../analytics/TrackPage";
 import { closeModal } from "~/renderer/actions/modals";
 import Rewards from "../images/rewards.svg";
 import Text from "./Text";
@@ -46,7 +45,6 @@ export default function EarnRewardsInfoModal<Name extends keyof ModalData>({
           onClose={onClose}
           render={() => (
             <Box flow={4} mx={4}>
-              <TrackPage category="Delegation Flow" name="Step Starter" />
               <Box flow={1} alignItems="center">
                 <Box mb={4}>
                   <RewardImg />

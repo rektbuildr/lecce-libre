@@ -12,7 +12,7 @@ import Box from "~/renderer/components/Box";
 import LinkWithExternalIcon from "~/renderer/components/LinkWithExternalIcon";
 import { ScrollArea } from "~/renderer/components/Onboarding/ScrollArea";
 import { urls } from "~/config/urls";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 
 const IncidentContainer = styled(Box)`
   width: 100%;
@@ -147,7 +147,7 @@ export function ServiceStatusPanel() {
   });
   return (
     <PanelContainer>
-      <TrackPage category="Notification Center" name="notification_center_status" />
+      
       {incidents.length > 0 ? <StatusNotOkHeader incidents={incidents} /> : <StatusOkHeader />}
     </PanelContainer>
   );

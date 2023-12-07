@@ -7,7 +7,7 @@ import { TFunction } from "i18next";
 import logger from "~/renderer/logger";
 import Button, { Props as ButtonProps } from "~/renderer/components/Button";
 import RepairModal from "~/renderer/modals/RepairModal";
-import { setTrackingSource } from "~/renderer/analytics/TrackPage";
+
 import { Subscription } from "rxjs";
 
 type OwnProps = {
@@ -97,7 +97,7 @@ class RepairDeviceButton extends PureComponent<Props, State> {
             progress: 0,
           },
           () => {
-            setTrackingSource("settings help repair device");
+            
             history.push({
               pathname: "/manager",
             });

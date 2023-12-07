@@ -10,8 +10,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { Trans } from "react-i18next";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import TrackPage from "~/renderer/analytics/TrackPage";
-import { track } from "~/renderer/analytics/segment";
+
 import { updateAccountWithUpdater } from "~/renderer/actions/accounts";
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
@@ -79,12 +78,7 @@ export default function ExchangeDrawer({ swapTransaction, exchangeRate, onComple
         provider: exchangeRate.provider,
         swapId: swapId ?? "",
       });
-      track("error_message", {
-        message: "drawer_error",
-        page: "Page Swap Drawer",
-        ...swapDefaultTrack,
-        error,
-      });
+      
       setError(error);
     },
     [exchangeRate.provider, swapDefaultTrack],
@@ -137,14 +131,7 @@ export default function ExchangeDrawer({ swapTransaction, exchangeRate, onComple
   if (error) {
     return (
       <Box height="100%" justifyContent="space-between">
-        <TrackPage
-          category="Swap"
-          name={`ModalStep-confirmationfail`}
-          sourceCurrency={sourceCurrency?.name}
-          targetCurrency={targetCurrency?.name}
-          provider={exchangeRate.provider}
-          {...swapDefaultTrack}
-        />
+        
         <Box justifyContent="center" flex={1} mx={3}>
           <ErrorDisplay error={error} />
         </Box>
@@ -168,14 +155,7 @@ export default function ExchangeDrawer({ swapTransaction, exchangeRate, onComple
   if (result) {
     return (
       <Box height="100%" justifyContent="space-between">
-        <TrackPage
-          category="Swap"
-          name={`ModalStep-finished`}
-          sourceCurrency={sourceCurrency?.name}
-          targetCurrency={targetCurrency?.name}
-          provider={exchangeRate.provider}
-          {...swapDefaultTrack}
-        />
+        
         {targetCurrency && (
           <Box justifyContent="center" flex={1} mx={3}>
             <SwapCompleted

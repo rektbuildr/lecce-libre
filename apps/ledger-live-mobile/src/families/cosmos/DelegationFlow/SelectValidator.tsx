@@ -6,7 +6,7 @@ import invariant from "invariant";
 import React, { useCallback, useState } from "react";
 import { FlatList, StyleSheet, View, SafeAreaView } from "react-native";
 import { useSelector } from "react-redux";
-import { TrackScreen } from "../../../analytics";
+
 import { ScreenName } from "../../../const";
 import { accountScreenSelector } from "../../../reducers/accounts";
 import ValidatorHead from "../shared/ValidatorHead";
@@ -51,13 +51,7 @@ export default function SelectValidator({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
-      <TrackScreen
-        category="DelegationFlow"
-        name="SelectValidator"
-        flow="stake"
-        action="delegation"
-        currency={ticker}
-      />
+      
       <SelectValidatorSearchBox searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <View style={styles.header}>
         <ValidatorHead />

@@ -4,7 +4,7 @@ import React, { memo, useCallback, useEffect, useState } from "react";
 import { FlatList } from "react-native";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import styled, { useTheme } from "styled-components/native";
-import { TrackScreen } from "../../analytics";
+
 import Skeleton from "../../components/Skeleton";
 import { ScreenName } from "../../const";
 import useDynamicContent from "../../dynamicContent/dynamicContent";
@@ -56,7 +56,7 @@ function LearnSection() {
 
   return (
     <Flex>
-      <TrackScreen category="Learn" />
+      
       <FlatList
         data={learnCards}
         renderItem={renderItem}

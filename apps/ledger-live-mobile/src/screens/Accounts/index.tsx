@@ -14,7 +14,7 @@ import { getAccountCurrency } from "@ledgerhq/live-common/account/helpers";
 import { useRefreshAccountsOrdering } from "../../actions/general";
 import { accountsSelector, isUpToDateSelector } from "../../reducers/accounts";
 import globalSyncRefreshControl from "../../components/globalSyncRefreshControl";
-import TrackScreen from "../../analytics/TrackScreen";
+
 
 import AccountRow from "./AccountRow";
 import TokenContextualModal from "../Settings/Accounts/TokenContextualModal";
@@ -106,7 +106,7 @@ function Accounts({ navigation, route }: NavigationProps) {
 
   return (
     <>
-      <TrackScreen category="Accounts" accountsLength={accounts.length} />
+      
       <SafeAreaView isFlex>
         <AccountsNavigationHeader currencyId={params?.currencyId} />
         {syncPending && (

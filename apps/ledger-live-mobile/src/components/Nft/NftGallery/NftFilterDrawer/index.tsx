@@ -1,13 +1,12 @@
 import React, { FC } from "react";
 import { useTranslation } from "react-i18next";
 
-import { TrackScreen } from "../../../../analytics";
+
 import NftFilterSection from "./NftFilterSection";
 import { NftFilterCurrencyItem } from "./NftFilterItem";
 import { NftGalleryChainFiltersState } from "../../../../reducers/types";
 import { NavigatorName, ScreenName } from "../../../../const/navigation";
 import { useNavigation } from "@react-navigation/native";
-import { track } from "../../../../analytics";
 import { View } from "react-native";
 import QueuedDrawer from "../../../QueuedDrawer";
 
@@ -32,7 +31,7 @@ const NftFilterDraw: FC<Props> = ({ onClose, isOpen, filters, toggleFilter }) =>
         onClose();
       }}
     >
-      <TrackScreen category="NFT Gallery Filters" type="drawer" refreshSource={false} />
+      
       <View testID="wallet-nft-gallery-filter-drawer">
         <NftFilterSection title={t("wallet.nftGallery.filters.blockchain")}>
           {Object.entries(filters).map(([key, value]) => {

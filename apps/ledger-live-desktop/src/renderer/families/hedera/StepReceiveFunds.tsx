@@ -3,7 +3,7 @@ import { Trans } from "react-i18next";
 import invariant from "invariant";
 import { getMainAccount, getAccountName } from "@ledgerhq/live-common/account/index";
 import styled from "styled-components";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import ErrorDisplay from "~/renderer/components/ErrorDisplay";
 import Text from "~/renderer/components/Text";
@@ -97,11 +97,7 @@ const StepReceiveFunds = ({
   return (
     <>
       <Box px={2}>
-        <TrackPage
-          category={`Receive Flow${eventType ? ` (${eventType})` : ""}`}
-          name="Step 3"
-          currencyName={currencyName}
-        />
+        
         {
           verifyAddressError ? (
             <ErrorDisplay error={verifyAddressError} onRetry={onVerify} />

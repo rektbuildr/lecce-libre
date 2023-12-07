@@ -11,7 +11,7 @@ import { useTheme } from "@react-navigation/native";
 import { PolkadotAccount } from "@ledgerhq/live-common/families/polkadot/types";
 import { Transaction } from "@ledgerhq/live-common/generated/types";
 import { accountScreenSelector } from "../../../reducers/accounts";
-import { TrackScreen } from "../../../analytics";
+
 import { NavigatorName, ScreenName } from "../../../const";
 import PreventNativeBack from "../../../components/PreventNativeBack";
 import ValidateSuccess from "../../../components/ValidateSuccess";
@@ -69,13 +69,7 @@ export default function ValidationSuccess({ navigation, route }: Props) {
         },
       ]}
     >
-      <TrackScreen
-        category="BondFlow"
-        name="ValidationSuccess"
-        flow="stake"
-        action="bond"
-        currency="dot"
-      />
+      
       <PreventNativeBack />
       {wasFirstBond.current ? (
         <ValidateSuccess

@@ -18,7 +18,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 import { Text } from "@ledgerhq/native-ui";
-import { TrackScreen } from "../../../analytics";
+
 import Button from "../../../components/Button";
 import CancelButton from "../../../components/CancelButton";
 import CurrencyUnitValue from "../../../components/CurrencyUnitValue";
@@ -126,14 +126,7 @@ export default function DelegationSelectAmount({ navigation, route }: Props) {
 
   return (
     <>
-      <TrackScreen
-        category="SendFunds"
-        name="Amount"
-        currencyName={currency.name}
-        flow="stake"
-        action="delegation"
-        currency="sol"
-      />
+      
       <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
         <KeyboardView style={styles.container}>
           <TouchableWithoutFeedback onPress={blur}>

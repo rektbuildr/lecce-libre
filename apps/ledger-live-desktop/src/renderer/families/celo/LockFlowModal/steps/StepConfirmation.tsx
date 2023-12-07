@@ -1,8 +1,7 @@
 import { SyncOneAccountOnMount } from "@ledgerhq/live-common/bridge/react/index";
 import React, { useCallback, useEffect } from "react";
 import { Trans } from "react-i18next";
-import TrackPage from "~/renderer/analytics/TrackPage";
-import { track } from "~/renderer/analytics/segment";
+
 import Box from "~/renderer/components/Box";
 import BroadcastErrorDisclaimer from "~/renderer/components/BroadcastErrorDisclaimer";
 import Button from "~/renderer/components/Button";
@@ -62,25 +61,14 @@ export const StepConfirmationFooter = ({
 const StepConfirmation = ({ t, optimisticOperation, error, signed, source }: StepProps) => {
   useEffect(() => {
     if (optimisticOperation) {
-      track("staking_completed", {
-        currency: "CELO",
-        source,
-        delegation: "lock",
-        flow: "stake",
-      });
+      
     }
   }, [optimisticOperation, source]);
 
   if (optimisticOperation) {
     return (
       <S.Container>
-        <TrackPage
-          category="Celo Lock"
-          name="Step Confirmed"
-          flow="stake"
-          action="lock"
-          currency="celo"
-        />
+        
         <SuccessDisplay
           title={<Trans i18nKey="celo.lock.steps.confirmation.success.title" />}
           description={multiline(t("celo.lock.steps.confirmation.success.textVote"))}
@@ -91,13 +79,7 @@ const StepConfirmation = ({ t, optimisticOperation, error, signed, source }: Ste
   if (error) {
     return (
       <S.Container shouldSpace={signed}>
-        <TrackPage
-          category="Celo Lock"
-          name="Step Confirmation Error"
-          flow="stake"
-          action="lock"
-          currency="celo"
-        />
+        
         {signed ? (
           <BroadcastErrorDisclaimer
             title={<Trans i18nKey="celo.lock.steps.confirmation.broadcastError" />}

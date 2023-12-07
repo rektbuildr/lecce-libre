@@ -4,7 +4,7 @@ import { Linking, Platform, TouchableOpacity } from "react-native";
 import { Flex, Text, Button } from "@ledgerhq/native-ui";
 import styled from "styled-components/native";
 import { urls } from "@utils/urls";
-import { track, TrackScreen } from "../../analytics";
+
 import useNpsRatings from "../../logic/npsRatings";
 import Love from "../../icons/Love";
 
@@ -23,39 +23,22 @@ const Enjoy = ({ closeModal }: Props) => {
     useNpsRatings();
 
   const goToStore = useCallback(() => {
-    track("RedirectedToStore", { source: ratingsHappyMoment?.route_name });
-    track("button_clicked", {
-      flow: "NPS",
-      page: "NPS Step 3 Ask Ratings",
-      button: "Give us 5 stars",
-      category: "NPS",
-    });
+    
+    
     Linking.openURL(Platform.OS === "ios" ? urls.applestoreRate : urls.playstore);
     closeModal();
     handleGoToStore();
   }, [ratingsHappyMoment?.route_name, closeModal, handleGoToStore]);
 
   const onNotNow = useCallback(() => {
-    track("button_clicked", {
-      flow: "NPS",
-      page: "NPS Step 3 Ask Ratings",
-      button: "Not Now",
-      category: "NPS",
-    });
+    
     closeModal();
     handleEnjoyNotNow();
   }, [closeModal, handleEnjoyNotNow]);
 
   return (
     <Flex flex={1} alignItems="center" justifyContent="center" mt={3}>
-      <TrackScreen
-        flow="NPS"
-        name="NPS Step 3 Ask Ratings"
-        page="NPS Step 3 Ask Ratings"
-        source={ratingsHappyMoment?.route_name}
-        params={ratingsFeatureParams}
-        category="NPS"
-      />
+      
       <Love />
       <Text
         variant="h4"

@@ -1,7 +1,7 @@
 import React, { Fragment, PureComponent, useCallback } from "react";
 import { Trans } from "react-i18next";
 import { getMainAccount } from "@ledgerhq/live-common/account/index";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import CurrencyDownStatusAlert from "~/renderer/components/CurrencyDownStatusAlert";
@@ -25,13 +25,7 @@ const StepAmount = (props: StepProps) => {
   if (!status) return null;
   return (
     <Box flow={4}>
-      <TrackPage
-        category="Delegation Elrond"
-        name="Step Amount"
-        flow="stake"
-        action="delegate"
-        currency="egld"
-      />
+      
       {mainAccount ? <CurrencyDownStatusAlert currencies={[mainAccount.currency]} /> : null}
       {error ? <ErrorBanner error={error} /> : null}
 

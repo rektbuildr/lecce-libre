@@ -13,7 +13,6 @@ import {
 } from "../../../components/RootNavigator/types/helpers";
 import { OnboardingNavigatorParamList } from "../../../components/RootNavigator/types/OnboardingNavigator";
 import { BaseNavigatorStackParamList } from "../../../components/RootNavigator/types/BaseNavigator";
-import { TrackScreen, track, updateIdentify } from "../../../analytics";
 import Illustration from "../../../images/illustration/Illustration";
 
 import ImageLedger from "../../../images/double-ledger.png";
@@ -36,7 +35,6 @@ export function NoLedgerYetModal({ onClose, isOpen }: Props) {
   const identifyUser = useCallback(
     (hasDevice: boolean) => {
       dispatch(setOnboardingHasDevice(hasDevice));
-      updateIdentify();
     },
     [dispatch],
   );
@@ -80,7 +78,7 @@ export function NoLedgerYetModal({ onClose, isOpen }: Props) {
       onClose={isFromBuy ? onClose : onCloseAndTrack}
       CustomHeader={CustomHeader}
     >
-      <TrackScreen category="Onboard" name="Start Upsell" drawer="Get Started Upsell" />
+      
       <Flex alignItems="flex-start" mt={7}>
         <Text variant="h4" fontWeight="semiBold" color="neutral.c100">
           {t("onboarding.postWelcomeStep.noLedgerYetModal.title")}

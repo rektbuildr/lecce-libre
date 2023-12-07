@@ -17,7 +17,7 @@ import { ScreenName } from "../../const";
 import { BaseComposite, StackNavigatorProps } from "../../components/RootNavigator/types/helpers";
 import { PostOnboardingNavigatorParamList } from "../../components/RootNavigator/types/PostOnboardingNavigator";
 import { useCompleteActionCallback } from "../../logic/postOnboarding/useCompleteAction";
-import { track, TrackScreen } from "../../analytics";
+
 import Link from "../../components/wrappedUi/Link";
 import { useCompletePostOnboarding } from "~/logic/postOnboarding/useCompletePostOnboarding";
 
@@ -53,7 +53,7 @@ const PostOnboardingHub = ({ route }: NavigationProps) => {
      * */
     () => {
       if (route?.params?.completed === "true") {
-        track("deeplink", { action: "Claim NFT return to setup" });
+        
         completePostOnboardingAction(PostOnboardingActionId.claimNft);
       }
       if (route?.params?.allCompleted === "true") {
@@ -76,12 +76,7 @@ const PostOnboardingHub = ({ route }: NavigationProps) => {
 
   return (
     <>
-      <TrackScreen
-        key={allDone.toString()}
-        category={
-          allDone ? "User has completed all post-onboarding actions" : "Post-onboarding hub"
-        }
-      />
+      
       <Flex
         px={6}
         py={7}

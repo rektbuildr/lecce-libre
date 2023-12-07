@@ -3,7 +3,6 @@ import { TextInput, StyleSheet, Keyboard, Platform } from "react-native";
 import { EnvName, getEnvDefault } from "@ledgerhq/live-env";
 import { useNavigation, useTheme } from "@react-navigation/native";
 import { Box, Flex, Switch } from "@ledgerhq/native-ui";
-import Track from "../../../analytics/Track";
 import getFontStyle from "../../../components/LText/getFontStyle";
 
 type Props = {
@@ -114,7 +113,7 @@ const FeatureInteger = ({
 
   return (
     <>
-      <Track onUpdate event={enabled ? `${name}Enabled` : `${name}Disabled`} />
+      
       <Flex flexDirection={"column"}>
         <Box mb={6}>
           <Switch

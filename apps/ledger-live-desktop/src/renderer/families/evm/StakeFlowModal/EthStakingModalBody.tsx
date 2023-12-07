@@ -5,7 +5,6 @@ import { useHistory } from "react-router-dom";
 
 import { appendQueryParamsToDappURL } from "@ledgerhq/live-common/platform/utils/appendQueryParamsToDappURL";
 import { useTranslation } from "react-i18next";
-import { track } from "~/renderer/analytics/segment";
 import CheckBox from "~/renderer/components/CheckBox";
 import EthStakeIllustration from "~/renderer/icons/EthStakeIllustration";
 import { openURL } from "~/renderer/linking";
@@ -52,10 +51,7 @@ export function EthStakingModalBody({
     }: StakeOnClickProps) => {
       const value = `/platform/${liveAppId}`;
       const customDappUrl = queryParams && appendQueryParamsToDappURL(manifest, queryParams);
-      track("button_clicked", {
-        button: providerConfigID,
-        ...getTrackProperties({ value, modal: source }),
-      });
+      
       history.push({
         pathname: value,
         ...(customDappUrl ? { customDappUrl } : {}),
@@ -70,11 +66,6 @@ export function EthStakingModalBody({
 
   const infoOnClick = useCallback(({ supportLink, id: providerConfigID }: ListProvider) => {
     if (supportLink) {
-      track("button_clicked", {
-        button: `learn_more_${providerConfigID}`,
-        ...getTrackProperties({ value: supportLink }),
-        link: supportLink,
-      });
       openURL(supportLink, "OpenURL", getTrackProperties({ value: supportLink }));
     }
   }, []);
@@ -92,10 +83,6 @@ export function EthStakingModalBody({
     const value = !doNotShowAgain;
     global.localStorage.setItem(`${LOCAL_STORAGE_KEY_PREFIX}${account?.currency?.id}`, `${value}`);
     setDoNotShowAgain(value);
-    track("button_clicked", {
-      button: "not_show",
-      ...getTrackProperties({ value, modal: source }),
-    });
   }, [doNotShowAgain, account?.currency?.id, source]);
 
   return (

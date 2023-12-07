@@ -6,7 +6,7 @@ import GenericErrorBottomModal from "../../../../components/GenericErrorBottomMo
 import { Confirmation, DeviceMeta } from "./Confirmation";
 import { Terms } from "./Terms";
 import { swapAcceptProvider } from "../../../../actions/settings";
-import { useAnalytics } from "../../../../analytics";
+
 import { sharedSwapTracking } from "../../utils";
 
 export function Modal({
@@ -53,12 +53,7 @@ export function Modal({
 
   const onError = useCallback(
     ({ error, swapId }: { error?: Error; swapId?: string }) => {
-      track("error_message", {
-        ...sharedSwapTracking,
-        message: "drawer_error",
-        page: "Page Swap Drawer",
-        error: error?.name ?? "unknown",
-      });
+      
       if (!exchangeRate || !swapId) {
         return;
       }

@@ -10,7 +10,7 @@ import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
 import { SyncSkipUnderPriority } from "@ledgerhq/live-common/bridge/react/index";
 import useBridgeTransaction from "@ledgerhq/live-common/bridge/useBridgeTransaction";
 import { updateAccountWithUpdater } from "~/renderer/actions/accounts";
-import Track from "~/renderer/analytics/Track";
+
 import { getCurrentDevice } from "~/renderer/reducers/devices";
 import { OpenModal, openModal } from "~/renderer/actions/modals";
 
@@ -151,7 +151,7 @@ const Body = ({ t, stepId, device, onClose, openModal, onChangeStepId, params }:
   return (
     <Stepper {...stepperProps}>
       <SyncSkipUnderPriority priority={100} />
-      <Track onUnmount event="CloseModalActivate" />
+      
     </Stepper>
   );
 };

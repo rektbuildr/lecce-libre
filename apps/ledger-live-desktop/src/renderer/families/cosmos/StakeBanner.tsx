@@ -8,7 +8,6 @@ import { StakeAccountBannerParams } from "~/renderer/screens/account/types";
 import { CosmosAccount } from "@ledgerhq/live-common/families/cosmos/types";
 import { openModal } from "~/renderer/actions/modals";
 import { useDispatch } from "react-redux";
-import { track } from "~/renderer/analytics/segment";
 import { stakeDefaultTrack } from "~/renderer/screens/stake/constants";
 
 const StakeBanner: React.FC<{ account: CosmosAccount }> = ({ account }) => {
@@ -39,14 +38,7 @@ const StakeBanner: React.FC<{ account: CosmosAccount }> = ({ account }) => {
     : t("account.banner.delegation.cta");
 
   const onClick = () => {
-    track("button_clicked", {
-      ...stakeDefaultTrack,
-      delegation: "stake",
-      page: "Page Account",
-      button: "delegate",
-      redelegate,
-      currency: account?.currency?.id?.toUpperCase(),
-    });
+  
 
     if (redelegate) {
       dispatch(

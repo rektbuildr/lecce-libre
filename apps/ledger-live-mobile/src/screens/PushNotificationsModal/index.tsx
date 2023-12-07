@@ -7,7 +7,7 @@ import PromptNotifGenericDark from "../../images/illustration/Dark/_PromptNotifG
 import PromptNotifGenericLight from "../../images/illustration/Light/_PromptNotifGeneric.png";
 import PromptNotifMarketDark from "../../images/illustration/Dark/_PromptNotifMarket.png";
 import PromptNotifMarketLight from "../../images/illustration/Light/_PromptNotifMarket.png";
-import { TrackScreen } from "../../analytics";
+
 import QueuedDrawer from "../../components/QueuedDrawer";
 
 const PushNotificationsModal = () => {
@@ -44,16 +44,7 @@ const PushNotificationsModal = () => {
     );
   return (
     <QueuedDrawer isRequestingToBeOpened={isPushNotificationsModalOpen} noCloseButton>
-      <TrackScreen
-        category="Notification Prompt"
-        name={
-          pushNotificationsModalType === "generic"
-            ? "Notification Prompt 1 - Notif"
-            : "Notification Prompt 2 - Graph"
-        }
-        source={pushNotificationsOldRoute}
-        type={"drawer"}
-      />
+      
       <Flex mb={4}>
         <Flex alignItems={"center"}>
           <NotifIllustration />

@@ -10,7 +10,7 @@ import firmwareUpdateMain from "@ledgerhq/live-common/hw/firmwareUpdate-main";
 import { withDevicePolling } from "@ledgerhq/live-common/hw/deviceAccess";
 import getDeviceInfo from "@ledgerhq/live-common/hw/getDeviceInfo";
 import { getEnv } from "@ledgerhq/live-env";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import FlashMCU from "~/renderer/components/FlashMCU";
 import { mockedEventEmitter } from "~/renderer/components/debug/DebugMock";
@@ -183,7 +183,7 @@ const StepFlashMcu = ({
   if (autoUpdatingMode) {
     return (
       <Container>
-        <TrackPage category="Manager" name="Firmware Updating" />
+        
         <StepUpdatingBody
           modelId={deviceModelId}
           deviceHasPin={deviceHasPin}
@@ -195,7 +195,7 @@ const StepFlashMcu = ({
 
   return (
     <Container data-test-id="firmware-update-flash-mcu-progress">
-      <TrackPage category="Manager" name="FlashMCU" />
+      
       <Body
         deviceModelId={deviceModelId}
         firmware={firmware}

@@ -12,7 +12,7 @@ import CollectionName from "~/renderer/components/Nft/CollectionName";
 import TokensList from "./TokensList";
 import Box from "~/renderer/components/Box";
 import Spinner from "~/renderer/components/Spinner";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Button from "~/renderer/components/Button";
 import Text from "~/renderer/components/Text";
 import GridListToggle from "./GridListToggle";
@@ -129,7 +129,7 @@ const Gallery = () => {
 
   return (
     <>
-      <TrackPage category="Page" name="NFT Gallery" />
+      
       <Box horizontal alignItems="center" mb={6}>
         <Box flex={1}>
           <Text ff="Inter|SemiBold" color="palette.text.shade100" fontSize={22}>

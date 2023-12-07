@@ -17,7 +17,6 @@ import { openURL } from "~/renderer/linking";
 import FirmwareUpdateBanner from "~/renderer/components/FirmwareUpdateBanner";
 import { FakeLink } from "~/renderer/components/TopBanner";
 import { context } from "~/renderer/drawers/Provider";
-import { track } from "~/renderer/analytics/segment";
 import { LocalTracer } from "@ledgerhq/logs";
 
 type Props = {
@@ -91,9 +90,7 @@ const FirmwareUpdate = (props: Props) => {
     tracer.trace("Opening drawer", { hasFirmware: !!firmware, function: "onOpenDrawer" });
 
     if (!firmware) return;
-    track("Manager Firmware Update Click", {
-      firmwareName: firmware.final.name,
-    });
+    
 
     setFirmwareUpdateOpened(true); // Prevents manager from reacting to device changes (?)
     const updateModalProps: UpdateModalProps = {
@@ -145,9 +142,7 @@ const FirmwareUpdate = (props: Props) => {
   useEffect(() => {
     // NB Open automatically the firmware update drawer if needed
     if (firmware && modal === "install" && !autoOpened) {
-      track("Manager Firmware Update Auto", {
-        firmwareName: firmware.final.name,
-      });
+      
       tracer.trace("Automatically opening firmware update drawer", { modal, autoOpened, firmware });
 
       setAutoOpened(true);
@@ -191,9 +186,7 @@ const FirmwareUpdate = (props: Props) => {
             data-test-id="manager-update-firmware-button"
             disabled={!!disableFirmwareUpdate}
             onClick={() => {
-              track("Manager Firmware Update Click", {
-                firmwareName: firmware.final.name,
-              });
+              
               onOpenDrawer();
             }}
           >

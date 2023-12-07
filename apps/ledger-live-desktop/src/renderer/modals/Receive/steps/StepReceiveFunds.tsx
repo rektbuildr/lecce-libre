@@ -2,7 +2,7 @@ import invariant from "invariant";
 import React, { useEffect, useRef, useCallback, useState } from "react";
 import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
 import { getMainAccount, getAccountName } from "@ledgerhq/live-common/account/index";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import ErrorDisplay from "~/renderer/components/ErrorDisplay";
 import { DisconnectedDevice } from "@ledgerhq/errors";
 import { Trans } from "react-i18next";
@@ -22,7 +22,6 @@ import Receive2NoDevice from "~/renderer/components/Receive2NoDevice";
 import { renderVerifyUnwrapped } from "~/renderer/components/DeviceAction/rendering";
 import { StepProps } from "../Body";
 import { AccountLike } from "@ledgerhq/types-live";
-import { track } from "~/renderer/analytics/segment";
 import Modal from "~/renderer/components/Modal";
 import Alert from "~/renderer/components/Alert";
 import ModalBody from "~/renderer/components/Modal/ModalBody";
@@ -206,16 +205,8 @@ const StepReceiveFunds = (props: StepProps) => {
       receiveStakingFlowConfig?.enabled &&
       receiveStakingFlowConfig?.params?.[id]?.enabled
     ) {
-      track("button_clicked", {
-        button: "continue",
-        page: window.location.hash
-          .split("/")
-          .filter(e => e !== "#")
-          .join("/"),
-        currency: currencyName,
-        modal: "receive",
-        account: name,
-      });
+      
+
       if (receiveStakingFlowConfig?.params?.[id]?.direct) {
         dispatch(
           openModal("MODAL_EVM_STAKE", {
@@ -264,11 +255,7 @@ const StepReceiveFunds = (props: StepProps) => {
   return (
     <>
       <Box px={2}>
-        <TrackPage
-          category={`Receive Flow${eventType ? ` (${eventType})` : ""}`}
-          name="Step 3"
-          currencyName={currencyName}
-        />
+        
         {
           verifyAddressError ? (
             <ErrorDisplay error={verifyAddressError} onRetry={onVerify} />

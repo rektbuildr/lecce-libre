@@ -1,6 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import ExportLogsBtn from "~/renderer/components/ExportLogsButton";
 import TroubleshootNetworkBtn from "~/renderer/components/TroubleshootNetworkButton";
 import OpenUserDataDirectoryBtn from "~/renderer/components/OpenUserDataDirectoryBtn";
@@ -19,7 +19,7 @@ const SectionHelp = () => {
 
   return (
     <>
-      <TrackPage category="Settings" name="Help" />
+      
       <Body>
         <RowItem title={t("settings.help.faq")} desc={t("settings.help.faqDesc")} url={urlFaq} />
         <Row

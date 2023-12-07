@@ -17,7 +17,7 @@ import { getAccountUnit } from "@ledgerhq/live-common/account/index";
 import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
 import { accountScreenSelector } from "../../../reducers/accounts";
 import { ScreenName } from "../../../const";
-import { TrackScreen } from "../../../analytics";
+
 import LText from "../../../components/LText";
 import CurrencyUnitValue from "../../../components/CurrencyUnitValue";
 import Button from "../../../components/Button";
@@ -98,7 +98,7 @@ export default function VoteAmount({ navigation, route }: Props) {
 
   return (
     <>
-      <TrackScreen category="VoteFlow" name="Amount" flow="stake" action="vote" currency="celo" />
+      
       <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
         <KeyboardView style={styles.container}>
           <TouchableWithoutFeedback onPress={blur}>

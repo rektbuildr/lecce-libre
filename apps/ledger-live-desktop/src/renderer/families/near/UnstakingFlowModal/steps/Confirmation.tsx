@@ -3,7 +3,7 @@ import { useTranslation, Trans } from "react-i18next";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { SyncOneAccountOnMount } from "@ledgerhq/live-common/bridge/react/index";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import BroadcastErrorDisclaimer from "~/renderer/components/BroadcastErrorDisclaimer";
 import Button from "~/renderer/components/Button";
@@ -36,13 +36,7 @@ export default function StepConfirmation({
       });
     return (
       <Container>
-        <TrackPage
-          category="Unstake NEAR Flow"
-          name="Step Confirmed"
-          flow="stake"
-          action="unstaking"
-          currency="near"
-        />
+        
         <SyncOneAccountOnMount priority={10} accountId={optimisticOperation.accountId} />
         <SuccessDisplay
           title={t("near.unstake.flow.steps.confirmation.success.title")}
@@ -66,13 +60,7 @@ export default function StepConfirmation({
   if (error) {
     return (
       <Container shouldSpace={signed}>
-        <TrackPage
-          category="Unstake NEAR Flow"
-          name="Step Confirmation Error"
-          flow="stake"
-          action="unstaking"
-          currency="near"
-        />
+        
         {signed ? (
           <BroadcastErrorDisclaimer
             title={t("near.unstake.flow.steps.confirmation.broadcastError")}

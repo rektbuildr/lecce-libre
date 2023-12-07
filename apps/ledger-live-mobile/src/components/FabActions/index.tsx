@@ -8,7 +8,7 @@ import { ButtonProps } from "@ledgerhq/native-ui/components/cta/Button/index";
 import { IconType } from "@ledgerhq/native-ui/components/Icon/type";
 import { StackNavigationProp } from "@react-navigation/stack";
 import InfoModal from "../InfoModal";
-import { useAnalytics } from "../../analytics";
+
 import { WrappedButtonProps } from "../wrappedUi/Button";
 import { NavigatorName } from "../../const";
 
@@ -124,10 +124,10 @@ export const FabButtonBarProvider = ({
 
       if (!confirmModalProps) {
         if (event) {
-          track(event, { ...globalEventProperties, ...eventProperties });
+          
         }
         if (id) {
-          track("button_clicked", { ...globalEventProperties, button: id });
+          
         }
         setInfoModalProps(undefined);
         if (linkUrl) {

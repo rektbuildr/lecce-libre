@@ -12,7 +12,7 @@ import Touchable from "../../components/Touchable";
 import { ScreenName } from "../../const";
 import { withDiscreetMode } from "../../context/DiscreetModeContext";
 import { countervalueFirstSelector, readOnlyModeEnabledSelector } from "../../reducers/settings";
-import { track } from "../../analytics";
+
 import CurrencyUnitValue from "../../components/CurrencyUnitValue";
 import Placeholder from "../../components/Placeholder";
 import CurrencyHeaderLayout from "../../components/CurrencyHeaderLayout";
@@ -82,18 +82,13 @@ function Header({
 
   const onBackButtonPress = useCallback(() => {
     if (readOnlyModeEnabled) {
-      track("button_clicked", {
-        button: "Back",
-        page: "Account",
-      });
+      
     }
     navigation.goBack();
   }, [navigation, readOnlyModeEnabled]);
 
   const goToSettings = useCallback(() => {
-    track("button_clicked", {
-      button: "Asset settings",
-    });
+    
     navigation.navigate(ScreenName.CurrencySettings, {
       currencyId: (currency as Exclude<Currency, FiatCurrency>).id,
     });

@@ -5,7 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import AddAccount from "../Accounts/AddAccount";
 import Touchable from "../../components/Touchable";
 import { ScreenName } from "../../const";
-import { track } from "../../analytics";
+
 
 type Props = {
   readOnly?: boolean;
@@ -15,18 +15,12 @@ function AssetsNavigationHeader({ readOnly }: Props) {
   const navigation = useNavigation();
 
   const handleOnReadOnlyAddAccountPress = useCallback(() => {
-    track("button_clicked", {
-      button: "Add Account '+'",
-      page: "Assets",
-    });
+    
     navigation.navigate(ScreenName.NoDeviceWallScreen);
   }, [navigation]);
 
   const goBack = useCallback(() => {
-    track("button_clicked", {
-      button: "Back",
-      page: "Assets",
-    });
+    
     navigation.goBack();
   }, [navigation]);
 

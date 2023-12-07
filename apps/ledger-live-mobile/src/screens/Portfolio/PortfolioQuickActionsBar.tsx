@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import useQuickActions from "../../hooks/useQuickActions";
 import { QuickActionList, type QuickActionButtonProps } from "@ledgerhq/native-ui";
 import { TextVariants } from "@ledgerhq/native-ui/styles/theme";
-import { track, useAnalytics } from "../../analytics";
+
 
 const SHARED_CONFIG = {
   variant: "small" as const,
@@ -21,7 +21,7 @@ function PortfolioQuickActionsBar() {
 
   const onNavigate = useCallback(
     (name: string, options: object, eventButton: string) => {
-      track("button_clicked", { button: eventButton, page });
+      
       (navigation as StackNavigationProp<{ [key: string]: object | undefined }>).navigate(
         name,
         options,

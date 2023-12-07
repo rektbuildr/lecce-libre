@@ -3,7 +3,7 @@ import { CryptoCurrency, TokenCurrency } from "@ledgerhq/types-cryptoassets";
 import { BigNumber } from "bignumber.js";
 import { ScreenName } from "../../../const";
 import AccountRowLayout from "../../../components/AccountRowLayout";
-import { track } from "../../../analytics";
+
 import { StackNavigatorNavigation } from "../../../components/RootNavigator/types/helpers";
 import { AccountsNavigatorParamList } from "../../../components/RootNavigator/types/AccountsNavigator";
 
@@ -17,7 +17,7 @@ const ReadOnlyAccountRow = ({ navigation, currency, screen }: Props) => {
   const { name, units, id, type } = currency;
 
   const onAccountPress = useCallback(() => {
-    track("account_clicked", { currency: name, screen });
+    
     navigation.navigate(ScreenName.Account, {
       currencyId: id,
       currencyType: type,

@@ -10,9 +10,6 @@ import RestoreAppsIllustration from "./RestoreAppsIllustration";
 import CancelModal from "./CancelModal";
 import InstallSetOfApps from "./InstallSetOfApps";
 import LockedModal from "./LockedModal";
-import TrackPage from "~/renderer/analytics/TrackPage";
-import { analyticsFlowName } from "../SyncOnboarding/Manual/shared";
-import { track, trackPage } from "~/renderer/analytics/segment";
 
 const fallbackDefaultAppsToInstall = ["Bitcoin", "Ethereum", "Polygon"];
 
@@ -87,55 +84,31 @@ const OnboardingAppInstallStep = ({
   );
 
   const handlePressSkip = useCallback(() => {
-    track("button_clicked", { button: "maybe later", flow: analyticsFlowName });
     onComplete();
   }, [onComplete]);
 
   const handlePressInstall = useCallback(() => {
-    track("button_clicked", {
-      button: deviceToRestore ? "Restore applications" : "Install applications",
-      flow: analyticsFlowName,
-    });
+
     setInProgress(true);
   }, [deviceToRestore]);
 
   const handleCancelModalRetryPressed = useCallback(() => {
-    track("button_clicked", {
-      button: "Install now",
-      flow: analyticsFlowName,
-    });
+
     handleRetry();
   }, [handleRetry]);
 
   const handleCancelModalSkipPressed = useCallback(() => {
-    track("button_clicked", {
-      button: "I'll do this later",
-      flow: analyticsFlowName,
-    });
+
     onComplete();
   }, [onComplete]);
 
   const handleInstallComplete = useCallback(() => {
-    trackPage(
-      `Set up ${productName}: Step 5  Successful`,
-      undefined,
-      { flow: analyticsFlowName },
-      true,
-      true,
-    );
+
     onComplete();
   }, [onComplete, productName]);
 
   return (
     <>
-      {isCancelModalOpen ? (
-        <TrackPage
-          category={`App installation was cancelled on ${productName}`}
-          flow={analyticsFlowName}
-          type="modal"
-          refreshSource={false}
-        />
-      ) : null}
       <CancelModal
         isOpen={isCancelModalOpen}
         productName={productName}
@@ -143,14 +116,7 @@ const OnboardingAppInstallStep = ({
         onSkip={handleCancelModalSkipPressed}
       />
       <LockedModal isOpen={isLockedModalOpen} productName={productName} onClose={handleRetry} />
-      <TrackPage
-        category={
-          deviceToRestore
-            ? `Set up ${productName}: Step 5 Restore Apps`
-            : `Set up ${productName}: Step 5 Install Apps`
-        }
-        flow={analyticsFlowName}
-      />
+
       {inProgress && device ? (
         <InstallSetOfApps
           device={device}

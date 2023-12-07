@@ -11,7 +11,6 @@ import {
   SwapTransactionType,
   SwapSelectorStateType,
 } from "@ledgerhq/live-common/exchange/swap/types";
-import { track } from "~/renderer/analytics/segment";
 import { rateSelector } from "~/renderer/actions/swap";
 import FormattedVal from "~/renderer/components/FormattedVal";
 import Box from "~/renderer/components/Box";
@@ -109,11 +108,7 @@ const SectionFees = ({
     () =>
       (canEdit &&
         (() => {
-          track("button_clicked", {
-            button: "change network fees",
-            page: "Page Swap Form",
-            ...swapDefaultTrack,
-          });
+          
           setDrawer(
             FeesDrawer,
             {

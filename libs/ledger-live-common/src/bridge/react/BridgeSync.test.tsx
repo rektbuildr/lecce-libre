@@ -47,18 +47,9 @@ describe("BridgeSync", () => {
       const accounts = [account];
       expect(accounts[0].operations.length).toBe(futureOpLength - 1);
 
-      function track(type, opts) {
-        if (type === "SyncSuccess") {
-          expect(opts).toMatchObject({
-            reason: "initial",
-            currencyName: "Bitcoin",
-            operationsLength: futureOpLength,
-          });
-          resolve(null);
-        }
-      }
+
       render(
-        <BridgeSync {...defaultsBridgeSyncOpts} accounts={accounts} trackAnalytics={track}>
+        <BridgeSync {...defaultsBridgeSyncOpts} accounts={accounts}>
           {null}
         </BridgeSync>,
       );
@@ -94,22 +85,12 @@ describe("BridgeSync", () => {
         resolveFirst();
         return Promise.resolve();
       }
-      function track(type, opts) {
-        expect(type).not.toEqual("SyncError");
-        if (type === "SyncSuccess") {
-          synced.push(opts);
-          expect(opts).toMatchObject({
-            reason: "initial",
-          });
-          if (synced.length === accounts.length) resolve(null);
-        }
-      }
+
       render(
         <BridgeSync
           {...defaultsBridgeSyncOpts}
           prepareCurrency={prepareCurrency}
           accounts={accounts}
-          trackAnalytics={track}
         >
           {null}
         </BridgeSync>,

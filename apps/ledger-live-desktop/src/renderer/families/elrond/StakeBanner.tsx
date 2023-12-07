@@ -6,7 +6,6 @@ import React from "react";
 import { StakeAccountBannerParams } from "~/renderer/screens/account/types";
 import { useElrondPreloadData } from "@ledgerhq/live-common/families/elrond/react";
 import { ElrondAccount, ElrondProvider } from "@ledgerhq/live-common/families/elrond/types";
-import { track } from "~/renderer/analytics/segment";
 import { stakeDefaultTrack } from "~/renderer/screens/stake/constants";
 import { useDispatch } from "react-redux";
 import { openModal } from "~/renderer/actions/modals";
@@ -47,14 +46,7 @@ const StakeBanner: React.FC<{ account: ElrondAccount }> = ({ account }) => {
     ? t("account.banner.delegation.linkText")
     : t("account.banner.redelegation.linkText");
   const onClick = () => {
-    track("button_clicked", {
-      ...stakeDefaultTrack,
-      delegation: "stake",
-      page: "Page Account",
-      button: "delegate",
-      redelegate: bannerState.bannerType === "redelegate",
-      currency: "ELROND",
-    });
+    
 
     if (bannerState.bannerType === "redelegate") {
       const findValidator = (validator: string) =>

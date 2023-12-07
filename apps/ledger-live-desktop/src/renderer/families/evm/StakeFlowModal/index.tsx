@@ -3,7 +3,7 @@ import { Account } from "@ledgerhq/types-live";
 import { useFeature } from "@ledgerhq/live-config/featureFlags/index";
 import Modal, { ModalBody } from "~/renderer/components/Modal";
 import { Flex } from "@ledgerhq/react-ui";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import { EthStakingModalBody } from "./EthStakingModalBody";
 
 type Props = {
@@ -31,7 +31,7 @@ const StakingModal = ({ account, hasCheckbox, singleProviderRedirectMode, source
           onClose={onClose}
           render={() => (
             <Flex justifyContent={"center"}>
-              <TrackPage category="ETH Stake Modal" name="Main Modal" />
+              
               <EthStakingModalBody
                 onClose={onClose}
                 account={account}

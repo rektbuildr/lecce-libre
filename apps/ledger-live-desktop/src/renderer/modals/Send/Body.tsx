@@ -21,7 +21,7 @@ import { closeModal, openModal } from "~/renderer/actions/modals";
 import { accountsSelector } from "~/renderer/reducers/accounts";
 import { updateAccountWithUpdater } from "~/renderer/actions/accounts";
 import { getCurrentDevice } from "~/renderer/reducers/devices";
-import Track from "~/renderer/analytics/Track";
+
 import { Device } from "@ledgerhq/live-common/hw/actions/types";
 import StepRecipient, { StepRecipientFooter } from "./steps/StepRecipient";
 import StepAmount, { StepAmountFooter } from "./steps/StepAmount";
@@ -355,7 +355,7 @@ const Body = ({
   return (
     <Stepper {...stepperProps}>
       {stepId === "confirmation" ? null : <SyncSkipUnderPriority priority={100} />}
-      <Track onUnmount event="CloseModalSend" />
+      
     </Stepper>
   );
 };

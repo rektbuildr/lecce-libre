@@ -3,7 +3,7 @@ import { TouchableOpacity } from "react-native";
 import { Trans } from "react-i18next";
 import styled from "styled-components/native";
 import { Flex, Text, Button } from "@ledgerhq/native-ui";
-import { track, TrackScreen } from "../../../analytics";
+
 
 const NotNowButton = styled(TouchableOpacity)`
   align-items: center;
@@ -18,23 +18,17 @@ type Props = {
 
 const InitMessage = ({ setStep, onVerifyAddress }: Props) => {
   const onDontVerify = useCallback(() => {
-    track("button_clicked", {
-      button: "Reveal my address without verifying",
-      drawer: "Verification Security Disclaimer",
-    });
+    
     setStep("confirmUnverified");
   }, [setStep]);
 
   const handleVerifyAddress = useCallback(() => {
-    track("button_clicked", {
-      button: "Verify my address",
-      drawer: "Verification Security Disclaimer",
-    });
+    
     onVerifyAddress();
   }, [onVerifyAddress]);
   return (
     <Flex flex={1} justifyContent="center" mt={3}>
-      <TrackScreen category="Deposit" name="Verification Security Disclaimer" type="drawer" />
+      
       <Text variant="h4" fontWeight="semiBold" color="neutral.c100" lineHeight="31.2px">
         <Trans i18nKey="transfer.receive.securityVerify.title" />
       </Text>

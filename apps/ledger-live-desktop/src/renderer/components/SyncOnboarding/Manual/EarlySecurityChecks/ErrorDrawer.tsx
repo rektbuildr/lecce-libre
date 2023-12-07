@@ -8,8 +8,7 @@ import useEnv from "@ledgerhq/live-common/hooks/useEnv";
 import { useHistory } from "react-router";
 import { DeviceBlocker } from "../../../DeviceAction/DeviceBlocker";
 import { setDrawer } from "~/renderer/drawers/Provider";
-import TrackPage from "~/renderer/analytics/TrackPage";
-import { track } from "~/renderer/analytics/segment";
+
 import { ErrorBody } from "~/renderer/components/DeviceAction/rendering";
 import { FirmwareNotRecognized } from "@ledgerhq/errors";
 
@@ -46,7 +45,7 @@ const ErrorDrawer: React.FC<Props> = ({ error, onClickRetry, closeable = false }
 
   return (
     <Flex flexDirection="column" alignItems="center" justifyContent="space-between" height="100%">
-      <TrackPage category={drawerAnalyticsName} type="drawer" refreshSource={false} />
+      
       <Flex px={13} flex={1}>
         {isNotFoundEntityError ? (
           <Flex flex={1} flexDirection={"column"} justifyContent={"center"} alignItems={"center"}>
@@ -71,7 +70,7 @@ const ErrorDrawer: React.FC<Props> = ({ error, onClickRetry, closeable = false }
           size="large"
           type="shade"
           onClick={() => {
-            track("button_clicked", { button: "Quit setup", drawer: drawerAnalyticsName });
+            
             exit();
           }}
         >
@@ -82,7 +81,7 @@ const ErrorDrawer: React.FC<Props> = ({ error, onClickRetry, closeable = false }
             size="large"
             variant="main"
             onClick={() => {
-              track("button_clicked", { button: "Go to settings", drawer: drawerAnalyticsName });
+              
               goToExperimentalSettings();
             }}
           >
@@ -95,7 +94,7 @@ const ErrorDrawer: React.FC<Props> = ({ error, onClickRetry, closeable = false }
             size="large"
             variant="main"
             onClick={() => {
-              track("button_clicked", { button: "Retry", drawer: drawerAnalyticsName });
+              
               onClickRetry();
             }}
           >

@@ -24,7 +24,7 @@ import {
   userThemeSelector,
 } from "~/renderer/reducers/settings";
 import { BehaviorSubject } from "rxjs";
-const extraSessionTrackingPairsChanges: BehaviorSubject<TrackingPair[]> = new BehaviorSubject(
+const extraSessionTrackingPairsChanges: BehaviorSubject = new BehaviorSubject(
   [] as TrackingPair[],
 );
 

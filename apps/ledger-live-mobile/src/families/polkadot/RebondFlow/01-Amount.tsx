@@ -20,7 +20,7 @@ import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
 import { StackScreenProps } from "@react-navigation/stack";
 import { accountScreenSelector } from "../../../reducers/accounts";
 import { ScreenName } from "../../../const";
-import { TrackScreen } from "../../../analytics";
+
 import LText from "../../../components/LText";
 import CurrencyUnitValue from "../../../components/CurrencyUnitValue";
 import Button from "../../../components/Button";
@@ -114,13 +114,7 @@ export default function PolkadotRebondAmount({ navigation, route }: NavigationPr
   const hasErrors = hasStatusError(status);
   return (
     <>
-      <TrackScreen
-        category="RebondFlow"
-        name="Amount"
-        flow="stake"
-        action="rebond"
-        currency="dot"
-      />
+      
       <SafeAreaView
         style={[
           styles.root,

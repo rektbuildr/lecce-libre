@@ -6,7 +6,6 @@ import { useFeature } from "@ledgerhq/live-config/featureFlags/index";
 import { Account, AccountLike } from "@ledgerhq/types-live";
 import { useHistory } from "react-router-dom";
 import { stakeDefaultTrack } from "./constants";
-import { track, trackPage } from "~/renderer/analytics/segment";
 import { useDispatch } from "react-redux";
 import { openModal } from "~/renderer/actions/modals";
 import { getAccountName } from "@ledgerhq/live-common/account/index";
@@ -37,25 +36,12 @@ const useStakeFlow = () => {
         currencies: currencies || list,
       });
 
-      trackPage("Stake", "Drawer - Choose Asset", {
-        ...stakeDefaultTrack,
-        page: history.location.pathname,
-        type: "drawer",
-      });
       setDrawer(
         SelectAccountAndCurrencyDrawer,
         {
           currencies: cryptoCurrencies,
           onAccountSelected: (account: AccountLike, parentAccount: Account | null = null) => {
-            track("button_clicked", {
-              ...stakeDefaultTrack,
-              button: "asset",
-              page: history.location.pathname,
-              currency: account.type === "Account" && account?.currency?.family,
-              account: account ? getAccountName(account) : undefined,
-              parentAccount: parentAccount ? getAccountName(parentAccount) : undefined,
-              drawer: "Select Account And Currency Drawer",
-            });
+
             setDrawer();
 
             if (alwaysShowNoFunds) {

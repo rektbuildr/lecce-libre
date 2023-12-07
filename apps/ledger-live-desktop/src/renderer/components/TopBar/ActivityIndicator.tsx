@@ -4,7 +4,6 @@ import { Trans } from "react-i18next";
 import { useBridgeSync, useGlobalSyncState } from "@ledgerhq/live-common/bridge/react/index";
 import { useCountervaluesPolling } from "@ledgerhq/live-common/countervalues/react";
 import { getEnv } from "@ledgerhq/live-env";
-import { track } from "~/renderer/analytics/segment";
 import { isUpToDateSelector } from "~/renderer/reducers/accounts";
 import IconLoader from "~/renderer/icons/Loader";
 import IconExclamationCircle from "~/renderer/icons/ExclamationCircle";
@@ -33,7 +32,7 @@ export default function ActivityIndicatorInner() {
       reason: "user-click",
     });
     setLastclickTime(Date.now());
-    track("SyncRefreshClick");
+    
   }, [cvPolling, bridgeSync]);
   const isSpectronRun = getEnv("PLAYWRIGHT_RUN"); // we will keep 'spinning' in spectron case
   const userClickTime = isSpectronRun ? 10000 : 1000;

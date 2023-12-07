@@ -5,7 +5,7 @@ import { TouchableHighlight } from "react-native-gesture-handler";
 import styled, { useTheme } from "styled-components/native";
 import { InAppBrowser } from "react-native-inappbrowser-reborn";
 import { useTranslation } from "react-i18next";
-import { track, TrackScreen } from "../../analytics";
+
 import { CryptopanicNewsWithMetadata } from "../../hooks/newsfeed/cryptopanicApi";
 import { inAppBrowserDefaultParams } from "../../components/InAppBrowser";
 import { useCryptopanicPosts } from "../../hooks/newsfeed/useCryptopanicPosts";
@@ -41,10 +41,7 @@ function NewsfeedPage() {
   const onClickItem = useCallback(
     async (news: CryptopanicNewsWithMetadata) => {
       const url = news?.source?.url || news.url;
-      track("card_clicked", {
-        url,
-        page: ScreenName.Newsfeed,
-      });
+      
       if (await InAppBrowser.isAvailable()) {
         await InAppBrowser.open(url, {
           ...inAppBrowserParams,
@@ -134,7 +131,7 @@ function NewsfeedPage() {
     <EmptyState />
   ) : (
     <Flex>
-      <TrackScreen category="NewsFeed" />
+      
       <FlatList
         data={posts}
         renderItem={renderItem}

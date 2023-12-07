@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { useTheme } from "@react-navigation/native";
 
 import ValidateError from "../../../../../../../components/ValidateError";
-import { TrackScreen } from "../../../../../../../analytics";
+
 
 import type { StackNavigatorNavigation } from "../../../../../../../components/RootNavigator/types/helpers";
 import type { BaseNavigatorStackParamList } from "../../../../../../../components/RootNavigator/types/BaseNavigator";
@@ -49,13 +49,7 @@ const ValidationError = (props: ValidationErrorPropsType) => {
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
-      <TrackScreen
-        category="ElrondClaimRewards"
-        name="ValidationError"
-        flow="stake"
-        action="claim"
-        currency="egld"
-      />
+      
       <ValidateError error={error} onRetry={retry} onClose={onClose} />
     </View>
   );

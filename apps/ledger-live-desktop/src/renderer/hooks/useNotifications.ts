@@ -9,7 +9,7 @@ import {
 } from "~/types/dynamicContent";
 import { notificationsContentCardSelector } from "~/renderer/reducers/dynamicContent";
 import { setNotificationsCards } from "~/renderer/actions/dynamicContent";
-import { track } from "../analytics/segment";
+
 
 export function useNotifications() {
   const [cachedNotifications, setCachedNotifications] = useState<braze.Card[]>([]);

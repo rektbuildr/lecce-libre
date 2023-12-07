@@ -11,7 +11,7 @@ import {
   listTokensForCryptoCurrency,
   listTokenTypesForCryptoCurrency,
 } from "@ledgerhq/live-common/currencies/index";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Label from "~/renderer/components/Label";
 import Button from "~/renderer/components/Button";
@@ -108,7 +108,7 @@ export default function StepAccount({
   const url = supportLinkByTokenType[tokenTypes[0] as keyof typeof supportLinkByTokenType];
   return (
     <Box flow={1}>
-      <TrackPage category={`Receive Flow${eventType ? ` (${eventType})` : ""}`} name="Step 1" />
+      
       {mainAccount ? <CurrencyDownStatusAlert currencies={[mainAccount.currency]} /> : null}
       {error ? <ErrorBanner error={error} /> : null}
       {receiveTokenMode && mainAccount ? (

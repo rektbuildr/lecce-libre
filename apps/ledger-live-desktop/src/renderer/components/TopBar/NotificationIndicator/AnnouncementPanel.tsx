@@ -13,7 +13,7 @@ import Text from "~/renderer/components/Text";
 import { useDeepLinkHandler } from "~/renderer/hooks/useDeeplinking";
 import { closeInformationCenter } from "~/renderer/actions/UI";
 import { useNotifications } from "~/renderer/hooks/useNotifications";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import { urls } from "~/config/urls";
 import useDateFormatter from "~/renderer/hooks/useDateFormatter";
 
@@ -271,7 +271,7 @@ export function AnnouncementPanel() {
   if (!notificationsCards) {
     return (
       <PanelContainer>
-        <TrackPage category="Notification Center" name="notification_center_news" />
+        
         <Text
           color="palette.text.shade100"
           ff="Inter|SemiBold"
@@ -296,7 +296,7 @@ export function AnnouncementPanel() {
   }
   return (
     <ScrollArea hideScrollbar>
-      <TrackPage category="Notification Center" name="notification_center_news" />
+      
       <Box py="32px">
         {groups.map((group, index) => (
           <React.Fragment key={index}>

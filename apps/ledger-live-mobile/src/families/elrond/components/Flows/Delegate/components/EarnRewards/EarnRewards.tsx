@@ -13,7 +13,7 @@ import Alert from "../../../../../../../components/Alert";
 import BulletList, { BulletGreenCheck } from "../../../../../../../components/BulletList";
 
 import { urls } from "@utils/urls";
-import { TrackScreen } from "../../../../../../../analytics";
+
 
 import type { EarnRewardsPropsType } from "./types";
 
@@ -61,13 +61,7 @@ const EarnRewards = (props: EarnRewardsPropsType) => {
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
       <NavigationScrollView style={styles.scroll} contentContainerStyle={styles.scrollContainer}>
-        <TrackScreen
-          category="DelegationFlow"
-          name="Started"
-          flow="stake"
-          action="delegate"
-          currency="egld"
-        />
+        
         <IlluRewards style={styles.rewards} />
 
         <LText semiBold style={styles.description}>

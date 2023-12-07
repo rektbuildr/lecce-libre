@@ -3,7 +3,7 @@ import React, { useCallback } from "react";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
-import { TrackScreen } from "../../../analytics";
+
 import ValidateError from "../../../components/ValidateError";
 import {
   BaseComposite,
@@ -32,7 +32,7 @@ export default function ValidationError({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
-      <TrackScreen category="CardanoDelegation" name="ValidationError" />
+      
       <ValidateError error={error} onRetry={retry} onClose={onClose} />
     </SafeAreaView>
   );

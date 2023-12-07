@@ -26,7 +26,7 @@ import CurrencyUnitValue from "../../../components/CurrencyUnitValue";
 import LText from "../../../components/LText";
 import { accountScreenSelector } from "../../../reducers/accounts";
 import { ScreenName } from "../../../const";
-import { TrackScreen } from "../../../analytics";
+
 import { rgba } from "../../../colors";
 import { StackNavigatorProps } from "../../../components/RootNavigator/types/helpers";
 import { CardanoUndelegationFlowParamList } from "./types";
@@ -77,7 +77,7 @@ export default function UndelegationSummary({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
-      <TrackScreen category="DelegationFlow" name="Summary" />
+      
 
       <View style={styles.body}>
         <View style={styles.delegatingAccount}>

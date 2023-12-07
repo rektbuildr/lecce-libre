@@ -5,7 +5,7 @@ import upperFirst from "lodash/upperFirst";
 import { setLocale } from "~/renderer/actions/settings";
 import { languageSelector, localeSelector } from "~/renderer/reducers/settings";
 import Select from "~/renderer/components/Select";
-import Track from "~/renderer/analytics/Track";
+
 import regionsByKey from "./regions.json";
 import { DEFAULT_LANGUAGE } from "~/config/languages";
 
@@ -63,7 +63,7 @@ const RegionSelect = () => {
   );
   return (
     <>
-      <Track onUpdate event="RegionSelectChange" currentRegion={currentRegionOption.region} />
+      
       <Select
         small
         minWidth={260}

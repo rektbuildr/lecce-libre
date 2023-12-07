@@ -1,7 +1,7 @@
 import React from "react";
 import { Trans } from "react-i18next";
 import styled from "styled-components";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import { multiline } from "~/renderer/styles/helpers";
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
@@ -28,13 +28,7 @@ function StepConfirmation({ t, optimisticOperation, error, signed }: StepProps) 
   if (optimisticOperation) {
     return (
       <Container>
-        <TrackPage
-          category="Unbond Flow"
-          name="Step Confirmed"
-          flow="stake"
-          action="withdraw_unbonded"
-          currency="dot"
-        />
+        
         <SuccessDisplay
           title={<Trans i18nKey="polkadot.unbond.steps.confirmation.success.title" />}
           description={multiline(t("polkadot.unbond.steps.confirmation.success.text"))}
@@ -45,13 +39,7 @@ function StepConfirmation({ t, optimisticOperation, error, signed }: StepProps) 
   if (error) {
     return (
       <Container shouldSpace={signed}>
-        <TrackPage
-          category="Unbond Flow"
-          name="Step Confirmation Error"
-          flow="stake"
-          action="withdraw_unbonded"
-          currency="dot"
-        />
+        
         {signed ? (
           <BroadcastErrorDisclaimer
             title={<Trans i18nKey="polkadot.unbond.steps.confirmation.broadcastError" />}

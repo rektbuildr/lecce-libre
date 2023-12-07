@@ -28,8 +28,8 @@ import { useLocale } from "../../context/Locale";
 import SortBadge, { Badge } from "./SortBadge";
 import SearchHeader from "./SearchHeader";
 import { ScreenName } from "../../const";
-import { track } from "../../analytics";
-import TrackScreen from "../../analytics/TrackScreen";
+
+
 import globalSyncRefreshControl from "../../components/globalSyncRefreshControl";
 import { TAB_BAR_SAFE_HEIGHT } from "../../components/TabBar/TabBarSafeAreaView";
 import CollapsibleHeaderFlatList from "../../components/WalletTab/CollapsibleHeaderFlatList";
@@ -102,12 +102,7 @@ const BottomSection = ({ navigation }: { navigation: NavigationProps["navigation
 
   const toggleFilterByStarredAccounts = useCallback(() => {
     if (!filterByStarredAccount) {
-      track(
-        "Page Market Favourites",
-        getAnalyticsProperties(requestParams, {
-          currencies: starredMarketCoins,
-        }),
-      );
+      
     }
     dispatch(setMarketFilterByStarredAccounts(!filterByStarredAccount));
   }, [dispatch, filterByStarredAccount, requestParams, starredMarketCoins]);
@@ -131,13 +126,7 @@ const BottomSection = ({ navigation }: { navigation: NavigationProps["navigation
    * */
   const onChange = useCallback(
     (value: unknown) => {
-      track(
-        "Page Market",
-        getAnalyticsProperties({
-          ...requestParams,
-          ...(value as MarketListRequestParams),
-        }),
-      );
+     
       dispatch(setMarketRequestParams(value as MarketListRequestParams));
       refresh(value as MarketListRequestParams);
     },
@@ -156,7 +145,7 @@ const BottomSection = ({ navigation }: { navigation: NavigationProps["navigation
       horizontal
       showsHorizontalScrollIndicator={false}
     >
-      <TrackScreen category="Page" name={"Market"} access={true} />
+      
 
       <TouchableOpacity onPress={toggleFilterByStarredAccounts} testID="starred">
         <Badge bg={filterByStarredAccount ? "primary.c80" : "neutral.c30"}>

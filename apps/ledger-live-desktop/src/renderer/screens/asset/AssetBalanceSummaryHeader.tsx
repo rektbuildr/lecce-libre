@@ -3,7 +3,6 @@ import { useDispatch } from "react-redux";
 import { Currency, CryptoCurrency, TokenCurrency, Unit } from "@ledgerhq/types-cryptoassets";
 
 import { setCountervalueFirst } from "~/renderer/actions/settings";
-import { track } from "~/renderer/analytics/segment";
 import { BalanceTotal, BalanceDiff } from "~/renderer/components/BalanceInfos";
 import Box, { Tabbable } from "~/renderer/components/Box";
 import FormattedVal from "~/renderer/components/FormattedVal";
@@ -13,7 +12,7 @@ import { useGetSwapTrackingProperties } from "~/renderer/screens/exchange/Swap2/
 import styled from "styled-components";
 import Swap from "~/renderer/icons/Swap";
 import Button from "~/renderer/components/ButtonV3";
-import { setTrackingSource } from "~/renderer/analytics/TrackPage";
+
 import { useHistory } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useRampCatalog } from "@ledgerhq/live-common/platform/providers/RampCatalogProvider/useRampCatalog";
@@ -84,7 +83,7 @@ export default function AssetBalanceSummaryHeader({
   const availableOnSwap = currenciesAll.includes(currency.id);
 
   const onBuy = useCallback(() => {
-    setTrackingSource("asset header actions");
+    
     history.push({
       pathname: "/exchange",
       state: {
@@ -95,13 +94,8 @@ export default function AssetBalanceSummaryHeader({
   }, [currency.id, history]);
 
   const onSwap = useCallback(() => {
-    track("button_clicked", {
-      button: "swap",
-      currency: currency?.ticker,
-      page: "Page Asset",
-      ...swapDefaultTrack,
-    });
-    setTrackingSource("Page Asset");
+    
+    
     history.push({
       pathname: "/swap",
       state: {
@@ -111,13 +105,8 @@ export default function AssetBalanceSummaryHeader({
   }, [currency, history, swapDefaultTrack]);
 
   const onStake = useCallback(() => {
-    track("button_clicked", {
-      button: "stake",
-      currency: currency?.ticker,
-      page: "Page Asset",
-      ...stakeDefaultTrack,
-    });
-    setTrackingSource("Page Asset");
+    
+    
     startStakeFlow({
       currencies: currency ? [currency.id] : undefined,
     });

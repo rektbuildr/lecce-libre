@@ -11,7 +11,7 @@ import useEnv from "@ledgerhq/live-common/hooks/useEnv";
 import { ReactNavigationPerformanceView } from "@shopify/react-native-performance-navigation";
 import { useDistribution, useRefreshAccountsOrdering } from "../../actions/general";
 import { isUpToDateSelector } from "../../reducers/accounts";
-import TrackScreen from "../../analytics/TrackScreen";
+
 import { withDiscreetMode } from "../../context/DiscreetModeContext";
 import AssetRow, { NavigationProp } from "../WalletCentricAsset/AssetRow";
 
@@ -63,7 +63,7 @@ function Assets() {
   return (
     <ReactNavigationPerformanceView screenName={ScreenName.Assets} interactive>
       <SafeAreaView isFlex>
-        <TrackScreen category="Assets List" />
+        
         <Flex flex={1} bg={"background.main"}>
           <AssetsNavigationHeader />
           {syncPending && (

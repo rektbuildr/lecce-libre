@@ -24,8 +24,7 @@ import DeviceNotGenuineDrawer, {
   Props as DeviceNotGenuineDrawerProps,
 } from "./DeviceNotGenuineDrawer";
 import { useTranslation } from "react-i18next";
-import TrackPage from "~/renderer/analytics/TrackPage";
-import { track } from "~/renderer/analytics/segment";
+
 import { log } from "@ledgerhq/logs";
 import { useDynamicUrl } from "~/renderer/terms";
 import { FinalFirmware } from "@ledgerhq/types-live";
@@ -335,22 +334,12 @@ const EarlySecurityChecks = ({
 
   return (
     <Flex flex={1} flexDirection="column" alignItems="center" marginTop="64px">
-      {isInitialRunOfSecurityChecks && (
-        <TrackPage category="Genuine check and OS update check start" />
-      )}
-      {isInitialRunOfSecurityChecks && genuineCheckStatus === SoftwareCheckStatus.cancelled && (
-        <TrackPage category="Error: user declined genuine check on their device" />
-      )}
-      {isInitialRunOfSecurityChecks && genuineCheckStatus === SoftwareCheckStatus.completed && (
-        <TrackPage category="The genuine check is successful" />
-      )}
+      {isInitialRunOfSecurityChecks}
+      {isInitialRunOfSecurityChecks && genuineCheckStatus === SoftwareCheckStatus.cancelled}
+      {isInitialRunOfSecurityChecks && genuineCheckStatus === SoftwareCheckStatus.completed}
       {genuineCheckStatus === SoftwareCheckStatus.completed &&
-        firmwareUpdateStatus === SoftwareCheckStatus.completed && (
-          <TrackPage category="The device is genuine and up to date" />
-        )}
-      {firmwareUpdateStatus === SoftwareCheckStatus.updateAvailable && (
-        <TrackPage category="Download OS update" />
-      )}
+        firmwareUpdateStatus === SoftwareCheckStatus.completed}
+      {firmwareUpdateStatus === SoftwareCheckStatus.updateAvailable}
       <Body
         genuineCheckStatus={
           genuineCheckStatus === SoftwareCheckStatus.optimisticCompleted
@@ -366,29 +355,29 @@ const EarlySecurityChecks = ({
         modelName={productName}
         updateSkippable={latestFirmware?.final.id === fwUpdateInterrupted?.id}
         onClickStartChecks={() => {
-          track("button_clicked", { button: "Start checks" });
+          
           setGenuineCheckStatus(SoftwareCheckStatus.active);
           resetGenuineCheckState();
         }}
         onClickWhyPerformSecurityChecks={() => {
-          track("button_clicked", { button: "Why perform these security checks" });
+          
           openURL(whySecurityChecksUrl);
         }}
         onClickResumeGenuineCheck={() => {
-          track("button_clicked", { button: "Resume genuine check" });
+          
           setGenuineCheckStatus(SoftwareCheckStatus.active);
           resetGenuineCheckState();
         }}
         onClickViewUpdate={() => {
-          track("button_clicked", { button: "View update" });
+          
           startFirmwareUpdate();
         }}
         onClickSkipUpdate={() => {
-          track("button_clicked", { button: "Skip update" });
+          
           handleCompletion();
         }}
         onClickContinueToSetup={() => {
-          track("button_clicked", { button: "Continue to setup" });
+          
           handleCompletion();
         }}
         onClickRetryUpdate={() => {

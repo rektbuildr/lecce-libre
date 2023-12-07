@@ -12,7 +12,7 @@ import NftGalleryEmptyState from "../Nft/NftGallery/NftGalleryEmptyState";
 import { NavigatorName, ScreenName } from "../../const";
 import { BaseComposite, StackNavigatorProps } from "../../components/RootNavigator/types/helpers";
 import { CustomImageNavigatorParamList } from "../../components/RootNavigator/types/CustomImageNavigator";
-import { TrackScreen } from "../../analytics";
+
 
 const NB_COLUMNS = 2;
 
@@ -61,7 +61,7 @@ const NFTGallerySelector = ({ navigation, route }: NavigationProps) => {
   );
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <TrackScreen category="Choose lockscreen from NFT gallery" />
+      
       <Flex flex={1} px={6}>
         {hasNFTs ? (
           <FlatList

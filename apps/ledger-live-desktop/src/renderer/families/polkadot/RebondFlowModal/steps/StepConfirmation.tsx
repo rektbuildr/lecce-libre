@@ -2,7 +2,7 @@ import React from "react";
 import { Trans } from "react-i18next";
 import styled from "styled-components";
 // import { usePolkadotRebondLoading } from "@ledgerhq/live-common/families/tron/react";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import { multiline } from "~/renderer/styles/helpers";
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
@@ -27,13 +27,7 @@ function StepConfirmation({ t, optimisticOperation, error, signed }: StepProps) 
   if (optimisticOperation) {
     return (
       <Container>
-        <TrackPage
-          category="Rebond Flow"
-          name="Step Confirmed"
-          flow="stake"
-          action="rebond"
-          currency="dot"
-        />
+        
         <SuccessDisplay
           title={<Trans i18nKey="polkadot.rebond.steps.confirmation.success.title" />}
           description={multiline(t("polkadot.rebond.steps.confirmation.success.text"))}
@@ -44,13 +38,7 @@ function StepConfirmation({ t, optimisticOperation, error, signed }: StepProps) 
   if (error) {
     return (
       <Container shouldSpace={signed}>
-        <TrackPage
-          category="Rebond Flow"
-          name="Step Confirmation Error"
-          flow="stake"
-          action="rebond"
-          currency="dot"
-        />
+        
         {signed ? (
           <BroadcastErrorDisclaimer
             title={<Trans i18nKey="polkadot.rebond.steps.confirmation.broadcastError" />}

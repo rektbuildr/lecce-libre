@@ -12,7 +12,7 @@ import IconNano from "~/renderer/icons/NanoAltSmall";
 import IconChevronRight from "~/renderer/icons/ChevronRight";
 import { openURL } from "~/renderer/linking";
 import Text from "~/renderer/components/Text";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import { SideDrawer } from "~/renderer/components/SideDrawer";
 import Box from "~/renderer/components/Box";
 import { urls } from "~/config/urls";
@@ -77,7 +77,7 @@ const HelpSideDrawer = ({ isOpened, onClose }: { isOpened: boolean; onClose: () 
   return (
     <SideDrawer isOpen={isOpened} onRequestClose={onClose} direction="left">
       <>
-        <TrackPage category="SideDrawer" name="Help" />
+        
 
         <Box py={60} px={40}>
           <Text ff="Inter|SemiBold" fontSize={22} mb={20} color={"palette.text.shade100"}>

@@ -5,7 +5,7 @@ import { Trans } from "react-i18next";
 import { useTheme } from "@react-navigation/native";
 import { useBaker } from "@ledgerhq/live-common/families/tezos/bakers";
 import { accountScreenSelector } from "../../../reducers/accounts";
-import { TrackScreen, track } from "../../../analytics";
+
 import { ScreenName } from "../../../const";
 import PreventNativeBack from "../../../components/PreventNativeBack";
 import ValidateSuccess from "../../../components/ValidateSuccess";
@@ -34,13 +34,7 @@ export default function ValidationSuccess({ navigation, route }: Props) {
   const delegation = transaction.mode;
 
   useEffect(() => {
-    track("staking_completed", {
-      currency: "XTZ",
-      validator,
-      source,
-      delegation,
-      flow: "stake",
-    });
+    
   }, [delegation, source, validator]);
 
   const goToOperationDetails = useCallback(() => {
@@ -64,13 +58,7 @@ export default function ValidationSuccess({ navigation, route }: Props) {
         },
       ]}
     >
-      <TrackScreen
-        category="SendFunds"
-        name="ValidationSuccess"
-        flow="stake"
-        action="delegation"
-        currency="xtz"
-      />
+      
       <PreventNativeBack />
       <ValidateSuccess
         onClose={onClose}

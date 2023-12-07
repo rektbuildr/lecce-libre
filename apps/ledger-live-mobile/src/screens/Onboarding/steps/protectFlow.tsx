@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useFeature } from "@ledgerhq/live-config/featureFlags/index";
 import { NavigatorName, ScreenName } from "../../../const";
 import BaseStepperView, { RestoreWithProtect, PinCodeInstructions } from "./setupDevice/scenes";
-import { TrackScreen } from "../../../analytics";
+
 
 import StepLottieAnimation from "./setupDevice/scenes/StepLottieAnimation";
 import { completeOnboarding } from "../../../actions/settings";
@@ -98,7 +98,7 @@ function OnboardingStepProtectFlow({ navigation, route }: NavigationProps) {
 
   return (
     <>
-      <TrackScreen category="Onboarding" name="PairNew" />
+      
       <BaseStepperView
         onNext={nextPage}
         steps={scenes}

@@ -15,7 +15,7 @@ import { toggleStarAction } from "~/renderer/actions/accounts";
 import { useRefreshAccountsOrdering } from "~/renderer/actions/general";
 import { swapSelectableCurrenciesSelector } from "~/renderer/reducers/settings";
 import { isCurrencySupported } from "~/renderer/screens/exchange/config";
-import { setTrackingSource } from "~/renderer/analytics/TrackPage";
+
 import { ContextMenuItemType } from "./ContextMenuWrapper";
 import { IconsLegacy } from "@ledgerhq/react-ui";
 
@@ -71,7 +71,7 @@ export default function AccountContextMenu({
         label: "accounts.contextMenu.buy",
         Icon: IconBuy,
         callback: () => {
-          setTrackingSource("account context menu");
+          
           history.push({
             pathname: "/exchange",
             state: {
@@ -89,7 +89,7 @@ export default function AccountContextMenu({
         label: "accounts.contextMenu.sell",
         Icon: IconBuy,
         callback: () => {
-          setTrackingSource("account context menu");
+          
           history.push({
             pathname: "/exchange",
             state: {
@@ -107,7 +107,7 @@ export default function AccountContextMenu({
         label: "accounts.contextMenu.swap",
         Icon: IconSwap,
         callback: () => {
-          setTrackingSource("account context menu");
+          
           history.push({
             pathname: "/swap",
             state: {

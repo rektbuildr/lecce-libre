@@ -17,7 +17,7 @@ import ActivityIndicator from "./ActivityIndicator";
 import { setDiscreetMode } from "~/renderer/actions/settings";
 import { hasPasswordSelector } from "~/renderer/reducers/application";
 import { NotificationIndicator } from "~/renderer/components/TopBar/NotificationIndicator";
-import { setTrackingSource } from "~/renderer/analytics/TrackPage";
+
 import { LiveAppDrawer } from "~/renderer/components/LiveAppDrawer";
 import { IconsLegacy } from "@ledgerhq/react-ui";
 const Container = styled(Box).attrs(() => ({}))`
@@ -58,7 +58,7 @@ const TopBar = () => {
   const navigateToSettings = useCallback(() => {
     const url = "/settings";
     if (location.pathname !== url) {
-      setTrackingSource("topbar");
+      
       history.push({
         pathname: url,
       });

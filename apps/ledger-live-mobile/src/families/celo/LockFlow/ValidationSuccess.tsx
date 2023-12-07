@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { Trans } from "react-i18next";
 import { useTheme } from "@react-navigation/native";
 import { accountScreenSelector } from "../../../reducers/accounts";
-import { TrackScreen } from "../../../analytics";
+
 import { ScreenName } from "../../../const";
 import PreventNativeBack from "../../../components/PreventNativeBack";
 import ValidateSuccess from "../../../components/ValidateSuccess";
@@ -42,13 +42,7 @@ export default function ValidationSuccess({ navigation, route }: Props) {
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
-      <TrackScreen
-        category="CeloLock"
-        name="ValidationSuccess"
-        flow="stake"
-        action="lock"
-        currency="celo"
-      />
+      
       <PreventNativeBack />
       <ValidateSuccess
         onClose={onClose}

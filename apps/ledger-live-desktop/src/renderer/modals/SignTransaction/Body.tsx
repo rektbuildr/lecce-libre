@@ -10,7 +10,7 @@ import { SyncSkipUnderPriority } from "@ledgerhq/live-common/bridge/react/index"
 import { isTokenAccount } from "@ledgerhq/live-common/account/index";
 import { closeModal, openModal } from "~/renderer/actions/modals";
 import { getCurrentDevice } from "~/renderer/reducers/devices";
-import Track from "~/renderer/analytics/Track";
+
 import StepAmount, { StepAmountFooter } from "./steps/StepAmount";
 import StepConnectDevice from "./steps/StepConnectDevice";
 import StepSummary, { StepSummaryFooter } from "./steps/StepSummary";
@@ -220,7 +220,7 @@ export default function Body({ onChangeStepId, onClose, setError, stepId, params
   return (
     <Stepper {...stepperProps}>
       <SyncSkipUnderPriority priority={100} />
-      <Track onUnmount event="CloseModalSignTransaction" />
+      
     </Stepper>
   );
 }

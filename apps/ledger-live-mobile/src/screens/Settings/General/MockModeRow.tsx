@@ -1,7 +1,6 @@
 import React, { memo, useCallback } from "react";
 import { getEnv, setEnvUnsafe } from "@ledgerhq/live-env";
 import SettingsRow from "../../../components/SettingsRow";
-import Track from "../../../analytics/Track";
 import { withReboot } from "../../../context/Reboot";
 import Switch from "../../../components/Switch";
 
@@ -25,7 +24,7 @@ function MockModeRow({ reboot }: Props) {
       title="Mock mode"
       desc="Toggle Mock mode for testing, relaunch to refresh"
     >
-      <Track event={isMock ? "EnableReadOnlyMode" : "DisableReadOnlyMode"} onUpdate />
+      
       <Switch value={!!isMock} onValueChange={setReadOnlyModeAndReset} />
     </SettingsRow>
   );

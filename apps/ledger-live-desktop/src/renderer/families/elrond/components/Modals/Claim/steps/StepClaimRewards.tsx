@@ -5,7 +5,7 @@ import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
 import { denominate } from "@ledgerhq/live-common/families/elrond/helpers/denominate";
 import invariant from "invariant";
 import { getAccountUnit } from "@ledgerhq/live-common/account/index";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import ModeSelectorField from "../fields/ModeSelectorField";
@@ -61,13 +61,7 @@ const StepClaimRewards = (props: StepProps) => {
   const key = transaction.mode === "claimRewards" ? "claimInfo" : "compoundInfo";
   return (
     <Box flow={1}>
-      <TrackPage
-        category="ClaimRewards Flow"
-        name="Step 1"
-        flow="stake"
-        action="claim"
-        currency="egld"
-      />
+      
       {warning && !error ? <ErrorBanner error={warning} warning={true} /> : null}
       {error ? <ErrorBanner error={error} /> : null}
       <ModeSelectorField mode={transaction.mode} onChange={onChangeMode} />

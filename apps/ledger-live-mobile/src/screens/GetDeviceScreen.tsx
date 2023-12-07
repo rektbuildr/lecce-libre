@@ -22,7 +22,7 @@ import { useNavigationInterceptor } from "./Onboarding/onboardingContext";
 import { NavigatorName, ScreenName } from "../const";
 import useIsAppInBackground from "../components/useIsAppInBackground";
 import { hasCompletedOnboardingSelector, readOnlyModeEnabledSelector } from "../reducers/settings";
-import { track, TrackScreen } from "../analytics";
+
 import {
   BaseNavigationComposite,
   StackNavigatorNavigation,
@@ -96,10 +96,7 @@ export default function GetDeviceScreen() {
   const handleBack = useCallback(() => {
     navigation.goBack();
     if (readOnlyModeEnabled) {
-      track("button_clicked", {
-        button: "close",
-        page: "Upsell Nano",
-      });
+      
     }
   }, [readOnlyModeEnabled, navigation]);
 
@@ -113,10 +110,7 @@ export default function GetDeviceScreen() {
       },
     });
     if (readOnlyModeEnabled) {
-      track("message_clicked", {
-        message: "I already have a device, set it up now",
-        page: "Upsell Nano",
-      });
+      
     }
   }, [readOnlyModeEnabled, navigation, setFirstTimeOnboarding, setShowWelcome]);
 
@@ -135,7 +129,7 @@ export default function GetDeviceScreen() {
 
   return (
     <StyledSafeAreaView>
-      {readOnlyModeEnabled ? <TrackScreen category="ReadOnly" name="Upsell Nano" /> : null}
+      {readOnlyModeEnabled ?  : null}
       <Flex
         flexDirection="row"
         alignItems="center"

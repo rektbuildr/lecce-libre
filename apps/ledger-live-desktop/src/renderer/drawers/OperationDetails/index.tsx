@@ -34,7 +34,7 @@ import { useHistory, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { urls } from "~/config/urls";
 import { openModal } from "~/renderer/actions/modals";
-import TrackPage, { setTrackingSource } from "~/renderer/analytics/TrackPage";
+
 import AccountTagDerivationMode from "~/renderer/components/AccountTagDerivationMode";
 import Alert from "~/renderer/components/Alert";
 import Box from "~/renderer/components/Box";
@@ -224,7 +224,7 @@ const OperationD = (props: Props) => {
   const goToMainAccount = useCallback(() => {
     const url = `/account/${mainAccount.id}`;
     if (location.pathname !== url) {
-      setTrackingSource("operation details");
+      
       history.push({
         pathname: url,
       });
@@ -234,7 +234,7 @@ const OperationD = (props: Props) => {
   const goToSubAccount = useCallback(() => {
     const url = `/account/${mainAccount.id}/${account.id}`;
     if (location.pathname !== url) {
-      setTrackingSource("operation details");
+      
       history.push({
         pathname: url,
       });

@@ -3,7 +3,7 @@ import { IconsLegacy, Alert as AlertBox, Flex } from "@ledgerhq/native-ui";
 import { Alert, TouchableWithoutFeedback, View } from "react-native";
 import { useFeatureFlags } from "@ledgerhq/live-config/featureFlags/FeatureFlagsContext";
 import { groupedFeatures } from "@ledgerhq/live-config/featureFlags/groupedFeatures";
-import { TrackScreen } from "../../../analytics";
+
 import SettingsRow from "../../../components/SettingsRow";
 import { ScreenName } from "../../../const";
 import SettingsNavigationScrollView from "../SettingsNavigationScrollView";
@@ -46,7 +46,7 @@ export default function DebugSettings({
 
   return (
     <SettingsNavigationScrollView>
-      <TrackScreen category="Settings" name="Debug" />
+      
       <Flex p={6} pt={0}>
         <AlertBox type={"warning"} title={"Tools for development, debugging and QA."} />
       </Flex>

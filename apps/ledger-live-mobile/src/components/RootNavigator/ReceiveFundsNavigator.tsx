@@ -21,7 +21,7 @@ import ReceiveAddAccount from "../../screens/ReceiveFunds/02-AddAccount";
 import { getStackNavigatorConfig } from "../../navigation/navigatorConfig";
 import StepHeader from "../StepHeader";
 import { NavigationHeaderCloseButtonAdvanced } from "../NavigationHeaderCloseButton";
-import { track } from "../../analytics";
+
 import { ReceiveFundsStackParamList } from "./types/ReceiveFundsNavigator";
 import { NavigationHeaderBackButton } from "../NavigationHeaderBackButton";
 import { Flex } from "@ledgerhq/native-ui";
@@ -43,10 +43,7 @@ export default function ReceiveFundsNavigator() {
   const hasClosedNetworkBanner = useSelector(hasClosedNetworkBannerSelector);
 
   const onClose = useCallback(() => {
-    track("button_clicked", {
-      button: "Close",
-      screen: route.name,
-    });
+    
   }, [route]);
 
   const stackNavigationConfig = useMemo(
@@ -58,25 +55,16 @@ export default function ReceiveFundsNavigator() {
   );
 
   const onConnectDeviceBack = useCallback((navigation: NavigationProp<Record<string, unknown>>) => {
-    track("button_clicked", {
-      button: "Back arrow",
-      page: ScreenName.ReceiveConnectDevice,
-    });
+    
     navigation.goBack();
   }, []);
 
   const onConfirmationClose = useCallback(() => {
-    track("button_clicked", {
-      button: "HeaderRight Close",
-      page: ScreenName.ReceiveConfirmation,
-    });
+    
   }, []);
 
   const onVerificationConfirmationClose = useCallback(() => {
-    track("button_clicked", {
-      button: "HeaderRight Close",
-      page: "ReceiveVerificationConfirmation",
-    });
+    
   }, []);
 
   return (

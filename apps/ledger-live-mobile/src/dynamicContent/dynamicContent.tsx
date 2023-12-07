@@ -19,7 +19,7 @@ import {
   WalletContentCard,
   ContentCard as LedgerContentCard,
 } from "./types";
-import { track } from "../analytics";
+
 import { setDismissedDynamicCards } from "../actions/settings";
 
 export const getMobileContentCards = (array: BrazeContentCard[]) =>
@@ -151,7 +151,7 @@ const useDynamicContent = () => {
         contentcard?: string;
       },
     ) => {
-      track(event, params);
+      
     },
     [],
   );

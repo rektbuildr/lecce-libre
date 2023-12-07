@@ -18,7 +18,7 @@ import {
 import { LockedDeviceError, PeerRemovedPairing } from "@ledgerhq/errors";
 import { getDeviceAnimation } from "../../helpers/getDeviceAnimation";
 import Animation from "../Animation";
-import { TrackScreen } from "../../analytics";
+
 import GenericErrorView from "../GenericErrorView";
 import { GenericInformationBody } from "../GenericInformationBody";
 import ExternalLink from "../ExternalLink";
@@ -78,7 +78,7 @@ const BleDevicePairing = ({ deviceToPair, onPaired, onRetry }: BleDevicePairingP
   if (isPaired) {
     content = (
       <Flex flex={1} alignItems="center">
-        <TrackScreen category="BT pairing successful" />
+        
         <Flex width="100%" py={6} alignItems="center">
           <Flex height={100} justifyContent="center" mb={7}>
             <BoxedIcon
@@ -142,7 +142,7 @@ const BleDevicePairing = ({ deviceToPair, onPaired, onRetry }: BleDevicePairingP
     // TODO refactor this into the generic error rendering when possible.
     content = (
       <Flex flex={1} mb={6}>
-        <TrackScreen category="BT failed to pair" />
+        
         <Flex flex={1} alignItems="center" justifyContent="center">
           <GenericInformationBody
             title={t("blePairingFlow.pairing.error.generic.title")}
@@ -164,7 +164,7 @@ const BleDevicePairing = ({ deviceToPair, onPaired, onRetry }: BleDevicePairingP
   } else {
     content = (
       <Flex flex={1} alignItems="center">
-        <TrackScreen category="BT pairing successful" />
+        
         <Flex width="100%" py={16} alignItems="center">
           <Flex height={100} justifyContent="center">
             <BoxedIcon

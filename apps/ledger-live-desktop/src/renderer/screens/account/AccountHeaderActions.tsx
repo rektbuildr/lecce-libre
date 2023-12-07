@@ -15,7 +15,7 @@ import { useHistory } from "react-router-dom";
 import { compose } from "redux";
 import styled from "styled-components";
 import { openModal } from "~/renderer/actions/modals";
-import { setTrackingSource } from "~/renderer/analytics/TrackPage";
+
 import Box, { Tabbable } from "~/renderer/components/Box";
 import Star from "~/renderer/components/Stars/Star";
 import Tooltip from "~/renderer/components/Tooltip";
@@ -23,7 +23,6 @@ import useTheme from "~/renderer/hooks/useTheme";
 import IconAccountSettings from "~/renderer/icons/AccountSettings";
 import IconWalletConnect from "~/renderer/icons/WalletConnect";
 import { rgba } from "~/renderer/styles/helpers";
-import { track } from "~/renderer/analytics/segment";
 import {
   ActionDefault,
   BuyActionDefault,
@@ -132,7 +131,7 @@ const AccountHeaderSettingsButtonComponent = ({ account, parentAccount, openModa
   const currency = getAccountCurrency(account);
   const history = useHistory();
   const onWalletConnectLiveApp = useCallback(() => {
-    setTrackingSource("account header actions");
+    
     const params = {
       initialAccountId: mainAccount.id,
     };
@@ -225,11 +224,8 @@ const AccountHeaderActions = ({ account, parentAccount, openModal }: Props) => {
 
   const onBuySell = useCallback(
     (mode = "buy") => {
-      setTrackingSource("account header actions");
-      track("button_clicked", {
-        button: mode,
-        ...buttonSharedTrackingFields,
-      });
+      
+      
       history.push({
         pathname: "/exchange",
         state: {
@@ -243,11 +239,7 @@ const AccountHeaderActions = ({ account, parentAccount, openModal }: Props) => {
   );
 
   const onSwap = useCallback(() => {
-    track("button_clicked", {
-      button: "swap",
-      ...buttonSharedTrackingFields,
-      ...swapDefaultTrack,
-    });
+    
     setTrackingSource(pageName);
     history.push({
       pathname: "/swap",
@@ -260,10 +252,7 @@ const AccountHeaderActions = ({ account, parentAccount, openModal }: Props) => {
   }, [currency, swapDefaultTrack, history, account, parentAccount, buttonSharedTrackingFields]);
 
   const onSend = useCallback(() => {
-    track("button_clicked", {
-      button: "send",
-      ...buttonSharedTrackingFields,
-    });
+    
     openModal("MODAL_SEND", {
       parentAccount,
       account,
@@ -271,10 +260,7 @@ const AccountHeaderActions = ({ account, parentAccount, openModal }: Props) => {
   }, [openModal, parentAccount, account, buttonSharedTrackingFields]);
 
   const onReceive = useCallback(() => {
-    track("button_clicked", {
-      button: "receive",
-      ...buttonSharedTrackingFields,
-    });
+    
     openModal("MODAL_RECEIVE", {
       parentAccount,
       account,

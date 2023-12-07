@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { Trans } from "react-i18next";
 import { useTheme } from "@react-navigation/native";
 import { accountScreenSelector } from "../../../reducers/accounts";
-import { TrackScreen, track } from "../../../analytics";
+
 import { ScreenName } from "../../../const";
 import PreventNativeBack from "../../../components/PreventNativeBack";
 import ValidateSuccess from "../../../components/ValidateSuccess";
@@ -33,13 +33,7 @@ export default function ValidationSuccess({ navigation, route }: Props) {
   const source = route.params.source?.name ?? "unknown";
 
   useEffect(() => {
-    track("staking_completed", {
-      currency: ticker,
-      validator,
-      source,
-      delegation: "delegation",
-      flow: "stake",
-    });
+    
   }, [source, validator, ticker]);
 
   const goToOperationDetails = useCallback(() => {
@@ -60,13 +54,7 @@ export default function ValidationSuccess({ navigation, route }: Props) {
         },
       ]}
     >
-      <TrackScreen
-        category="NearStaking"
-        name="ValidationSuccess"
-        flow="stake"
-        action="staking"
-        currency="near"
-      />
+      
       <PreventNativeBack />
       <ValidateSuccess
         onClose={onClose}

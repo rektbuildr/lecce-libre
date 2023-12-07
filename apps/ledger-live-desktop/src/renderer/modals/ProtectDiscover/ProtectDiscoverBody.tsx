@@ -11,7 +11,6 @@ import LedgerRecoverLogo from "./images/ledger_recover.png";
 import QrCodeLLMImages from "./images/QRcode_LLM.png";
 import { openURL } from "~/renderer/linking";
 import { urls } from "~/config/urls";
-import { track } from "~/renderer/analytics/segment";
 
 type Props = {
   onClose?: () => void | undefined;
@@ -31,9 +30,7 @@ const ProtectDiscoverBody = ({ onClose }: Props) => {
   const discoverTheBenefitsLink = protectServicesDesktopFeature?.params?.discoverTheBenefitsLink;
   const onDiscoverClick = useCallback(() => {
     if (!discoverTheBenefitsLink) return;
-    track("button_clicked", {
-      button: "Discover the benefits",
-    });
+    
     openURL(discoverTheBenefitsLink);
   }, [discoverTheBenefitsLink]);
 

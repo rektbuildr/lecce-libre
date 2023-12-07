@@ -2,7 +2,7 @@ import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
 import invariant from "invariant";
 import React from "react";
 import { Trans } from "react-i18next";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import ErrorBanner from "~/renderer/components/ErrorBanner";
@@ -38,13 +38,7 @@ export default function StepValidator({
 
   return (
     <Box flow={1}>
-      <TrackPage
-        category="Solana Delegation"
-        name="Step Validator"
-        flow="stake"
-        action="activate"
-        currency="sol"
-      />
+      
       {error && <ErrorBanner error={error} />}
       {status.errors.fee && <ErrorDisplay error={status.errors.fee} />}
       {status ? (

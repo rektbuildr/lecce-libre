@@ -12,7 +12,7 @@ import {
 } from "@ledgerhq/errors";
 import { Flex, Button, IconsLegacy } from "@ledgerhq/native-ui";
 import { useTheme } from "@react-navigation/native";
-import { TrackScreen } from "../../analytics";
+
 import Touchable from "../../components/Touchable";
 import LText from "../../components/LText";
 import GenericErrorView from "../../components/GenericErrorView";
@@ -99,7 +99,7 @@ function RenderError({ error, status, onBypassGenuine, onRetry }: Props) {
 
   return (
     <Flex flex={1}>
-      <TrackScreen category="PairDevices" name="Error" />
+      
       <Flex flex={1} p={20} justifyContent="center">
         <GenericErrorView
           error={error}

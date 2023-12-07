@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import RingChart from "./RingChart";
 import { useDistribution } from "../../actions/general";
 import DistributionCard, { DistributionItem } from "./DistributionCard";
-import { TrackScreen } from "../../analytics";
+
 import { withDiscreetMode } from "../../context/DiscreetModeContext";
 import { normalize } from "../../helpers/normalizeSize";
 
@@ -59,7 +59,7 @@ function Allocation() {
         style={{ width: "100%" }}
         contentContainerStyle={{ paddingHorizontal: 16 }}
       />
-      <TrackScreen category="Analytics" name="Allocation" />
+      
     </Container>
   );
 }

@@ -7,7 +7,7 @@ import { Device } from "@ledgerhq/live-common/hw/actions/types";
 import DeviceLanguageSelection from "./DeviceLanguageSelection";
 import QueuedDrawer from "../../../components/QueuedDrawer";
 import ChangeDeviceLanguageActionModal from "../../../components/ChangeDeviceLanguageActionModal";
-import { track } from "../../../analytics";
+
 import DeviceOptionRow from "./DeviceOptionRow";
 
 type Props = {
@@ -44,7 +44,7 @@ const DeviceLanguage: React.FC<Props> = ({
   }, [setIsChangeLanguageOpen]);
 
   const confirmInstall = useCallback(() => {
-    track("Page Manager LanguageInstallTriggered", { selectedLanguage });
+    
     setShouldInstallLanguage(true);
     closeChangeLanguageModal();
   }, [setShouldInstallLanguage, closeChangeLanguageModal, selectedLanguage]);
@@ -70,7 +70,7 @@ const DeviceLanguage: React.FC<Props> = ({
   const handleError = useCallback(
     (error: Error) => {
       if (errorTracked.current !== error) {
-        track("Page Manager LanguageInstallError", { error, type: "drawer" });
+        
         errorTracked.current = error;
       }
       refreshDeviceLanguage();
@@ -78,10 +78,7 @@ const DeviceLanguage: React.FC<Props> = ({
     [refreshDeviceLanguage],
   );
   const handleResult = useCallback(() => {
-    track("Page Manager LanguageInstalled", {
-      selectedLanguage,
-      type: "drawer",
-    });
+    
     refreshDeviceLanguage();
   }, [refreshDeviceLanguage, selectedLanguage]);
 

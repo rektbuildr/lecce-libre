@@ -6,7 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { getMainAccount } from "@ledgerhq/live-common/account/helpers";
 import { accountScreenSelector } from "../../reducers/accounts";
 import DeviceAction from "../../components/DeviceAction";
-import { TrackScreen } from "../../analytics";
+
 import { ScreenName } from "../../const";
 import { navigateToSelectDevice } from "../ConnectDevice";
 import { SignMessageNavigatorStackParamList } from "../../components/RootNavigator/types/SignMessageNavigator";
@@ -44,7 +44,7 @@ export default function ConnectDevice({
   return useMemo(
     () => (
       <SafeAreaView style={styles.root}>
-        <TrackScreen category={"SignMessage"} name="ConnectDevice" />
+        
         <DeviceAction
           action={action}
           request={{

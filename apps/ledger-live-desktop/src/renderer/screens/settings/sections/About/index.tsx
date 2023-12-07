@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import { getEnv } from "@ledgerhq/live-env";
 import { SettingsSectionBody as Body, SettingsSectionRow as Row } from "../../SettingsSection";
 import RowItem from "../../RowItem";
@@ -39,7 +39,7 @@ const SectionHelp = () => {
   }, [clickCounter, devMode, pushToast, t, dispatch]);
   return (
     <>
-      <TrackPage category="Settings" name="About" />
+      
       <Body>
         <Row
           dataTestId="version-row"

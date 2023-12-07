@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { AccountLike, AnyMessage } from "@ledgerhq/types-live";
-import Track from "~/renderer/analytics/Track";
+
 import { Trans, useTranslation } from "react-i18next";
 import StepSummary, { StepSummaryFooter } from "./steps/StepSummary";
 import StepSign from "./steps/StepSign";
@@ -61,7 +61,7 @@ const Body = ({ onClose, data }: Props) => {
   };
   return (
     <Stepper {...stepperProps}>
-      <Track onUnmount event="CloseModalWalletConnectPasteLink" />
+      
     </Stepper>
   );
 };

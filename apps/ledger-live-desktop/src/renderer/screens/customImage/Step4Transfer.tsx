@@ -10,8 +10,8 @@ import { useSelector } from "react-redux";
 import CustomImageDeviceAction from "~/renderer/components/CustomImage/CustomImageDeviceAction";
 import { getCurrentDevice } from "~/renderer/reducers/devices";
 import { ImageCommitRefusedOnDevice, ImageLoadRefusedOnDevice } from "@ledgerhq/live-common/errors";
-import { analyticsDrawerName, analyticsFlowName, analyticsPageNames } from "./shared";
-import TrackPage from "~/renderer/analytics/TrackPage";
+import { analyticsDrawerName} from "./shared";
+
 
 type Props = StepProps & {
   result?: ProcessorResult;
@@ -87,14 +87,6 @@ const StepTransfer: React.FC<Props> = props => {
     >
       {result ? (
         <Flex flex={1} px={12}>
-          {error ? (
-            <TrackPage
-              category={analyticsPageNames.error + error.name}
-              type="drawer"
-              flow={analyticsFlowName}
-              refreshSource={false}
-            />
-          ) : null}
           <CustomImageDeviceAction
             device={device}
             hexImage={result?.rawResult.hexData}

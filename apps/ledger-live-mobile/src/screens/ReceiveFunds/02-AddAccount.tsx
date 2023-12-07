@@ -14,7 +14,7 @@ import { makeEmptyTokenAccount } from "@ledgerhq/live-common/account/index";
 import { replaceAccounts } from "../../actions/accounts";
 import logger from "../../logger";
 import { ScreenName } from "../../const";
-import { TrackScreen } from "../../analytics";
+
 import Button from "../../components/Button";
 import PreventNativeBack from "../../components/PreventNativeBack";
 import LText from "../../components/LText";
@@ -221,7 +221,7 @@ function AddAccountsAccounts({ navigation, route }: Props) {
 
   return (
     <>
-      <TrackScreen category="Deposit" name="Accounts" asset={currency.name} />
+      
       <PreventNativeBack />
       {scanning ? (
         <ScanLoading
@@ -233,11 +233,7 @@ function AddAccountsAccounts({ navigation, route }: Props) {
         <AddingAccountLoading currency={currency} />
       ) : (
         <>
-          <TrackScreen
-            category="Deposit"
-            name="Select account to deposit to"
-            asset={currency.name}
-          />
+          
           <FlatList
             data={scannedAccounts}
             renderItem={renderItem}
@@ -278,7 +274,7 @@ function ScanLoading({
         currencyName: currency.name,
       })}
     >
-      <TrackScreen category="Deposit" name="Create account" asset={currency.name} />
+      
       <Flex
         minHeight={120}
         flexDirection="column"

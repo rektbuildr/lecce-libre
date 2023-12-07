@@ -21,7 +21,6 @@ import Plus from "~/renderer/icons/Plus";
 import { rgba } from "~/renderer/styles/helpers";
 import { shallowAccountsSelector } from "~/renderer/reducers/accounts";
 import { context } from "~/renderer/drawers/Provider";
-import { track } from "~/renderer/analytics/segment";
 import { useGetSwapTrackingProperties } from "../../utils/index";
 
 const AccountWrapper = styled(Tabbable)<{ selected?: boolean }>`
@@ -77,14 +76,7 @@ const TargetAccount = memo(function TargetAccount({
       : account.balance;
 
   const onClick = useCallback(() => {
-    track("button_clicked", {
-      page: "Swap accounts",
-      ...swapDefaultTrack,
-      button: "account",
-      currency,
-      account: name,
-      parentAccount: parentName,
-    });
+    
     setAccount && setAccount(currency, account, parentAccount || undefined);
   }, [swapDefaultTrack, currency, name, parentName, setAccount, account, parentAccount]);
 

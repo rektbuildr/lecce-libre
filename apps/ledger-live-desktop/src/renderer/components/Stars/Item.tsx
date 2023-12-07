@@ -12,7 +12,7 @@ import FormattedVal from "~/renderer/components/FormattedVal";
 import Box from "~/renderer/components/Box";
 import Ellipsis from "~/renderer/components/Ellipsis";
 import ParentCryptoCurrencyIcon from "~/renderer/components/ParentCryptoCurrencyIcon";
-import { setTrackingSource } from "~/renderer/analytics/TrackPage";
+
 const ParentCryptoCurrencyIconWrapper = styled.div`
   width: 20px;
 `;
@@ -54,7 +54,7 @@ const Item = ({ account, pathname, collapsed }: Props) => {
   const active = pathname.endsWith(account.id);
   const onAccountClick = useCallback(() => {
     const parentAccountId = account.type !== "Account" ? account.parentId : undefined;
-    setTrackingSource("starred account item");
+    
     history.push({
       pathname: parentAccountId
         ? `/account/${parentAccountId}/${account.id}`

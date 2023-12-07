@@ -5,7 +5,7 @@ import { experimentalFeatures, isReadOnlyEnv, Feature } from "~/renderer/experim
 import { useDispatch } from "react-redux";
 import { setEnvOnAllThreads } from "~/helpers/env";
 import { openModal } from "~/renderer/actions/modals";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import useEnv from "@ledgerhq/live-common/hooks/useEnv";
 import Alert from "~/renderer/components/Alert";
 import Button from "~/renderer/components/Button";
@@ -88,7 +88,7 @@ const SectionExperimental = () => {
   }, [dispatch, needsCleanCache]);
   return (
     <div data-e2e="experimental_section_title">
-      <TrackPage category="Settings" name="Experimental" />
+      
       <Body>
         <Alert type="security" m={4}>
           <Trans i18nKey="settings.experimental.disclaimer"></Trans>

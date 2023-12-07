@@ -23,7 +23,7 @@ import NavigationScrollView from "../../components/NavigationScrollView";
 import ReceiveSecurityModal from "./ReceiveSecurityModal";
 import { replaceAccounts } from "../../actions/accounts";
 import { ScreenName } from "../../const";
-import { track, TrackScreen } from "../../analytics";
+
 import byFamily from "../../generated/Confirmation";
 import byFamilyPostAlert from "../../generated/ReceiveConfirmationPostAlert";
 
@@ -84,10 +84,7 @@ function ReceiveConfirmationInner({ navigation, route, account, parentAccount }:
   const [displayBanner, setBanner] = useState(!hasClosedWithdrawBanner);
 
   const onRetry = useCallback(() => {
-    track("button_clicked", {
-      button: "Verify address",
-      page: "Receive Account Qr Code",
-    });
+    
     const params = { ...route.params, notSkippable: true };
     setIsModalOpened(false);
     navigation.navigate(ScreenName.ReceiveConnectDevice, params);
@@ -107,20 +104,13 @@ function ReceiveConfirmationInner({ navigation, route, account, parentAccount }:
   }, [currency]);
 
   const hideBanner = useCallback(() => {
-    track("button_clicked", {
-      button: "How to withdraw from exchange",
-      page: "Receive Account Qr Code",
-    });
+    
     dispatch(setCloseWithdrawBanner(true));
     setBanner(false);
   }, [dispatch]);
 
   const clickLearn = useCallback(() => {
-    track("button_clicked", {
-      button: "How to withdraw from exchange",
-      type: "card",
-      page: "Receive Account Qr Code",
-    });
+    
     // @ts-expect-error TYPINGS
     Linking.openURL(depositWithdrawBannerMobile?.params?.url);
   }, [depositWithdrawBannerMobile?.params?.url]);
@@ -164,19 +154,12 @@ function ReceiveConfirmationInner({ navigation, route, account, parentAccount }:
 
   useEffect(() => {
     if (verified && currency) {
-      track("Verification Success", {
-        asset: currency.name,
-        page: "Receive Account Qr Code",
-      });
+      
     }
   }, [verified, currency]);
 
   const triggerSuccessEvent = useCallback(() => {
-    track("receive_done", {
-      asset: currency?.name,
-      network,
-      page: "Receive Account Qr Code",
-    });
+    
   }, [network, currency?.name]);
 
   useEffect(() => {
@@ -186,10 +169,7 @@ function ReceiveConfirmationInner({ navigation, route, account, parentAccount }:
   }, [verified, isModalOpened, triggerSuccessEvent]);
 
   const onShare = useCallback(() => {
-    track("button_clicked", {
-      button: "Share address",
-      page: "Receive Account Qr Code",
-    });
+    
     if (mainAccount?.freshAddress) {
       Share.share({ message: mainAccount?.freshAddress });
     }
@@ -200,10 +180,7 @@ function ReceiveConfirmationInner({ navigation, route, account, parentAccount }:
       if (!mainAccount?.freshAddress) return;
       Clipboard.setString(mainAccount.freshAddress);
       setCopied(true);
-      track("button_clicked", {
-        button: eventName,
-        page: "Receive Account Qr Code",
-      });
+      
       const options = {
         enableVibrateFallback: false,
         ignoreAndroidSystemSettings: false,
@@ -257,12 +234,7 @@ function ReceiveConfirmationInner({ navigation, route, account, parentAccount }:
   return (
     <Flex flex={1} mb={insets.bottom}>
       <NavigationScrollView style={{ flex: 1 }}>
-        <TrackScreen
-          category="Deposit"
-          name="Receive Account Qr Code"
-          asset={currency.name}
-          network={network}
-        />
+        
         <Flex p={0} alignItems="center" justifyContent="center">
           <StyledTouchableHightlight
             activeOpacity={1}

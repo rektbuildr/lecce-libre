@@ -22,7 +22,7 @@ import { Trans } from "react-i18next";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
-import { TrackScreen } from "../../../analytics";
+
 import Alert from "../../../components/Alert";
 import Button from "../../../components/Button";
 import ConfirmationModal from "../../../components/ConfirmationModal";
@@ -160,7 +160,7 @@ function EditTransactionSummary({ navigation, route }: Props) {
         },
       ]}
     >
-      <TrackScreen category="SendFunds" name="Summary" currencyName={currencyOrToken?.name} />
+      
       <NavigationScrollView style={styles.body}>
         {transaction.useAllAmount && hasNonEmptySubAccounts ? (
           <View style={styles.infoBox}>

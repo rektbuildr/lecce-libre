@@ -4,7 +4,7 @@ import { Linking, Platform, TouchableOpacity } from "react-native";
 import { Flex, Text, Button } from "@ledgerhq/native-ui";
 import styled from "styled-components/native";
 import { urls } from "@utils/urls";
-import { track, TrackScreen } from "../../analytics";
+
 import useRatings from "../../logic/ratings";
 import Love from "../../icons/Love";
 
@@ -22,40 +22,21 @@ const Enjoy = ({ closeModal }: Props) => {
   const { ratingsFeatureParams, ratingsHappyMoment, handleEnjoyNotNow, handleGoToStore } =
     useRatings();
   const goToStore = useCallback(() => {
-    track("RedirectedToStore", { source: ratingsHappyMoment?.route_name });
-    track("button_clicked", {
-      flow: "review",
-      page: "review_satisfiedstep1",
-      button: "rate_store",
-      source: ratingsHappyMoment?.route_name,
-      params: ratingsFeatureParams,
-    });
+    
+    
     Linking.openURL(Platform.OS === "ios" ? urls.applestoreRate : urls.playstore);
     closeModal();
     handleGoToStore();
   }, [ratingsHappyMoment?.route_name, ratingsFeatureParams, closeModal, handleGoToStore]);
   const onNotNow = useCallback(() => {
-    track("button_clicked", {
-      flow: "review",
-      page: "review_satisfiedstep1",
-      button: "notnow",
-      source: ratingsHappyMoment?.route_name,
-      params: ratingsFeatureParams,
-    });
+    
     closeModal();
     handleEnjoyNotNow();
   }, [ratingsHappyMoment?.route_name, ratingsFeatureParams, closeModal, handleEnjoyNotNow]);
 
   return (
     <Flex flex={1} alignItems="center" justifyContent="center" mt={3}>
-      <TrackScreen
-        category="Review"
-        name="page_viewed"
-        flow="review"
-        page="review_satisfiedstep1"
-        source={ratingsHappyMoment?.route_name}
-        params={ratingsFeatureParams}
-      />
+      
       <Love />
       <Text
         variant="h4"

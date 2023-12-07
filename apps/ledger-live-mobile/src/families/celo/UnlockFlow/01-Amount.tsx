@@ -19,7 +19,7 @@ import { Transaction as CeloTransaction } from "@ledgerhq/live-common/families/c
 import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
 import { accountScreenSelector } from "../../../reducers/accounts";
 import { ScreenName } from "../../../const";
-import { TrackScreen } from "../../../analytics";
+
 import LText from "../../../components/LText";
 import CurrencyUnitValue from "../../../components/CurrencyUnitValue";
 import Button from "../../../components/Button";
@@ -124,13 +124,7 @@ export default function UnlockAmount({ navigation, route }: Props) {
 
   return (
     <>
-      <TrackScreen
-        category="UnlockFlow"
-        name="Amount"
-        flow="stake"
-        action="unlock"
-        currency="celo"
-      />
+      
       <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
         <KeyboardView style={styles.container}>
           <TouchableWithoutFeedback onPress={blur}>

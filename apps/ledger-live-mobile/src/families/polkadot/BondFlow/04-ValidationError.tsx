@@ -3,7 +3,7 @@ import { StyleSheet, SafeAreaView } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { Transaction } from "@ledgerhq/live-common/generated/types";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { TrackScreen } from "../../../analytics";
+
 import ValidateError from "../../../components/ValidateError";
 
 type Props = {
@@ -35,13 +35,7 @@ export default function ValidationError({ navigation, route }: Props) {
         },
       ]}
     >
-      <TrackScreen
-        category="BondFlow"
-        name="ValidationError"
-        flow="stake"
-        action="bond"
-        currency="dot"
-      />
+      
       <ValidateError error={route.params.error} onRetry={retry} onClose={onClose} />
     </SafeAreaView>
   );

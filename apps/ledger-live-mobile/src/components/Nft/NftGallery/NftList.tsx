@@ -10,7 +10,7 @@ import NftListItem from "./NftListItem";
 import { AddNewItem } from "./AddNewItemList";
 import CollapsibleHeaderFlatList from "../../WalletTab/CollapsibleHeaderFlatList";
 import globalSyncRefreshControl from "../../globalSyncRefreshControl";
-import { TrackScreen, track } from "../../../analytics";
+
 import { useNftList } from "./NftList.hook";
 import BackgroundGradient from "../../TabBar/BackgroundGradient";
 import NftFilterDrawer from "./NftFilterDrawer";
@@ -114,7 +114,7 @@ const NftList = ({ data }: Props) => {
 
   return (
     <>
-      <TrackScreen category="NFT Gallery" NFTs_owned={data.length} />
+      
       <RefreshableCollapsibleHeaderFlatList
         numColumns={2}
         ListHeaderComponent={
@@ -138,10 +138,7 @@ const NftList = ({ data }: Props) => {
                     ) : null}
                     <NftFilterChip
                       onPress={() => {
-                        track("button_clicked", {
-                          button: "Open Filter",
-                          page: ScreenName.WalletNftGallery,
-                        });
+                        
                         openFilterDrawer();
                       }}
                     >
@@ -164,10 +161,7 @@ const NftList = ({ data }: Props) => {
         ListEmptyComponent={
           <EmptyState
             onPress={() => {
-              track("button_clicked", {
-                button: "Reset Filters",
-                page: ScreenName.WalletNftGallery,
-              });
+              
               openFilterDrawer();
             }}
           />

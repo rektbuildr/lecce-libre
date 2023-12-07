@@ -5,7 +5,7 @@ import { BigNumber } from "bignumber.js";
 import invariant from "invariant";
 import React, { useCallback } from "react";
 import { Trans } from "react-i18next";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import ErrorBanner from "~/renderer/components/ErrorBanner";
@@ -45,13 +45,7 @@ export default function StepDelegation({
 
   return (
     <Box flow={1}>
-      <TrackPage
-        category="Delegation Flow"
-        name="Step Validator"
-        flow="stake"
-        action="delegation"
-        currency={account.currency.id}
-      />
+      
       {error && <ErrorBanner error={error} />}
       <ValidatorField
         account={account}

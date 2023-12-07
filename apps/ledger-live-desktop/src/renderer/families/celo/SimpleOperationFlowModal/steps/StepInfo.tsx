@@ -1,7 +1,7 @@
 import invariant from "invariant";
 import React from "react";
 import { Trans } from "react-i18next";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import ErrorBanner from "~/renderer/components/ErrorBanner";
@@ -45,13 +45,7 @@ const StepInfo = ({ account, transaction, warning, error, t, mode }: StepProps) 
   const description = t(`celo.simpleOperation.modes.${mode}.description`);
   return (
     <Box flow={1}>
-      <TrackPage
-        category="Celo SimpleOperation"
-        name="Step 1"
-        flow="stake"
-        action={mode}
-        currency="celo"
-      />
+      
       {warning && !error ? <ErrorBanner error={warning} warning /> : null}
       {error ? <ErrorBanner error={error} /> : null}
       {description && (

@@ -1,5 +1,5 @@
 import React from "react";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import { getMainAccount } from "@ledgerhq/live-common/account/index";
 import GenericStepConnectDevice from "./GenericStepConnectDevice";
 import { StepProps } from "../types";
@@ -17,7 +17,7 @@ export default function StepConnectDevice({
   const dependencies = (account && [getMainAccount(account, parentAccount)]) || [];
   return (
     <>
-      <TrackPage category="Sign Transaction Flow" name="Step ConnectDevice" />
+      
       <GenericStepConnectDevice
         account={account}
         useApp={useApp}

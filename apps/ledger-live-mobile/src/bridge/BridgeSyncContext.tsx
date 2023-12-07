@@ -5,7 +5,7 @@ import logger from "../logger";
 import { updateAccountWithUpdater } from "../actions/accounts";
 import { accountsSelector } from "../reducers/accounts";
 import { blacklistedTokenIdsSelector } from "../reducers/settings";
-import { track } from "../analytics/segment";
+
 import { prepareCurrency, hydrateCurrency } from "./cache";
 import { Account } from "@ledgerhq/types-live";
 

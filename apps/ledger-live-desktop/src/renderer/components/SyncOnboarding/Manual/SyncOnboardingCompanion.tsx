@@ -23,13 +23,12 @@ import { useCustomPath } from "@ledgerhq/live-common/hooks/recoverFeatureFlag";
 import { lastSeenDeviceSelector } from "~/renderer/reducers/settings";
 import { DesyncOverlay } from "./DesyncOverlay";
 import SeedStep, { SeedPathStatus } from "./SeedStep";
-import { analyticsFlowName, StepText } from "./shared";
+import { StepText } from "./shared";
 import OnboardingAppInstallStep from "../../OnboardingAppInstall";
 import { getOnboardingStatePolling } from "@ledgerhq/live-common/hw/getOnboardingStatePolling";
 import ContinueOnDeviceWithAnim from "./ContinueOnDeviceWithAnim";
 import { RecoverState } from "~/renderer/screens/recover/Player";
-import TrackPage from "~/renderer/analytics/TrackPage";
-import { trackPage } from "~/renderer/analytics/segment";
+
 import { Device } from "@ledgerhq/live-common/hw/actions/types";
 import { setDrawer } from "~/renderer/drawers/Provider";
 import LockedDeviceDrawer, { Props as LockedDeviceDrawerProps } from "./LockedDeviceDrawer";
@@ -134,10 +133,7 @@ const SyncOnboardingCompanion: React.FC<SyncOnboardingCompanionProps> = ({
         }),
         renderBody: () => (
           <Flex flexDirection="column">
-            <TrackPage
-              category={`Set up ${productName}: Step 1 device paired`}
-              flow={analyticsFlowName}
-            />
+            
             {/* @ts-expect-error weird props issue with React 18 */}
             <StepText>
               {
@@ -160,7 +156,6 @@ const SyncOnboardingCompanion: React.FC<SyncOnboardingCompanionProps> = ({
         titleCompleted: t("syncOnboarding.manual.pinContent.titleCompleted"),
         renderBody: () => (
           <Flex flexDirection="column">
-            <TrackPage category={`Set up ${productName}: Step 2 PIN`} flow={analyticsFlowName} />
             {/* @ts-expect-error weird props issue with React 18 */}
             <StepText>
               {t("syncOnboarding.manual.pinContent.description", { productName })}
@@ -179,10 +174,7 @@ const SyncOnboardingCompanion: React.FC<SyncOnboardingCompanionProps> = ({
         titleCompleted: t("syncOnboarding.manual.seedContent.titleCompleted"),
         renderBody: () => (
           <>
-            <TrackPage
-              category={`Set up ${productName}: Step 3 Seed Intro`}
-              flow={analyticsFlowName}
-            />
+
             <SeedStep seedPathStatus={seedPathStatus} deviceModelId={device.modelId} />
           </>
         ),
@@ -298,18 +290,7 @@ const SyncOnboardingCompanion: React.FC<SyncOnboardingCompanionProps> = ({
       stepKey > StepKey.Seed &&
       !analyticsSeedingTracked.current
     ) {
-      trackPage(
-        `Set up ${productName}: Step 3 Seed Success`,
-        undefined,
-        {
-          seedPhraseType: analyticsSeedPhraseType.current
-            ? fromSeedPhraseTypeToAnalyticsPropertyString.get(analyticsSeedPhraseType.current)
-            : undefined,
-          seedConfiguration: analyticsSeedConfiguration.current,
-        },
-        true,
-        true,
-      );
+
 
       analyticsSeedingTracked.current = true;
     }
@@ -424,13 +405,7 @@ const SyncOnboardingCompanion: React.FC<SyncOnboardingCompanionProps> = ({
     }
 
     if (stepKey === StepKey.Exit) {
-      trackPage(
-        `Set up ${productName}: Final Step ${productName} is ready`,
-        undefined,
-        { flow: analyticsFlowName },
-        true,
-        true,
-      );
+
       setTimeout(handleDeviceReady, READY_REDIRECT_DELAY_MS);
     }
 

@@ -6,7 +6,7 @@ import { DeviceModelId } from "@ledgerhq/devices";
 import { withDevicePolling } from "@ledgerhq/live-common/hw/deviceAccess";
 import getDeviceInfo from "@ledgerhq/live-common/hw/getDeviceInfo";
 import { getEnv } from "@ledgerhq/live-env";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import { mockedEventEmitter } from "~/renderer/components/debug/DebugMock";
 import { renderFirmwareUpdating } from "~/renderer/components/DeviceAction/rendering";
@@ -73,7 +73,7 @@ const StepUpdating = ({
 
   return (
     <Container>
-      <TrackPage category="Manager" name="Firmware Updating" />
+      
       <Body modelId={deviceModelId} deviceHasPin={deviceHasPin} downloadPhase={downloadPhase} />
     </Container>
   );

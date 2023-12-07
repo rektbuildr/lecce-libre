@@ -5,7 +5,6 @@ import { openURL } from "~/renderer/linking";
 import Box from "~/renderer/components/Box";
 import LabelWithExternalIcon from "~/renderer/components/LabelWithExternalIcon";
 import { urls } from "~/config/urls";
-import { track } from "~/renderer/analytics/segment";
 export default withTranslation()(
   ({
     children,
@@ -23,7 +22,7 @@ export default withTranslation()(
         <LabelWithExternalIcon
           onClick={() => {
             openURL(urls.feesMoreInfo);
-            track("Send Flow Fees Help Requested");
+            
           }}
           label={t(i18nKeyOverride || "send.steps.details.fees")}
         />

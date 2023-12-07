@@ -7,7 +7,6 @@ import Text from "~/renderer/components/Text";
 import { Wrapper, Label, IllustrationWrapper } from "~/renderer/components/Carousel";
 import { useHistory } from "react-router-dom";
 import Image from "../Image";
-import { track } from "~/renderer/analytics/segment";
 import { ContentCard } from "~/types/dynamicContent";
 
 const Layer = styled(animated.div)<{

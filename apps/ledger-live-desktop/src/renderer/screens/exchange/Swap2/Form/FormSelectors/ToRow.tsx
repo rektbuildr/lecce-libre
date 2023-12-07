@@ -21,7 +21,6 @@ import {
 } from "~/renderer/components/Input";
 import styled from "styled-components";
 import CounterValue from "~/renderer/components/CounterValue";
-import { track } from "~/renderer/analytics/segment";
 import { useGetSwapTrackingProperties } from "../../utils/index";
 import { CryptoOrTokenCurrency } from "@ledgerhq/types-cryptoassets";
 
@@ -68,11 +67,7 @@ function ToRow({
   const unit = toCurrency?.units[0];
   usePickDefaultCurrency(currencies, toCurrency, setToCurrency);
   const trackEditCurrency = () =>
-    track("button_clicked", {
-      button: "Edit target currency",
-      page: "Page Swap Form",
-      ...swapDefaultTrack,
-    });
+    
   const setCurrencyAndTrack = (currency: CryptoOrTokenCurrency | null | undefined) => {
     updateSelectedRate();
     track("button_clicked", {

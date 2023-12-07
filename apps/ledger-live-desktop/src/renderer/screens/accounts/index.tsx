@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import styled from "styled-components";
 import { Account, AccountLike } from "@ledgerhq/types-live";
-import TrackPage, { setTrackingSource } from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import { Redirect } from "react-router";
 import {
@@ -30,7 +30,7 @@ export default function AccountsPage() {
   });
   const onAccountClick = useCallback(
     (account: AccountLike, parentAccount?: Account | null) => {
-      setTrackingSource("accounts page");
+      
       history.push({
         pathname: parentAccount
           ? `/account/${parentAccount.id}/${account.id}`
@@ -44,12 +44,7 @@ export default function AccountsPage() {
   }
   return (
     <Box>
-      <TrackPage
-        category="Accounts"
-        accountsLength={accounts.length}
-        starredAccountsLength={starredAccounts.length}
-        mode={mode}
-      />
+      
       <AccountsHeader />
       <AccountList onAccountClick={onAccountClick} accounts={accounts} range={range} mode={mode} />
     </Box>

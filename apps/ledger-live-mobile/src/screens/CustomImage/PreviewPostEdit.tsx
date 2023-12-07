@@ -10,7 +10,7 @@ import { BaseComposite, StackNavigatorProps } from "../../components/RootNavigat
 import { CustomImageNavigatorParamList } from "../../components/RootNavigator/types/CustomImageNavigator";
 import { NavigatorName, ScreenName } from "../../const";
 import StaxFramedImage, { previewConfig } from "../../components/CustomImage/StaxFramedImage";
-import { TrackScreen } from "../../analytics";
+
 import Link from "../../components/wrappedUi/Link";
 
 type NavigationProps = BaseComposite<
@@ -80,7 +80,7 @@ const PreviewPostEdit = ({ navigation, route }: NavigationProps) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <TrackScreen category={analyticsScreenName} />
+      
       <Flex flex={1}>
         <Flex flex={1}>
           <Flex flex={1} flexDirection="column" alignItems="center" justifyContent="center">

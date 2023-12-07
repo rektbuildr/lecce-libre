@@ -10,7 +10,7 @@ import { Image, ImageProps } from "react-native";
 import { completeOnboarding, setReadOnlyMode } from "../../../actions/settings";
 
 import { NavigatorName, ScreenName } from "../../../const";
-import { screen, track } from "../../../analytics";
+
 
 import { AnalyticsContext } from "../../../analytics/AnalyticsContext";
 import {
@@ -60,10 +60,7 @@ const Item = ({
 
   const onClick = useCallback(
     (value: string) => {
-      track("button_clicked", {
-        button: value,
-        page: screenName,
-      });
+      
     },
     [screenName],
   );

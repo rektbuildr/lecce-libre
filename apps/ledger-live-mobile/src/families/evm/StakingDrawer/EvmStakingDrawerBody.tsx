@@ -8,7 +8,7 @@ import { appendQueryParamsToDappURL } from "@ledgerhq/live-common/platform/utils
 
 import { ListProvider } from "./types";
 import { EvmStakingDrawerProvider } from "./EvmStakingDrawerProvider";
-import { useAnalytics } from "../../../analytics";
+
 import { NavigatorName, ScreenName } from "../../../const";
 import { StackNavigationProp } from "@react-navigation/stack";
 
@@ -36,10 +36,7 @@ export function EvmStakingDrawerBody({
         const customDappURL =
           provider.queryParams &&
           appendQueryParamsToDappURL(manifest, provider.queryParams)?.toString();
-        track("button_clicked", {
-          button: provider.id,
-          page,
-        });
+        
         onClose(() => {
           navigation.navigate(ScreenName.PlatformApp, {
             platform: manifest.id,
@@ -58,9 +55,7 @@ export function EvmStakingDrawerBody({
       if (provider.supportLink) {
         const supported = await Linking.canOpenURL(provider.supportLink);
         if (supported) {
-          track("button_clicked", {
-            page,
-          });
+          
           await Linking.openURL(provider.supportLink);
         }
       }

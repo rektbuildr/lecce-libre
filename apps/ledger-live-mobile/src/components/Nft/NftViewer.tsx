@@ -55,7 +55,7 @@ import type { BaseNavigatorStackParamList } from "../RootNavigator/types/BaseNav
 import { AccountsNavigatorParamList } from "../RootNavigator/types/AccountsNavigator";
 import InfoModal from "../../modals/Info";
 import { notAvailableModalInfo } from "../../screens/Nft/NftInfoNotAvailable";
-import { track, TrackScreen } from "../../analytics";
+
 import { DesignedForStaxDrawer, DesignedForStaxText } from "./DesignedForStax";
 import {
   discreetModeSelector,
@@ -112,9 +112,7 @@ const Section = ({
   const copy = useCallback(() => {
     if (typeof value === "undefined") return null;
 
-    track("button_clicked", {
-      button: title,
-    });
+    
 
     Clipboard.setString(value);
     setCopied(true);
@@ -202,10 +200,7 @@ const NftViewer = ({ route }: Props) => {
   }, [nft, currency]);
 
   const closeModal = () => {
-    track("button_clicked", {
-      button: "Close 'x'",
-      drawer: "NFT settings",
-    });
+    
     setBottomModalOpen(false);
   };
 
@@ -224,9 +219,7 @@ const NftViewer = ({ route }: Props) => {
       },
     });
 
-    track("button_clicked", {
-      button: "Send NFT",
-    });
+    
 
     navigation.navigate(NavigatorName.SendFunds, {
       screen: ScreenName.SendSelectRecipient,
@@ -320,9 +313,7 @@ const NftViewer = ({ route }: Props) => {
     setOpen(true);
   }, []);
   const onCloseModal = useCallback(() => {
-    track("button_clicked", {
-      button: "Back",
-    });
+    
     setOpen(false);
   }, []);
   const isNFTDisabled = useFeature("disableNftSend")?.enabled && Platform.OS === "ios";
@@ -332,7 +323,7 @@ const NftViewer = ({ route }: Props) => {
   const isFocused = useIsFocused();
   return (
     <>
-      <TrackScreen category="NFT" />
+      
       <InfoModal
         isOpened={isOpen}
         onClose={onCloseModal}
@@ -406,7 +397,7 @@ const NftViewer = ({ route }: Props) => {
             {nftMetadata?.medias && mediaType !== "video" ? (
               <TouchableOpacity
                 onPress={() => {
-                  track("NFT_clicked");
+                  
                   navigation.navigate(NavigatorName.NftNavigator, {
                     screen: ScreenName.NftImageViewer,
                     params: {
@@ -441,9 +432,7 @@ const NftViewer = ({ route }: Props) => {
                   type="main"
                   Icon={IconsLegacy.OthersMedium}
                   onPress={() => {
-                    track("button_clicked", {
-                      button: "NFT Settings",
-                    });
+                    
                     setBottomModalOpen(true);
                   }}
                 />

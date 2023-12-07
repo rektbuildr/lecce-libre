@@ -2,7 +2,6 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Link, Flex, Text } from "@ledgerhq/react-ui";
 import ExitIcon from "~/renderer/icons/ExitIcon";
-import { track } from "~/renderer/analytics/segment";
 import { getDeviceModel } from "@ledgerhq/devices";
 import { Device } from "@ledgerhq/live-common/hw/actions/types";
 import styled, { useTheme } from "styled-components";
@@ -59,7 +58,7 @@ const Header = ({ onClose, device, displayTitle }: Props) => {
         type="shade"
         Icon={ExitIcon}
         onClick={() => {
-          track("button_clicked", { button: "Exit setup" });
+          
           onClose();
         }}
         iconPosition="left"

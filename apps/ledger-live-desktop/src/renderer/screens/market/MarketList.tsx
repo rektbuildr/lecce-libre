@@ -13,14 +13,14 @@ import { Button } from ".";
 import { useSelector, useDispatch } from "react-redux";
 import { localeSelector } from "~/renderer/reducers/settings";
 import { addStarredMarketCoins, removeStarredMarketCoins } from "~/renderer/actions/settings";
-import Track from "~/renderer/analytics/Track";
+
 import { useRampCatalog } from "@ledgerhq/live-common/platform/providers/RampCatalogProvider/useRampCatalog";
 import Image from "~/renderer/components/Image";
 import NoResultsFound from "~/renderer/images/no-results-found.png";
 import { useFeature } from "@ledgerhq/live-config/featureFlags/index";
 import { FlexProps } from "styled-system";
 import { CurrencyData, MarketListRequestParams } from "@ledgerhq/live-common/market/types";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import { useFetchCurrencyFrom } from "@ledgerhq/live-common/exchange/swap/hooks/index";
 
 export const TableCellBase: StyledComponent<"div", DefaultTheme, FlexProps> = styled(Flex).attrs({
@@ -189,7 +189,7 @@ const NoCryptoPlaceholder = ({
     width="400px"
     flexDirection="column"
   >
-    <Track event="Page Market Search" success={false} />
+    
     <Flex justifyContent="center" alignItems="center">
       <Image alt="no result found" resource={NoResultsFound} width={192} height={192} />
     </Flex>
@@ -339,7 +339,7 @@ function MarketList({
         <NoCryptoPlaceholder requestParams={requestParams} t={t} resetSearch={resetSearch} />
       ) : (
         <>
-          {search && currenciesLength > 0 && <TrackPage category="Market Search" success={true} />}
+          {search && currenciesLength > 0 && }
           <TableRow header>
             <SortTableCell
               data-test-id="market-sort-button"

@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { Button, Flex, Icons, Link } from "@ledgerhq/native-ui";
 import { useTranslation } from "react-i18next";
 import QueuedDrawer from "../../components/QueuedDrawer";
-import { TrackScreen, track } from "../../analytics";
+
 import GenericErrorView from "../../components/GenericErrorView";
 import { GenericInformationBody } from "../../components/GenericInformationBody";
 import { BluetoothRequired, FirmwareNotRecognized } from "@ledgerhq/errors";
@@ -66,10 +66,7 @@ const GenuineCheckErrorDrawer: React.FC<Props> = ({
     (error instanceof FirmwareNotRecognized || (error as Error).message === "not found entity");
 
   const onGoToSettings = useCallback(() => {
-    track("button_clicked", {
-      button: "Go to settings",
-      page: "Error: Ledger Stax OS version not recognized",
-    });
+    
     navigation.navigate(NavigatorName.Base, {
       screen: NavigatorName.Settings,
       params: {
@@ -87,18 +84,12 @@ const GenuineCheckErrorDrawer: React.FC<Props> = ({
     : "Error: unknown error";
 
   const handleRetry = () => {
-    track("button_clicked", {
-      button: "Try again",
-      page: screenName,
-    });
+    
     onRetry();
   };
 
   const handleCancel = () => {
-    track("button_clicked", {
-      button: "Cancel",
-      page: screenName,
-    });
+    
     onCancel();
   };
 
@@ -182,7 +173,7 @@ const GenuineCheckErrorDrawer: React.FC<Props> = ({
       preventBackdropClick
       noCloseButton
     >
-      <TrackScreen name={screenName} type="drawer" refreshSource={false} />
+      
       {content}
     </QueuedDrawer>
   );

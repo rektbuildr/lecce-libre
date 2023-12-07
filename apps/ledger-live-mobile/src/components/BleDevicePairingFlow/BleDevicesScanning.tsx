@@ -16,7 +16,7 @@ import BleDeviceItem from "./BleDeviceItem";
 import Link from "../../components/wrappedUi/Link";
 import lottie from "./assets/bluetooth.json";
 import { urls } from "@utils/urls";
-import { TrackScreen, track } from "../../analytics";
+
 import { useResetOnNavigationFocusState } from "../../helpers/useResetOnNavigationFocusState";
 import LocationPermissionDenied from "../RequiresLocation/LocationPermissionDenied";
 import LocationDisabled from "../RequiresLocation/LocationDisabled";
@@ -81,9 +81,7 @@ const BleDevicesScanning = ({
   );
 
   const onCantSeeDevicePress = useCallback(() => {
-    track("button_clicked", {
-      button: "Can’t find device Bluetooth",
-    });
+    
     Linking.openURL(urls.pairingIssues);
   }, []);
 
@@ -147,7 +145,7 @@ const BleDevicesScanning = ({
 
   return (
     <Flex flex={1}>
-      <TrackScreen category={"Looking for device Bluetooth"} />
+      
       <Flex flex={1} px={2}>
         <Flex py={16}>
           <Flex height={100} alignItems="center" justifyContent="center" mb={24}>

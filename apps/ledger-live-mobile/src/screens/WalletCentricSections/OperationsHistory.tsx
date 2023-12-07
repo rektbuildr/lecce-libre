@@ -18,7 +18,7 @@ import SectionHeader from "../../components/SectionHeader";
 import { withDiscreetMode } from "../../context/DiscreetModeContext";
 import { ScreenName } from "../../const";
 import { parentAccountSelector } from "../../reducers/accounts";
-import { track } from "../../analytics";
+
 import { State } from "../../reducers/types";
 import { filterTokenOperationsZeroAmountEnabledSelector } from "../../reducers/settings";
 
@@ -86,9 +86,7 @@ const OperationsHistory = ({ accounts }: Props) => {
   );
 
   const goToAnalyticsOperations = useCallback(() => {
-    track("button_clicked", {
-      button: "See All Transactions",
-    });
+    
     navigation.navigate(ScreenName.AnalyticsOperations, {
       accountsIds: accounts.map(account => account.id),
     });

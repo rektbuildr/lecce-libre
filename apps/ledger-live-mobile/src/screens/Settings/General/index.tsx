@@ -1,5 +1,5 @@
 import React from "react";
-import { TrackScreen } from "../../../analytics";
+
 import CountervalueSettingsRow from "./CountervalueSettingsRow";
 import ThemeSettingsRow from "./ThemeSettingsRow";
 import AuthSecurityToggle from "./AuthSecurityToggle";
@@ -12,7 +12,7 @@ import DateFormatRow from "./DateFormatRow";
 export default function GeneralSettings() {
   return (
     <SettingsNavigationScrollView>
-      <TrackScreen category="Settings" name="General" />
+      
       <CountervalueSettingsRow />
       <LanguageRow />
       <DateFormatRow />

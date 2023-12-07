@@ -6,7 +6,7 @@ import { isAccountEmpty, getAccountSpendableBalance } from "@ledgerhq/live-commo
 import { NotEnoughBalance } from "@ledgerhq/errors";
 import { ScreenName } from "../const";
 import { accountsSelector } from "../reducers/accounts";
-import { TrackScreen } from "../analytics";
+
 import AccountSelector from "../components/AccountSelector";
 import GenericErrorBottomModal from "../components/GenericErrorBottomModal";
 import { SendFundsNavigatorStackParamList } from "../components/RootNavigator/types/SendFundsNavigator";
@@ -83,7 +83,6 @@ export default function ReceiveFunds({ navigation, route }: Props) {
 
   return (
     <SafeAreaView isFlex edges={["left", "right"]}>
-      <TrackScreen category={category || ""} name="SelectAccount" />
       <Flex m={6} style={{ flex: 1 }}>
         <AccountSelector
           list={allAccounts}

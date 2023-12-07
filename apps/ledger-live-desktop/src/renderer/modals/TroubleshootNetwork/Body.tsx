@@ -8,7 +8,7 @@ import {
 import { ModalBody } from "~/renderer/components/Modal";
 import Box from "~/renderer/components/Box";
 import Spinner from "~/renderer/components/Spinner";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Button from "~/renderer/components/Button";
 import styled from "styled-components";
 import Tooltip from "~/renderer/components/Tooltip";
@@ -104,7 +104,7 @@ const Body = ({ onClose }: Props) => {
           px={5}
           pb={8}
         >
-          <TrackPage category="Modal" name="TroubleshootNetwork" />
+          
           <RenderState state={rendererState} />
         </Box>
       )}

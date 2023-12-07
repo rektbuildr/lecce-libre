@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Switch, Route } from "react-router-dom";
 import user from "~/helpers/user";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import { SettingsSectionBody as Body, SettingsSectionRow as Row } from "../../SettingsSection";
 import AllowExperimentalAppsToggle from "./AllowExperimentalAppsToggle";
 import AllowDebugAppsToggle from "./AllowDebugAppsToggle";
@@ -83,7 +83,7 @@ const Default = () => {
 };
 const SectionDeveloper = () => (
   <>
-    <TrackPage category="Settings" name="Developer" />
+    
     <Switch>
       <Route path="/settings/developer/custom-locksscreen-assets" component={CustomLockScreen} />
       <Route component={Default} />

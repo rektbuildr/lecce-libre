@@ -2,7 +2,7 @@ import { useFeature } from "@ledgerhq/live-config/featureFlags/index";
 import { useLoginURI, useLearnMoreURI } from "@ledgerhq/live-common/hooks/recoverFeatureFlag";
 import { useMemo } from "react";
 import { Linking } from "react-native";
-import { track } from "../../../analytics";
+
 
 export function useProtect() {
   const servicesConfig = useFeature("protectServicesMobile");
@@ -35,10 +35,7 @@ export function useProtect() {
   };
 
   const trackEvent = (eventName: "button_clicked" | "card_clicked", name: string) => {
-    track(eventName, {
-      ...(eventName === "button_clicked" && { button: name }),
-      ...(eventName === "card_clicked" && { card: name }),
-    });
+    
   };
 
   const displayService = useMemo(

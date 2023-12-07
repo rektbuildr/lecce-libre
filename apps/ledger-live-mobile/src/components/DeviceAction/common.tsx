@@ -8,7 +8,7 @@ import Button from "../wrappedUi/Button";
 import Animation from "../Animation";
 import { getDeviceAnimation } from "../../helpers/getDeviceAnimation";
 import Link from "../wrappedUi/Link";
-import { TrackScreen } from "../../analytics";
+
 import { ArrowRight } from "@ledgerhq/native-ui/assets/icons";
 
 // NEW DEVICE ACTION UX
@@ -119,7 +119,7 @@ export const FirmwareUpdateDenied = ({
   const drawerName = "Error: update cancelled on device";
   return (
     <Flex alignItems="center" justifyContent="center" px={1}>
-      <TrackScreen category={drawerName} type="drawer" refreshSource={false} />
+      
       <IconBadge iconColor="primary.c100" iconSize={32} Icon={IconsLegacy.InfoAltFillMedium} />
       <Text fontSize={7} fontWeight="semiBold" textAlign="center" mt={6}>
         {t("FirmwareUpdate.updateCancelled", {

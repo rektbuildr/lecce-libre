@@ -250,7 +250,6 @@
     "src/platform/rawTypes.ts",
     "src/platform/react.ts",
     "src/platform/serializers.ts",
-    "src/platform/tracking.ts",
     "src/platform/types.ts",
     "src/platform/utils/appendQueryParamsToDappURL.ts",
     "src/portfolio/v2/index.ts",

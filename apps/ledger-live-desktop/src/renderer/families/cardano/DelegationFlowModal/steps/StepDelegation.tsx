@@ -3,7 +3,7 @@ import React from "react";
 import { Trans } from "react-i18next";
 import { StepProps } from "../types";
 import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import { AccountBridge } from "@ledgerhq/types-live";
@@ -45,7 +45,7 @@ export default function StepDelegation({
 
   return (
     <Box flow={1}>
-      <TrackPage category="Delegation Flow" name="Step Validator" />
+      
       {error && <ErrorBanner error={error} />}
       <ValidatorField
         account={account}

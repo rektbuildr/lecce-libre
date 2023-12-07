@@ -6,8 +6,6 @@ import { targetDisplayDimensions } from "~/renderer/components/CustomImage/share
 import StepFooter from "./StepFooter";
 import { useTranslation } from "react-i18next";
 import StepContainer from "./StepContainer";
-import { analyticsPageNames, analyticsFlowName } from "./shared";
-import TrackPage from "~/renderer/analytics/TrackPage";
 
 type Props = StepProps & {
   src?: ImageBase64Data;
@@ -47,12 +45,7 @@ const StepAdjustImage: React.FC<Props> = props => {
         />
       }
     >
-      <TrackPage
-        category={analyticsPageNames.preview}
-        type="drawer"
-        flow={analyticsFlowName}
-        refreshSource={false}
-      />
+      
       {src ? (
         <ImageCropper
           {...src}

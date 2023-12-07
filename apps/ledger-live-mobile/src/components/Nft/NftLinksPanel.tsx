@@ -13,7 +13,7 @@ import RaribleIcon from "../../icons/Rarible";
 import QueuedDrawer from "../QueuedDrawer";
 import { rgba } from "../../colors";
 import HideNftDrawer from "./HideNftDrawer";
-import { track, TrackScreen } from "../../analytics";
+
 import { extractImageUrlFromNftMetadata } from "../CustomImage/imageUtils";
 import { knownDeviceModelIdsSelector } from "../../reducers/settings";
 import { useSelector } from "react-redux";
@@ -84,46 +84,28 @@ const NftLinksPanel = ({ nftContract, nftId, links, isOpen, onClose, nftMetadata
     knownDeviceModelIds.stax && customImage?.enabled && !!customImageUri;
 
   const handleOpenOpenSea = useCallback(() => {
-    track("button_clicked", {
-      button: "OpenSea",
-      drawer: "NFT settings",
-      url: links?.opensea,
-    });
+    
     links?.opensea && Linking.openURL(links?.opensea);
   }, [links?.opensea]);
 
   const handleOpenRarible = useCallback(() => {
-    track("url_clicked", {
-      button: "Rarible",
-      drawer: "NFT settings",
-      url: links?.rarible,
-    });
+    
     links?.rarible && Linking.openURL(links?.rarible);
   }, [links?.rarible]);
 
   const handleOpenExplorer = useCallback(() => {
-    track("button_clicked", {
-      button: "View in Explorer",
-      drawer: "NFT settings",
-      url: links?.explorer,
-    });
+    
     links?.explorer && Linking.openURL(links?.explorer);
   }, [links?.explorer]);
 
   const hide = useCallback(() => {
-    track("button_clicked", {
-      button: "Hide NFT Collection",
-      drawer: "NFT settings",
-    });
+    
     setBottomHideCollectionOpen(true);
   }, []);
 
   const handlePressCustomImage = useCallback(() => {
     if (!customImageUri) return;
-    track("button_clicked", {
-      button: "Set as device lockscreen picture",
-      drawer: "NFT settings",
-    });
+    
     navigation.navigate(NavigatorName.CustomImage, {
       screen: ScreenName.CustomImagePreviewPreEdit,
       params: {
@@ -272,7 +254,7 @@ const NftLinksPanel = ({ nftContract, nftId, links, isOpen, onClose, nftMetadata
         isRequestingToBeOpened={isOpen && !bottomHideCollectionOpen}
         onClose={onClose}
       >
-        <TrackScreen category="NFT settings" refreshSource={false} type="drawer" />
+        
         {content}
       </QueuedDrawer>
       <HideNftDrawer

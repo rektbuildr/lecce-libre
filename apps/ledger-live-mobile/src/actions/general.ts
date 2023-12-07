@@ -19,7 +19,7 @@ import { counterValueCurrencySelector, orderAccountsSelector } from "../reducers
 import { clearBridgeCache } from "../bridge/cache";
 import { flushAll } from "../components/DBSave";
 
-const extraSessionTrackingPairsChanges: BehaviorSubject<TrackingPair[]> = new BehaviorSubject<
+const extraSessionTrackingPairsChanges: BehaviorSubject = new BehaviorSubject<
   TrackingPair[]
 >([]);
 export function useDistribution(
@@ -112,7 +112,7 @@ export function addExtraSessionTrackingPair(trackingPair: TrackingPair) {
     extraSessionTrackingPairsChanges.next(value.concat(trackingPair));
 }
 export function useExtraSessionTrackingPair() {
-  const [extraSessionTrackingPair, setExtraSessionTrackingPair] = useState<TrackingPair[]>([]);
+  const [extraSessionTrackingPair, setExtraSessionTrackingPair] = useState([]);
   useEffect(() => {
     const sub = extraSessionTrackingPairsChanges.subscribe(setExtraSessionTrackingPair);
     return () => sub && sub.unsubscribe();

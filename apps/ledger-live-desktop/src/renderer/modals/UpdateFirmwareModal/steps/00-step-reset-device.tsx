@@ -8,7 +8,7 @@ import {
   bootOptions,
   recovery,
 } from "@ledgerhq/live-common/deviceWordings";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Text from "~/renderer/components/Text";
 import Button from "~/renderer/components/Button";
@@ -43,7 +43,7 @@ const StepResetDevice = ({ deviceModelId }: StepProps) => {
   const device = getDeviceModel(deviceModelId);
   return (
     <Container>
-      <TrackPage category="Manager" name="ResetBlueDevice" />
+      
 
       <Wrapper>
         <SubTitle justifyContent="start">

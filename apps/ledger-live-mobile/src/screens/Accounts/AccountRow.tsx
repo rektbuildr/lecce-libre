@@ -14,7 +14,7 @@ import { NavigatorName, ScreenName } from "../../const";
 import { useBalanceHistoryWithCountervalue } from "../../hooks/portfolio";
 import AccountRowLayout from "../../components/AccountRowLayout";
 import { parentAccountSelector } from "../../reducers/accounts";
-import { track } from "../../analytics";
+
 import { State } from "../../reducers/types";
 import { AccountsNavigatorParamList } from "../../components/RootNavigator/types/AccountsNavigator";
 import { BaseComposite, StackNavigatorProps } from "../../components/RootNavigator/types/helpers";
@@ -76,9 +76,7 @@ const AccountRow = ({
 
   const onAccountPress = useCallback(
     (uiEvent: GestureResponderEvent) => {
-      track("account_clicked", {
-        currency: currency.name,
-      });
+      
       if (navigationParams) {
         startNavigationTTITimer({ source: sourceScreenName, uiEvent });
         // @ts-expect-error navigagtion spread, ask your mom about it

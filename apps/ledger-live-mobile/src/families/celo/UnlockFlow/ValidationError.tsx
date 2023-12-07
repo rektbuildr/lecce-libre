@@ -2,7 +2,7 @@ import { useTheme } from "@react-navigation/native";
 import React, { useCallback } from "react";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { TrackScreen } from "../../../analytics";
+
 import type { BaseNavigatorStackParamList } from "../../../components/RootNavigator/types/BaseNavigator";
 import type {
   BaseComposite,
@@ -30,13 +30,7 @@ export default function ValidationError({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
-      <TrackScreen
-        category="CeloUnlock"
-        name="ValidationError"
-        flow="stake"
-        action="unlock"
-        currency="celo"
-      />
+      
       <ValidateError error={error} onRetry={retry} onClose={onClose} />
     </SafeAreaView>
   );

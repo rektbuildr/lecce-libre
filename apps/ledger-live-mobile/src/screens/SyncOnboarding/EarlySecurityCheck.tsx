@@ -5,7 +5,7 @@ import { log } from "@ledgerhq/logs";
 import AllowManagerDrawer from "./AllowManagerDrawer";
 import GenuineCheckErrorDrawer from "./GenuineCheckErrorDrawer";
 import GenuineCheckNonGenuineDrawer from "./GenuineCheckNonGenuineDrawer";
-import { TrackScreen, track } from "../../analytics";
+
 import { useGenuineCheck } from "@ledgerhq/live-common/hw/hooks/useGenuineCheck";
 import { useGetLatestAvailableFirmware } from "@ledgerhq/live-common/deviceSDK/hooks/useGetLatestAvailableFirmware";
 import FirmwareUpdateAvailableDrawer from "./FirmwareUpdateAvailableDrawer";
@@ -142,32 +142,24 @@ export const EarlySecurityCheck: React.FC<EarlySecurityCheckProps> = ({
   }, []);
 
   const onGenuineCheckLearnMore = useCallback(() => {
-    track("button_clicked", {
-      button: "Learn more about Genuine Check",
-    });
+    
     Linking.openURL(urls.genuineCheck.learnMore);
   }, []);
 
   const onRetryGenuineCheck = useCallback(() => {
-    track("button_clicked", {
-      button: "Retry genuine check",
-    });
+    
     resetGenuineCheckState();
     setGenuineCheckStatus("unchecked");
   }, [resetGenuineCheckState]);
 
   const onCancelGenuineCheck = useCallback(() => {
-    track("button_clicked", {
-      button: "Cancel onboarding",
-    });
+    
 
     onCancelOnboarding();
   }, [onCancelOnboarding]);
 
   const onSkipFirmwareUpdate = useCallback(() => {
-    track("button_clicked", {
-      button: "Skip software update",
-    });
+    
 
     notifyOnboardingEarlyCheckEnded();
   }, [notifyOnboardingEarlyCheckEnded]);
@@ -190,12 +182,7 @@ export const EarlySecurityCheck: React.FC<EarlySecurityCheckProps> = ({
   );
 
   const onUpdateFirmware = useCallback(() => {
-    track("button_clicked", {
-      button: "Update device OS Version",
-      firmwareUpdate: {
-        version: latestFirmware?.final.name,
-      },
-    });
+    
 
     if (deviceInfo && latestFirmware) {
       // Resets the `useGetLatestAvailableFirmware` hook to be able to trigger it again
@@ -382,17 +369,17 @@ export const EarlySecurityCheck: React.FC<EarlySecurityCheckProps> = ({
   return (
     <>
       {firmwareUpdateUiStepStatus === "completed" ? (
-        <TrackScreen name="Success: device is genuine and OS check up to date" />
+        
       ) : hasLatestAvailableFirmwareStatus ? (
-        <TrackScreen name="Update required: new OS Version is available" key="fw-available" />
+        
       ) : genuineCheckUiStepStatus === "genuineCheckRefused" ? (
-        <TrackScreen name="Error: Genuine check refused on device" key="refused" />
+        
       ) : currentStep === "idle" ? (
-        <TrackScreen name="Verify device" key="verify" />
+        
       ) : currentStep === "genuine-check" ? (
-        <TrackScreen name="Beginning of genuine check" key="beginning-genuine" />
+        
       ) : currentStep === "firmware-update-check" ? (
-        <TrackScreen name="Beginning of OS version check" key="beginning-os" />
+        
       ) : null}
       <AllowManagerDrawer isOpen={currentDisplayedDrawer === "allow-manager"} device={device} />
       <GenuineCheckErrorDrawer

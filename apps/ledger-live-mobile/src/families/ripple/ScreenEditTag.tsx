@@ -13,7 +13,7 @@ import Button from "../../components/Button";
 import NavigationScrollView from "../../components/NavigationScrollView";
 import { accountScreenSelector } from "../../reducers/accounts";
 import { ScreenName } from "../../const";
-import { track } from "../../analytics";
+
 import TextInput from "../../components/FocusedTextInput";
 import { BaseComposite } from "../../components/RootNavigator/types/helpers";
 import { SendFundsNavigatorStackParamList } from "../../components/RootNavigator/types/SendFundsNavigator";
@@ -41,7 +41,7 @@ function RippleEditTag({ route, navigation }: NavigationProps) {
     return undefined;
   });
   const onTagFieldFocus = useCallback(() => {
-    track("SendTagFieldFocusedXRP");
+    
   }, []);
 
   function onChangeTag(str: string): void {

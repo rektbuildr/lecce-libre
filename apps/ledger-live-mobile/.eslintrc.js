@@ -93,7 +93,6 @@ module.exports = {
         "src/**/*.test.{ts,tsx}",
         "src/screens/Settings/Debug/**/*",
         "src/screens/FeatureFlagsSettings/**/*",
-        "src/components/AnalyticsConsole/**/*",
         "src/components/StorylyStories/**/*",
         "src/screens/Settings/Experimental/**/*",
         "src/components/PerformanceConsole/**/*",

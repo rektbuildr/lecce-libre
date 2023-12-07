@@ -23,7 +23,7 @@ import { hasOrderedNanoSelector } from "../../../reducers/settings";
 import BuyDeviceBanner, { IMAGE_PROPS_BIG_NANO } from "../../../components/BuyDeviceBanner";
 import SetupDeviceBanner from "../../../components/SetupDeviceBanner";
 import { FabAssetActions } from "../../../components/FabActions/actionsList/asset";
-import { TrackScreen } from "../../../analytics";
+
 import {
   BaseComposite,
   StackNavigatorProps,
@@ -126,7 +126,7 @@ const ReadOnlyAssetScreen = ({ route }: NavigationProps) => {
 
   return (
     <TabBarSafeAreaView edges={["bottom", "left", "right"]}>
-      <TrackScreen category="Asset" currency={currency.name} />
+      
       <CurrencyBackgroundGradient
         currentPositionY={currentPositionY}
         graphCardEndPosition={graphCardEndPosition}

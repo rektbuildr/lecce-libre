@@ -1,7 +1,6 @@
 import React, { PureComponent } from "react";
 import invariant from "invariant";
 import { withContextMenuContext, ContextMenuItemType, ContextType } from "./ContextMenuWrapper";
-import { track } from "~/renderer/analytics/segment";
 const DISABLE_CONTEXT_MENU = Boolean(process.env.DISABLE_CONTEXT_MENU);
 
 type InnerProps = {
@@ -46,7 +45,7 @@ class ContextMenuItem extends PureComponent<Props, State> {
 
   showContextMenu = (e: MouseEvent) => {
     if (this.props.event) {
-      track(this.props.event, this.props.eventProperties);
+      
     }
     this.props.context.showContextMenu(e, this.props.items);
     e.preventDefault();

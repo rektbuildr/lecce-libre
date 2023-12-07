@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { Trans } from "react-i18next";
 import { StepProps } from "../types";
 import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import ValidatorsField from "../fields/ValidatorsField";
@@ -43,13 +43,7 @@ export default function StepNomination({
   const nominations = polkadotResources.nominations || [];
   return (
     <Box flow={1}>
-      <TrackPage
-        category="Nomination Flow"
-        name="Step 1"
-        flow="stake"
-        action="nomination"
-        currency="dot"
-      />
+      
       {error && <ErrorBanner error={error} />}
       <ValidatorsField
         account={account}

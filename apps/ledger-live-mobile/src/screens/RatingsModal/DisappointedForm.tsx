@@ -5,7 +5,7 @@ import VersionNumber from "react-native-version-number";
 import { Platform } from "react-native";
 import styled from "styled-components/native";
 import { useSelector } from "react-redux";
-import { track, TrackScreen } from "../../analytics";
+
 import useRatings from "../../logic/ratings";
 import getWindowDimensions from "../../logic/getWindowDimensions";
 import {
@@ -72,26 +72,14 @@ const DisappointedForm = ({ setStep }: Props) => {
     .join(",");
 
   const onLoadEnd = useCallback(() => {
-    track("button_clicked", {
-      flow: "review",
-      page: "review_disappointedstep2",
-      button: "typeform_loaded",
-      source: ratingsHappyMoment?.route_name,
-      params: ratingsFeatureParams,
-    });
+    
   }, [ratingsFeatureParams, ratingsHappyMoment?.route_name]);
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
       const { data } = event.nativeEvent;
 
       if (data === "form-submit") {
-        track("button_clicked", {
-          flow: "review",
-          page: "review_disappointedstep2",
-          button: "form_submitted",
-          source: ratingsHappyMoment?.route_name,
-          params: ratingsFeatureParams,
-        });
+        
         setStep("disappointedDone");
       }
     },
@@ -112,14 +100,7 @@ const DisappointedForm = ({ setStep }: Props) => {
 
   return (
     <Flex flex={1} height={height * (4 / 5)}>
-      <TrackScreen
-        category="Review"
-        name="page_viewed"
-        flow="review"
-        page="review_disappointedstep2"
-        source={ratingsHappyMoment?.route_name}
-        params={ratingsFeatureParams}
-      />
+      
       <Flex flex={1} borderRadius={16} overflow="hidden">
         <StyledWebview
           source={{ uri: encodeURI(formUrl) }}

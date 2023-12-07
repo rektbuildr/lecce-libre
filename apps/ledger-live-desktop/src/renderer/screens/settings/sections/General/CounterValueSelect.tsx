@@ -7,7 +7,7 @@ import {
   supportedCounterValuesSelector,
 } from "~/renderer/reducers/settings";
 import Select from "~/renderer/components/Select";
-import Track from "~/renderer/analytics/Track";
+
 
 const CounterValueSelect = React.memo<{}>(function CounterValueSelect() {
   const counterValueCurrency = useSelector(counterValueCurrencySelector);
@@ -28,7 +28,7 @@ const CounterValueSelect = React.memo<{}>(function CounterValueSelect() {
   );
   return (
     <>
-      <Track onUpdate event="CounterValueSelect" counterValue={cvOption && cvOption.value} />
+      
       <Select
         small
         minWidth={260}

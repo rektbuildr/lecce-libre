@@ -4,7 +4,7 @@ import { Trans } from "react-i18next";
 import { useTheme } from "@react-navigation/native";
 import { Flex } from "@ledgerhq/native-ui";
 import { ScreenName } from "../../../const";
-import { TrackScreen } from "../../../analytics";
+
 import LText from "../../../components/LText";
 import ExternalLink from "../../../components/ExternalLink";
 import BulletList, { BulletGreenCheck } from "../../../components/BulletList";
@@ -37,7 +37,7 @@ export default function PolkadotBondStarted({ navigation, route }: Props) {
       ]}
     >
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContainer}>
-        <TrackScreen category="BondFlow" name="Started" flow="stake" action="bond" currency="dot" />
+        
         <Flex alignItems="center" mb={6}>
           <Illustration lightSource={EarnLight} darkSource={EarnDark} size={150} />
         </Flex>

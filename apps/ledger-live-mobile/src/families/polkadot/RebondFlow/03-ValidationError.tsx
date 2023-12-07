@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
 import { StackScreenProps } from "@react-navigation/stack";
-import { TrackScreen } from "../../../analytics";
+
 import ValidateError from "../../../components/ValidateError";
 import { BaseComposite, BaseNavigation } from "../../../components/RootNavigator/types/helpers";
 import { PolkadotRebondFlowParamList } from "./type";
@@ -30,13 +30,7 @@ export default function ValidationError({ navigation, route }: NavigationProps) 
         },
       ]}
     >
-      <TrackScreen
-        category="RebondFlow"
-        name="ValidationError"
-        flow="stake"
-        action="rebond"
-        currency="dot"
-      />
+      
       <ValidateError error={route.params.error} onRetry={retry} onClose={onClose} />
     </SafeAreaView>
   );

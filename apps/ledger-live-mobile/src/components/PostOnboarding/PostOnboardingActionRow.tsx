@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigation } from "@react-navigation/native";
 import { PostOnboardingActionState, PostOnboardingAction } from "@ledgerhq/types-live";
 import Touchable from "../Touchable";
-import { track } from "../../analytics";
+
 import { BaseNavigationComposite, StackNavigatorNavigation } from "../RootNavigator/types/helpers";
 import { PostOnboardingNavigatorParamList } from "../RootNavigator/types/PostOnboardingNavigator";
 
@@ -33,7 +33,7 @@ const PostOnboardingActionRow: React.FC<Props> = props => {
     if (navigationParams) {
       navigation.navigate(...navigationParams);
       buttonLabelForAnalyticsEvent &&
-        track("button_clicked", { button: buttonLabelForAnalyticsEvent });
+        
     }
   }, [navigationParams, navigation, buttonLabelForAnalyticsEvent]);
 

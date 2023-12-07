@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { getMainAccount } from "@ledgerhq/live-common/account/index";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import { delegatableAccountsSelector } from "~/renderer/actions/general";
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
@@ -26,13 +26,7 @@ const StepAccount = ({
   if (!status) return null;
   return (
     <Box flow={4}>
-      <TrackPage
-        category={`Delegation Flow${eventType ? ` (${eventType})` : ""}`}
-        name="Step Account"
-        flow="stake"
-        action="delegation"
-        currency="xtz"
-      />
+      
       {mainAccount ? <CurrencyDownStatusAlert currencies={[mainAccount.currency]} /> : null}
       {error ? <ErrorBanner error={error} /> : null}
       <Box flow={1}>

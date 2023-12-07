@@ -8,14 +8,14 @@ import { useAvailableLanguagesForDevice } from "@ledgerhq/live-common/manager/ho
 
 import { FwUpdateForegroundEvent } from "./types";
 
-import Track from "../../analytics/Track";
+
 import { useLocale } from "../../context/Locale";
 import { localeIdToDeviceLanguage } from "../../languages";
 
 import ChangeDeviceLanguageAction from "../ChangeDeviceLanguageAction";
 import ChangeDeviceLanguagePrompt from "../ChangeDeviceLanguagePrompt";
 import DeviceActionProgress from "../DeviceActionProgress";
-import { track } from "../../analytics";
+
 
 type Props = {
   oldDeviceInfo?: DeviceInfo;
@@ -66,7 +66,7 @@ const DeviceLanguageStep = ({ oldDeviceInfo, updatedDeviceInfo, dispatchEvent, d
         oldDeviceInfo?.languageId !== undefined &&
         oldDeviceInfo?.languageId !== languageIds.english
       ) {
-        track("Page Manager FwUpdateReinstallLanguage");
+        
         installLanguage(idsToLanguage[oldDeviceInfo.languageId]);
       } else {
         dispatchEvent({ type: "languagePromptDismissed" });
@@ -90,13 +90,13 @@ const DeviceLanguageStep = ({ oldDeviceInfo, updatedDeviceInfo, dispatchEvent, d
     <Flex alignItems="center">
       {isLanguagePromptOpen && deviceForAction === null && (
         <>
-          <Track event="Page Manager FwUpdateDeviceLanguagePrompt" onMount />
+          
           <ChangeDeviceLanguagePrompt
             language={localeIdToDeviceLanguage[currentLocale] as Language}
             deviceModel={deviceModel}
             canSkip
             onSkip={() => {
-              track("Page Manager FwUpdateDeviceLanguagePromptDismissed");
+              
               dispatchEvent({ type: "languagePromptDismissed" });
             }}
             onConfirm={() => installLanguage(localeIdToDeviceLanguage[currentLocale] as Language)}
@@ -108,14 +108,10 @@ const DeviceLanguageStep = ({ oldDeviceInfo, updatedDeviceInfo, dispatchEvent, d
           device={deviceForAction}
           language={languageToInstall}
           onError={(error: Error) => {
-            track("Page Manager FwUpdateLanguageInstallError", {
-              error,
-            });
+            
           }}
           onResult={() =>
-            track("Page Manager FwUpdateLanguageInstalled", {
-              selectedLanguage: languageToInstall,
-            })
+            
           }
           onContinue={() => {
             setDeviceForAction(null);

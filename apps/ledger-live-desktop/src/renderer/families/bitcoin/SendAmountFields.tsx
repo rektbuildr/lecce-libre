@@ -4,7 +4,6 @@ import { Transaction } from "@ledgerhq/live-common/families/bitcoin/types";
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
-import { track } from "~/renderer/analytics/segment";
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import SelectFeeStrategy, { OnClickType } from "~/renderer/components/SelectFeeStrategy";
@@ -59,11 +58,7 @@ const Fields: Props = ({
 
   const onFeeStrategyClick = useCallback(
     ({ amount, feesStrategy }: OnClickType) => {
-      track("button_clicked", {
-        ...trackProperties,
-        button: feesStrategy,
-        feePerByte: amount,
-      });
+      
       updateTransaction((transaction: Transaction) =>
         bridge.updateTransaction(transaction, {
           feePerByte: amount,
@@ -77,21 +72,14 @@ const Fields: Props = ({
   );
   const setAdvanceModeAndTrack = useCallback(
     (state: boolean) => {
-      track("button_clicked", {
-        ...trackProperties,
-        button: state ? "advanced" : "standard",
-      });
+      
       setAdvanceMode(state);
     },
     [trackProperties],
   );
   const onChangeAndTrack = useCallback(
     (params: Transaction) => {
-      track("button_clicked", {
-        ...trackProperties,
-        button: "fees",
-        value: params,
-      });
+      
       onChange(params);
     },
     [onChange, trackProperties],

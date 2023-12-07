@@ -3,7 +3,7 @@ import { isWalletConnectSupported } from "@ledgerhq/live-common/walletConnect/in
 import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useCallback } from "react";
-import { track } from "../../../analytics";
+
 import { NavigatorName, ScreenName } from "../../../const";
 
 type Props = {
@@ -24,7 +24,7 @@ export function useWalletConnectAction({ currency, event }: Props) {
     [navigation],
   );
   const onWalletConnectPress = useCallback(() => {
-    track(event, { currencyName: currency?.name });
+    
     onNavigate(NavigatorName.WalletConnect, {
       screen: ScreenName.WalletConnectConnect,
     });

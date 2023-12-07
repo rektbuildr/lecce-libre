@@ -1,7 +1,7 @@
 import invariant from "invariant";
 import React, { useEffect, useMemo } from "react";
 import { prepareCurrency } from "~/renderer/bridge/cache";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import DeviceAction from "~/renderer/components/DeviceAction";
 import { createAction } from "@ledgerhq/live-common/hw/actions/app";
 import { StepProps } from "..";
@@ -32,7 +32,7 @@ const StepConnectDevice = ({ currency, transitionTo, flow }: StepProps) => {
   );
   return (
     <>
-      <TrackPage category="AddAccounts" name="Step2" currencyName={currencyName} />
+      
       <DeviceAction
         action={action}
         request={request}

@@ -2,8 +2,7 @@ import React, { useEffect } from "react";
 import { Trans } from "react-i18next";
 import styled from "styled-components";
 import { SyncOneAccountOnMount } from "@ledgerhq/live-common/bridge/react/index";
-import { track } from "~/renderer/analytics/segment";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import { multiline } from "~/renderer/styles/helpers";
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
@@ -35,26 +34,14 @@ function StepConfirmation({
     const voteAccAddress = transaction?.recipient;
     // Blockchain is not retrieving the name yet.
     if (optimisticOperation && voteAccAddress) {
-      track("staking_completed", {
-        currency: "NEAR",
-        validator: voteAccAddress,
-        source,
-        delegation: "delegation",
-        flow: "stake",
-      });
+      
     }
   }, [optimisticOperation, source, transaction?.recipient]);
 
   if (optimisticOperation) {
     return (
       <Container>
-        <TrackPage
-          category="Stake NEAR"
-          name="Step Confirmed"
-          flow="stake"
-          action="staking"
-          currency="near"
-        />
+        
         <SyncOneAccountOnMount priority={10} accountId={optimisticOperation.accountId} />
         <SuccessDisplay
           title={<Trans i18nKey="near.stake.flow.steps.confirmation.success.title" />}
@@ -66,13 +53,7 @@ function StepConfirmation({
   if (error) {
     return (
       <Container shouldSpace={signed}>
-        <TrackPage
-          category="Stake NEAR"
-          name="Step Confirmation Error"
-          flow="stake"
-          action="staking"
-          currency="near"
-        />
+        
         {signed ? (
           <BroadcastErrorDisclaimer
             title={<Trans i18nKey="near.stake.flow.steps.confirmation.broadcastError" />}

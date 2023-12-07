@@ -5,7 +5,6 @@ import ChangeDeviceLanguageAction from "~/renderer/components/ChangeDeviceLangua
 import { DEFAULT_LANGUAGE, Language, Languages } from "~/config/languages";
 import { DeviceModelInfo } from "@ledgerhq/types-live";
 import { useTranslation } from "react-i18next";
-import { track } from "~/renderer/analytics/segment";
 import { withV3StyleProvider } from "~/renderer/styles/StyleProviderV3";
 import ChangeDeviceLanguagePrompt from "~/renderer/components/ChangeDeviceLanguagePrompt";
 import { getDeviceModel } from "@ledgerhq/devices";
@@ -45,16 +44,14 @@ const ChangeDeviceLanguagePromptDrawer: React.FC<Props> = ({
 
   const handleSuccess = useCallback(() => {
     if (onSuccess) onSuccess();
-    track(`${analyticsContext} LanguageInstalled`, {
-      selectedLanguage: Languages[currentLanguage].deviceSupport?.label,
-    });
+    
     setLanguageInstalled(true);
   }, [onSuccess, analyticsContext, currentLanguage]);
 
   const handleError = useCallback(
     (error: Error) => {
       if (onError) onError();
-      track(`${analyticsContext} LanguageInstallError`, { error });
+      
     },
     [onError, analyticsContext],
   );
@@ -110,9 +107,7 @@ const ChangeDeviceLanguagePromptDrawer: React.FC<Props> = ({
           deviceModelId={deviceModelInfo?.modelId ?? DeviceModelId.nanoX}
           onSkip={onCloseDrawer}
           onConfirm={() => {
-            track(`${analyticsContext} LanguageInstallTriggered`, {
-              selectedLanguage: Languages[currentLanguage].deviceSupport?.label,
-            });
+            
             setInstallingLanguage(true);
           }}
           titleWording={getTextToDisplay("title")}

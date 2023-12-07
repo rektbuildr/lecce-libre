@@ -10,7 +10,7 @@ import {
 } from "@ledgerhq/live-common/families/celo/types";
 import { useCeloPreloadData } from "@ledgerhq/live-common/families/celo/react";
 import { fallbackValidatorGroup, revokableVotes } from "@ledgerhq/live-common/families/celo/logic";
-import { TrackScreen } from "../../../analytics";
+
 import { ScreenName } from "../../../const";
 import { accountScreenSelector } from "../../../reducers/accounts";
 import ValidatorHead from "../ValidatorHead";
@@ -69,13 +69,7 @@ export default function SelectValidator({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
-      <TrackScreen
-        category="CeloRevoke"
-        name="SelectValidator"
-        flow="stake"
-        action="revoke"
-        currency="celo"
-      />
+      
       <View style={styles.header}>
         <ValidatorHead />
       </View>

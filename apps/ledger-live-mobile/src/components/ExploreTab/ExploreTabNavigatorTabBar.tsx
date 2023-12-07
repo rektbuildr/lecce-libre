@@ -4,7 +4,7 @@ import styled, { BaseStyledProps } from "@ledgerhq/native-ui/components/styled";
 import { Flex, Text } from "@ledgerhq/native-ui";
 import { useTheme } from "styled-components/native";
 import { TouchableOpacity } from "react-native";
-import { track } from "../../analytics";
+
 import { rgba } from "../../colors";
 
 const StyledTouchableOpacity = styled(TouchableOpacity)<BaseStyledProps>`
@@ -34,10 +34,7 @@ function Tab({
     });
 
     if (!isActive && !event.defaultPrevented) {
-      track("tab_clicked", {
-        tab: route.name,
-        page: route.name,
-      });
+      
       navigation.navigate(route.name);
     }
   }, [isActive, navigation, route.key, route.name]);

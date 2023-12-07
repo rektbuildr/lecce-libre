@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@react-navigation/native";
 import { ScreenName } from "../../../const";
-import { TrackScreen } from "../../../analytics";
+
 import ValidateError from "../../../components/ValidateError";
 import type {
   BaseComposite,
@@ -35,13 +35,7 @@ export default function ValidationError({ navigation, route }: Props) {
         },
       ]}
     >
-      <TrackScreen
-        category="NearStaking"
-        name="ValidationError"
-        flow="stake"
-        action="staking"
-        currency="near"
-      />
+      
       <ValidateError error={error} onRetry={retry} onClose={onClose} />
     </SafeAreaView>
   );

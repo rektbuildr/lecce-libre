@@ -8,7 +8,7 @@ import {
   SwapSelectorStateType,
 } from "@ledgerhq/live-common/exchange/swap/types";
 import { DrawerTitle } from "../DrawerTitle";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import { useGetSwapTrackingProperties } from "../../utils/index";
 import { Account, FeeStrategy } from "@ledgerhq/types-live";
 
@@ -48,12 +48,7 @@ export default function FeesDrawer({
 
   return (
     <Box height="100%">
-      <TrackPage
-        category="Swap"
-        name="Form - Edit Fees"
-        provider={provider}
-        {...swapDefaultTrack}
-      />
+      
       <DrawerTitle i18nKey="swap2.form.details.label.fees" />
       <Box mt={3} flow={4} mx={3}>
         {transaction && mainAccount && (

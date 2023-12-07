@@ -4,7 +4,7 @@ import { Trans } from "react-i18next";
 import { SyncSkipUnderPriority } from "@ledgerhq/live-common/bridge/react/index";
 import { urls } from "~/config/urls";
 import AccountFooter from "~/renderer/modals/Send/AccountFooter";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import Alert from "~/renderer/components/Alert";
@@ -56,13 +56,7 @@ const StepAmount = ({
   return (
     <Box flow={1}>
       <SyncSkipUnderPriority priority={100} />
-      <TrackPage
-        category="Celo Unlock"
-        name="Step 1"
-        flow="stake"
-        action="unlock"
-        currency="celo"
-      />
+      
       {error && <ErrorBanner error={error} />}
       <Alert
         type="primary"

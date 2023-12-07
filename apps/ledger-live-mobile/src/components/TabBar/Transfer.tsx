@@ -21,7 +21,6 @@ import Touchable from "../Touchable";
 import TransferDrawer from "./TransferDrawer";
 import { lockSubject } from "../RootNavigator/CustomBlockRouterNavigator";
 import { MAIN_BUTTON_BOTTOM, MAIN_BUTTON_SIZE } from "./shared";
-import { useTrack } from "../../analytics";
 import { readOnlyModeEnabledSelector } from "../../reducers/settings";
 
 import lightAnimSource from "../../animations/mainButton/light.json";
@@ -90,7 +89,6 @@ export function TransferTabIcon() {
     colors: { type: themeType },
   } = useTheme();
   const isExperimental = useExperimental();
-  const track = useTrack();
 
   // Value used to derive which step of animation is being displayed.
   // Used by several animation: drawer translation and opacity, button's lottie etc.
@@ -138,7 +136,6 @@ export function TransferTabIcon() {
   const openModal = useCallback(() => {
     setIsOpened(true);
     const animCallback = () => {
-      if (!readOnlyModeEnabled) track("drawer_viewed", { drawer: "trade" });
     };
 
     openAnimValue.value = 0;
@@ -147,7 +144,7 @@ export function TransferTabIcon() {
         runOnJS(animCallback)();
       }
     });
-  }, [openAnimValue, track, readOnlyModeEnabled]);
+  }, [openAnimValue, null, readOnlyModeEnabled]);
 
   const closeModal = useCallback(() => {
     const animCallback = () => {
@@ -164,22 +161,8 @@ export function TransferTabIcon() {
   const { screen } = useContext(AnalyticsContext);
 
   const onPressButton = useCallback(() => {
-    if (getIsModalOpened()) {
-      closeModal();
-      track("button_clicked", {
-        button: "close_trade",
-        drawer: "trade",
-        screen,
-      });
-    } else {
-      openModal();
-      track("button_clicked", {
-        button: "trade",
-        drawer: "trade",
-        screen,
-      });
-    }
-  }, [getIsModalOpened, closeModal, track, screen, openModal]);
+
+  }, [getIsModalOpened, closeModal, null, screen, openModal]);
 
   const handleBackPress = useCallback(() => {
     if (!getIsModalOpened()) return false;

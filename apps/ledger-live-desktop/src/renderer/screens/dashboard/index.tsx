@@ -13,7 +13,7 @@ import {
 } from "~/renderer/reducers/settings";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import OperationsList from "~/renderer/components/OperationsList";
 import Carousel from "~/renderer/components/Carousel";
 import AssetDistribution from "./AssetDistribution";
@@ -85,13 +85,7 @@ export default function DashboardPage() {
       <RecoverBanner />
       {isPostOnboardingBannerVisible && <PostOnboardingHubBanner />}
       <FeaturedButtons />
-      <TrackPage
-        category="Portfolio"
-        totalAccounts={totalAccounts}
-        totalOperations={totalOperations}
-        totalCurrencies={totalCurrencies}
-        hasExchangeBannerCTA={!!portfolioExchangeBanner?.enabled}
-      />
+      
       <Box flow={7} id="portfolio-container" data-test-id="portfolio-container">
         {!hasInstalledApps ? (
           <EmptyStateInstalledApps />

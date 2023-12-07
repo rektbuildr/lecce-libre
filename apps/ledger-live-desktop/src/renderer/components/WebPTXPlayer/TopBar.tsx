@@ -14,7 +14,6 @@ import { enablePlatformDevToolsSelector } from "~/renderer/reducers/settings";
 import { WebviewState, WebviewAPI } from "../Web3AppWebview/types";
 import Spinner from "../Spinner";
 import { safeGetRefValue } from "@ledgerhq/live-common/wallet-api/react";
-import { track } from "~/renderer/analytics/segment";
 import { INTERNAL_APP_IDS } from "@ledgerhq/live-common/wallet-api/constants";
 import { safeUrl } from "@ledgerhq/live-common/wallet-api/helpers";
 
@@ -134,8 +133,7 @@ export const TopBar = ({ manifest, webviewAPIRef, webviewState }: Props) => {
     if (manifestId) {
       const flowName = localStorage.getItem("flow-name") || "";
 
-      track("button_clicked", {
-        button: ["buy", "sell"].includes(flowName) ? "back to quote" : "back to liveapp",
+       ? "back to quote" : "back to liveapp",
         provider: manifestId,
         flow: flowName,
       });
@@ -155,11 +153,7 @@ export const TopBar = ({ manifest, webviewAPIRef, webviewState }: Props) => {
       const urlParams = new URLSearchParams(url.searchParams);
       const flowName = urlParams.get("liveAppFlow");
 
-      track("button_clicked", {
-        button: flowName === "compare_providers" ? "back to quote" : "back to liveapp",
-        provider: currentHostname,
-        flow: flowName,
-      });
+      
 
       await webview.loadURL(safeUrl);
       webview.clearHistory();

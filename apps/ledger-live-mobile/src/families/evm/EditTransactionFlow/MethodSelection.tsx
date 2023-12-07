@@ -21,7 +21,7 @@ import invariant from "invariant";
 import React, { memo, useCallback, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { Dimensions, Linking } from "react-native";
-import { TrackScreen } from "../../../analytics";
+
 import LText from "../../../components/LText";
 import { StackNavigatorProps } from "../../../components/RootNavigator/types/helpers";
 import { ScreenName } from "../../../const";
@@ -186,7 +186,7 @@ function MethodSelectionComponent({ navigation, route }: Props) {
 
   return (
     <Flex flex={1} color="background.main">
-      <TrackScreen category="EditTransaction" name="EditTransaction" />
+      
       <Flex p={6}>
         <SelectableList onChange={onSelect}>
           <SelectableList.Element

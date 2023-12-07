@@ -15,7 +15,7 @@ import {
 import { cryptoCurrenciesSelector } from "../../../reducers/accounts";
 import LText from "../../../components/LText";
 import CurrencyIcon from "../../../components/CurrencyIcon";
-import { TrackScreen } from "../../../analytics";
+
 import HideEmptyTokenAccountsRow from "./HideEmptyTokenAccountsRow";
 import FilterTokenOperationsZeroAmountRow from "./FilterTokenOperationsZeroAmountRow";
 import Close from "../../../icons/Close";
@@ -70,7 +70,7 @@ export default function AccountsSettings({
   const renderHeader = useCallback(
     () => (
       <>
-        <TrackScreen category="Settings" name="Accounts" />
+        
         {currencies.length > 0 && (
           <SettingsRow
             title={t("settings.accounts.cryptoAssets.title")}

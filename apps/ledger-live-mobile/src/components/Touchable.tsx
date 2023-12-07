@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { GestureResponderEvent, TouchableOpacity, TouchableOpacityProps } from "react-native";
-import { track } from "../analytics";
 
 const defaultHitSlop = {
   // default & can be overridden by rest
@@ -43,7 +42,7 @@ export default class Touchable extends Component<
 
     try {
       if (event) {
-        track(event, eventProperties);
+        
       }
 
       const res = onPress();
@@ -72,7 +71,7 @@ export default class Touchable extends Component<
     if (!onLongPress) return;
 
     if (event) {
-      track(event, eventProperties);
+      
     }
 
     const res = onLongPress();

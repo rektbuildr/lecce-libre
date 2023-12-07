@@ -7731,7 +7731,6 @@ function attach(hook, rendererID, renderer, global) {
           mountFiberRecursively(fiber.child, shouldIncludeInTree ? fiber : parentFiber, true, traceNearestHostComponentUpdate);
         }
       } // We're exiting this Fiber now, and entering its siblings.
-      // If we have selection to restore, we might need to re-activate tracking.
 
 
       updateTrackedPathStateAfterMount(mightSiblingsBeOnTrackedPath);

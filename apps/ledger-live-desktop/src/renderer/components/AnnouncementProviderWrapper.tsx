@@ -12,7 +12,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { ServiceStatusProvider } from "@ledgerhq/live-common/notifications/ServiceStatusProvider/index";
 import { useToasts } from "@ledgerhq/live-common/notifications/ToastProvider/index";
 import { openInformationCenter } from "~/renderer/actions/UI";
-import { track } from "~/renderer/analytics/segment";
 import fetchApi from "../../../tests/mocks/notificationsHelpers";
 import networkApi from "../../../tests/mocks/serviceStatusHelpers";
 
@@ -98,10 +97,7 @@ export function AnnouncementProviderWrapper({ children }: Props) {
     (announcement: Announcement) => {
       // eslint-disable-next-line camelcase
       const { uuid, content, icon, utm_campaign, published_at } = announcement;
-      track("Announcement Received", {
-        uuid,
-        utm_campaign,
-      });
+
       if (new Date(published_at) > startDate) {
         pushToast({
           id: uuid,
@@ -119,10 +115,7 @@ export function AnnouncementProviderWrapper({ children }: Props) {
     (announcement: Announcement) => {
       // eslint-disable-next-line camelcase
       const { uuid, utm_campaign } = announcement;
-      track("Announcement Viewed", {
-        uuid,
-        utm_campaign,
-      });
+
       dismissToast(uuid);
     },
     [dismissToast],

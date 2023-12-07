@@ -5,7 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Linking, View } from "react-native";
 import Svg, { G, Path, Rect, Mask } from "react-native-svg";
 import { NavigatorName, ScreenName } from "../../../const";
-import { track, TrackScreen } from "../../../analytics";
+
 import { urls } from "@utils/urls";
 import QueuedDrawer from "../../../components/QueuedDrawer";
 
@@ -20,10 +20,7 @@ export default function ReceiveNFTsModal({ onClose, isOpened }: Props) {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const onClickContinue = useCallback(() => {
-    track("button_clicked", {
-      button: "Continue",
-      drawer: "Confirm Receive NFT",
-    });
+    
     navigation.navigate(NavigatorName.ReceiveFunds, {
       screen: ScreenName.ReceiveSelectCrypto,
       params: {
@@ -34,27 +31,17 @@ export default function ReceiveNFTsModal({ onClose, isOpened }: Props) {
   }, [navigation, onClose]);
 
   const onPressClose = useCallback(() => {
-    track("button_clicked", {
-      button: "Close 'x'",
-      drawer: "Confirm Receive NFT",
-    });
+    
     onClose();
   }, [onClose]);
 
   const openSupportLink = useCallback(() => {
-    track("url_clicked", {
-      name: "i'd like to learn more",
-      url: urls.nft.howToSecure,
-      drawer: "Confirm Receive NFT",
-    });
+    
     Linking.openURL(urls.nft.howToSecure);
   }, []);
 
   const onClickLearnMore = useCallback(() => {
-    track("button_clicked", {
-      button: "Learn More",
-      drawer: "Confirm Receive NFT",
-    });
+    
     openSupportLink();
     onClose();
   }, [onClose, openSupportLink]);
@@ -66,7 +53,7 @@ export default function ReceiveNFTsModal({ onClose, isOpened }: Props) {
       onClose={onPressClose}
       Icon={<EthPolygonIcons />}
     >
-      <TrackScreen category="Confirm Receive NFT" type="drawer" refreshSource={false} />
+      
       <View testID="wallet-nft-gallery-receive-modal">
         {new Array(2).fill(null).map((_e, index) => (
           <Text variant="body" fontWeight="medium" color="neutral.c80" key={index}>

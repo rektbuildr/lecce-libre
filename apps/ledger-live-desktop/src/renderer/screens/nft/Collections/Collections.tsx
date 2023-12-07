@@ -11,7 +11,6 @@ import LabelWithExternalIcon from "~/renderer/components/LabelWithExternalIcon";
 import { hiddenNftCollectionsSelector } from "~/renderer/reducers/settings";
 import { supportLinkByTokenType } from "~/config/urls";
 import { openModal } from "~/renderer/actions/modals";
-import { track } from "~/renderer/analytics/segment";
 import AngleDown from "~/renderer/icons/AngleDown";
 import IconReceive from "~/renderer/icons/Receive";
 import Button from "~/renderer/components/Button";
@@ -95,7 +94,7 @@ const Collections = ({ account }: Props) => {
     [account, filteredCollections, numberOfVisibleCollections, onOpenCollection],
   );
   useEffect(() => {
-    track("View NFT Collections (Account Page)");
+    ");
   }, []);
   return (
     <Box>
@@ -130,7 +129,7 @@ const Collections = ({ account }: Props) => {
                   ff="Inter|SemiBold"
                   onClick={() => {
                     openURL(supportLinkByTokenType.nfts);
-                    track(`More info on Manage nfts tokens`);
+                    
                   }}
                   label={t("tokensList.link")}
                 />

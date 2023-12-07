@@ -5,7 +5,7 @@ import { BigNumber } from "bignumber.js";
 import type { AccountLike } from "@ledgerhq/types-live";
 import { useSendAmount } from "@ledgerhq/live-common/countervalues/react";
 import { useTranslation } from "react-i18next";
-import { track } from "../../analytics";
+
 import { counterValueCurrencySelector } from "../../reducers/settings";
 import LText from "../../components/LText/index";
 import CounterValuesSeparator from "./CounterValuesSeparator";
@@ -49,11 +49,11 @@ export default function AmountInput({
   );
   const onCryptoFieldFocus = useCallback(() => {
     setActive("crypto");
-    track("SendAmountCryptoFocused");
+    
   }, []);
   const onFiatFieldFocus = useCallback(() => {
     setActive("fiat");
-    track("SendAmountFiatFocused");
+    
   }, []);
   const isCrypto = active === "crypto";
   return (

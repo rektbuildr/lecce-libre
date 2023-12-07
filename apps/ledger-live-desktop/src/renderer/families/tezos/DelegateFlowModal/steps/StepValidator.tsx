@@ -7,7 +7,7 @@ import { useBakers } from "@ledgerhq/live-common/families/tezos/bakers";
 import { Baker } from "@ledgerhq/live-common/families/tezos/types";
 import bakersWhitelistDefault from "@ledgerhq/live-common/families/tezos/bakers.whitelist-default";
 import { openURL } from "~/renderer/linking";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Text from "~/renderer/components/Text";
 import Button from "~/renderer/components/Button";
@@ -108,13 +108,7 @@ const StepValidator = ({
 
   return (
     <Box flow={4} mx={20}>
-      <TrackPage
-        category={`Delegation Flow${eventType ? ` (${eventType})` : ""}`}
-        name="Step Validator"
-        flow="stake"
-        action="delegation"
-        currency="xtz"
-      />
+      
       <Box>
         <Text ff="Inter|Regular" color="palette.text.shade80" fontSize={4} textAlign="center">
           <Trans i18nKey="delegation.flow.steps.validator.description" />

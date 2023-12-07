@@ -11,8 +11,6 @@ import { accountsSelector } from "~/renderer/reducers/accounts";
 import { openModal, closeAllModal } from "~/renderer/actions/modals";
 import { deepLinkUrlSelector, areSettingsLoaded } from "~/renderer/reducers/settings";
 import { setDeepLinkUrl } from "~/renderer/actions/settings";
-import { track } from "~/renderer/analytics/segment";
-import { setTrackingSource } from "../analytics/TrackPage";
 import { CryptoOrTokenCurrency, Currency } from "@ledgerhq/types-cryptoassets";
 import { Account, SubAccount } from "@ledgerhq/types-live";
 
@@ -53,14 +51,14 @@ export function useDeepLinkHandler() {
       const hasNewSearch = typeof search === "string" && search !== location.search;
       const hasNewState = JSON.stringify(state) !== JSON.stringify(location.state);
       if (hasNewPathname || hasNewSearch) {
-        setTrackingSource("deeplink");
+        
         history.push({
           pathname,
           state,
           search,
         });
       } else if (!hasNewPathname && hasNewState) {
-        setTrackingSource("deeplink");
+        
         history.replace({
           pathname,
           state,
@@ -111,18 +109,6 @@ export function useDeepLinkHandler() {
         appName,
       } = query;
 
-      // Track deeplink only when ajsPropSource attribute exists.
-      if (ajsPropSource) {
-        track("deeplink_clicked", {
-          deeplinkSource: ajsPropSource,
-          deeplinkCampaign: ajsPropCampaign,
-          url,
-          currency,
-          installApp,
-          appName,
-          ...(ajsPropTrackData ? JSON.parse(ajsPropTrackData) : {}),
-        });
-      }
       switch (url) {
         case "accounts": {
           const { address } = query;
@@ -303,7 +289,7 @@ export function useDeepLinkHandler() {
           }
           break;
         case "wc": {
-          setTrackingSource("deeplink");
+          
           navigate("/platform/ledger-wallet-connect", query);
 
           break;

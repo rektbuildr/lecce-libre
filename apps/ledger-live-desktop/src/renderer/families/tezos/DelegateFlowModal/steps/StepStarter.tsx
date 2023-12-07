@@ -5,7 +5,7 @@ import { urls } from "~/config/urls";
 import { openURL } from "~/renderer/linking";
 import CoinWallet from "~/renderer/icons/CoinWallet";
 import Check from "~/renderer/icons/CheckFull";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Text from "~/renderer/components/Text";
 import Button from "~/renderer/components/Button";
 import Box from "~/renderer/components/Box";
@@ -30,13 +30,7 @@ const StepStarter = ({ transitionTo, t, openedWithAccount, eventType }: StepProp
   }, [transitionTo, openedWithAccount]);
   return (
     <Box flow={4} mx={4}>
-      <TrackPage
-        category={`Delegation Flow${eventType ? ` (${eventType})` : ""}`}
-        name="Step Starter"
-        flow="stake"
-        action="delegation"
-        currency="xtz"
-      />
+      
       <Box flow={1} alignItems="center">
         <Box mb={4}>
           <CoinWallet size={120} />

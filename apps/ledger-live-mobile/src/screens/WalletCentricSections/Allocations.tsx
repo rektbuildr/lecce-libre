@@ -11,7 +11,7 @@ import { ensureContrast } from "../../colors";
 import { ScreenName } from "../../const";
 import { useDistribution } from "../../actions/general";
 import RingChart, { ColorableDistributionItem } from "../Analytics/RingChart";
-import { track } from "../../analytics";
+
 import { blacklistedTokenIdsSelector } from "../../reducers/settings";
 
 const NUMBER_MAX_ALLOCATION_ASSETS_TO_DISPLAY = 4;
@@ -45,9 +45,7 @@ const Allocations = () => {
   const blacklistedTokenIds = useSelector(blacklistedTokenIdsSelector);
 
   const goToAnalyticsAllocations = useCallback(() => {
-    track("analytics_clicked", {
-      analytics: "Allocations",
-    });
+    
     navigation.navigate(ScreenName.AnalyticsAllocation);
   }, [navigation]);
 

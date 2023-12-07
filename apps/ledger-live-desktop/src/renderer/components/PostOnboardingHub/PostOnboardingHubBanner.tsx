@@ -8,7 +8,6 @@ import { useNavigateToPostOnboardingHubCallback } from "./logic/useNavigateToPos
 import Illustration from "~/renderer/components/Illustration";
 import bannerStaxLight from "./assets/bannerStaxLight.svg";
 import bannerStaxDark from "./assets/bannerStaxDark.svg";
-import { track } from "~/renderer/analytics/segment";
 
 const CloseButtonWrapper = styled(Box).attrs(() => ({
   top: 4,
@@ -24,7 +23,7 @@ const PostOnboardingHubBanner = () => {
   const navigateToPostOnboardingHub = useNavigateToPostOnboardingHubCallback();
 
   const handleNavigateToPostOnboardingHub = useCallback(() => {
-    track("button_clicked", { button: "What’s next for your device" });
+    
     navigateToPostOnboardingHub();
   }, [navigateToPostOnboardingHub]);
 

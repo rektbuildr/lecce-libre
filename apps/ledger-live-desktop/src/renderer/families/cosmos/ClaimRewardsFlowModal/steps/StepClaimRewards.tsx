@@ -7,7 +7,7 @@ import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
 import { getAccountUnit } from "@ledgerhq/live-common/account/index";
 import { formatCurrencyUnit } from "@ledgerhq/live-common/currencies/index";
 import { localeSelector } from "~/renderer/reducers/settings";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import ModeSelectorField from "../fields/ModeSelectorField";
@@ -76,13 +76,7 @@ export default function StepClaimRewards({
   const key = transaction.mode === "claimReward" ? "claimInfo" : "compoundInfo";
   return (
     <Box flow={1}>
-      <TrackPage
-        category="ClaimRewards Flow"
-        name="Step 1"
-        flow="stake"
-        action="claim_rewards"
-        currency={account.currency.id}
-      />
+      
       {warning && !error ? <ErrorBanner error={warning} warning /> : null}
       {error ? <ErrorBanner error={error} /> : null}
       <ModeSelectorField mode={transaction.mode} onChange={onChangeMode} />

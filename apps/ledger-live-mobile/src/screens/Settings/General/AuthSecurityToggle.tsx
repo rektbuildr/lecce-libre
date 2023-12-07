@@ -8,7 +8,7 @@ import { privacySelector } from "../../../reducers/settings";
 import SettingsRow from "../../../components/SettingsRow";
 import BiometricsRow from "./BiometricsRow";
 import { ScreenName } from "../../../const";
-import { track } from "../../../analytics";
+
 
 export default function AuthSecurityToggle() {
   const { t } = useTranslation();
@@ -17,11 +17,7 @@ export default function AuthSecurityToggle() {
   const { navigate } = useNavigation();
 
   const onValueChange = (authSecurityEnabled: boolean): void => {
-    track("toggle_clicked", {
-      toggle: "Password Lock",
-      page: ScreenName.GeneralSettings,
-      enabled: !privacy?.hasPassword,
-    });
+    
 
     navigate(
       authSecurityEnabled ? NavigatorName.PasswordAddFlow : NavigatorName.PasswordModifyFlow,

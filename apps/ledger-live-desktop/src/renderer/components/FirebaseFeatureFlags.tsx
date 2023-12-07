@@ -11,7 +11,6 @@ import { Feature, FeatureId, Features } from "@ledgerhq/types-live";
 import { useFirebaseRemoteConfig } from "./FirebaseRemoteConfig";
 import { overriddenFeatureFlagsSelector } from "../reducers/settings";
 import { setOverriddenFeatureFlag, setOverriddenFeatureFlags } from "../actions/settings";
-import { setAnalyticsFeatureFlagMethod } from "../analytics/segment";
 
 export const FirebaseFeatureFlagsProvider = ({ children }: Props): JSX.Element => {
   const remoteConfig = useFirebaseRemoteConfig();
@@ -48,13 +47,6 @@ export const FirebaseFeatureFlagsProvider = ({ children }: Props): JSX.Element =
     <T extends FeatureId>(key: T): Features[T] => getFeature({ key, localOverrides }),
     [localOverrides],
   );
-
-  useEffect(() => {
-    if (remoteConfig) {
-      setAnalyticsFeatureFlagMethod(wrappedGetFeature);
-    }
-    return () => setAnalyticsFeatureFlagMethod(null);
-  }, [remoteConfig, wrappedGetFeature]);
 
   const contextValue = useMemo(
     () => ({

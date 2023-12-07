@@ -13,7 +13,7 @@ import uniq from "lodash/uniq";
 import { urls } from "~/config/urls";
 import logger from "~/renderer/logger";
 import { prepareCurrency } from "~/renderer/bridge/cache";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import RetryButton from "~/renderer/components/RetryButton";
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
@@ -320,7 +320,7 @@ class StepImport extends PureComponent<
     };
     return (
       <>
-        <TrackPage category="AddAccounts" name="Step3" currencyName={currencyName} />
+        
         <Box data-test-id={"add-accounts-step-import-accounts-list"} mt={-4}>
           {sections.map(({ id, selectable, defaultSelected, data, supportLink }, i) => {
             const hasMultipleSchemes =

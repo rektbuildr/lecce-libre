@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { informationCenterStateSelector } from "~/renderer/reducers/UI";
 import { openInformationCenter, closeInformationCenter } from "~/renderer/actions/UI";
 import { notificationsContentCardSelector } from "~/renderer/reducers/dynamicContent";
-import { track } from "~/renderer/analytics/segment";
 import { useHistory } from "react-router";
 import { getEnv } from "@ledgerhq/live-env";
 
@@ -24,10 +23,7 @@ export function NotificationIndicator() {
   const history = useHistory();
 
   const onClickNotificationCenter = useCallback(() => {
-    track("button_clicked", {
-      button: "Notification Center",
-      page: history.location.pathname,
-    });
+    
     dispatch(openInformationCenter(undefined));
   }, [dispatch, history.location.pathname]);
 

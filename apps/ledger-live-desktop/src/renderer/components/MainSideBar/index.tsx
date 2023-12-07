@@ -19,7 +19,7 @@ import { isNavigationLocked } from "~/renderer/reducers/application";
 import { openModal } from "~/renderer/actions/modals";
 import { setSidebarCollapsed } from "~/renderer/actions/settings";
 import useExperimental from "~/renderer/hooks/useExperimental";
-import { setTrackingSource } from "~/renderer/analytics/TrackPage";
+
 import { darken, rgba } from "~/renderer/styles/helpers";
 import IconChevron from "~/renderer/icons/ChevronRightSmall";
 import IconExperimental from "~/renderer/icons/Experimental";
@@ -33,7 +33,6 @@ import useEnv from "@ledgerhq/live-common/hooks/useEnv";
 import { CARD_APP_ID } from "~/renderer/screens/card";
 import TopGradient from "./TopGradient";
 import Hide from "./Hide";
-import { track } from "~/renderer/analytics/segment";
 import { useAccountPath } from "@ledgerhq/live-common/hooks/recoverFeatureFlag";
 
 type Location = Parameters<Exclude<PromptProps["message"], string>>[0];
@@ -245,7 +244,7 @@ const MainSideBar = () => {
   const push = useCallback(
     (pathname: string) => {
       if (location.pathname === pathname) return;
-      setTrackingSource("sidebar");
+      
       history.push({
         pathname,
       });
@@ -255,11 +254,7 @@ const MainSideBar = () => {
 
   const trackEntry = useCallback(
     (entry: string, flagged = false) => {
-      track("menuentry_clicked", {
-        entry,
-        page: history.location.pathname,
-        flagged,
-      });
+      
     },
     [history.location.pathname],
   );
@@ -331,9 +326,7 @@ const MainSideBar = () => {
     } else if (enabled) {
       dispatch(openModal("MODAL_PROTECT_DISCOVER", undefined));
     }
-    track("button_clicked", {
-      button: "Protect",
-    });
+    
   }, [
     recoverFeature?.enabled,
     recoverFeature?.params?.openRecoverFromSidebar,

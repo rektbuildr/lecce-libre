@@ -9,7 +9,7 @@ import {
 import { useBaker, useDelegation } from "@ledgerhq/live-common/families/tezos/bakers";
 import { Baker } from "@ledgerhq/live-common/families/tezos/types";
 import { Trans } from "react-i18next";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import { openURL } from "~/renderer/linking";
 import AccountFooter from "~/renderer/modals/Send/AccountFooter";
 import Box from "~/renderer/components/Box";
@@ -63,13 +63,7 @@ const StepSummary = ({ account, transaction, eventType, transitionTo }: StepProp
 
   return (
     <Box flow={4} mx={40}>
-      <TrackPage
-        category={`Delegation Flow${eventType ? ` (${eventType})` : ""}`}
-        name="Step Summary"
-        flow="stake"
-        action="delegation"
-        currency="xtz"
-      />
+      
 
       <DelegationContainer
         undelegation={transaction.mode === "undelegate"}

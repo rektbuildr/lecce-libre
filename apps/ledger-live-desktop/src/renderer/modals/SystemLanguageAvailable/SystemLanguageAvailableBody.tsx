@@ -6,7 +6,7 @@ import styled from "styled-components";
 import moment from "moment";
 import { ModalBody } from "~/renderer/components/Modal";
 import Box from "~/renderer/components/Box";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Text from "~/renderer/components/Text";
 import Button from "~/renderer/components/Button";
 import LanguageIcon from "~/renderer/icons/Language";
@@ -76,11 +76,7 @@ const SystemLanguageAvailableBody = (props: Props) => {
       onClose={onClose}
       render={() => (
         <Box>
-          <TrackPage
-            category="Discoverability"
-            name={`Prompt - ${osLanguage}`}
-            language={osLanguage}
-          />
+          
           <IconBox>
             <Circle />
             <LanguageBox>

@@ -4,7 +4,7 @@ import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
 import { getAccountUnit } from "@ledgerhq/live-common/account/index";
 import { Trans } from "react-i18next";
 import { BigNumber } from "bignumber.js";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import Text from "~/renderer/components/Text";
@@ -44,13 +44,7 @@ const StepWithdraw = (props: StepProps) => {
   );
   return (
     <Box flow={1}>
-      <TrackPage
-        category="ClaimRewards Flow"
-        name="Step 1"
-        flow="stake"
-        action="withdraw"
-        currency="egld"
-      />
+      
       {warning && !error ? <ErrorBanner error={warning} warning={true} /> : null}
       {error ? <ErrorBanner error={error} /> : null}
 

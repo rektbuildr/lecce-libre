@@ -11,7 +11,6 @@ import Modal, { ModalBody } from "~/renderer/components/Modal";
 import Box from "~/renderer/components/Box";
 import EntryButton from "~/renderer/components/EntryButton/EntryButton";
 import CoinsIcon from "./assets/CoinsIcon";
-import { trackPage, track } from "~/renderer/analytics/segment";
 import { stakeDefaultTrack } from "~/renderer/screens/stake/constants";
 import { CryptoCurrency } from "@ledgerhq/types-cryptoassets";
 import { useFetchCurrencyAll } from "@ledgerhq/live-common/exchange/swap/hooks/index";
@@ -60,11 +59,7 @@ const NoFundsStakeModal = ({ account, parentAccount, entryPoint }: NoFundsStakeM
   const modalName = "MODAL_NO_FUNDS_STAKE";
 
   const onBuy = useCallback(() => {
-    track("button_clicked", {
-      button: "buy",
-      page: history.location.pathname,
-      ...stakeDefaultTrack,
-    });
+
 
     dispatch(closeModal(modalName));
 
@@ -78,11 +73,7 @@ const NoFundsStakeModal = ({ account, parentAccount, entryPoint }: NoFundsStakeM
   }, [currency, history, dispatch]);
 
   const onSwap = useCallback(() => {
-    track("button_clicked", {
-      button: "swap",
-      page: history.location.pathname,
-      ...stakeDefaultTrack,
-    });
+
 
     dispatch(closeModal(modalName));
 
@@ -97,11 +88,7 @@ const NoFundsStakeModal = ({ account, parentAccount, entryPoint }: NoFundsStakeM
   }, [currency, account, parentAccount, history, dispatch]);
 
   const onReceive = useCallback(() => {
-    track("button_clicked", {
-      button: "receive",
-      page: history.location.pathname,
-      ...stakeDefaultTrack,
-    });
+
 
     dispatch(closeModal(modalName));
 
@@ -113,9 +100,7 @@ const NoFundsStakeModal = ({ account, parentAccount, entryPoint }: NoFundsStakeM
   }, [dispatch]);
 
   useEffect(() => {
-    trackPage("Stake", "Service_modal", {
-      source: history.location.pathname,
-    });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

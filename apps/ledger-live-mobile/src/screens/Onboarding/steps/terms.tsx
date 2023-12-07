@@ -7,7 +7,7 @@ import { Flex, Text, Button, Checkbox } from "@ledgerhq/native-ui";
 import { IconsLegacy } from "@ledgerhq/native-ui/assets/index";
 
 import Touchable from "../../../components/Touchable";
-import { TrackScreen } from "../../../analytics";
+
 import { ScreenName } from "../../../const";
 import { setAnalytics } from "../../../actions/settings";
 import { useAcceptGeneralTerms } from "../../../logic/terms";
@@ -93,7 +93,7 @@ function OnboardingStepTerms() {
       <Flex flexDirection="row" mt={9}>
         <Checkbox checked={toggle} onChange={onSwitch} label={t("Terms.switchLabelFull")} />
       </Flex>
-      <TrackScreen category="Onboarding" name="Terms" />
+      
     </OnboardingView>
   );
 }

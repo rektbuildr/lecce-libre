@@ -7,7 +7,6 @@ import { useTheme } from "@react-navigation/native";
 import { Account, AccountLike } from "@ledgerhq/types-live";
 import { getAccountCurrency, flattenAccounts } from "@ledgerhq/live-common/account/index";
 import { accountWithMandatoryTokens } from "@ledgerhq/live-common/account/helpers";
-import { TrackScreen, useAnalytics } from "../../../analytics";
 import AccountCard from "../../../components/AccountCard";
 import FilteredSearchBar from "../../../components/FilteredSearchBar";
 import KeyboardView from "../../../components/KeyboardView";
@@ -114,11 +113,7 @@ export function SelectAccount({ navigation, route: { params } }: SelectAccountPa
   );
 
   const onAddAccount = useCallback(() => {
-    track("button_clicked", {
-      ...sharedSwapTracking,
-      account: "account",
-      button: "new source account",
-    });
+    
     // @ts-expect-error navigation type is only partially declared
     navigation.navigate(NavigatorName.AddAccounts, {
       screen: ScreenName.AddAccountsSelectCrypto,
@@ -174,7 +169,7 @@ export function SelectAccount({ navigation, route: { params } }: SelectAccountPa
 
   return (
     <KeyboardView>
-      <TrackScreen category="Swap Form" name="Edit Source Account" provider={provider} />
+      
       <FilteredSearchBar
         keys={["name", "unit.code", "token.name", "token.ticker"]}
         inputWrapperStyle={[styles.searchBarContainer]}

@@ -18,7 +18,6 @@ import { openModal } from "~/renderer/actions/modals";
 import IconAngleDown from "~/renderer/icons/AngleDown";
 import Box from "~/renderer/components/Box";
 import Text from "~/renderer/components/Text";
-import { track } from "~/renderer/analytics/segment";
 import { createStructuredSelector } from "reselect";
 import { accountsSelector } from "~/renderer/reducers/accounts";
 import SectionTitle from "./SectionTitle";
@@ -78,7 +77,7 @@ export class OperationsList extends PureComponent<Props, State> {
 
   // TODO: convert of async/await if fetching with the api
   fetchMoreOperations = () => {
-    track("FetchMoreOperations");
+    
     this.setState({
       nbToShow: this.state.nbToShow + 20,
     });

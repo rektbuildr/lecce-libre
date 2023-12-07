@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import { CurrencyCircleIcon } from "~/renderer/components/CurrencyBadge";
@@ -23,7 +23,7 @@ export default function StepFinish({ currency, checkedAccountsIds }: StepProps) 
       {/* onMount because if we already have the countervalues we want to sort it straightaway
           onUnmount because if not, it is useful to trigger a second refresh to ensure it get sorted */}
 
-      <TrackPage category="AddAccounts" name="Step4" currencyName={currencyName} />
+      
       {currency ? <CurrencyCircleIcon currency={currency} size={50} showCheckmark /> : null}
       <Title id="add-account-success-title">
         {t("addAccounts.success", {

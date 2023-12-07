@@ -24,7 +24,6 @@ import DebugUpdater from "~/renderer/components/debug/DebugUpdater";
 import DebugTheme from "~/renderer/components/debug/DebugTheme";
 import DebugFirmwareUpdater from "~/renderer/components/debug/DebugFirmwareUpdater";
 import Page from "~/renderer/components/Page";
-import AnalyticsConsole from "~/renderer/components/AnalyticsConsole";
 import DebugMock from "~/renderer/components/debug/DebugMock";
 import DebugSkeletons from "~/renderer/components/debug/DebugSkeletons";
 import { DisableTransactionBroadcastWarning } from "~/renderer/components/debug/DisableTransactionBroadcastWarning";
@@ -38,7 +37,6 @@ import UpdateBanner from "~/renderer/components/Updater/Banner";
 import FirmwareUpdateBanner from "~/renderer/components/FirmwareUpdateBanner";
 import VaultSignerBanner from "~/renderer/components/VaultSignerBanner";
 import { hasCompletedOnboardingSelector } from "~/renderer/reducers/settings";
-import { updateIdentify } from "./analytics/segment";
 import { useFeature, FeatureToggle } from "@ledgerhq/live-config/featureFlags/index";
 import { enableListAppsV2 } from "@ledgerhq/live-common/apps/hw";
 import {
@@ -181,7 +179,6 @@ export default function Default() {
   const hasCompletedOnboarding = useSelector(hasCompletedOnboardingSelector);
   const accounts = useSelector(accountsSelector);
 
-  useAccountsWithFundsListener(accounts, updateIdentify);
   useListenToHidDevices();
   useDeeplink();
   useUSBTroubleshooting();
@@ -198,13 +195,11 @@ export default function Default() {
     if (!hasCompletedOnboarding) {
       history.push("/onboarding");
     }
-    updateIdentify();
   }, [history, hasCompletedOnboarding]);
   return (
     <>
       <TriggerAppReady />
       <ExportLogsButton hookToShortcut />
-      <TrackAppStart />
       <Idler />
       {process.platform === "darwin" ? <AppRegionDrag /> : null}
 

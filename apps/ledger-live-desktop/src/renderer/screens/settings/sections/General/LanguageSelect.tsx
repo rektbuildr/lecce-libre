@@ -9,8 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Languages, Language } from "~/config/languages";
 import { firstValueFrom, from } from "rxjs";
 import { setLanguage, setLastSeenDevice } from "~/renderer/actions/settings";
-import Track from "~/renderer/analytics/Track";
-import { track } from "~/renderer/analytics/segment";
+
 import Select from "~/renderer/components/Select";
 import { setDrawer } from "~/renderer/drawers/Provider";
 import { getCurrentDevice } from "~/renderer/reducers/devices";
@@ -115,9 +114,7 @@ const LanguageSelect: React.FC<Props> = ({ disableLanguagePrompt }) => {
         idsToLanguage[deviceLanguageId] !== potentialDeviceLanguage &&
         !disableLanguagePrompt
       ) {
-        track("Page LiveLanguageChange DeviceLanguagePrompt", {
-          selectedLanguage: potentialDeviceLanguage,
-        });
+        
         openDrawer(language?.value);
       }
 
@@ -134,7 +131,7 @@ const LanguageSelect: React.FC<Props> = ({ disableLanguagePrompt }) => {
 
   return (
     <>
-      <Track onUpdate event="LanguageSelect" currentRegion={selectedLanguage.value} />
+      
 
       <Select
         aria-label={

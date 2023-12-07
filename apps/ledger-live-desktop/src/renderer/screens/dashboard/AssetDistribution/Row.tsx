@@ -13,7 +13,7 @@ import Ellipsis from "~/renderer/components/Ellipsis";
 import CryptoCurrencyIcon from "~/renderer/components/CryptoCurrencyIcon";
 import Tooltip from "~/renderer/components/Tooltip";
 import Bar from "./Bar";
-import { setTrackingSource } from "~/renderer/analytics/TrackPage";
+
 import { localeSelector } from "~/renderer/reducers/settings";
 import { DistributionItem } from "@ledgerhq/types-live";
 
@@ -96,7 +96,7 @@ const Row = ({ item: { currency, amount, distribution }, isVisible }: Props) => 
   });
   const icon = <CryptoCurrencyIcon currency={currency} size={16} />;
   const onClick = useCallback(() => {
-    setTrackingSource("asset allocation");
+    
     history.push({
       pathname: `/asset/${currency.id}`,
     });

@@ -3,7 +3,7 @@ import { Linking, ScrollView } from "react-native";
 import { Trans } from "react-i18next";
 import { Flex, Text, IconsLegacy, List, Link, Log } from "@ledgerhq/native-ui";
 import { ScreenName } from "../../../const";
-import { TrackScreen } from "../../../analytics";
+
 import { urls } from "@utils/urls";
 import Illustration from "../../../images/illustration/Illustration";
 import EarnLight from "../../../images/illustration/Light/_003.png";
@@ -30,13 +30,7 @@ export default function DelegationStarted({ navigation, route }: Props) {
     <ScrollView>
       <Flex flex={1} justifyContent="space-between" bg="background.main">
         <Flex m={6}>
-          <TrackScreen
-            category="DelegationFlow"
-            name="Started"
-            flow="stake"
-            action="delegation"
-            currency="xtz"
-          />
+          
           <Flex alignItems="center">
             <Illustration lightSource={EarnLight} darkSource={EarnDark} size={150} />
           </Flex>

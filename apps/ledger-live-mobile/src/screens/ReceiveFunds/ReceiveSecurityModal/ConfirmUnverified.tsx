@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import { TouchableOpacity } from "react-native";
 import { Trans } from "react-i18next";
 import { Flex, Text, Button, Checkbox } from "@ledgerhq/native-ui";
-import { track, TrackScreen } from "../../../analytics";
+
 
 type Props = {
   closeModal: () => void;
@@ -13,25 +13,16 @@ type Props = {
 const ConfirmUnverified = ({ closeModal, setStep, setShouldNotRemindUserAgain }: Props) => {
   const [doNotRemindUserAgain, setDoNotRemindUserAgain] = useState(false);
   const toggleDoNotRemindUserAgain = useCallback(() => {
-    track("button_clicked", {
-      button: "Do not remind me",
-      drawer: "confirmUnverified",
-    });
+    
     setDoNotRemindUserAgain(!doNotRemindUserAgain);
   }, [doNotRemindUserAgain]);
 
   const onGoBack = useCallback(() => {
     setStep("initMessage");
-    track("button_clicked", {
-      button: "No",
-      drawer: "confirmUnverified",
-    });
+    
   }, [setStep]);
   const onCloseModal = useCallback(() => {
-    track("button_clicked", {
-      button: "Yes",
-      drawer: "confirmUnverified",
-    });
+    
     closeModal();
     if (doNotRemindUserAgain) {
       setShouldNotRemindUserAgain();
@@ -40,7 +31,7 @@ const ConfirmUnverified = ({ closeModal, setStep, setShouldNotRemindUserAgain }:
 
   return (
     <Flex flex={1} justifyContent="center" mt={3}>
-      <TrackScreen category="ReceiveFunds" name="No Verification Confirmation" type="drawer" />
+      
       <Text variant="h4" fontWeight="semiBold" color="neutral.c100" lineHeight="31.2px">
         <Trans i18nKey="transfer.receive.securityDontVerify.title" />
       </Text>

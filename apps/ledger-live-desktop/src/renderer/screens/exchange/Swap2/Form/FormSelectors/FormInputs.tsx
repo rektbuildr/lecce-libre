@@ -3,7 +3,6 @@ import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import ArrowsUpDown from "~/renderer/icons/ArrowsUpDown";
 import styled from "styled-components";
-import { track } from "~/renderer/analytics/segment";
 import FromRow from "./FromRow";
 import ToRow from "./ToRow";
 import {
@@ -87,11 +86,7 @@ export default function FormInputs({
 }: FormInputsProps) {
   const swapDefaultTrack = useGetSwapTrackingProperties();
   const reverseSwapAndTrack = () => {
-    track("button_clicked", {
-      button: "switch",
-      page: "Page Swap Form",
-      ...swapDefaultTrack,
-    });
+    
     reverseSwap();
   };
 

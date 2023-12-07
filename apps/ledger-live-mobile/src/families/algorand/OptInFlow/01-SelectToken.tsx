@@ -15,7 +15,7 @@ import { AlgorandAccount } from "@ledgerhq/live-common/families/algorand/types";
 import { ScreenName } from "../../../const";
 import LText from "../../../components/LText";
 import { accountScreenSelector } from "../../../reducers/accounts";
-import { TrackScreen } from "../../../analytics";
+
 import FilteredSearchBar from "../../../components/FilteredSearchBar";
 import FirstLetterIcon from "../../../components/FirstLetterIcon";
 import KeyboardView from "../../../components/KeyboardView";
@@ -146,7 +146,7 @@ export default function DelegationStarted({ navigation, route }: Props) {
         },
       ]}
     >
-      <TrackScreen category="DelegationFlow" name="Started" />
+      
       <KeyboardView style={styles.keyboardView}>
         <View style={styles.searchContainer}>
           <FilteredSearchBar

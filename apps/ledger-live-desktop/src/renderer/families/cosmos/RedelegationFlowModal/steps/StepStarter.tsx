@@ -3,7 +3,7 @@ import React from "react";
 import { Trans } from "react-i18next";
 import styled from "styled-components";
 import { StepProps } from "../types";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import Text from "~/renderer/components/Text";
@@ -22,13 +22,7 @@ export default function StepStarter({ account, transaction }: StepProps) {
   invariant(account && account.cosmosResources && transaction, "account and transaction required");
   return (
     <Box flow={4}>
-      <TrackPage
-        category="Redelegation Flow"
-        name="Step Starter"
-        flow="stake"
-        action="redelegation"
-        currency={account.currency.id}
-      />
+      
       <Box flow={1} alignItems="center">
         <Box mb={4}>
           <RewardImg />

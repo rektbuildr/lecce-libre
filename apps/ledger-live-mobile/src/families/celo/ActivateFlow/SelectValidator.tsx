@@ -13,7 +13,7 @@ import {
   activatableVotes,
   fallbackValidatorGroup,
 } from "@ledgerhq/live-common/families/celo/logic";
-import { TrackScreen } from "../../../analytics";
+
 import { ScreenName } from "../../../const";
 import { accountScreenSelector } from "../../../reducers/accounts";
 import ValidatorHead from "../ValidatorHead";
@@ -71,13 +71,7 @@ export default function SelectValidator({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
-      <TrackScreen
-        category="ActivateFlow"
-        name="SelectValidator"
-        flow="stake"
-        action="activate"
-        currency="celo"
-      />
+      
       <View style={styles.header}>
         <ValidatorHead />
       </View>

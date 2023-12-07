@@ -20,7 +20,7 @@ import { accountsSelector } from "../../reducers/accounts";
 import logger from "../../logger";
 import { Theme, withTheme } from "../../colors";
 import { NavigatorName, ScreenName } from "../../const";
-import { TrackScreen } from "../../analytics";
+
 import Button from "../../components/Button";
 import PreventNativeBack from "../../components/PreventNativeBack";
 import SelectableAccountsList from "../../components/SelectableAccountsList";
@@ -324,7 +324,7 @@ function AddAccountsAccounts({
         },
       ]}
     >
-      <TrackScreen category="AddAccounts" name="Accounts" currencyName={currency.name} />
+      
       <PreventNativeBack />
       <NavigationScrollView style={styles.inner} contentContainerStyle={styles.innerContent}>
         {sections.map(({ id, selectable, defaultSelected, data }, i) => {

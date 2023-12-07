@@ -21,7 +21,7 @@ import { getAccountCurrency } from "@ledgerhq/live-common/account/helpers";
 import { ScreenName } from "../../const";
 import { urls } from "@utils/urls";
 import { accountScreenSelector } from "../../reducers/accounts";
-import { TrackScreen } from "../../analytics";
+
 import LText from "../../components/LText";
 import CurrencyUnitValue from "../../components/CurrencyUnitValue";
 import Touchable from "../../components/Touchable";
@@ -130,7 +130,7 @@ export default function SendAmountCoin({ navigation, route }: Props) {
 
   return (
     <>
-      <TrackScreen category="SendFunds" name="Amount" currencyName={currency.name} />
+      
       <SafeAreaView
         style={[
           styles.root,

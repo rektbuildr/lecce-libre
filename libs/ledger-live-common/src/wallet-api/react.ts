@@ -26,7 +26,6 @@ import { isWalletAPISupportedCurrency } from "./helpers";
 import { WalletAPICurrency, AppManifest, WalletAPIAccount, WalletAPICustomHandlers } from "./types";
 import { getMainAccount, getParentAccount } from "../account";
 import { listCurrencies, findCryptoCurrencyById, findTokenById } from "../currencies";
-import { TrackingAPI } from "./tracking";
 import {
   bitcoinFamillyAccountGetXPubLogic,
   broadcastTransactionLogic,
@@ -202,7 +201,7 @@ export function useConfig({ appId, userId, tracking, wallet }: ServerConfig): Se
   );
 }
 
-function useDeviceTransport({ manifest, tracking }) {
+function useDeviceTransport({ manifest }) {
   const ref = useRef<Subject<BidirectionalEvent> | undefined>();
 
   const subscribe = useCallback((deviceId: string) => {
@@ -232,17 +231,17 @@ function useDeviceTransport({ manifest, tracking }) {
         subject$.pipe(first(e => e.type === "device-response" || e.type === "error")).subscribe({
           next: e => {
             if (e.type === "device-response") {
-              tracking.deviceExchangeSuccess(manifest);
+              
               resolve(e.data);
               return;
             }
             if (e.type === "error") {
-              tracking.deviceExchangeFail(manifest);
+              
               reject(e.error || new Error("deviceExchange: unknown error"));
             }
           },
           error: error => {
-            tracking.deviceExchangeFail(manifest);
+            
             reject(error);
           },
         });
@@ -250,7 +249,7 @@ function useDeviceTransport({ manifest, tracking }) {
         subject$.next({ type: "input-frame", apduHex });
       });
     },
-    [manifest, tracking],
+    [manifest, null],
   );
 
   useEffect(() => {
@@ -267,7 +266,6 @@ const allCurrenciesAndTokens = listCurrencies(true);
 export type useWalletAPIServerOptions = {
   manifest: AppManifest;
   accounts: AccountLike[];
-  tracking: TrackingAPI;
   config: ServerConfig;
   webviewHook: {
     reload: () => void;
@@ -280,7 +278,6 @@ export type useWalletAPIServerOptions = {
 export function useWalletAPIServer({
   manifest,
   accounts,
-  tracking,
   config,
   webviewHook,
   uiHook: {
@@ -321,14 +318,10 @@ export function useWalletAPIServer({
   });
 
   useEffect(() => {
-    tracking.load(manifest);
-  }, [tracking, manifest]);
-
-  useEffect(() => {
     if (!uiAccountRequest) return;
 
     server.setHandler("account.request", async ({ accounts$, currencies$ }) => {
-      tracking.requestAccountRequested(manifest);
+      
       const currencies = await firstValueFrom(currencies$);
 
       return new Promise((resolve, reject) => {
@@ -344,7 +337,7 @@ export function useWalletAPIServer({
           }
 
           if (!currencyList[0]) {
-            tracking.requestAccountFail(manifest);
+            
             // @TODO replace with correct error
             reject(new ServerError(createCurrencyNotFound(currencyIds[0])));
           }
@@ -356,24 +349,24 @@ export function useWalletAPIServer({
           accounts$,
           currencies: currencyList,
           onSuccess: (account: AccountLike, parentAccount: Account | undefined) => {
-            tracking.requestAccountSuccess(manifest);
+            
             resolve(accountToWalletAPIAccount(account, parentAccount));
           },
           onCancel: () => {
-            tracking.requestAccountFail(manifest);
+            
             reject(new Error("Canceled by user"));
           },
         });
       });
     });
-  }, [manifest, server, tracking, uiAccountRequest]);
+  }, [manifest, server, null, uiAccountRequest]);
 
   useEffect(() => {
     if (!uiAccountReceive) return;
 
     server.setHandler("account.receive", ({ account }) =>
       receiveOnAccountLogic(
-        { manifest, accounts, tracking },
+        { manifest, accounts },
         account.id,
         (account, parentAccount, accountAddress) =>
           new Promise((resolve, reject) =>
@@ -382,29 +375,29 @@ export function useWalletAPIServer({
               parentAccount,
               accountAddress,
               onSuccess: accountAddress => {
-                tracking.receiveSuccess(manifest);
+                
                 resolve(accountAddress);
               },
               onCancel: () => {
-                tracking.receiveFail(manifest);
+                
                 reject(new Error("User cancelled"));
               },
               onError: error => {
-                tracking.receiveFail(manifest);
+                
                 reject(error);
               },
             }),
           ),
       ),
     );
-  }, [accounts, manifest, server, tracking, uiAccountReceive]);
+  }, [accounts, manifest, server, null, uiAccountReceive]);
 
   useEffect(() => {
     if (!uiMessageSign) return;
 
     server.setHandler("message.sign", ({ account, message }) =>
       signMessageLogic(
-        { manifest, accounts, tracking },
+        { manifest, accounts },
         account.id,
         message.toString("hex"),
         (account: AccountLike, message: AnyMessage) =>
@@ -413,22 +406,22 @@ export function useWalletAPIServer({
               account,
               message,
               onSuccess: signature => {
-                tracking.signMessageSuccess(manifest);
+                
                 resolve(Buffer.from(signature.replace("0x", ""), "hex"));
               },
               onCancel: () => {
-                tracking.signMessageFail(manifest);
+                
                 reject(new UserRefusedOnDevice());
               },
               onError: error => {
-                tracking.signMessageFail(manifest);
+                
                 reject(error);
               },
             });
           }),
       ),
     );
-  }, [accounts, manifest, server, tracking, uiMessageSign]);
+  }, [accounts, manifest, server, null, uiMessageSign]);
 
   useEffect(() => {
     if (!uiStorageGet) return;
@@ -447,7 +440,7 @@ export function useWalletAPIServer({
 
     server.setHandler("transaction.sign", async ({ account, transaction, options }) => {
       const signedOperation = await signTransactionLogic(
-        { manifest, accounts, tracking },
+        { manifest, accounts },
         account.id,
         transaction,
         (account, parentAccount, signFlowInfos) =>
@@ -458,11 +451,11 @@ export function useWalletAPIServer({
               signFlowInfos,
               options,
               onSuccess: signedOperation => {
-                tracking.signTransactionSuccess(manifest);
+                
                 resolve(signedOperation);
               },
               onError: error => {
-                tracking.signTransactionFail(manifest);
+                
                 reject(error);
               },
             }),
@@ -471,14 +464,14 @@ export function useWalletAPIServer({
 
       return Buffer.from(signedOperation.signature);
     });
-  }, [accounts, manifest, server, tracking, uiTxSign]);
+  }, [accounts, manifest, server, null, uiTxSign]);
 
   useEffect(() => {
     if (!uiTxSign) return;
 
     server.setHandler("transaction.signAndBroadcast", async ({ account, transaction, options }) => {
       const signedTransaction = await signTransactionLogic(
-        { manifest, accounts, tracking },
+        { manifest, accounts },
         account.id,
         transaction,
         (account, parentAccount, signFlowInfos) =>
@@ -489,11 +482,11 @@ export function useWalletAPIServer({
               signFlowInfos,
               options,
               onSuccess: signedOperation => {
-                tracking.signTransactionSuccess(manifest);
+                
                 resolve(signedOperation);
               },
               onError: error => {
-                tracking.signTransactionFail(manifest);
+                
                 reject(error);
               },
             }),
@@ -501,7 +494,7 @@ export function useWalletAPIServer({
       );
 
       return broadcastTransactionLogic(
-        { manifest, accounts, tracking },
+        { manifest, accounts },
         account.id,
         signedTransaction,
         async (account, parentAccount, signedOperation) => {
@@ -516,9 +509,9 @@ export function useWalletAPIServer({
                 account: mainAccount,
                 signedOperation,
               });
-              tracking.broadcastSuccess(manifest);
+              
             } catch (error) {
-              tracking.broadcastFail(manifest);
+              
               throw error;
             }
           }
@@ -529,25 +522,25 @@ export function useWalletAPIServer({
         },
       );
     });
-  }, [accounts, manifest, server, tracking, uiTxBroadcast, uiTxSign]);
+  }, [accounts, manifest, server, null, uiTxBroadcast, uiTxSign]);
 
   const onLoad = useCallback(() => {
-    tracking.loadSuccess(manifest);
+    
     setWidgetLoaded(true);
-  }, [manifest, tracking]);
+  }, [manifest, null]);
 
   const onReload = useCallback(() => {
-    tracking.reload(manifest);
+    
     setWidgetLoaded(false);
 
     webviewHook.reload();
-  }, [manifest, tracking, webviewHook]);
+  }, [manifest, null, webviewHook]);
 
   const onLoadError = useCallback(() => {
-    tracking.loadFail(manifest);
-  }, [manifest, tracking]);
+    
+  }, [manifest, null]);
 
-  const device = useDeviceTransport({ manifest, tracking });
+  const device = useDeviceTransport({ manifest });
 
   useEffect(() => {
     if (!uiDeviceTransport) return;
@@ -560,12 +553,12 @@ export function useWalletAPIServer({
             return reject(new Error("Device already opened"));
           }
 
-          tracking.deviceTransportRequested(manifest);
+          
 
           return uiDeviceTransport({
             appName,
             onSuccess: ({ device: deviceParam, appAndVersion }) => {
-              tracking.deviceTransportSuccess(manifest);
+              
 
               if (!deviceParam) {
                 reject(new Error("No device"));
@@ -588,13 +581,12 @@ export function useWalletAPIServer({
               resolve("1");
             },
             onCancel: () => {
-              tracking.deviceTransportFail(manifest);
               reject(new Error("User cancelled"));
             },
           });
         }),
     );
-  }, [device, manifest, server, tracking, uiDeviceTransport]);
+  }, [device, manifest, server, null, uiDeviceTransport]);
 
   useEffect(() => {
     if (!uiDeviceSelect) return;
@@ -607,12 +599,10 @@ export function useWalletAPIServer({
             return reject(new Error("Device already opened"));
           }
 
-          tracking.deviceSelectRequested(manifest);
 
           return uiDeviceSelect({
             appName,
             onSuccess: ({ device: deviceParam, appAndVersion }) => {
-              tracking.deviceSelectSuccess(manifest);
 
               if (!deviceParam) {
                 reject(new Error("No device"));
@@ -633,13 +623,13 @@ export function useWalletAPIServer({
               resolve(deviceParam.deviceId);
             },
             onCancel: () => {
-              tracking.deviceSelectFail(manifest);
+              
               reject(new Error("User cancelled"));
             },
           });
         }),
     );
-  }, [device.ref, manifest, server, tracking, uiDeviceSelect]);
+  }, [device.ref, manifest, server, null, uiDeviceSelect]);
 
   useEffect(() => {
     server.setHandler("device.open", params => {
@@ -647,12 +637,12 @@ export function useWalletAPIServer({
         return Promise.reject(new Error("Device already opened"));
       }
 
-      tracking.deviceOpenRequested(manifest);
+      
 
       device.subscribe(params.deviceId);
       return "1";
     });
-  }, [device, manifest, server, tracking]);
+  }, [device, manifest, server, null]);
 
   useEffect(() => {
     server.setHandler("device.exchange", params => {
@@ -660,11 +650,11 @@ export function useWalletAPIServer({
         return Promise.reject(new Error("No device opened"));
       }
 
-      tracking.deviceExchangeRequested(manifest);
+      
 
       return device.exchange(params);
     });
-  }, [device, manifest, server, tracking]);
+  }, [device, manifest, server, null]);
 
   useEffect(() => {
     server.setHandler("device.close", ({ transportId }) => {
@@ -672,21 +662,21 @@ export function useWalletAPIServer({
         return Promise.reject(new Error("No device opened"));
       }
 
-      tracking.deviceCloseRequested(manifest);
+      
 
       device.close();
 
-      tracking.deviceCloseSuccess(manifest);
+      
 
       return Promise.resolve(transportId);
     });
-  }, [device, manifest, server, tracking]);
+  }, [device, manifest, server, null]);
 
   useEffect(() => {
     server.setHandler("bitcoin.getXPub", ({ accountId }) => {
-      return bitcoinFamillyAccountGetXPubLogic({ manifest, accounts, tracking }, accountId);
+      return bitcoinFamillyAccountGetXPubLogic({ manifest, accounts }, accountId);
     });
-  }, [accounts, manifest, server, tracking]);
+  }, [accounts, manifest, server, null]);
 
   useEffect(() => {
     if (!uiExchangeStart) {
@@ -695,25 +685,25 @@ export function useWalletAPIServer({
 
     server.setHandler("exchange.start", ({ exchangeType }) => {
       return startExchangeLogic(
-        { manifest, accounts, tracking },
+        { manifest, accounts },
         exchangeType,
         (exchangeType: "SWAP" | "FUND" | "SELL") =>
           new Promise((resolve, reject) =>
             uiExchangeStart({
               exchangeType,
               onSuccess: (nonce: string) => {
-                tracking.startExchangeSuccess(manifest);
+                
                 resolve(nonce);
               },
               onCancel: error => {
-                tracking.completeExchangeFail(manifest);
+                
                 reject(error);
               },
             }),
           ),
       );
     });
-  }, [uiExchangeStart, accounts, manifest, server, tracking]);
+  }, [uiExchangeStart, accounts, manifest, server, null]);
 
   useEffect(() => {
     if (!uiExchangeComplete) {
@@ -737,25 +727,25 @@ export function useWalletAPIServer({
       };
 
       return completeExchangeLogic(
-        { manifest, accounts, tracking },
+        { manifest, accounts },
         request,
         request =>
           new Promise((resolve, reject) =>
             uiExchangeComplete({
               exchangeParams: request,
               onSuccess: (hash: string) => {
-                tracking.completeExchangeSuccess(manifest);
+                
                 resolve(hash);
               },
               onCancel: error => {
-                tracking.completeExchangeFail(manifest);
+                
                 reject(error);
               },
             }),
           ),
       );
     });
-  }, [uiExchangeComplete, accounts, manifest, server, tracking]);
+  }, [uiExchangeComplete, accounts, manifest, server, null]);
 
   return {
     widgetLoaded,

@@ -28,7 +28,7 @@ import SectionHeader from "../../components/SectionHeader";
 import LoadingFooter from "../../components/LoadingFooter";
 import Button from "../../components/Button";
 import { ScreenName } from "../../const";
-import { TrackScreen } from "../../analytics";
+
 import { withDiscreetMode } from "../../context/DiscreetModeContext";
 import type { BaseNavigatorStackParamList } from "../../components/RootNavigator/types/BaseNavigator";
 import type { StackNavigatorProps } from "../../components/RootNavigator/types/helpers";
@@ -162,7 +162,7 @@ export function Operations({ navigation, route }: Props) {
         }
         ListEmptyComponent={ListEmptyComponent}
       />
-      <TrackScreen category="Analytics" name="Operations" />
+      
     </Flex>
   );
 }

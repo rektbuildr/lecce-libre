@@ -10,7 +10,7 @@ import TransactionsPendingConfirmationWarning from "~/renderer/components/Transa
 import { useGetSwapTrackingProperties } from "~/renderer/screens/exchange/Swap2/utils/index";
 import { PlaceholderLine } from "./Placeholder";
 import Button from "~/renderer/components/ButtonV3";
-import { setTrackingSource } from "~/renderer/analytics/TrackPage";
+
 import { useHistory } from "react-router-dom";
 import { useFeature } from "@ledgerhq/live-config/featureFlags/index";
 
@@ -117,7 +117,7 @@ export default function BalanceInfos({ totalBalance, valueChange, isAvailable, u
   // Remove "SWAP" and "BUY" redundant buttons when portafolio exchange banner is available
   const portfolioExchangeBanner = useFeature("portfolioExchangeBanner");
   const onBuy = useCallback(() => {
-    setTrackingSource("Page Portfolio");
+    
     history.push({
       pathname: "/exchange",
       state: {
@@ -126,7 +126,7 @@ export default function BalanceInfos({ totalBalance, valueChange, isAvailable, u
     });
   }, [history]);
   const onSwap = useCallback(() => {
-    setTrackingSource("Page Portfolio");
+    
     history.push({
       pathname: "/swap",
     });

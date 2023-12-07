@@ -7,7 +7,7 @@ import { Account, TokenAccount } from "@ledgerhq/types-live";
 import AccountRow from "../Accounts/AccountRow";
 import { withDiscreetMode } from "../../context/DiscreetModeContext";
 import { NavigatorName, ScreenName } from "../../const";
-import { track } from "../../analytics";
+
 import { AccountsNavigatorParamList } from "../../components/RootNavigator/types/AccountsNavigator";
 import { BaseComposite, StackNavigatorProps } from "../../components/RootNavigator/types/helpers";
 
@@ -44,9 +44,7 @@ const AccountsSection = ({ accounts, currencyId, currencyTicker }: ListProps) =>
   );
 
   const goToAccountsScreen = useCallback(() => {
-    track("button_clicked", {
-      button: "See All",
-    });
+    
     navigation.navigate(NavigatorName.Accounts, {
       screen: ScreenName.Accounts,
       params: {

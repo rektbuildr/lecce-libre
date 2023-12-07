@@ -2,7 +2,6 @@ import React, { useCallback } from "react";
 import { Flex, Icons, Tag, Text } from "@ledgerhq/react-ui";
 import { useTranslation } from "react-i18next";
 import { PostOnboardingActionState, PostOnboardingAction } from "@ledgerhq/types-live";
-import { track } from "~/renderer/analytics/segment";
 import styled from "styled-components";
 import { useDispatch } from "react-redux";
 import { openModal } from "~/renderer/actions/modals";
@@ -34,7 +33,7 @@ const PostOnboardingActionRow: React.FC<Props> = props => {
     if ("startAction" in props) {
       props.startAction({ openModalCallback, navigationCallback });
       buttonLabelForAnalyticsEvent &&
-        track("button_clicked", { button: buttonLabelForAnalyticsEvent, flow: "post-onboarding" });
+        
     }
   }, [props, dispatch, history, buttonLabelForAnalyticsEvent]);
 

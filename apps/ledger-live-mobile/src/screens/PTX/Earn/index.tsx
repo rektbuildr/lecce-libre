@@ -7,7 +7,7 @@ import {
 import TabBarSafeAreaView from "../../../components/TabBar/TabBarSafeAreaView";
 import { useTheme } from "styled-components/native";
 import { Flex, InfiniteLoader } from "@ledgerhq/native-ui";
-import TrackScreen from "../../../analytics/TrackScreen";
+
 import GenericErrorView from "../../../components/GenericErrorView";
 import { WebPTXPlayer } from "../../../components/WebPTXPlayer";
 import { EarnLiveAppNavigatorParamList } from "../../../components/RootNavigator/types/EarnLiveAppNavigator";
@@ -51,7 +51,7 @@ function Earn({ route }: Props) {
 
   return manifest ? (
     <TabBarSafeAreaView>
-      <TrackScreen category="EarnDashboard" name="Earn" />
+      
       <WebPTXPlayer
         manifest={manifest}
         disableHeader

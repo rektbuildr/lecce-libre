@@ -1,5 +1,5 @@
 import React from "react";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Modal from "~/renderer/components/Modal";
 import ModalBody from "~/renderer/components/Modal/ModalBody";
@@ -27,7 +27,7 @@ const ErrorModal = ({ isOpened, onClose, error, onRetry, withExportLogs, ...prop
           </Box>
         )}
       />
-      <TrackPage category="Modal" name={error && error.name} />
+      
     </Modal>
   );
 };

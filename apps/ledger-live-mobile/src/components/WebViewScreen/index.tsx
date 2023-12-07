@@ -6,7 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import styled from "styled-components/native";
 import { Flex } from "@ledgerhq/native-ui";
 
-import { Track } from "../../analytics";
+
 import extraStatusBarPadding from "../../logic/extraStatusBarPadding";
 import WebViewNoConnectionError from "./NoConnectionError";
 import WebViewLoading from "./Loading";
@@ -84,7 +84,7 @@ const WebViewScreen = ({
   return (
     <SafeContainer>
       {renderHeader && renderHeader()}
-      {trackEventName && <Track onMount event={trackEventName} />}
+      {trackEventName && }
 
       <Flex flex={1}>
         {hasNetwork ? (

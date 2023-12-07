@@ -8,7 +8,7 @@ import { isTokenCurrency } from "@ledgerhq/live-common/currencies/index";
 import { Flex } from "@ledgerhq/native-ui";
 import { prepareCurrency } from "../../bridge/cache";
 import { ScreenName } from "../../const";
-import { TrackScreen } from "../../analytics";
+
 import SelectDevice from "../../components/SelectDevice";
 import SelectDevice2, { SetHeaderOptionsRequest } from "../../components/SelectDevice2";
 import NavigationScrollView from "../../components/NavigationScrollView";
@@ -117,7 +117,7 @@ export default function AddAccountsSelectDevice({ navigation, route }: Props) {
         </Flex>
       ) : (
         <NavigationScrollView style={styles.scroll} contentContainerStyle={styles.scrollContainer}>
-          <TrackScreen category="AddAccounts" name="SelectDevice" currencyName={currency?.name} />
+          
           <SelectDevice onSelect={onSetDevice} />
         </NavigationScrollView>
       )}

@@ -11,7 +11,7 @@ import Alert from "../../components/Alert";
 import LText from "../../components/LText";
 import { urls } from "@utils/urls";
 import { ScreenName, NavigatorName } from "../../const";
-import { TrackScreen } from "../../analytics";
+
 import { AddAccountsNavigatorParamList } from "../../components/RootNavigator/types/AddAccountsNavigator";
 import {
   StackNavigatorNavigation,
@@ -67,11 +67,7 @@ export default function AddAccountsTokenCurrencyDisclaimer({ navigation, route }
       ]}
     >
       <View style={styles.container}>
-        <TrackScreen
-          category="AddAccounts"
-          name="TokenCurrencyDisclaimer"
-          currencyName={tokenName}
-        />
+        
         <View style={styles.wrapper}>
           <CurrencyIcon size={56} radius={16} currency={token} />
         </View>

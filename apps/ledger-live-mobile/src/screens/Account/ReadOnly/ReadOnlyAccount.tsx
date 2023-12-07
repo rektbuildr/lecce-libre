@@ -13,7 +13,7 @@ import GradientContainer from "../../../components/GradientContainer";
 import BuyDeviceBanner, { IMAGE_PROPS_BIG_NANO } from "../../../components/BuyDeviceBanner";
 import SetupDeviceBanner from "../../../components/SetupDeviceBanner";
 import CurrencyUnitValue from "../../../components/CurrencyUnitValue";
-import { TrackScreen } from "../../../analytics";
+
 
 import { withDiscreetMode } from "../../../context/DiscreetModeContext";
 import { counterValueCurrencySelector, hasOrderedNanoSelector } from "../../../reducers/settings";
@@ -113,7 +113,7 @@ function ReadOnlyAccount({ route }: Props) {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom", "left", "right"]}>
-      <TrackScreen category="Account" currency={currency.name} operationsSize={0} source={source} />
+      
       <FlatList
         data={data}
         renderItem={renderItem}

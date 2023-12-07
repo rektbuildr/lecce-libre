@@ -6,7 +6,6 @@ import { useSelector } from "react-redux";
 import { languageSelector } from "~/renderer/reducers/settings";
 import { DEFAULT_LANGUAGE, Languages } from "~/config/languages";
 import { useAvailableLanguagesForDevice } from "@ledgerhq/live-common/manager/hooks";
-import { track } from "~/renderer/analytics/segment";
 import ChangeDeviceLanguageAction from "~/renderer/components/ChangeDeviceLanguageAction";
 import { renderLoading } from "~/renderer/components/DeviceAction/rendering";
 import ChangeDeviceLanguagePrompt from "~/renderer/components/ChangeDeviceLanguagePrompt";
@@ -71,14 +70,14 @@ const Language = ({
         confirmedPrompt &&
         setIsLanguagePromptOpen
       ) {
-        track("Page Manager FwUpdatePromptLanguageToMatchLive");
+        
         setIsLanguagePromptOpen(false);
         installLanguage(potentialDeviceLanguage.deviceSupport.label);
       } else if (
         oldDeviceInfo?.languageId !== undefined &&
         oldDeviceInfo?.languageId !== languageIds.english
       ) {
-        track("Page Manager FwUpdateReinstallLanguage");
+        
         installLanguage(idsToLanguage[oldDeviceInfo.languageId]);
       } else {
         onDone();
@@ -119,9 +118,7 @@ const Language = ({
           language={languageToInstall}
           onError={setError}
           onSuccess={() => {
-            track("Page Manager FwUpdateLanguageInstalled", {
-              selectedLanguage: languageToInstall,
-            });
+            
             setInstallingLanguage(false);
             onDone();
           }}

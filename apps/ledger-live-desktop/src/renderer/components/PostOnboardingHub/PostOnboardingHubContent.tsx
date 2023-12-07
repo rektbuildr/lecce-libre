@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 import { useAllPostOnboardingActionsCompleted } from "@ledgerhq/live-common/postOnboarding/hooks/index";
 import PostOnboardingHub from ".";
 import { withV3StyleProvider } from "~/renderer/styles/StyleProviderV3";
-import { track } from "~/renderer/analytics/segment";
 import ButtonV3 from "~/renderer/components/ButtonV3";
 
 const PostOnboardingHubContent = () => {
@@ -14,12 +13,12 @@ const PostOnboardingHubContent = () => {
   const allDone = useAllPostOnboardingActionsCompleted();
 
   const handleSkipButton = useCallback(() => {
-    track("button_clicked", { button: "I'll do this later", flow: "post-onboarding" });
+    
     history.push("/");
   }, [history]);
 
   const handleOnboardingOver = useCallback(() => {
-    track("button_clicked", { button: "Explore wallet", flow: "post-onboarding" });
+    
     history.push("/");
   }, [history]);
 

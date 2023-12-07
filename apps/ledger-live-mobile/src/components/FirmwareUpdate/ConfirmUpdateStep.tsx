@@ -7,7 +7,7 @@ import { DeviceInfo, FirmwareUpdateContext } from "@ledgerhq/types-live";
 import { useTheme } from "styled-components/native";
 import { getDeviceAnimation } from "../../helpers/getDeviceAnimation";
 import Animation from "../Animation";
-import Track from "../../analytics/Track";
+
 
 type Props = {
   device: Device;
@@ -21,7 +21,7 @@ const ConfirmUpdateStep = ({ device, deviceInfo, latestFirmware }: Props) => {
 
   return (
     <Flex alignItems="center">
-      <Track event="FirmwareUpdateConfirmOnDevice" onMount />
+      
       <Animation
         source={getDeviceAnimation({
           device,

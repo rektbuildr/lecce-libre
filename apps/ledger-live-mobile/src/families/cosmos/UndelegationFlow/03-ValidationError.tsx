@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { getAccountCurrency } from "@ledgerhq/live-common/account/index";
 import { useTheme } from "@react-navigation/native";
 import { accountScreenSelector } from "../../../reducers/accounts";
-import { TrackScreen } from "../../../analytics";
+
 import ValidateError from "../../../components/ValidateError";
 import type {
   BaseComposite,
@@ -40,13 +40,7 @@ export default function ValidationError({ navigation, route }: Props) {
         },
       ]}
     >
-      <TrackScreen
-        category="CosmosUndelegation"
-        name="ValidationError"
-        flow="stake"
-        action="undelegation"
-        currency={ticker}
-      />
+      
       <ValidateError error={error} onRetry={retry} onClose={onClose} />
     </SafeAreaView>
   );

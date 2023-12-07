@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { denominate } from "@ledgerhq/live-common/families/elrond/helpers/denominate";
 import { SyncOneAccountOnMount } from "@ledgerhq/live-common/bridge/react/index";
 import { getAccountUnit } from "@ledgerhq/live-common/account/index";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import RetryButton from "~/renderer/components/RetryButton";
@@ -32,13 +32,7 @@ const StepConfirmation = (props: StepProps) => {
     })} ${getAccountUnit(account).code || "EGLD"}`;
     return (
       <Container>
-        <TrackPage
-          category="Withdraw Elrond Flow"
-          name="Step Confirmed"
-          flow="stake"
-          action="withdraw"
-          currency="egld"
-        />
+        
         <SyncOneAccountOnMount priority={10} accountId={optimisticOperation.accountId} />
         <SuccessDisplay
           title={<Trans i18nKey="elrond.withdraw.flow.steps.confirmation.success.title" />}
@@ -61,13 +55,7 @@ const StepConfirmation = (props: StepProps) => {
   if (error) {
     return (
       <Container shouldSpace={signed}>
-        <TrackPage
-          category="Withdraw Elrond Flow"
-          name="Step Confirmation Error"
-          flow="stake"
-          action="withdraw"
-          currency="egld"
-        />
+        
         {signed ? (
           <BroadcastErrorDisclaimer
             title={<Trans i18nKey="elrond.withdraw.flow.steps.confirmation.broadcastError" />}

@@ -20,7 +20,7 @@ import logger from "~/renderer/logger";
 import { updateAccountWithUpdater } from "~/renderer/actions/accounts";
 import { OpenModal, openModal } from "~/renderer/actions/modals";
 
-import Track from "~/renderer/analytics/Track";
+
 import Stepper from "~/renderer/components/Stepper";
 import GenericStepConnectDevice from "~/renderer/modals/Send/steps/GenericStepConnectDevice";
 import { getCurrentDevice } from "~/renderer/reducers/devices";
@@ -172,7 +172,7 @@ const Body = ({ t, stepId, device, onClose, openModal, onChangeStepId, params }:
   return (
     <Stepper {...stepperProps}>
       <SyncSkipUnderPriority priority={100} />
-      <Track onUnmount event="CloseModalDelegation" />
+      
     </Stepper>
   );
 };

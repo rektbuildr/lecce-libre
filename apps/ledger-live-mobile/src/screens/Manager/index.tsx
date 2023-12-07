@@ -12,8 +12,8 @@ import { ScreenName } from "../../const";
 import SelectDevice2, { SetHeaderOptionsRequest } from "../../components/SelectDevice2";
 import SelectDevice from "../../components/SelectDevice";
 import RemoveDeviceMenu from "../../components/SelectDevice2/RemoveDeviceMenu";
-import TrackScreen from "../../analytics/TrackScreen";
-import { track } from "../../analytics";
+
+
 import NavigationScrollView from "../../components/NavigationScrollView";
 import DeviceActionModal from "../../components/DeviceActionModal";
 import {
@@ -56,9 +56,7 @@ const ChooseDevice: React.FC<ChooseDeviceProps> = ({ isFocused }) => {
 
   const onSelectDevice = (device?: Device) => {
     if (device)
-      track("ManagerDeviceEntered", {
-        modelId: device.modelId,
-      });
+      
     setDevice(device);
   };
 
@@ -129,7 +127,7 @@ const ChooseDevice: React.FC<ChooseDeviceProps> = ({ isFocused }) => {
 
   return (
     <TabBarSafeAreaView>
-      <TrackScreen category="Manager" name="ChooseDevice" />
+      
       {!isHeaderOverridden ? (
         <Flex px={16} pb={8}>
           <Text pt={3} fontWeight="semiBold" variant="h4" testID="manager-title">

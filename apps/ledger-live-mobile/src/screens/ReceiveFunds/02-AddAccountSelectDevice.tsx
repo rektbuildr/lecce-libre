@@ -7,7 +7,7 @@ import { useFeature } from "@ledgerhq/live-config/featureFlags/index";
 import { useIsFocused, useTheme } from "@react-navigation/native";
 import { prepareCurrency } from "../../bridge/cache";
 import { ScreenName } from "../../const";
-import { TrackScreen, track } from "../../analytics";
+
 import SelectDevice from "../../components/SelectDevice";
 import SelectDevice2, { SetHeaderOptionsRequest } from "../../components/SelectDevice2";
 import NavigationScrollView from "../../components/NavigationScrollView";
@@ -80,10 +80,7 @@ export default function AddAccountsSelectDevice({
   const analyticsPropertyFlow = route.params?.analyticsPropertyFlow;
 
   const onHeaderCloseButton = useCallback(() => {
-    track("button_clicked", {
-      button: "Close 'x'",
-      page: route.name,
-    });
+    
   }, [route]);
 
   const requestToSetHeaderOptions = useCallback(
@@ -124,7 +121,7 @@ export default function AddAccountsSelectDevice({
         </Flex>
       ) : (
         <NavigationScrollView style={styles.scroll} contentContainerStyle={styles.scrollContainer}>
-          <TrackScreen category="Deposit" name="SelectDevice" asset={currency.name} />
+          
           <SelectDevice onSelect={onSetDevice} />
         </NavigationScrollView>
       )}

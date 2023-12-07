@@ -7,7 +7,6 @@ import { useDispatch } from "react-redux";
 import { useHistory } from "react-router";
 import styled from "styled-components";
 import { closeModal } from "~/renderer/actions/modals";
-import { track } from "~/renderer/analytics/segment";
 import Box from "~/renderer/components/Box";
 import { focusedShadowStyle } from "~/renderer/components/Box/Tabbable";
 import ChevronRight from "~/renderer/icons/ChevronRight";
@@ -77,10 +76,7 @@ export const DepositFromCoinbaseButton = ({ location, source }: Props) => {
     if (path) {
       history.push(path);
       dispatch(closeModal("MODAL_RECEIVE"));
-      track("button_clicked", {
-        button: "deposit from coinbase",
-        page: source,
-      });
+      
     }
   };
 

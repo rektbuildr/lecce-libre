@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { StyleSheet, SafeAreaView } from "react-native";
 import { useTheme } from "@react-navigation/native";
-import { TrackScreen } from "../../../analytics";
+
 import ValidateError from "../../../components/ValidateError";
 import type {
   BaseComposite,
@@ -32,13 +32,7 @@ export default function ValidationError({ navigation, route }: Props) {
         },
       ]}
     >
-      <TrackScreen
-        category="NominateFlow"
-        name="ValidationError"
-        flow="stake"
-        action="nomination"
-        currency="dot"
-      />
+      
       <ValidateError error={route.params.error} onRetry={retry} onClose={onClose} />
     </SafeAreaView>
   );

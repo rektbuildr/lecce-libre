@@ -3,7 +3,7 @@ import React, { useCallback, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
-import { TrackScreen } from "../../analytics";
+
 import Button from "../../components/Button";
 import CustomImageBottomModal from "../../components/CustomImage/CustomImageBottomModal";
 import GenericErrorView from "../../components/GenericErrorView";
@@ -64,7 +64,7 @@ const ErrorScreen = ({ route, navigation }: NavigationProps) => {
 
   return (
     <Container>
-      <TrackScreen category={screenName} />
+      
       <CustomImageBottomModal isOpened={isModalOpened} onClose={closeModal} device={device} />
       <Flex flex={1} justifyContent="center" alignSelf="center" p={5}>
         <Flex flex={1} justifyContent="center">

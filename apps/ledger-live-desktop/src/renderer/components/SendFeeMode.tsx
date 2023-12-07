@@ -6,7 +6,6 @@ import Text from "~/renderer/components/Text";
 import Tabbable from "~/renderer/components/Box/Tabbable";
 import { urls } from "~/config/urls";
 import { openURL } from "~/renderer/linking";
-import { track } from "~/renderer/analytics/segment";
 import LabelWithExternalIcon from "~/renderer/components/LabelWithExternalIcon";
 
 type Props = {
@@ -40,7 +39,7 @@ const SendFeeMode = ({ isAdvanceMode, setAdvanceMode }: Props) => {
       <LabelWithExternalIcon
         onClick={() => {
           openURL(urls.feesMoreInfo);
-          track("Send Flow Fees Help Requested");
+          
         }}
         label={t("send.steps.amount.fees")}
       />

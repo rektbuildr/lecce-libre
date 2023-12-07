@@ -8,7 +8,6 @@ import { radii } from "~/renderer/styles/theme";
 import QRCodeCameraPickerCanvas from "~/renderer/components/QRCodeCameraPickerCanvas";
 import Box from "~/renderer/components/Box";
 import Input from "~/renderer/components/Input";
-import { track } from "~/renderer/analytics/segment";
 import IconQrCode from "~/renderer/icons/QrCode";
 import BigNumber from "bignumber.js";
 
@@ -77,7 +76,6 @@ class RecipientAddress extends PureComponent<Props, State> {
     this.setState(prev => ({
       qrReaderOpened: !prev.qrReaderOpened,
     }));
-    !qrReaderOpened ? track("Send Flow QR Code Opened") : track("Send Flow QR Code Closed");
   };
 
   handleOnPick = (code: string) => {

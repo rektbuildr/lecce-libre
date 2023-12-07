@@ -13,7 +13,6 @@ import { renderError } from "./DeviceAction/rendering";
 import CustomImageBottomModal from "./CustomImage/CustomImageBottomModal";
 import Button from "./wrappedUi/Button";
 import Link from "./wrappedUi/Link";
-import { screen, TrackScreen } from "../analytics";
 import { useStaxLoadImageDeviceAction } from "../hooks/deviceActions";
 import { SettingsSetLastSeenCustomImagePayload } from "../actions/types";
 
@@ -98,15 +97,8 @@ const CustomImageDeviceAction: React.FC<Props & { remountMe: () => void }> = ({
     else remountMe();
   }, [isRefusedOnStaxError, remountMe, openModal]);
 
-  const trackScreenName = isError
-    ? isRefusedOnStaxError
-      ? analyticsScreenNameRefusedOnStax
-      : "Error: " + error.name
-    : undefined;
-
   return (
     <ImageSourceContext.Provider value={{ source }}>
-      {trackScreenName ? <TrackScreen category={trackScreenName} /> : null}
       <Flex flexDirection="column" flex={1} alignSelf="stretch">
         {isError ? (
           <Flex flex={1}>

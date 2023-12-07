@@ -5,7 +5,7 @@ import { FlatList, StyleSheet, View, SafeAreaView, ListRenderItem } from "react-
 import { useSelector } from "react-redux";
 import { CeloValidatorGroup } from "@ledgerhq/live-common/families/celo/types";
 import { useValidatorGroups } from "@ledgerhq/live-common/families/celo/react";
-import { TrackScreen } from "../../../analytics";
+
 import { ScreenName } from "../../../const";
 import { accountScreenSelector } from "../../../reducers/accounts";
 import ValidatorHead from "../ValidatorHead";
@@ -46,13 +46,7 @@ export default function SelectValidator({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
-      <TrackScreen
-        category="VoteFlow"
-        name="SelectValidator"
-        flow="stake"
-        action="vote"
-        currency="celo"
-      />
+      
       <SelectValidatorSearchBox searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <View style={styles.header}>
         <ValidatorHead />

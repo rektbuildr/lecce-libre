@@ -7,7 +7,7 @@ import { useFeature } from "@ledgerhq/live-config/featureFlags/index";
 import { useStartPostOnboardingCallback } from "@ledgerhq/live-common/postOnboarding/hooks/index";
 import { NavigatorName, ScreenName } from "../../../const";
 import BaseStepperView, { PairNew, ConnectNano } from "./setupDevice/scenes";
-import { TrackScreen } from "../../../analytics";
+
 import SeedWarning from "../shared/SeedWarning";
 import Illustration from "../../../images/illustration/Illustration";
 
@@ -144,7 +144,7 @@ function OnboardingStepPairNew() {
 
   return (
     <>
-      <TrackScreen category="Onboarding" name="PairNew" />
+      
       <BaseStepperView
         onNext={nextPage}
         steps={scenes}

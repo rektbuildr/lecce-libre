@@ -8,7 +8,7 @@ import { useTheme } from "styled-components/native";
 import { Flex, InfiniteLoader } from "@ledgerhq/native-ui";
 import { useOnboardingStatePolling } from "@ledgerhq/live-common/onboarding/hooks/useOnboardingStatePolling";
 import { OnboardingStep } from "@ledgerhq/live-common/hw/extractOnboardingState";
-import TrackScreen from "../../analytics/TrackScreen";
+
 import GenericErrorView from "../../components/GenericErrorView";
 import { useLocale } from "../../context/Locale";
 import WebRecoverPlayer from "../../components/WebRecoverPlayer";
@@ -78,7 +78,7 @@ export function RecoverPlayer({ navigation, route }: Props) {
 
   return manifest ? (
     <>
-      <TrackScreen category="Platform" name="App" />
+      
       <WebRecoverPlayer
         manifest={manifest}
         inputs={{

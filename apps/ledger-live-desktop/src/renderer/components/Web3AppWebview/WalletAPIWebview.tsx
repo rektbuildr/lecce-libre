@@ -21,7 +21,6 @@ import BigSpinner from "../BigSpinner";
 import { setDrawer } from "~/renderer/drawers/Provider";
 import { OperationDetails } from "~/renderer/drawers/OperationDetails";
 import SelectAccountAndCurrencyDrawer from "~/renderer/drawers/DataSelector/SelectAccountAndCurrencyDrawer";
-import { track } from "~/renderer/analytics/segment";
 import { shareAnalyticsSelector } from "~/renderer/reducers/settings";
 import { Loader } from "./styled";
 import { WebviewAPI, WebviewProps, WebviewTag } from "./types";
@@ -30,15 +29,11 @@ import { getStoreValue, setStoreValue } from "~/renderer/store";
 import { NetworkErrorScreen } from "./NetworkError";
 import getUser from "~/helpers/user";
 import { openExchangeDrawer } from "~/renderer/actions/UI";
-import { currentRouteNameRef } from "~/renderer/analytics/screenRefs";
-import { TrackFunction } from "@ledgerhq/live-common/platform/tracking";
 
 const wallet = { name: "ledger-live-desktop", version: __APP_VERSION__ };
 
 function useUiHook(
-  manifest: AppManifest,
-  tracking: Record<string, TrackFunction>,
-): Partial<UiHook> {
+  manifest: AppManifest): Partial<UiHook> {
   const { pushToast } = useToasts();
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -129,7 +124,6 @@ function useUiHook(
           text: t("platform.flows.broadcast.toast.text"),
           icon: "info",
           callback: () => {
-            tracking.broadcastOperationDetailsClick(manifest);
             setDrawer(OperationDetails, {
               operationId: optimisticOperation.id,
               accountId: account.id,
@@ -186,7 +180,7 @@ function useUiHook(
         );
       },
     }),
-    [dispatch, manifest, pushToast, t, tracking],
+    [dispatch, manifest, pushToast, t],
   );
 }
 
@@ -209,11 +203,10 @@ const useGetUserId = () => {
 function useWebView(
   { manifest, customHandlers }: Pick<WebviewProps, "manifest" | "customHandlers">,
   webviewRef: RefObject<WebviewTag>,
-  tracking: TrackingAPI,
 ) {
   const accounts = useSelector(flattenAccountsSelector);
 
-  const uiHook = useUiHook(manifest, tracking);
+  const uiHook = useUiHook(manifest);
   const shareAnalytics = useSelector(shareAnalyticsSelector);
   const userId = useGetUserId();
   const config = useConfig({
@@ -240,7 +233,6 @@ function useWebView(
   const { widgetLoaded, onLoad, onReload, onMessage } = useWalletAPIServer({
     manifest,
     accounts,
-    tracking,
     config,
     webviewHook,
     uiHook,
@@ -306,28 +298,7 @@ function useWebView(
 
 export const WalletAPIWebview = forwardRef<WebviewAPI, WebviewProps>(
   ({ manifest, inputs = {}, customHandlers, onStateChange }, ref) => {
-    const tracking = useMemo(
-      () =>
-        trackingWrapper(
-          (
-            eventName: string,
-            properties?: Record<string, unknown> | null,
-            mandatory?: boolean | null,
-          ) =>
-            track(
-              eventName,
-              {
-                ...properties,
-                flowInitiatedFrom:
-                  currentRouteNameRef.current === "Platform Catalog"
-                    ? "Discover"
-                    : currentRouteNameRef.current,
-              },
-              mandatory,
-            ),
-        ),
-      [],
-    );
+
 
     const { webviewState, webviewRef, webviewProps, handleRefresh } = useWebviewState(
       { manifest, inputs },
@@ -344,9 +315,7 @@ export const WalletAPIWebview = forwardRef<WebviewAPI, WebviewProps>(
         manifest,
         customHandlers,
       },
-      webviewRef,
-      tracking,
-    );
+      webviewRef    );
 
     return (
       <>

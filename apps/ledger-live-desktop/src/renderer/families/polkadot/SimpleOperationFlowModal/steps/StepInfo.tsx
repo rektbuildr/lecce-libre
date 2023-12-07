@@ -3,7 +3,7 @@ import React from "react";
 import { Trans } from "react-i18next";
 import { StepProps } from "../types";
 import { urls } from "~/config/urls";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import ErrorBanner from "~/renderer/components/ErrorBanner";
@@ -18,13 +18,7 @@ export default function StepInfo({ account, transaction, warning, error, mode }:
   const action = mode.replace(/([A-Z])/g, "_$1").toLowerCase();
   return (
     <Box flow={1}>
-      <TrackPage
-        category="SimpleOperationFlow Flow"
-        name="Step 1"
-        flow="stake"
-        action={action}
-        currency="dot"
-      />
+      
       {warning && !error ? <ErrorBanner error={warning} warning /> : null}
       {error ? <ErrorBanner error={error} /> : null}
       <Box px={5} py={2}>

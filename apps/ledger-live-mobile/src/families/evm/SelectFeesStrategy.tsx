@@ -18,7 +18,7 @@ import {
   TouchableOpacityProps,
   View,
 } from "react-native";
-import { useAnalytics } from "../../analytics";
+
 import CounterValue from "../../components/CounterValue";
 import CurrencyUnitValue from "../../components/CurrencyUnitValue";
 import LText from "../../components/LText";
@@ -86,11 +86,7 @@ export default function SelectFeesStrategy({
 
   const onPressStrategySelect = useCallback(
     (strategy: StrategyWithCustom) => {
-      track("button_clicked", {
-        ...sharedSwapTracking,
-        button: strategy,
-        page: "Swap quotes",
-      });
+      
       onStrategySelect({ feesStrategy: strategy });
     },
     [onStrategySelect, track],

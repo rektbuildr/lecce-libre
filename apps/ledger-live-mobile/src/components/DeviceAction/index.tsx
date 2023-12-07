@@ -440,7 +440,7 @@ export function DeviceActionDefaultRendering<R, H extends Status, P>({
 
   if (!isLoading && error) {
     /** @TODO Put that back if the app is still crashing */
-    // track("DeviceActionError", error);
+    // 
 
     // NB Until we find a better way, remap the error if it's 6d06 (LNS, LNSP, LNX) or 6d07 (Stax) and we haven't fallen
     // into another handled case.

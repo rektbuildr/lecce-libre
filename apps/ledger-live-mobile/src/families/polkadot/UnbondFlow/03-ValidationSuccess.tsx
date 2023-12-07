@@ -6,7 +6,7 @@ import invariant from "invariant";
 import { useTheme } from "@react-navigation/native";
 import { StackScreenProps } from "@react-navigation/stack";
 import { accountScreenSelector } from "../../../reducers/accounts";
-import { TrackScreen } from "../../../analytics";
+
 import { ScreenName } from "../../../const";
 import PreventNativeBack from "../../../components/PreventNativeBack";
 import ValidateSuccess from "../../../components/ValidateSuccess";
@@ -42,13 +42,7 @@ export default function ValidationSuccess({ navigation, route }: NavigationProps
         },
       ]}
     >
-      <TrackScreen
-        category="UnbondFlow"
-        name="ValidationSuccess"
-        flow="stake"
-        action="withdraw_unbonded"
-        currency="dot"
-      />
+      
       <PreventNativeBack />
       <ValidateSuccess
         onClose={onClose}

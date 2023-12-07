@@ -23,7 +23,7 @@ import useTheme from "~/renderer/hooks/useTheme";
 import { mockedEventEmitter } from "~/renderer/components/debug/DebugMock";
 import Button from "~/renderer/components/Button";
 import Alert from "~/renderer/components/Alert";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Receive2NoDevice from "~/renderer/components/Receive2NoDevice";
 import { firstValueFrom } from "rxjs";
 
@@ -241,7 +241,7 @@ const StepConnectDeviceFooter = ({ data, onClose, onSkipDevice }: PropsFooter) =
   }, [onSkipDevice]);
   return !skipClicked ? (
     <Box horizontal flow={2}>
-      <TrackPage category="Buy Flow" name="Step 1" />
+      
       <Button
         primary
         inverted

@@ -5,7 +5,6 @@ import EditDeviceName from "./EditDeviceName";
 import { Device } from "@ledgerhq/live-common/hw/actions/types";
 import { identifyTargetId, DeviceModelId } from "@ledgerhq/devices";
 import { DeviceInfo } from "@ledgerhq/types-live";
-import { track } from "~/renderer/analytics/segment";
 import { withV3StyleProvider } from "~/renderer/styles/StyleProviderV3";
 import { setDrawer } from "~/renderer/drawers/Provider";
 import styled from "styled-components";
@@ -39,7 +38,7 @@ const DeviceName: React.FC<Props> = ({
 
   const onSuccess = useCallback(
     (deviceName: string) => {
-      track("Page Manager RenamedDevice", { deviceName });
+      
       setName(deviceName);
       onRefreshDeviceInfo();
     },
@@ -55,7 +54,7 @@ const DeviceName: React.FC<Props> = ({
         deviceName: name,
         deviceInfo,
       });
-    track("Page Manager RenameDeviceEntered");
+    
   }, [device, deviceInfo, name, onSuccess]);
 
   return (

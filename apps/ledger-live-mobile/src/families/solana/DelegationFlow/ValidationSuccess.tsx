@@ -5,7 +5,7 @@ import { StyleSheet, View } from "react-native";
 import { useSelector } from "react-redux";
 import invariant from "invariant";
 import { getAccountCurrency } from "@ledgerhq/live-common/account/index";
-import { TrackScreen, track } from "../../../analytics";
+
 import PreventNativeBack from "../../../components/PreventNativeBack";
 import ValidateSuccess from "../../../components/ValidateSuccess";
 import { ScreenName } from "../../../const";
@@ -40,13 +40,7 @@ export default function ValidationSuccess({ navigation, route }: Props) {
 
   useEffect(() => {
     if (delegation)
-      track("staking_completed", {
-        currency: ticker,
-        validator,
-        source,
-        delegation,
-        flow: "stake",
-      });
+      
   }, [source, validator, delegation, ticker]);
 
   const goToOperationDetails = useCallback(() => {
@@ -66,13 +60,7 @@ export default function ValidationSuccess({ navigation, route }: Props) {
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
-      <TrackScreen
-        category="SendFunds"
-        name="ValidationSuccess"
-        flow="stake"
-        action="delegation"
-        currency="sol"
-      />
+      
       <PreventNativeBack />
       <ValidateSuccess
         onClose={onClose}

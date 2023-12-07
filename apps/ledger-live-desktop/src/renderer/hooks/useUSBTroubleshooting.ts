@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useHistory } from "react-router-dom";
 import { USBTroubleshootingIndexSelector } from "~/renderer/reducers/settings";
 import { setUSBTroubleshootingIndex } from "~/renderer/actions/settings";
-import { setTrackingSource } from "../analytics/TrackPage";
 function useUSBTroubleshooting() {
   const lastLocation = useRef<string | null>(null);
   const dispatch = useDispatch();
@@ -22,7 +21,6 @@ function useUSBTroubleshooting() {
         // We are navigating away from the troubleshooting
         dispatch(setUSBTroubleshootingIndex());
       } else {
-        setTrackingSource("USBTroubleshooting");
         lastLocation.current = "/USBTroubleshooting";
         history.push({
           pathname: "/USBTroubleshooting",

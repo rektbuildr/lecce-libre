@@ -10,7 +10,7 @@ import IconCheck from "~/renderer/icons/Check";
 import IconAngleDown from "~/renderer/icons/AngleDown";
 import IconAngleUp from "~/renderer/icons/AngleUp";
 import { Separator, Item, TextLink, AngleDown, Check } from "./common";
-import { setTrackingSource } from "~/renderer/analytics/TrackPage";
+
 import CollectionName from "~/renderer/components/Nft/CollectionName";
 import { ProtoNFT } from "@ledgerhq/types-live";
 import { State } from "~/renderer/reducers";
@@ -61,7 +61,7 @@ const NFTCrumb = () => {
   const onCollectionSelected = useCallback(
     (item: DropDownItemType<ProtoNFT>) => {
       if (!item) return;
-      setTrackingSource("NFT breadcrumb");
+      
       history.push({
         pathname: `/account/${account?.id}/nft-collection/${item.key}`,
       });
@@ -69,7 +69,7 @@ const NFTCrumb = () => {
     [account?.id, history],
   );
   const onSeeAll = useCallback(() => {
-    setTrackingSource("NFT breadcrumb");
+    
     history.push({
       pathname: `/account/${account?.id}/nft-collection`,
     });

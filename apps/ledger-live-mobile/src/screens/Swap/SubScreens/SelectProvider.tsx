@@ -10,7 +10,6 @@ import CurrencyUnitValue from "../../../components/CurrencyUnitValue";
 import ProviderIcon from "../../../components/ProviderIcon";
 import { SelectProviderParamList } from "../types";
 import CounterValue from "../../../components/CounterValue";
-import { TrackScreen, useAnalytics } from "../../../analytics";
 import { ScreenName } from "../../../const";
 import { sharedSwapTracking, SWAP_VERSION } from "../utils";
 
@@ -28,13 +27,7 @@ export function SelectProvider({ navigation, route }: SelectProviderParamList) {
 
   const onSelect = useCallback(
     (rate: ExchangeRate) => {
-      track("button_clicked", {
-        ...sharedSwapTracking,
-        button: "Partner Chosen",
-        swapType: rate.tradeMethod,
-        defaultPartner: selectedRate?.provider ?? "missing",
-        totalPartners: rates.value?.length ?? "missing",
-      });
+      
       // @ts-expect-error navigation type is only partially declared
       navigation.navigate(ScreenName.SwapForm, {
         rate,
@@ -52,15 +45,6 @@ export function SelectProvider({ navigation, route }: SelectProviderParamList) {
 
   return (
     <Flex paddingX={4}>
-      <TrackScreen
-        category="Swap Form"
-        name="Edit Provider"
-        provider={provider}
-        flow="swap"
-        swapVersion={SWAP_VERSION}
-        defaultPartner={selectedRate?.provider ?? "missing"}
-        totalPartners={rates.value.length}
-      />
       <Flex flexDirection="row" justifyContent="space-between" paddingY={2}>
         <Text margin={4} color="neutral.c70">
           {t("transfer.swap2.form.ratesDrawer.quote")}

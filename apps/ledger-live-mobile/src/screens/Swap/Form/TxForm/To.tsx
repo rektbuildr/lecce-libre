@@ -11,7 +11,7 @@ import {
 import { Selector } from "./Selector";
 import { CurrencyValue } from "./CurrencyValue";
 import { ScreenName } from "../../../../const";
-import { useAnalytics } from "../../../../analytics";
+
 import { sharedSwapTracking } from "../../utils";
 import { SwapNavigatorParamList } from "../../../../components/RootNavigator/types/SwapNavigator";
 import { StackNavigatorNavigation } from "../../../../components/RootNavigator/types/helpers";
@@ -33,10 +33,7 @@ export function To({ swapTx, provider, exchangeRate }: Props) {
   usePickDefaultCurrency(currencies, swapTx.swap.to.currency, swapTx.setToCurrency);
 
   const onPress = useCallback(() => {
-    track("button_clicked", {
-      ...sharedSwapTracking,
-      button: "edit target account",
-    });
+    
     navigation.navigate(ScreenName.SwapSelectCurrency, {
       currencies,
       provider,

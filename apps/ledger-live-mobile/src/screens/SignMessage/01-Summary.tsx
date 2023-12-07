@@ -8,7 +8,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
-import { TrackScreen } from "../../analytics";
+
 import Button from "../../components/Button";
 import LText from "../../components/LText";
 import ParentCurrencyIcon from "../../components/ParentCurrencyIcon";
@@ -113,7 +113,7 @@ function SignSummary({
         },
       ]}
     >
-      <TrackScreen category="SignMessage" name="Summary" />
+      
       <View style={styles.body}>
         <View style={styles.fromContainer}>
           <View

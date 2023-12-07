@@ -6,7 +6,7 @@ import { useTheme } from "@react-navigation/native";
 import { getAccountCurrency } from "@ledgerhq/live-common/account/index";
 
 import { accountScreenSelector } from "../../../../../../../reducers/accounts";
-import { TrackScreen, track } from "../../../../../../../analytics";
+
 import { ScreenName } from "../../../../../../../const";
 import PreventNativeBack from "../../../../../../../components/PreventNativeBack";
 import ValidateSuccess from "../../../../../../../components/ValidateSuccess";
@@ -42,13 +42,7 @@ const ValidationSuccess = ({ navigation, route }: ValidationSuccessPropsType) =>
   const source = route.params.source?.name ?? "unknown";
 
   useEffect(() => {
-    track("staking_completed", {
-      currency: ticker,
-      validator,
-      source,
-      delegation: "delegation",
-      flow: "stake",
-    });
+    
   }, [source, validator, ticker]);
 
   /*
@@ -80,13 +74,7 @@ const ValidationSuccess = ({ navigation, route }: ValidationSuccessPropsType) =>
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
-      <TrackScreen
-        category="ElrondDelegation"
-        name="ValidationSuccess"
-        flow="stake"
-        action="delegate"
-        currency="egld"
-      />
+      
       <PreventNativeBack />
 
       <ValidateSuccess

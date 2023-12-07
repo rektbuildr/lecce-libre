@@ -10,7 +10,7 @@ import Touchable from "../../components/Touchable";
 import { NavigatorName, ScreenName } from "../../const";
 import { withDiscreetMode } from "../../context/DiscreetModeContext";
 import DiscreetModeButton from "../../components/DiscreetModeButton";
-import { track } from "../../analytics";
+
 import useDynamicContent from "../../dynamicContent/dynamicContent";
 import Notifications from "../../icons/Notifications";
 
@@ -20,10 +20,7 @@ const NotificationsButton = () => {
   const { notificationCards } = useDynamicContent();
 
   const onNotificationButtonPress = useCallback(() => {
-    track("button_clicked", {
-      button: "notification bell",
-      page: ScreenName.Portfolio,
-    });
+    
     navigation.navigate(NavigatorName.NotificationCenter, {
       screen: ScreenName.NotificationCenter,
     });
@@ -71,9 +68,7 @@ function PortfolioHeader({ hidePortfolio }: { hidePortfolio: boolean }) {
   );
 
   const onSettingsButtonPress = useCallback(() => {
-    track("button_clicked", {
-      button: "Settings",
-    });
+    
     // @ts-expect-error navigation ts issue
     navigation.navigate(NavigatorName.Settings);
   }, [navigation]);

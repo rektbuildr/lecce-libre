@@ -4,8 +4,7 @@ import { TFunction } from "i18next";
 import styled from "styled-components";
 import { repairChoices } from "@ledgerhq/live-common/hw/firmwareUpdate-repair";
 import { MCUNotGenuineToDashboard } from "@ledgerhq/errors";
-import TrackPage from "~/renderer/analytics/TrackPage";
-import { track } from "~/renderer/analytics/segment";
+
 import Button from "~/renderer/components/Button";
 import Box from "~/renderer/components/Box";
 import Text from "~/renderer/components/Text";
@@ -191,7 +190,7 @@ class RepairModal extends PureComponent<Props, State> {
         onClose={onClose}
         {...props}
       >
-        <TrackPage category="Modal" name={analyticsName} />
+        
         <ModalBody
           title={title}
           onClose={onClose}

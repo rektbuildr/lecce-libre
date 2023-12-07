@@ -7,7 +7,7 @@ import { useStartProfiler } from "@shopify/react-native-performance";
 import { NavigatorName, ScreenName } from "../../const";
 import { usePortfolioForAccounts } from "../../hooks/portfolio";
 import AssetRowLayout from "../../components/AssetRowLayout";
-import { track } from "../../analytics";
+
 import {
   BaseNavigationComposite,
   StackNavigatorNavigation,
@@ -50,9 +50,7 @@ const AssetRow = ({
 
   const onAssetPress = useCallback(
     (uiEvent: GestureResponderEvent) => {
-      track("asset_clicked", {
-        asset: currency.name,
-      });
+      
       startNavigationTTITimer({
         source: sourceScreenName,
         uiEvent,

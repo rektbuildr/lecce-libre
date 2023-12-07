@@ -7,7 +7,7 @@ import {
 } from "@ledgerhq/live-common/currencies/index";
 import { findTokenAccountByCurrency } from "@ledgerhq/live-common/account/index";
 import { supportLinkByTokenType } from "~/config/urls";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import SelectCurrency from "~/renderer/components/SelectCurrency";
 import Button from "~/renderer/components/Button";
 import Box from "~/renderer/components/Box";
@@ -280,7 +280,7 @@ export const StepChooseCurrencyFooter = ({
 
   return (
     <>
-      <TrackPage category="AddAccounts" name="Step1" />
+      
       {currency && <CurrencyBadge currency={currency} />}
       {isToken ? (
         <Box horizontal>

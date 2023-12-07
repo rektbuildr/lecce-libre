@@ -1,6 +1,6 @@
-export const analyticsFlowName = "custom lock screen";
+export const analyticsFlowName = "notrack";
 
-export const analyticsDrawerName = "custom lock screen";
+export const analyticsDrawerName = "notrack";
 
 export const analyticsPageNames = {
   chooseImage: "Choose an image to set as your device lockscreen",

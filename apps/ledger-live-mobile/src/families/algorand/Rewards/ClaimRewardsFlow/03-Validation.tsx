@@ -8,7 +8,7 @@ import { Account } from "@ledgerhq/types-live";
 import { useSignWithDevice } from "../../../../logic/screenTransactionHooks";
 import { updateAccountWithUpdater } from "../../../../actions/accounts";
 import { accountScreenSelector } from "../../../../reducers/accounts";
-import { TrackScreen } from "../../../../analytics";
+
 import PreventNativeBack from "../../../../components/PreventNativeBack";
 import ValidateOnDevice from "../../../../components/ValidateOnDevice";
 import SkipLock from "../../../../components/behaviour/SkipLock";
@@ -51,14 +51,7 @@ export default function Validation({ route }: Props) {
         },
       ]}
     >
-      <TrackScreen
-        category="AlgorandClaimRewards"
-        name="Validation"
-        signed={signed}
-        flow="stake"
-        action="claim_rewards"
-        currency="algo"
-      />
+      
       {signing && (
         <>
           <PreventNativeBack />

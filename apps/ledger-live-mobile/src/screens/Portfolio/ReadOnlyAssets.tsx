@@ -10,7 +10,7 @@ import {
 } from "@ledgerhq/live-common/currencies/index";
 import { useCurrenciesByMarketcap } from "@ledgerhq/live-common/currencies/hooks";
 import { CryptoCurrency, TokenCurrency } from "@ledgerhq/types-cryptoassets";
-import TrackScreen from "../../analytics/TrackScreen";
+
 import { withDiscreetMode } from "../../context/DiscreetModeContext";
 
 import GradientContainer from "../../components/GradientContainer";
@@ -58,7 +58,7 @@ function ReadOnlyAssets({ navigation }: { navigation: NavigationProp }) {
 
   return (
     <TabBarSafeAreaView>
-      <TrackScreen category="ReadOnly" name="Assets" />
+      
       <Flex flex={1} bg={"background.main"}>
         <AssetsNavigationHeader readOnly />
         <FlatList<Asset>

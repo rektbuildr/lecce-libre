@@ -7,7 +7,6 @@ import { View } from "react-native";
 import SettingsRow from "../../../components/SettingsRow";
 import { setAnalytics } from "../../../actions/settings";
 import { analyticsEnabledSelector } from "../../../reducers/settings";
-import Track from "../../../analytics/Track";
 import QueuedDrawer from "../../../components/QueuedDrawer";
 
 const AnalyticsRow = () => {
@@ -57,7 +56,7 @@ const AnalyticsRow = () => {
 
   return (
     <>
-      <Track event={analyticsEnabled ? "EnableAnalytics" : "DisableAnalytics"} mandatory onUpdate />
+      
       <SettingsRow
         event="AnalyticsRow"
         title={t("settings.display.analytics")}

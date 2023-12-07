@@ -5,7 +5,7 @@ import { getDeviceModel } from "@ledgerhq/devices";
 import { useTheme } from "@react-navigation/native";
 import { DeviceModelId } from "@ledgerhq/types-devices";
 import { urls } from "@utils/urls";
-import { TrackScreen } from "../../analytics";
+
 import Touchable from "../../components/Touchable";
 import Button from "../../components/Button";
 import LText from "../../components/LText";
@@ -21,7 +21,7 @@ function ScanningTimeout({ onRetry }: Props) {
   const { colors } = useTheme();
   return (
     <View style={styles.root}>
-      <TrackScreen category="PairDevices" name="ScanningTimeout" />
+      
       <View style={styles.body}>
         <Circle bg={colors.lightAlert} size={80}>
           <NanoX color={colors.alert} width={11} height={48} />

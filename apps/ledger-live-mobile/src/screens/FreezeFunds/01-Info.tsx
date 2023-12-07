@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Trans } from "react-i18next";
 import { CompositeScreenProps, useTheme } from "@react-navigation/native";
 import { ScreenName } from "../../const";
-import { TrackScreen } from "../../analytics";
+
 import Button from "../../components/Button";
 import LText from "../../components/LText";
 import ExternalLink from "../../components/ExternalLink";
@@ -41,7 +41,7 @@ export default function FreezeInfo({ navigation, route }: NavigatorProps) {
       ]}
     >
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContainer}>
-        <TrackScreen category="FreezeFlow" name="Info" />
+        
         <IlluRewards />
         <LText secondary style={styles.description}>
           <Trans i18nKey="freeze.info.description" />

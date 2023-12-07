@@ -1,5 +1,5 @@
 import React from "react";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import { Text, Flex } from "@ledgerhq/react-ui";
 import { RecentlyUsed } from "./RecentlyUsed";
 import { Browse } from "./Browse";
@@ -14,7 +14,7 @@ export function Catalog() {
 
   return (
     <Flex flexDirection="column" paddingBottom={100}>
-      <TrackPage category="Platform" name="Catalog" />
+      
 
       <Text variant="h3" style={{ fontSize: 28 }}>
         {t("platform.catalog.title")}

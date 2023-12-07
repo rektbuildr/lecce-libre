@@ -4,7 +4,7 @@ import { Trans } from "react-i18next";
 import { SyncSkipUnderPriority } from "@ledgerhq/live-common/bridge/react/index";
 import { urls } from "~/config/urls";
 import AccountFooter from "~/renderer/modals/Send/AccountFooter";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import Alert from "~/renderer/components/Alert";
@@ -24,13 +24,7 @@ export default function StepAmount({
   return (
     <Box flow={1}>
       <SyncSkipUnderPriority priority={100} />
-      <TrackPage
-        category="Unbond Flow"
-        name="Step 1"
-        flow="stake"
-        action="withdraw_unbonded"
-        currency="dot"
-      />
+      
       {error && <ErrorBanner error={error} />}
       <Alert
         type="primary"

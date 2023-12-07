@@ -4,7 +4,6 @@ import { SyncOneAccountOnMount } from "@ledgerhq/live-common/bridge/react/index"
 import React from "react";
 import { Trans } from "react-i18next";
 import styled from "styled-components";
-import TrackPage from "~/renderer/analytics/TrackPage";
 import Box from "~/renderer/components/Box";
 import BroadcastErrorDisclaimer from "~/renderer/components/BroadcastErrorDisclaimer";
 import Button from "~/renderer/components/Button";
@@ -40,12 +39,6 @@ function StepConfirmation({
   if (optimisticOperation) {
     return (
       <Container>
-        <TrackPage
-          category="Send Flow"
-          name="Step Confirmed"
-          currencyName={currencyName}
-          isNFTSend={isNFTSend}
-        />
         <SyncOneAccountOnMount
           reason="transaction-flow-confirmation"
           priority={10}
@@ -69,11 +62,7 @@ function StepConfirmation({
 
     return (
       <Container shouldSpace={signed}>
-        <TrackPage
-          category="Send Flow"
-          name="Step Confirmation Error"
-          currencyName={currencyName}
-        />
+
         {signed ? (
           <BroadcastErrorDisclaimer
             title={<Trans i18nKey="send.steps.confirmation.broadcastError" />}

@@ -8,7 +8,6 @@ import React, { memo, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import styled from "styled-components";
 import { urls } from "~/config/urls";
-import { track } from "~/renderer/analytics/segment";
 import Box from "~/renderer/components/Box";
 import InputCurrency from "~/renderer/components/InputCurrency";
 import Label from "~/renderer/components/Label";
@@ -89,7 +88,7 @@ const FeesField: NonNullable<EvmFamily["sendAmountFields"]>["component"] = ({
       <LabelWithExternalIcon
         onClick={() => {
           openURL(urls.feesEIP1559MoreInfo);
-          track("Send Flow EIP1559 Fees Help Requested");
+          
         }}
         label={t("send.steps.details.ethereumMaxFee", { unitName })}
       />

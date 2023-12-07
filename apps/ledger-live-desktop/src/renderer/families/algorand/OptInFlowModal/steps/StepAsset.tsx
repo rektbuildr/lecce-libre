@@ -4,7 +4,7 @@ import { Trans } from "react-i18next";
 import { StepProps } from "../types";
 import { TokenCurrency } from "@ledgerhq/types-cryptoassets";
 import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import ErrorBanner from "~/renderer/components/ErrorBanner";
@@ -36,7 +36,7 @@ export default function StepAsset({
   );
   return (
     <Box flow={1}>
-      <TrackPage category="OptIn Flow" name="Step 1" />
+      
       {warning && !error ? <ErrorBanner error={warning} warning /> : null}
       {error ? <ErrorBanner error={error} /> : null}
       <AsaSelector transaction={transaction} account={account} t={t} onChange={onUpdateAsset} />

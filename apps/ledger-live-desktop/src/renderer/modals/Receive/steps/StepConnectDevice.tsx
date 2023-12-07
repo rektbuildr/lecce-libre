@@ -5,7 +5,7 @@ import Button from "~/renderer/components/Button";
 import DeviceAction from "~/renderer/components/DeviceAction";
 import { createAction } from "@ledgerhq/live-common/hw/actions/app";
 import CurrencyDownStatusAlert from "~/renderer/components/CurrencyDownStatusAlert";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import connectApp from "@ledgerhq/live-common/hw/connectApp";
 import { StepProps } from "../Body";
 import { mockedEventEmitter } from "~/renderer/components/debug/DebugMock";
@@ -41,11 +41,7 @@ export default function StepConnectDevice({
 export function StepConnectDeviceFooter({ t, onSkipConfirm, eventType, currencyName }: StepProps) {
   return (
     <Box horizontal flow={2}>
-      <TrackPage
-        category={`Receive Flow${eventType ? ` (${eventType})` : ""}`}
-        name="Step 2"
-        currencyName={currencyName}
-      />
+      
       <Button
         event="Receive Flow Without Device Clicked"
         data-test-id="receive-connect-device-skip-device-button"

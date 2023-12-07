@@ -25,7 +25,7 @@ import TachometerSlow from "../icons/TachometerSlow";
 import TachometerMedium from "../icons/TachometerMedium";
 import TachometerFast from "../icons/TachometerFast";
 import NetworkFeeInfo from "./NetworkFeeInfo";
-import { useAnalytics } from "../analytics";
+
 import { sharedSwapTracking } from "../screens/Swap/utils";
 
 export type SelectFeeStrategy = FeeStrategy & {
@@ -80,11 +80,7 @@ export default function SelectFeesStrategy({
 
   const onPressStrategySelect = useCallback(
     (item: SelectFeeStrategy) => {
-      track("button_clicked", {
-        ...sharedSwapTracking,
-        button: item.label,
-        page: "Swap quotes",
-      });
+      
 
       onStrategySelect({
         amount: item.amount,

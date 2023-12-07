@@ -26,11 +26,10 @@ import { StackNavigatorNavigation } from "../RootNavigator/types/helpers";
 import { BaseNavigatorStackParamList } from "../RootNavigator/types/BaseNavigator";
 import { analyticsEnabledSelector } from "../../reducers/settings";
 import deviceStorage from "../../logic/storeWrapper";
-import { track } from "../../analytics";
+
 import getOrCreateUser from "../../user";
 import * as bridge from "../../../e2e/bridge/client";
 import Config from "react-native-config";
-import { currentRouteNameRef } from "../../analytics/screenRefs";
 
 export function useWebView(
   {

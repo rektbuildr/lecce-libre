@@ -24,7 +24,7 @@ import { PolkadotAccount } from "@ledgerhq/live-common/families/polkadot/types";
 import { urls } from "@utils/urls";
 import { accountScreenSelector } from "../../../reducers/accounts";
 import { ScreenName } from "../../../const";
-import { TrackScreen } from "../../../analytics";
+
 import LText from "../../../components/LText";
 import CurrencyUnitValue from "../../../components/CurrencyUnitValue";
 import Button from "../../../components/Button";
@@ -177,7 +177,7 @@ export default function PolkadotBondAmount({ navigation, route }: Props) {
   const hasErrors = hasStatusError(status);
   return (
     <>
-      <TrackScreen category="BondFlow" name="Amount" flow="stake" action="bond" currency="dot" />
+      
       <SafeAreaView
         style={[
           styles.root,

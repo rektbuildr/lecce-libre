@@ -13,7 +13,7 @@ import { SyncSkipUnderPriority } from "@ledgerhq/live-common/bridge/react/index"
 import { UserRefusedOnDevice } from "@ledgerhq/errors";
 import logger from "~/renderer/logger";
 import { updateAccountWithUpdater } from "~/renderer/actions/accounts";
-import Track from "~/renderer/analytics/Track";
+
 import { getCurrentDevice } from "~/renderer/reducers/devices";
 import { openModal } from "~/renderer/actions/modals";
 import Stepper from "~/renderer/components/Stepper";
@@ -262,7 +262,7 @@ const Body = ({ stepId, params, onChangeStepId, onClose }: Props) => {
   return (
     <Stepper {...stepperProps}>
       <SyncSkipUnderPriority priority={100} />
-      <Track onUnmount event="CloseModalDelegate" />
+      
     </Stepper>
   );
 };

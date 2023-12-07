@@ -5,7 +5,7 @@ import { Device } from "@ledgerhq/live-common/hw/actions/types";
 import { Flex } from "@ledgerhq/native-ui";
 import { DeviceModelId, getDeviceModel } from "@ledgerhq/devices";
 
-import { track } from "../../analytics";
+
 import { useLocale } from "../../context/Locale";
 import { localeIdToDeviceLanguage } from "../../languages";
 import { Language, idsToLanguage } from "@ledgerhq/types-live";
@@ -95,9 +95,7 @@ export const LanguagePrompt: React.FC<LanguagePromptProps> = ({ device }) => {
             language={localeIdToDeviceLanguage[currentLocale] as Language}
             deviceModel={getDeviceModel(device?.modelId || DeviceModelId.nanoX)}
             onConfirm={() => {
-              track("Page LiveLanguageChange LanguageInstallTriggered", {
-                selectedLanguage: localeIdToDeviceLanguage[currentLocale],
-              });
+              
               setDeviceForChangeLanguageAction(device);
             }}
           />

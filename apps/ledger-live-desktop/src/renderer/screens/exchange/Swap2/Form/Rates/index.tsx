@@ -1,7 +1,6 @@
 import React, { useCallback, useState, useMemo, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Trans } from "react-i18next";
-import { track } from "~/renderer/analytics/segment";
 import Box from "~/renderer/components/Box";
 import Text from "~/renderer/components/Text";
 import NoQuoteSwapRate from "./NoQuoteSwapRate";
@@ -15,7 +14,7 @@ import {
   ExchangeRate,
 } from "@ledgerhq/live-common/exchange/swap/types";
 import { rateSelector, updateRateAction } from "~/renderer/actions/swap";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import { useGetSwapTrackingProperties } from "../../utils/index";
 import styled from "styled-components";
 import Tooltip from "~/renderer/components/Tooltip";
@@ -71,14 +70,7 @@ export default function ProviderRate({
   const updateRate = useCallback(
     (rate: ExchangeRate) => {
       const value = rate.rate ?? rate.provider;
-      track("partner_clicked", {
-        page: "Page Swap Form",
-        ...swapDefaultTrack,
-        swap_type: rate.tradeMethod,
-        value,
-        partner: rate.provider,
-        defaultPartner,
-      });
+      
       dispatch(updateRateAction(rate));
     },
     [defaultPartner, dispatch, swapDefaultTrack],
@@ -114,12 +106,7 @@ export default function ProviderRate({
 
   const updateFilter = useCallback(
     (newFilter: string[]) => {
-      track("button_clicked", {
-        button: "Filter selected",
-        page: "Page Swap Form",
-        ...swapDefaultTrack,
-        value: newFilter,
-      });
+      
       setFilter(newFilter);
     },
     [swapDefaultTrack],
@@ -127,16 +114,7 @@ export default function ProviderRate({
 
   return (
     <Box height="100%" width="100%">
-      <TrackPage
-        category="Swap"
-        name="Form - Edit Rates"
-        provider={provider}
-        partnersList={providers}
-        exchangeRateList={exchangeRates}
-        sourceCurrency={fromCurrency?.id}
-        targetCurrency={toCurrency?.id}
-        {...swapDefaultTrack}
-      />
+      
       <Box horizontal justifyContent="space-between" fontSize={5}>
         <Text
           color="neutral.c100"

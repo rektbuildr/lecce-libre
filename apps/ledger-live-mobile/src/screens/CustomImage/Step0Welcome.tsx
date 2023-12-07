@@ -12,7 +12,7 @@ import BottomButtonsContainer from "../../components/CustomImage/BottomButtonsCo
 import Button from "../../components/wrappedUi/Button";
 import { ScreenName } from "../../const";
 import { CustomImageNavigatorParamList } from "../../components/RootNavigator/types/CustomImageNavigator";
-import { TrackScreen } from "../../analytics";
+
 import videoSources from "../../../assets/videos";
 
 const videoDimensions = {
@@ -48,7 +48,7 @@ const Step0Welcome: React.FC<
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <TrackScreen category={analyticsScreenName} />
+      
       <Flex flex={1} mt={8} justifyContent={"space-between"}>
         <Flex>
           <Video

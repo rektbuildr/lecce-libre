@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState, useMemo } from "react";
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
 import useNpsRatings from "../../logic/npsRatings";
 import QueuedDrawer from "../../components/QueuedDrawer";
-import { track } from "../../analytics";
+
 
 import Form from "./Form";
 
@@ -66,11 +66,7 @@ const RatingsModal = () => {
   }, [handleInitNotNow, ratingsInitialStep, setRatingsModalOpen, sharedHeight]);
 
   const handleBackdropClose = useCallback(() => {
-    track("button_clicked", {
-      flow: "NPS",
-      page: eventNameByPage[step],
-      button: "Close",
-    });
+    
     closeModal();
   }, [closeModal, step]);
 

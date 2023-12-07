@@ -5,7 +5,7 @@ import type { LiveAppManifest } from "@ledgerhq/live-common/platform/types";
 import { useSelector } from "react-redux";
 import { useRemoteLiveAppContext } from "@ledgerhq/live-common/platform/providers/RemoteLiveAppProvider/index";
 import { useBanner } from "../../../components/banners/hooks";
-import TrackScreen from "../../../analytics/TrackScreen";
+
 import { ScreenName } from "../../../const";
 import TwitterBanner from "./TwitterBanner";
 import DAppDisclaimer, { Props as DisclaimerProps } from "./DAppDisclaimer";
@@ -93,7 +93,7 @@ export function Catalog({ route, navigation }: Props) {
         title={<Trans i18nKey={"platform.catalog.title"} />}
         hasBackButton
       >
-        <TrackScreen category="Platform" name="Catalog" />
+        
         {disclaimerOpts && (
           <DAppDisclaimer
             disableDisclaimer={disclaimerOpts.disableDisclaimer}

@@ -5,7 +5,6 @@ import { Flex, Text, IconsLegacy, Link } from "@ledgerhq/react-ui";
 import { useFeature } from "@ledgerhq/live-config/featureFlags/index";
 import { StepProps } from "../Body";
 import StakingIllustration from "../assets/StakingIllustration";
-import { track } from "~/renderer/analytics/segment";
 import { openURL } from "~/renderer/linking";
 import { withV3StyleProvider } from "~/renderer/styles/StyleProviderV3";
 import Button from "~/renderer/components/ButtonV3";
@@ -83,11 +82,7 @@ const StepReceiveStakingFlow = (props: StepProps) => {
   }, []);
 
   const openLink = useCallback(() => {
-    track("button_clicked", {
-      button: "learn_more",
-      ...getTrackProperties(),
-      link: supportLink,
-    });
+
     // @ts-expect-error TYPINGS
     openURL(supportLink, "OpenURL", getTrackProperties());
   }, [getTrackProperties, supportLink]);
@@ -96,11 +91,6 @@ const StepReceiveStakingFlow = (props: StepProps) => {
     const value = !doNotShowAgain;
     global.localStorage.setItem(`${LOCAL_STORAGE_KEY_PREFIX}${id}`, "" + value);
     setDoNotShowAgain(value);
-    track("button_clicked", {
-      button: "not_show",
-      ...getTrackProperties(),
-      value,
-    });
   }, [doNotShowAgain, getTrackProperties, id]);
 
   return (
@@ -161,10 +151,6 @@ export const StepReceiveStakingFooter = (props: StepProps) => {
 
   const onStake = useCallback(() => {
     if (action && "onClick" in action && action?.onClick) {
-      track("button_clicked", {
-        button: "stake",
-        ...getTrackProperties(),
-      });
 
       closeModal();
       (action.onClick as () => void)();
@@ -174,10 +160,6 @@ export const StepReceiveStakingFooter = (props: StepProps) => {
   }, [action, closeModal, getTrackProperties]);
 
   const onCloseModal = useCallback(() => {
-    track("button_clicked", {
-      button: "skip",
-      ...getTrackProperties(),
-    });
     closeModal();
   }, [closeModal, getTrackProperties]);
 

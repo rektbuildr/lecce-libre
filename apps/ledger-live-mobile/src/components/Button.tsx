@@ -4,7 +4,7 @@ import { useIsFocused } from "@react-navigation/native";
 import { Button } from "@ledgerhq/native-ui";
 import type { ButtonProps } from "@ledgerhq/native-ui/components/cta/Button/index";
 import ButtonUseTouchableContext from "../context/ButtonUseTouchableContext";
-import { track } from "../analytics";
+
 
 const inferType = (type?: string): ButtonProps["type"] => {
   switch (type) {

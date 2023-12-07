@@ -6,7 +6,7 @@ import Button, { Props as ButtonProps } from "~/renderer/components/Button";
 import RepairModal from "~/renderer/modals/RepairModal";
 import logger from "~/renderer/logger";
 import { useHistory } from "react-router-dom";
-import { setTrackingSource } from "~/renderer/analytics/TrackPage";
+
 import { openModal, closeModal } from "~/renderer/actions/modals";
 import { Subscription } from "rxjs";
 
@@ -90,7 +90,7 @@ const RepairDeviceButton = React.forwardRef(function RepairDevice(
           setOpened(false);
           setIsLoading(false);
           setProgress(0);
-          setTrackingSource("repair device button");
+          
           history.push({
             pathname: "manager",
           });

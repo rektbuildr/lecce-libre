@@ -14,7 +14,7 @@ import LText from "../../../components/LText";
 import ExternalLink from "../../../components/ExternalLink";
 import BulletList, { BulletGreenCheck } from "../../../components/BulletList";
 import NavigationScrollView from "../../../components/NavigationScrollView";
-import { TrackScreen } from "../../../analytics";
+
 import Illustration from "../../../images/illustration/Illustration";
 import EarnLight from "../../../images/illustration/Light/_003.png";
 import EarnDark from "../../../images/illustration/Dark/_003.png";
@@ -46,13 +46,7 @@ export default function DelegationStarted({ navigation, route }: Props) {
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
       <NavigationScrollView style={styles.scroll} contentContainerStyle={styles.scrollContainer}>
-        <TrackScreen
-          category="DelegationFlow"
-          name="Started"
-          flow="stake"
-          action="delegation"
-          currency={ticker}
-        />
+        
         <Flex alignItems="center" mb={6}>
           <Illustration lightSource={EarnLight} darkSource={EarnDark} size={150} />
         </Flex>

@@ -8,7 +8,6 @@ import BleDevicePairing from "./BleDevicePairing";
 import { addKnownDevice } from "../../actions/ble";
 import type { BleDevicesScanningProps } from "./BleDevicesScanning";
 import type { BleDevicePairingProps } from "./BleDevicePairing";
-import { track } from "../../analytics";
 import { NavigationHeaderBackButton } from "../NavigationHeaderBackButton";
 import { NavigationHeaderCloseButton } from "../NavigationHeaderCloseButton";
 
@@ -153,7 +152,7 @@ const BleDevicePairingFlow: React.FC<BleDevicePairingFlowProps> = ({
   const onRetryPairingFlow = useCallback(() => {
     // If a device has been paired, we let the pairing flow end
     if (!isPaired) {
-      track("button_clicked", { button: "Try BT pairing again" });
+      
       setDeviceToPair(null);
       setPairingFlowStep("scanning");
     }

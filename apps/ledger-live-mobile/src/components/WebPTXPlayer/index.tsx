@@ -29,7 +29,7 @@ import { Web3AppWebview } from "../Web3AppWebview";
 import { RootNavigationComposite, StackNavigatorNavigation } from "../RootNavigator/types/helpers";
 import { BaseNavigatorStackParamList } from "../RootNavigator/types/BaseNavigator";
 import { initialWebviewState } from "../Web3AppWebview/helpers";
-import { track } from "../../analytics";
+
 import { NavigationHeaderCloseButtonAdvanced } from "../NavigationHeaderCloseButton";
 import { NavigatorName, ScreenName } from "../../const";
 import { Loading } from "../Loading";
@@ -64,11 +64,7 @@ function BackToInternalDomain({
       const lastScreen = (await AsyncStorage.getItem("last-screen")) || "";
       const flowName = (await AsyncStorage.getItem("flow-name")) || "";
 
-      track("button_clicked", {
-        button: lastScreen === "compare_providers" ? "back to quote" : "back to liveapp",
-        provider: manifestId,
-        flow: flowName,
-      });
+      
 
       navigation.navigate(NavigatorName.Exchange, {
         screen: flowName === "buy" ? ScreenName.ExchangeBuy : ScreenName.ExchangeSell,
@@ -82,11 +78,7 @@ function BackToInternalDomain({
       const urlParams = new URLSearchParams(url.searchParams);
       const flowName = urlParams.get("liveAppFlow")!;
 
-      track("button_clicked", {
-        button: flowName === "compare_providers" ? "back to quote" : "back to liveapp",
-        provider: currentHostname,
-        flow: flowName,
-      });
+      
 
       navigation.goBack();
     }

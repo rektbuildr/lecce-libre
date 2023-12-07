@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CompositeScreenProps, useTheme } from "@react-navigation/native";
-import { TrackScreen } from "../../analytics";
+
 import ValidateError from "../../components/ValidateError";
 import {
   StackNavigatorNavigation,
@@ -34,7 +34,7 @@ export default function ValidationError({ navigation, route }: NavigatorProps) {
         },
       ]}
     >
-      <TrackScreen category="FreezeFunds" name="ValidationError" />
+      
       <ValidateError error={route.params.error} onRetry={retry} onClose={onClose} />
     </SafeAreaView>
   );

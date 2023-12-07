@@ -8,7 +8,7 @@ import useBridgeTransaction from "@ledgerhq/live-common/bridge/useBridgeTransact
 import { useTheme } from "@react-navigation/native";
 import { accountScreenSelector } from "../../reducers/accounts";
 import DeviceAction from "../../components/DeviceAction";
-import { TrackScreen } from "../../analytics";
+
 import { useSignedTxHandlerWithoutBroadcast } from "../../logic/screenTransactionHooks";
 import { navigateToSelectDevice } from "../ConnectDevice";
 import { SignTransactionNavigatorParamList } from "../../components/RootNavigator/types/SignTransactionNavigator";
@@ -60,7 +60,7 @@ function ConnectDevice({
         },
       ]}
     >
-      <TrackScreen category={route.name.replace("ConnectDevice", "")} name="ConnectDevice" />
+      
       <DeviceAction
         action={action}
         // @ts-expect-error Wrong types?

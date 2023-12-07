@@ -40,7 +40,7 @@ import useCenteredImage, {
   CenteredResult,
 } from "../../components/CustomImage/useCenteredImage";
 import Button from "../../components/wrappedUi/Button";
-import { TrackScreen } from "../../analytics";
+
 import Link from "../../components/wrappedUi/Link";
 
 const DEFAULT_CONTRAST = 1;
@@ -293,7 +293,7 @@ const PreviewPreEdit = ({ navigation, route }: NavigationProps) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <TrackScreen category={analyticsScreenName} />
+      
       {croppedImage?.imageBase64DataUri && (
         <ImageProcessor
           ref={imageProcessorRef}

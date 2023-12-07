@@ -19,7 +19,7 @@ import LText from "../../../../components/LText";
 import { accountScreenSelector } from "../../../../reducers/accounts";
 import { localeSelector } from "../../../../reducers/settings";
 import NavigationScrollView from "../../../../components/NavigationScrollView";
-import { TrackScreen } from "../../../../analytics";
+
 import Alert from "../../../../components/Alert";
 import TranslatedError from "../../../../components/TranslatedError";
 import Illustration from "../../../../images/illustration/Illustration";
@@ -73,13 +73,7 @@ export default function DelegationStarted({ navigation, route }: Props) {
       ]}
     >
       <NavigationScrollView style={styles.scroll} contentContainerStyle={styles.scrollContainer}>
-        <TrackScreen
-          category="DelegationFlow"
-          name="Started"
-          flow="stake"
-          action="claim_rewards"
-          currency="algo"
-        />
+        
         <Flex alignItems="center" justifyContent="center" mb={6}>
           <Illustration
             size={200}

@@ -5,7 +5,7 @@ import { Trans } from "react-i18next";
 import { useTheme } from "@react-navigation/native";
 
 import { accountScreenSelector } from "../../../../../../../reducers/accounts";
-import { TrackScreen } from "../../../../../../../analytics";
+
 import { ScreenName } from "../../../../../../../const";
 import PreventNativeBack from "../../../../../../../components/PreventNativeBack";
 import ValidateSuccess from "../../../../../../../components/ValidateSuccess";
@@ -64,13 +64,7 @@ const ValidationSuccess = (props: ValidationSuccessPropsType) => {
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
-      <TrackScreen
-        category="ElrondDelegation"
-        name="ValidationSuccess"
-        flow="stake"
-        action="undelegate"
-        currency="egld"
-      />
+      
       <PreventNativeBack />
 
       <ValidateSuccess

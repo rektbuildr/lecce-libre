@@ -8,7 +8,7 @@ import { useCurrenciesByMarketcap } from "@ledgerhq/live-common/currencies/hooks
 import { BannerCard, Flex, Text } from "@ledgerhq/native-ui";
 import { useDispatch, useSelector } from "react-redux";
 import { ScreenName } from "../../const";
-import { track, TrackScreen } from "../../analytics";
+
 import { flattenAccountsSelector } from "../../reducers/accounts";
 import { ReceiveFundsStackParamList } from "../../components/RootNavigator/types/ReceiveFundsNavigator";
 import { StackNavigatorProps } from "../../components/RootNavigator/types/helpers";
@@ -91,10 +91,7 @@ export default function SelectNetwork({ navigation, route }: Props) {
 
   const onPressItem = useCallback(
     (currency: CryptoCurrency | TokenCurrency) => {
-      track("network_clicked", {
-        network: currency.name,
-        page: "Choose a network",
-      });
+      
 
       const cryptoToSend = provider?.currenciesByNetwork.find(curByNetwork =>
         curByNetwork.type === "TokenCurrency"
@@ -140,20 +137,13 @@ export default function SelectNetwork({ navigation, route }: Props) {
   );
 
   const hideBanner = useCallback(() => {
-    track("button_clicked", {
-      button: "Close network article",
-      page: "Choose a network",
-    });
+    
     dispatch(setCloseNetworkBanner(true));
     setBanner(false);
   }, [dispatch]);
 
   const clickLearn = useCallback(() => {
-    track("button_clicked", {
-      button: "Choose a network article",
-      type: "card",
-      page: "Choose a network",
-    });
+    
     // @ts-expect-error TYPINGS
     Linking.openURL(depositNetworkBannerMobile?.params?.url);
   }, [depositNetworkBannerMobile?.params?.url]);
@@ -175,7 +165,7 @@ export default function SelectNetwork({ navigation, route }: Props) {
 
   return (
     <>
-      <TrackScreen category="Deposit" name="Choose a network" />
+      
       <Flex px={6} py={2}>
         <Text variant="h4" fontWeight="semiBold" testID="receive-header-step2-title" mb={2}>
           {t("transfer.receive.selectNetwork.title")}

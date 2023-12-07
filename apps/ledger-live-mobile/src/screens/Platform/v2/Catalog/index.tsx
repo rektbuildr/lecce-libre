@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import TabBarSafeAreaView from "../../../../components/TabBar/TabBarSafeAreaView";
 import { Layout } from "./Layout";
 import { useCatalog } from "../hooks";
-import TrackScreen from "../../../../analytics/TrackScreen";
+
 import { Search, SearchBar } from "./Search";
 import { ManifestList } from "./ManifestList";
 import { RecentlyUsed } from "./RecentlyUsed";
@@ -22,7 +22,7 @@ export function Catalog() {
   return (
     <TabBarSafeAreaView edges={["top", "bottom", "left", "right"]}>
       {/* TODO: put under the animation header and style  */}
-      <TrackScreen category="Platform" name="Catalog" />
+      
       <DAppDisclaimer disclaimer={disclaimer} />
 
       {search.isActive ? (

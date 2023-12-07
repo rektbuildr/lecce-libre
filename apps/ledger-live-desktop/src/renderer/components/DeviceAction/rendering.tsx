@@ -36,13 +36,11 @@ import IconTriangleWarning from "~/renderer/icons/TriangleWarning";
 import { urls } from "~/config/urls";
 import CurrencyUnitValue from "~/renderer/components/CurrencyUnitValue";
 import ExternalLinkButton from "../ExternalLinkButton";
-import TrackPage, { setTrackingSource } from "~/renderer/analytics/TrackPage";
 import { Rotating } from "~/renderer/components/Spinner";
 import ProgressCircle from "~/renderer/components/ProgressCircle";
 import CrossCircle from "~/renderer/icons/CrossCircle";
 import CryptoCurrencyIcon from "~/renderer/components/CryptoCurrencyIcon";
 import { context } from "~/renderer/drawers/Provider";
-import { track } from "~/renderer/analytics/segment";
 import { DrawerFooter } from "~/renderer/screens/exchange/Swap2/Form/DrawerFooter";
 import {
   Theme,
@@ -263,7 +261,7 @@ const OpenManagerBtn = ({
       ...(appName ? { q: appName } : {}),
     });
     const search = urlParams.toString();
-    setTrackingSource("device action open manager button");
+    
     history.push({
       pathname: "/manager",
       search: search ? `?${search}` : "",
@@ -285,7 +283,7 @@ const OpenOnboardingBtn = () => {
   const history = useHistory();
 
   const onClick = useCallback(() => {
-    setTrackingSource("device action open onboarding button");
+    
     dispatch(closeAllModal());
     setDrawer(undefined);
     history.push("/onboarding");
@@ -347,7 +345,7 @@ export const InstallingApp = ({
   const appNameToTrack = appName || request?.appName || currency?.managerAppName;
   const cleanProgress = progress ? Math.round(progress * 100) : null;
   useEffect(() => {
-    track("In-line app install", { appName: appNameToTrack, flow: analyticsPropertyFlow });
+    
   }, [appNameToTrack, analyticsPropertyFlow]);
   return (
     <Wrapper data-test-id="device-action-loader">
@@ -602,7 +600,7 @@ export const RenderDeviceNotOnboardedError = ({
   const dispatch = useDispatch();
 
   const redirectToOnboarding = useCallback(() => {
-    setTrackingSource("device action open onboarding button");
+    
     dispatch(closeAllModal());
     setDrawer(undefined);
     history.push(device?.modelId === "stax" ? "/sync-onboarding/manual" : "/onboarding");

@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import Track from "~/renderer/analytics/Track";
+
 import BoldToggle from "~/renderer/components/BoldToggle";
 import Box from "~/renderer/components/Box";
 import DropDownSelector, {
@@ -49,7 +49,7 @@ function Range() {
       {({ isOpen, value }) =>
         value ? (
           <Box horizontal flow={1}>
-            <Track onUpdate event="ChangeRange" range={rangeItems} />
+            
             <Text color="palette.text.shade60" ff="Inter|SemiBold" fontSize={4}>
               {t("common.range")}
             </Text>

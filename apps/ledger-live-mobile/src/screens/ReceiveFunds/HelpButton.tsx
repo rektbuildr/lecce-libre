@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { Linking, TouchableOpacity } from "react-native";
 import { HelpMedium } from "@ledgerhq/native-ui/assets/icons";
 import { Box } from "@ledgerhq/native-ui";
-import { track } from "../../analytics";
+
 
 type Props = {
   enabled: boolean;
@@ -11,10 +11,7 @@ type Props = {
 };
 const HelpButton = ({ enabled, url, eventButton }: Props) => {
   const onClickButton = useCallback(() => {
-    track("button_clicked", {
-      button: eventButton,
-      type: "{?}",
-    });
+    
     Linking.openURL(url);
   }, [url, eventButton]);
 

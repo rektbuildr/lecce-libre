@@ -8,7 +8,7 @@ import type { Device } from "@ledgerhq/live-common/hw/actions/types";
 import { useFeature } from "@ledgerhq/live-config/featureFlags/index";
 import { Flex } from "@ledgerhq/native-ui";
 import { accountScreenSelector } from "../../reducers/accounts";
-import { TrackScreen } from "../../analytics";
+
 import SelectDevice from "../../components/SelectDevice";
 import SelectDevice2 from "../../components/SelectDevice2";
 import DeviceActionModal from "../../components/DeviceActionModal";
@@ -99,7 +99,7 @@ export default function VerifyAccount({ navigation, route }: NavigationProps) {
         },
       ]}
     >
-      <TrackScreen category="VerifyAccount" name="ConnectDevice" />
+      
       {newDeviceSelectionFeatureFlag?.enabled ? (
         <Flex px={16} py={8} flex={1}>
           <SelectDevice2

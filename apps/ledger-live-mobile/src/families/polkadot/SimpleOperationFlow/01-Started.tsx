@@ -15,7 +15,7 @@ import { Button, Alert, Text, Log } from "@ledgerhq/native-ui";
 import { PolkadotAccount } from "@ledgerhq/live-common/families/polkadot/types";
 import { accountScreenSelector } from "../../../reducers/accounts";
 import { ScreenName } from "../../../const";
-import { TrackScreen } from "../../../analytics";
+
 import TranslatedError from "../../../components/TranslatedError";
 import FlowErrorBottomModal from "../components/FlowErrorBottomModal";
 import SendRowsFee from "../SendRowsFee";
@@ -85,13 +85,7 @@ export default function PolkadotSimpleOperationStarted({ navigation, route }: Na
         ]}
       >
         <View style={styles.container}>
-          <TrackScreen
-            category="SimpleOperationFlow"
-            name="Started"
-            flow="stake"
-            action={action}
-            currency="dot"
-          />
+          
           <View style={styles.content}>
             <Log>
               <Trans i18nKey={`polkadot.simpleOperation.modes.${mode}.description`} />

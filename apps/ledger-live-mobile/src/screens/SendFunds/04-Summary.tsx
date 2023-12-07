@@ -15,7 +15,7 @@ import invariant from "invariant";
 
 import { accountScreenSelector } from "../../reducers/accounts";
 import { ScreenName, NavigatorName } from "../../const";
-import { TrackScreen } from "../../analytics";
+
 import { useTransactionChangeFromNavigation } from "../../logic/screenTransactionHooks";
 import Button from "../../components/Button";
 import LText from "../../components/LText";
@@ -169,7 +169,7 @@ function SendSummary({ navigation, route }: Props) {
         },
       ]}
     >
-      <TrackScreen category="SendFunds" name="Summary" currencyName={currencyOrToken?.name} />
+      
       <NavigationScrollView style={styles.body}>
         {transaction.useAllAmount && hasNonEmptySubAccounts ? (
           <View style={styles.infoBox}>

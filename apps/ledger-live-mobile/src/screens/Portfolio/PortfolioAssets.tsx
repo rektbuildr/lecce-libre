@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { useStartProfiler } from "@shopify/react-native-performance";
 import { GestureResponderEvent } from "react-native";
 import { useDistribution } from "../../actions/general";
-import { TrackScreen } from "../../analytics";
+
 import { NavigatorName, ScreenName } from "../../const";
 import { Box } from "@ledgerhq/native-ui";
 import { useFeature } from "@ledgerhq/live-config/featureFlags/index";
@@ -59,11 +59,7 @@ const PortfolioAssets = ({ hideEmptyTokenAccount, openAddModal }: Props) => {
 
   return (
     <>
-      <TrackScreen
-        category="Wallet"
-        accountsLength={distribution.list && distribution.list.length}
-        discreet={discreetMode}
-      />
+      
       {llmWalletQuickActions?.enabled ? (
         <Box mb={24} mt={18}>
           <PortfolioQuickActionsBar />

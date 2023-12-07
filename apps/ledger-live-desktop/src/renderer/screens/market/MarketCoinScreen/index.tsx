@@ -3,14 +3,13 @@ import { Flex, Text, Icon } from "@ledgerhq/react-ui";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import TrackPage, { setTrackingSource } from "~/renderer/analytics/TrackPage";
+
 import { starredMarketCoinsSelector, localeSelector } from "~/renderer/reducers/settings";
 import { useSingleCoinMarketData } from "@ledgerhq/live-common/market/MarketDataProvider";
 import styled, { useTheme } from "styled-components";
 import CryptoCurrencyIcon from "~/renderer/components/CryptoCurrencyIcon";
 import { getCurrencyColor } from "~/renderer/getCurrencyColor";
 import { addStarredMarketCoins, removeStarredMarketCoins } from "~/renderer/actions/settings";
-import { track } from "~/renderer/analytics/segment";
 import { useGetSwapTrackingProperties } from "~/renderer/screens/exchange/Swap2/utils/index";
 import { Button } from "..";
 import MarketCoinChart from "./MarketCoinChart";
@@ -127,7 +126,7 @@ export default function MarketCoinScreen() {
     (e: React.SyntheticEvent<HTMLButtonElement>) => {
       e.preventDefault();
       e.stopPropagation();
-      setTrackingSource("Page Market Coin");
+      
 
       history.push({
         pathname: "/exchange",
@@ -161,13 +160,8 @@ export default function MarketCoinScreen() {
       if (currency?.internalCurrency?.id) {
         e.preventDefault();
         e.stopPropagation();
-        track("button_clicked", {
-          button: "swap",
-          currency: currency?.ticker,
-          page: "Page Market Coin",
-          ...swapDefaultTrack,
-        });
-        setTrackingSource("Page Market Coin");
+        
+        
 
         const currencyId = currency?.internalCurrency?.id;
 
@@ -204,13 +198,8 @@ export default function MarketCoinScreen() {
     (e: React.SyntheticEvent<HTMLButtonElement>) => {
       e.preventDefault();
       e.stopPropagation();
-      track("button_clicked", {
-        button: "stake",
-        currency: currency?.ticker,
-        page: "Page Market Coin",
-        ...stakeDefaultTrack,
-      });
-      setTrackingSource("Page Market Coin");
+      
+      
 
       startStakeFlow({
         currencies: internalCurrency ? [internalCurrency.id] : undefined,
@@ -230,13 +219,7 @@ export default function MarketCoinScreen() {
 
   return currency && counterCurrency ? (
     <Container data-test-id="market-coin-page-container">
-      <TrackPage
-        category="Page Market Coin"
-        currencyName={name}
-        starred={isStarred}
-        timeframe={chartRequestParams.range}
-        countervalue={counterCurrency}
-      />
+      
       <Flex flexDirection="row" my={2} alignItems="center" justifyContent="space-between">
         <Flex flexDirection="row" alignItems="center" justifyContent="flex-start">
           <CryptoCurrencyIconWrapper>

@@ -23,7 +23,7 @@ import { useBakers } from "@ledgerhq/live-common/families/tezos/bakers";
 import whitelist from "@ledgerhq/live-common/families/tezos/bakers.whitelist-default";
 import { useTheme } from "@react-navigation/native";
 import { accountScreenSelector } from "../../../reducers/accounts";
-import { TrackScreen } from "../../../analytics";
+
 import { ScreenName } from "../../../const";
 import InfoModal from "../../../components/InfoModal";
 import LText, { getFontStyle } from "../../../components/LText";
@@ -234,13 +234,7 @@ export default function SelectValidator({ navigation, route }: Props) {
         },
       ]}
     >
-      <TrackScreen
-        category="DelegationFlow"
-        name="SelectValidator"
-        flow="stake"
-        action="delegation"
-        currency="xtz"
-      />
+      
       <View style={styles.header}>
         {/* TODO SEARCH */}
         <BakerHead onPressHelp={displayInfos} />

@@ -4,7 +4,7 @@ import {
   SupportedCountervaluesData,
 } from "~/renderer/reducers/settings";
 import Dropdown from "./DropDown";
-import Track from "~/renderer/analytics/Track";
+
 import { useTranslation } from "react-i18next";
 import { Currency } from "@ledgerhq/types-cryptoassets";
 import { useSelector } from "react-redux";
@@ -51,7 +51,7 @@ function CounterValueSelect({
 
   return (
     <>
-      <Track onUpdate event="MarketCounterValueSelect" counterValue={cvOption && cvOption.value} />
+      
       <Dropdown
         label={t("market.currency")}
         name="currency"

@@ -5,7 +5,7 @@ import moment from "moment";
 import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
 import { TransactionRefusedOnDevice } from "@ledgerhq/live-common/errors";
 import { UserRefusedOnDevice } from "@ledgerhq/errors";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import Text from "~/renderer/components/Text";
@@ -81,13 +81,7 @@ const StepAmount = ({
     onChange(pendingWithdrawals[0].index);
   return (
     <Box flow={1}>
-      <TrackPage
-        category="Celo Withdraw"
-        name="Step 1"
-        flow="stake"
-        action="withdraw"
-        currency="celo"
-      />
+      
       {error && !isTransactionRefuse(error) ? <ErrorBanner error={error} /> : null}
       <Box>
         {pendingWithdrawals.map(({ value, time, index }) => {

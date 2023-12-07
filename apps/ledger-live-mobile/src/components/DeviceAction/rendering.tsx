@@ -56,7 +56,7 @@ import GenericErrorView from "../GenericErrorView";
 import Circle from "../Circle";
 import { MANAGER_TABS } from "../../const/manager";
 import ExternalLink from "../ExternalLink";
-import { TrackScreen, track } from "../../analytics";
+
 import CurrencyUnitValue from "../CurrencyUnitValue";
 import TermsFooter, { TermsProviders } from "../TermsFooter";
 import CurrencyIcon from "../CurrencyIcon";
@@ -410,7 +410,7 @@ export function renderAllowLanguageInstallation({
       alignSelf="stretch"
       flex={fullScreen ? 1 : undefined}
     >
-      <TrackScreen category="Allow language installation on device" refreshSource={false} />
+      
       <Text variant="h4" textAlign="center">
         {wording ??
           t("deviceLocalization.allowLanguageInstallation", {
@@ -439,7 +439,7 @@ export const renderAllowRemoveCustomLockscreen = ({
 
   return (
     <Wrapper>
-      <TrackScreen category={`Allow CLS removal on ${productName}`} />
+      
       <Text variant="h4" textAlign="center">
         {t("DeviceAction.allowRemoveCustomLockscreen", { productName })}
       </Text>
@@ -944,7 +944,7 @@ export function LoadingAppInstall({
   const appName = request?.appName || currency?.managerAppName;
   useEffect(() => {
     const trackingArgs = ["In-line app install", { appName, flow: analyticsPropertyFlow }] as const;
-    track(...trackingArgs);
+    
   }, [appName, analyticsPropertyFlow]);
 
   return renderLoading({ ...props, lockModal: true });

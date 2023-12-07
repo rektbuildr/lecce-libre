@@ -16,7 +16,7 @@ import { AmountInput } from "./AmountInput";
 import { SwapFormParamList } from "../../types";
 import TranslatedError from "../../../../components/TranslatedError";
 import { ScreenName } from "../../../../const";
-import { useAnalytics } from "../../../../analytics";
+
 import { sharedSwapTracking } from "../../utils";
 import { flattenAccountsSelector } from "../../../../reducers/accounts";
 import { useSelector } from "react-redux";
@@ -56,10 +56,7 @@ export function From({ swapTx, provider, swapError, swapWarning, isSendMaxLoadin
   usePickDefaultAccount(accounts, swapTx.swap.from.account, swapTx.setFromAccount);
 
   const onPress = useCallback(() => {
-    track("button_clicked", {
-      ...sharedSwapTracking,
-      button: "Edit source account",
-    });
+    
     // @ts-expect-error navigation type is only partially declared
     navigation.navigate(ScreenName.SwapSelectAccount, {
       target: "from",
@@ -72,11 +69,7 @@ export function From({ swapTx, provider, swapError, swapWarning, isSendMaxLoadin
   const onFocus = useCallback(
     (event: boolean) => {
       if (event) {
-        track("button_clicked", {
-          ...sharedSwapTracking,
-          button: "Amount input",
-          amount: null,
-        });
+        
       }
     },
     [track],

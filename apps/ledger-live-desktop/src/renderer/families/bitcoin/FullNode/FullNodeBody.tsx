@@ -4,7 +4,7 @@ import {
 } from "@ledgerhq/live-common/families/bitcoin/satstack";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Trans } from "react-i18next";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import ErrorDisplay from "~/renderer/components/ErrorDisplay";
 import { ModalBody } from "~/renderer/components/Modal";
 import Breadcrumb from "~/renderer/components/Stepper/Breadcrumb";
@@ -119,7 +119,7 @@ const FullNodeBody = ({
       }
       render={() => (
         <>
-          <TrackPage category="FullNode" name={`ModalStep-${activeStep}`} />
+          
           {showBreadcrumb ? (
             <Breadcrumb mb={40} currentStep={stepIndex} stepsErrors={errorSteps} items={items} />
           ) : null}

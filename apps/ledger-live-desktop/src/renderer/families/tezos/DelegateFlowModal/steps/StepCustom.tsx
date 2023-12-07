@@ -4,7 +4,7 @@ import { Trans } from "react-i18next";
 import styled from "styled-components";
 import { getMainAccount } from "@ledgerhq/live-common/account/index";
 import { getAccountBridge } from "@ledgerhq/live-common/bridge/index";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import RecipientField from "~/renderer/modals/Send/fields/RecipientField";
 import Button from "~/renderer/components/Button";
 import Box from "~/renderer/components/Box";
@@ -34,13 +34,7 @@ const StepCustom = ({
   const mainAccount = getMainAccount(account, parentAccount);
   return (
     <Box flow={4} mx={40}>
-      <TrackPage
-        category={`Delegation Flow${eventType ? ` (${eventType})` : ""}`}
-        name="Step Custom"
-        flow="stake"
-        action="delegation"
-        currency="xtz"
-      />
+      
       <Box>
         <IconWrapper color="palette.primary.main">
           <UserPlusIcon size={30} />

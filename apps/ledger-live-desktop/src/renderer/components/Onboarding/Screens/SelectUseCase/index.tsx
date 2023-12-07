@@ -11,7 +11,6 @@ import { ScrollArea } from "~/renderer/components/Onboarding/ScrollArea";
 import { Separator } from "./Separator";
 import { registerAssets } from "~/renderer/components/Onboarding/preloadAssets";
 import OnboardingNavHeader from "../../OnboardingNavHeader";
-import { track } from "~/renderer/analytics/segment";
 import { ScreenId } from "../Tutorial";
 import { OnboardingContext, UseCase } from "../../index";
 import connectNanoLight from "./assets/connectNanoLight.png";
@@ -122,7 +121,7 @@ export function SelectUseCase({ setUseCase, setOpenedPedagogyModal }: Props) {
                 <Illustration lightSource={setupNanoLight} darkSource={setupNanoDark} size={220} />
               }
               onClick={() => {
-                track("Onboarding - Setup new");
+                
                 setUseCase(UseCase.setupDevice);
                 setOpenedPedagogyModal(true);
                 history.push(`/onboarding/${UseCase.setupDevice}/${ScreenId.howToGetStarted}`);
@@ -156,7 +155,7 @@ export function SelectUseCase({ setUseCase, setOpenedPedagogyModal }: Props) {
                 />
               }
               onClick={() => {
-                track("Onboarding - Connect");
+                
                 setUseCase(UseCase.connectDevice);
                 history.push(`/onboarding/${UseCase.connectDevice}/${ScreenId.pairMyNano}`);
               }}
@@ -181,7 +180,7 @@ export function SelectUseCase({ setUseCase, setOpenedPedagogyModal }: Props) {
                 />
               }
               onClick={() => {
-                track("Onboarding - Restore");
+                
                 setUseCase(UseCase.recoveryPhrase);
                 history.push(
                   `/onboarding/${UseCase.recoveryPhrase}/${ScreenId.importYourRecoveryPhrase}`,
@@ -204,7 +203,7 @@ export function SelectUseCase({ setUseCase, setOpenedPedagogyModal }: Props) {
                   />
                 }
                 onClick={() => {
-                  track("Onboarding - Restore With Recover");
+                  
 
                   // An array is used here because we'll have to allow Stax later
                   if (deviceModelId && [DeviceModelId.nanoX].includes(deviceModelId)) {

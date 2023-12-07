@@ -13,7 +13,7 @@ import { getCurrentDevice } from "~/renderer/reducers/devices";
 import { accountsSelector } from "~/renderer/reducers/accounts";
 import { replaceAccounts } from "~/renderer/actions/accounts";
 import { closeModal } from "~/renderer/actions/modals";
-import Track from "~/renderer/analytics/Track";
+
 import Stepper, { Step } from "~/renderer/components/Stepper";
 import { SyncSkipUnderPriority } from "@ledgerhq/live-common/bridge/react/index";
 import Modal from "~/renderer/components/Modal";
@@ -296,7 +296,7 @@ class AddAccounts extends PureComponent<Props, State> {
               errorSteps={errorSteps}
               {...stepperProps}
             >
-              <Track onUnmount event="CloseModalAddAccounts" />
+              
               <SyncSkipUnderPriority priority={100} />
             </Stepper>
           );

@@ -8,7 +8,7 @@ import { useTimer } from "@ledgerhq/live-common/hooks/useTimer";
 import { CompositeScreenProps, useTheme } from "@react-navigation/native";
 import { TronAccount, Transaction } from "@ledgerhq/live-common/families/tron/types";
 import { accountScreenSelector } from "../../reducers/accounts";
-import { TrackScreen } from "../../analytics";
+
 import { NavigatorName, ScreenName } from "../../const";
 import PreventNativeBack from "../../components/PreventNativeBack";
 import ValidateSuccess from "../../components/ValidateSuccess";
@@ -59,7 +59,7 @@ export default function ValidationSuccess({ navigation, route }: NavigatorProps)
         },
       ]}
     >
-      <TrackScreen category="FreezeFunds" name="ValidationSuccess" />
+      
       <PreventNativeBack />
       <ValidateSuccess
         onClose={onClose}

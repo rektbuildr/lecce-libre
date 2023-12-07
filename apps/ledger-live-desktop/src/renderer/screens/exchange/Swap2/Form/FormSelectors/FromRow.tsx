@@ -19,7 +19,6 @@ import {
   SwapTransactionType,
   SwapDataType,
 } from "@ledgerhq/live-common/exchange/swap/types";
-import { track } from "~/renderer/analytics/segment";
 import { useGetSwapTrackingProperties } from "../../utils/index";
 import { useCurrenciesByMarketcap } from "@ledgerhq/live-common/currencies/hooks";
 import { listCryptoCurrencies, listTokens } from "@ledgerhq/live-common/currencies/index";
@@ -130,43 +129,24 @@ function FromRow({
   usePickDefaultAccount(accounts, fromAccount, setFromAccount);
 
   const trackEditAccount = () => {
-    track("button_clicked", {
-      button: "Edit source account",
-      page: "Page Swap Form",
-      ...swapDefaultTrack,
-    });
+    
   };
 
   const setAccountAndTrack = (account: AccountLike) => {
     updateSelectedRate();
     const name = account ? getAccountName(account) : undefined;
-    track("button_clicked", {
-      button: "New source account",
-      page: "Page Swap Form",
-      ...swapDefaultTrack,
-      account: name,
-    });
+    
     setFromAccount(account);
   };
 
   const setValue = (fromAmount: BigNumber) => {
-    track("button_clicked", {
-      button: "Amount input",
-      page: "Page Swap Form",
-      ...swapDefaultTrack,
-      amount: null,
-    });
+    
     updateSelectedRate();
     setFromAmount(fromAmount);
   };
 
   const toggleMaxAndTrack = (state: unknown) => {
-    track("button_clicked", {
-      button: "max",
-      page: "Page Swap Form",
-      ...swapDefaultTrack,
-      state,
-    });
+    
     toggleMax();
   };
 

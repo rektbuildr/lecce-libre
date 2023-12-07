@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
-import { track } from "~/renderer/analytics/segment";
 import SummaryLabel from "./SummaryLabel";
 import SectionInformative from "./SectionInformative";
 import SummaryValue, { NoValuePlaceholder } from "./SummaryValue";
@@ -33,11 +32,7 @@ const AccountSection = ({
   const swapDefaultTrack = useGetSwapTrackingProperties();
 
   const handleChangeAndTrack = useCallback(() => {
-    track("button_clicked", {
-      button: "change target account",
-      page: "Page Swap Form",
-      ...swapDefaultTrack,
-    });
+    
 
     if (handleChange) {
       handleChange();
@@ -95,11 +90,7 @@ const SectionTarget = ({
   const swapDefaultTrack = useGetSwapTrackingProperties();
 
   const handleAddAccount = () => {
-    track("button_clicked", {
-      button: "add account",
-      page: "Page Swap Form",
-      ...swapDefaultTrack,
-    });
+    
     dispatch(openModal("MODAL_ADD_ACCOUNTS", { currency, ...swapDefaultTrack }));
   };
 

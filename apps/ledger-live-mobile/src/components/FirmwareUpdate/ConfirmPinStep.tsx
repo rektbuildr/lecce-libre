@@ -5,7 +5,6 @@ import { Device } from "@ledgerhq/live-common/hw/actions/types";
 import { useTheme } from "styled-components/native";
 import { getDeviceAnimation } from "../../helpers/getDeviceAnimation";
 import Animation from "../Animation";
-import Track from "../../analytics/Track";
 
 type Props = {
   device: Device;
@@ -17,7 +16,7 @@ const ConfirmPinStep = ({ device }: Props) => {
 
   return (
     <Flex alignItems="center">
-      <Track event="FirmwareUpdateConfirmPin" onMount />
+      
       <Animation
         source={getDeviceAnimation({
           device,

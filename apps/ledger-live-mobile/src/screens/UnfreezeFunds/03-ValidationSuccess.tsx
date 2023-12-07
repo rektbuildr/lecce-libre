@@ -5,7 +5,7 @@ import { Trans } from "react-i18next";
 import { CompositeScreenProps, useTheme } from "@react-navigation/native";
 import type { Transaction as TronTransaction } from "@ledgerhq/live-common/families/tron/types";
 import { accountScreenSelector } from "../../reducers/accounts";
-import { TrackScreen } from "../../analytics";
+
 import { ScreenName } from "../../const";
 import PreventNativeBack from "../../components/PreventNativeBack";
 import ValidateSuccess from "../../components/ValidateSuccess";
@@ -47,7 +47,7 @@ export default function ValidationSuccess({ navigation, route }: Props) {
         },
       ]}
     >
-      <TrackScreen category="UnfreezeFunds" name="ValidationSuccess" />
+      
       <PreventNativeBack />
       <ValidateSuccess
         onClose={onClose}

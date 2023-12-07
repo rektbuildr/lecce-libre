@@ -7,7 +7,7 @@ import type { BaseNavigatorStackParamList } from "../../components/RootNavigator
 import type { AccountsNavigatorParamList } from "../../components/RootNavigator/types/AccountsNavigator";
 
 import { Flex } from "@ledgerhq/native-ui";
-import { track } from "../../analytics";
+
 import { isWalletConnectSupported } from "@ledgerhq/live-common/walletConnect/index";
 import { CryptoOrTokenCurrency } from "@ledgerhq/types-cryptoassets";
 
@@ -23,10 +23,7 @@ export default function AccountHeaderLeft({ currency }: Props) {
     >();
 
   const onBackButtonPress = useCallback(() => {
-    track("button_clicked", {
-      button: "Back",
-      page: "Account",
-    });
+    
     navigation.goBack();
   }, [navigation]);
 

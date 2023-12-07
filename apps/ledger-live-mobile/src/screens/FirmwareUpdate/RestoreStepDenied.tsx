@@ -5,7 +5,7 @@ import { TFunction } from "i18next";
 import { getDeviceModel } from "@ledgerhq/devices";
 import Button from "../../components/wrappedUi/Button";
 import Link from "../../components/wrappedUi/Link";
-import { TrackScreen } from "../../analytics";
+
 import { UserRefusedAllowManager } from "@ledgerhq/errors";
 import {
   LanguageInstallRefusedOnDevice,
@@ -37,7 +37,7 @@ export const RestoreStepDenied = ({
       : `Error: ${(stepDeniedError as Error).name}`;
   return (
     <Flex alignItems="center" justifyContent="center" px={1}>
-      <TrackScreen category={analyticsDrawerName} refreshSource={false} />
+      
       <IconBadge iconColor="primary.c100" iconSize={32} Icon={IconsLegacy.InfoAltFillMedium} />
       <Text fontSize={7} fontWeight="semiBold" textAlign="center" mt={6}>
         {

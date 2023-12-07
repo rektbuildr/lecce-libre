@@ -23,7 +23,7 @@ import ConfirmPinStep from "./ConfirmPinStep";
 import ConfirmUpdateStep from "./ConfirmUpdateStep";
 import DownloadingUpdateStep from "./DownloadingUpdateStep";
 import DeviceLanguageStep from "./DeviceLanguageStep";
-import { track } from "../../analytics";
+
 import { FwUpdateForegroundEvent } from "./types";
 import { FwUpdateBackgroundEvent } from "../../reducers/types";
 
@@ -169,7 +169,7 @@ export default function FirmwareUpdate({
 
   useEffect(() => {
     if (step === "error") {
-      track("FirmwareUpdateError", error ?? null);
+      
     }
   }, [error, step]);
 

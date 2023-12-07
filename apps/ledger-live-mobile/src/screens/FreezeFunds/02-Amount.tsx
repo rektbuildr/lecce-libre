@@ -19,7 +19,7 @@ import { GraphTabs, Text, IconsLegacy } from "@ledgerhq/native-ui";
 import { Transaction } from "@ledgerhq/live-common/families/tron/types";
 import { accountScreenSelector } from "../../reducers/accounts";
 import { ScreenName } from "../../const";
-import { TrackScreen } from "../../analytics";
+
 import LText from "../../components/LText";
 import CurrencyUnitValue from "../../components/CurrencyUnitValue";
 import KeyboardView from "../../components/KeyboardView";
@@ -215,7 +215,7 @@ export default function FreezeAmount({ navigation, route }: NavigatorProps) {
 
   return (
     <>
-      <TrackScreen category="FreezeFunds" name="Amount" />
+      
       <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
         <KeyboardView style={styles.container}>
           <View style={styles.topContainer}>

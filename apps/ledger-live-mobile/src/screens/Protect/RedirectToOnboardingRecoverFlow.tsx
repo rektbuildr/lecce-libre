@@ -18,7 +18,7 @@ import {
 } from "@ledgerhq/live-common/hw/extractOnboardingState";
 import { first } from "rxjs/operators";
 import { from } from "rxjs";
-import { TrackScreen } from "../../analytics";
+
 import { SetHeaderOptionsRequest } from "../../components/SelectDevice2";
 import { RootComposite, StackNavigatorProps } from "../../components/RootNavigator/types/helpers";
 import { BaseNavigatorStackParamList } from "../../components/RootNavigator/types/BaseNavigator";
@@ -158,7 +158,7 @@ export function RedirectToOnboardingRecoverFlowScreen({ navigation }: Navigation
   if (error) {
     return (
       <SafeAreaView edges={edges} style={savStyle}>
-        <TrackScreen category="RedirectToRecoverOnboarding" name="Error handling" />
+        
         <Flex px={16} py={5} flex={1} justifyContent="space-between">
           <Flex flex={1} justifyContent="center">
             <GenericErrorView
@@ -191,7 +191,7 @@ export function RedirectToOnboardingRecoverFlowScreen({ navigation }: Navigation
   if (state?.isOnboarded) {
     return (
       <SafeAreaView edges={edges} style={savStyle}>
-        <TrackScreen category="RedirectToRecoverOnboarding" name="Already seeded" />
+        
         <Flex px={16} py={5} flex={1} justifyContent="space-between">
           <Flex flex={1} justifyContent="center">
             <GenericErrorView
@@ -221,7 +221,7 @@ export function RedirectToOnboardingRecoverFlowScreen({ navigation }: Navigation
 
   return (
     <SafeAreaView edges={edges} style={savStyle}>
-      <TrackScreen category="RedirectToRecoverOnboarding" name="PairingFlow" />
+      
       <Flex px={16} py={5} marginTop={headerHeight} flex={1}>
         <BleDevicePairingFlow
           onPairingSuccess={handleOnSelect}

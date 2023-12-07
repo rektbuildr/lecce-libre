@@ -6,7 +6,6 @@ import EntryButton from "~/renderer/components/EntryButton/EntryButton";
 import { useHistory } from "react-router-dom";
 import useStakeFlow from "~/renderer/screens/stake";
 import { useFeature } from "@ledgerhq/live-config/featureFlags/index";
-import { track } from "~/renderer/analytics/segment";
 
 const ButtonGrid = styled(Grid).attrs(() => ({
   columns: 3,
@@ -28,19 +27,19 @@ const FeaturedButtons = () => {
   const startStakeFlow = useStakeFlow();
 
   const handleClickExchange = useCallback(() => {
-    track("button_clicked", { button: "buy", flow: "Buy", page: "portfolio" });
+    
 
     history.push("/exchange");
   }, [history]);
 
   const handleClickSwap = useCallback(() => {
-    track("button_clicked", { button: "swap", flow: "Swap", page: "portfolio" });
+    
 
     history.push("/swap");
   }, [history]);
 
   const handleClickStake = useCallback(() => {
-    track("button_clicked", { button: "stake", flow: "stake", page: "portfolio" });
+    
 
     startStakeFlow({ source: "Portafolio" });
   }, [startStakeFlow]);

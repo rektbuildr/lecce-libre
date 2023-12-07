@@ -7,7 +7,7 @@ import { Result } from "@ledgerhq/live-common/hw/actions/manager";
 import DeviceActionModal from "../../../../../components/DeviceActionModal";
 import SelectDevice from "../../../../../components/SelectDevice";
 import SelectDevice2 from "../../../../../components/SelectDevice2";
-import { TrackScreen } from "../../../../../analytics";
+
 import Button from "../../../../../components/PreventDoubleClickButton";
 
 import {
@@ -79,7 +79,7 @@ const ConnectNanoScene = ({
 
   return (
     <>
-      <TrackScreen category="Onboarding" name="PairNew" />
+      
       <Flex flex={1}>
         {newDeviceSelectionFeatureFlag?.enabled ? (
           <SelectDevice2

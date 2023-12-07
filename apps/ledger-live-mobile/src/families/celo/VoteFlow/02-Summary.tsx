@@ -19,7 +19,7 @@ import { Trans } from "react-i18next";
 import { Animated, SafeAreaView, StyleSheet, View } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { useSelector } from "react-redux";
-import { TrackScreen } from "../../../analytics";
+
 import { rgba } from "../../../colors";
 import Button from "../../../components/Button";
 import Circle from "../../../components/Circle";
@@ -155,7 +155,7 @@ export default function VoteSummary({ navigation, route }: Props) {
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
-      <TrackScreen category="VoteFlow" name="Summary" flow="stake" action="vote" currency="celo" />
+      
 
       <View style={styles.body}>
         <DelegatingContainer

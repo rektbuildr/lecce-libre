@@ -3,7 +3,7 @@ import { Trans } from "react-i18next";
 import styled from "styled-components";
 import { listTokensForCryptoCurrency } from "@ledgerhq/live-common/currencies/index";
 import { SyncOneAccountOnMount } from "@ledgerhq/live-common/bridge/react/index";
-import TrackPage from "~/renderer/analytics/TrackPage";
+
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
 import RetryButton from "~/renderer/components/RetryButton";
@@ -31,7 +31,7 @@ function StepConfirmation({ account, optimisticOperation, error, signed, transac
   if (optimisticOperation) {
     return (
       <Container>
-        <TrackPage category="ClaimRewards Algorand Flow" name="Step Confirmed" />
+        
         <SyncOneAccountOnMount
           reason="transaction-flow-confirmation"
           priority={10}
@@ -65,7 +65,7 @@ function StepConfirmation({ account, optimisticOperation, error, signed, transac
   if (error) {
     return (
       <Container shouldSpace={signed}>
-        <TrackPage category="ClaimRewards Algorand Flow" name="Step Confirmation Error" />
+        
         {signed ? (
           <BroadcastErrorDisclaimer
             title={<Trans i18nKey="algorand.optIn.flow.steps.confirmation.broadcastError" />}

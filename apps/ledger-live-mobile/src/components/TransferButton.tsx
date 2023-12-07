@@ -3,7 +3,7 @@ import { BoxedIcon, Flex, Tag, Text } from "@ledgerhq/native-ui";
 import { TouchableOpacity, StyleProp, ViewStyle } from "react-native";
 import type { IconType } from "@ledgerhq/native-ui/components/Icon/type";
 import { ChevronRightMedium } from "@ledgerhq/native-ui/assets/icons";
-import { track } from "../analytics";
+
 
 type Props = {
   title: string;
@@ -40,7 +40,7 @@ export default function TransferButton({
       return;
     }
     if (onPress) onPress();
-    if (event) track(event, eventProperties ?? null);
+    if (event) 
   }, [onPress, event, eventProperties, disabled, onDisabledPress]);
 
   return (

@@ -2,8 +2,7 @@ import { SyncOneAccountOnMount } from "@ledgerhq/live-common/bridge/react/index"
 import { useValidatorGroups } from "@ledgerhq/live-common/families/celo/react";
 import React, { useEffect } from "react";
 import { Trans } from "react-i18next";
-import TrackPage from "~/renderer/analytics/TrackPage";
-import { track } from "~/renderer/analytics/segment";
+
 import Box from "~/renderer/components/Box";
 import BroadcastErrorDisclaimer from "~/renderer/components/BroadcastErrorDisclaimer";
 import Button from "~/renderer/components/Button";
@@ -83,13 +82,7 @@ const StepConfirmation = ({
   if (optimisticOperation) {
     return (
       <S.Container>
-        <TrackPage
-          category="Celo Activate"
-          name="Step Confirmed"
-          flow="stake"
-          action="activate"
-          currency="celo"
-        />
+        
         <SuccessDisplay
           title={<Trans i18nKey="celo.activate.steps.confirmation.success.title" />}
           description={multiline(t("celo.activate.steps.confirmation.success.text"))}
@@ -100,13 +93,7 @@ const StepConfirmation = ({
   if (error) {
     return (
       <S.Container shouldSpace={signed}>
-        <TrackPage
-          category="Celo Activate"
-          name="Step Confirmation Error"
-          flow="stake"
-          action="activate"
-          currency="celo"
-        />
+        
         {signed ? (
           <BroadcastErrorDisclaimer
             title={<Trans i18nKey="celo.activate.steps.confirmation.broadcastError" />}

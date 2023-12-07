@@ -1,6 +1,6 @@
 import { EnvName } from "@ledgerhq/live-env";
 import React, { useCallback } from "react";
-import Track from "~/renderer/analytics/Track";
+
 import Switch from "~/renderer/components/Switch";
 type Props = {
   name: EnvName;
@@ -27,7 +27,7 @@ const ExperimentalSwitch = ({
   );
   return (
     <>
-      <Track onUpdate event={checked ? `${name}Enabled` : `${name}Disabled`} />
+      
       <Switch
         disabled={readOnly}
         isChecked={checked}

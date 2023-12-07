@@ -6,7 +6,7 @@ import { TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import styled, { useTheme } from "styled-components/native";
 import { setDateFormat } from "../../../actions/settings";
-import { track, TrackScreen } from "../../../analytics";
+
 import { Format } from "../../../components/DateFormat/formatter.util";
 import QueuedDrawer from "../../../components/QueuedDrawer";
 import { ScreenName } from "../../../const";
@@ -25,10 +25,7 @@ export function DateFormatDrawer({ isOpen, closeModal }: Props) {
   const dateFormat = useSelector(dateFormatSelector);
 
   const onClose = useCallback(() => {
-    track("button_clicked", {
-      button: "Close",
-      drawer: drawerNameAnalytics,
-    });
+    
     closeModal();
   }, [closeModal]);
 
@@ -50,11 +47,7 @@ export function DateFormatDrawer({ isOpen, closeModal }: Props) {
   const onClickRow = useCallback(
     (value: Format) => {
       dispatch(setDateFormat(value));
-      track("button_clicked", {
-        button: value,
-        page: ScreenName.SettingsScreen,
-        drawer: drawerNameAnalytics,
-      });
+      
       closeModal();
     },
     [closeModal, dispatch],
@@ -67,7 +60,7 @@ export function DateFormatDrawer({ isOpen, closeModal }: Props) {
       preventBackdropClick
       title={t("settings.display.DateFormatModal.title")}
     >
-      <TrackScreen category={drawerNameAnalytics} type="drawer" refreshSource={false} />
+      
       {options.map((option, index) => (
         <Row
           title={option.title}

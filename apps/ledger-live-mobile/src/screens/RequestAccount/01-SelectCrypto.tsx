@@ -5,7 +5,7 @@ import type { CryptoOrTokenCurrency } from "@ledgerhq/types-cryptoassets";
 import { useCurrenciesByMarketcap } from "@ledgerhq/live-common/currencies/hooks";
 import { useTheme } from "@react-navigation/native";
 import { ScreenName } from "../../const";
-import { TrackScreen } from "../../analytics";
+
 import FilteredSearchBar from "../../components/FilteredSearchBar";
 import KeyboardView from "../../components/KeyboardView";
 import CurrencyRow from "../../components/CurrencyRow";
@@ -73,7 +73,7 @@ export default function RequestAccountsSelectCrypto({ navigation, route }: Props
         },
       ]}
     >
-      <TrackScreen category="RequestAccounts" name="SelectCrypto" />
+      
       <KeyboardView>
         <View style={styles.searchContainer}>
           <FilteredSearchBar

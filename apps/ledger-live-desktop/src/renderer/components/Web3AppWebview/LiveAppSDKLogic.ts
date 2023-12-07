@@ -9,21 +9,17 @@ import { accountToPlatformAccount } from "@ledgerhq/live-common/platform/convert
 import { broadcastTransactionLogic as broadcastTransactionCommonLogic } from "@ledgerhq/live-common/platform/logic";
 import { RawPlatformSignedTransaction } from "@ledgerhq/live-common/platform/rawTypes";
 import { serializePlatformAccount } from "@ledgerhq/live-common/platform/serializers";
-import trackingWrapper from "@ledgerhq/live-common/platform/tracking";
 import { LiveAppManifest } from "@ledgerhq/live-common/platform/types";
 import { updateAccountWithUpdater } from "../../actions/accounts";
 import { selectAccountAndCurrency } from "../../drawers/DataSelector/logic";
 import { OperationDetails } from "~/renderer/drawers/OperationDetails";
 import { setDrawer } from "~/renderer/drawers/Provider";
-import { track } from "~/renderer/analytics/segment";
 
-const trackingLiveAppSDKLogic = trackingWrapper(track);
 
 type WebPlatformContext = {
   manifest: LiveAppManifest;
   dispatch: Dispatch;
   accounts: AccountLike[];
-  tracking: typeof trackingLiveAppSDKLogic;
 };
 
 export type RequestAccountParams = {
@@ -35,7 +31,6 @@ export const requestAccountLogic = async (
   { manifest }: Omit<WebPlatformContext, "accounts" | "dispatch" | "tracking">,
   { currencies, includeTokens }: RequestAccountParams,
 ) => {
-  trackingLiveAppSDKLogic.platformRequestAccountRequested(manifest);
 
   /**
    * make sure currencies are strings
@@ -51,14 +46,14 @@ export const requestAccountLogic = async (
 };
 
 export const broadcastTransactionLogic = (
-  { manifest, dispatch, accounts, tracking }: WebPlatformContext,
+  { manifest, dispatch, accounts }: WebPlatformContext,
   accountId: string,
   signedTransaction: RawPlatformSignedTransaction,
   pushToast: (data: ToastData) => void,
   t: TFunction,
 ): Promise<string> =>
   broadcastTransactionCommonLogic(
-    { manifest, accounts, tracking },
+    { manifest, accounts },
     accountId,
     signedTransaction,
     async (
@@ -78,9 +73,7 @@ export const broadcastTransactionLogic = (
             account: mainAccount,
             signedOperation,
           });
-          tracking.platformBroadcastSuccess(manifest);
         } catch (error) {
-          tracking.platformBroadcastFail(manifest);
           throw error;
         }
       }
@@ -98,7 +91,6 @@ export const broadcastTransactionLogic = (
         text: t("platform.flows.broadcast.toast.text"),
         icon: "info",
         callback: () => {
-          tracking.platformBroadcastOperationDetailsClick(manifest);
           setDrawer<{
             operationId: string;
             accountId: string;

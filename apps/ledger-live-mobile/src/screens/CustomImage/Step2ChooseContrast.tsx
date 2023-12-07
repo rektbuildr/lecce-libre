@@ -23,7 +23,7 @@ import { ScreenName } from "../../const";
 import { CustomImageNavigatorParamList } from "../../components/RootNavigator/types/CustomImageNavigator";
 import { BaseComposite, StackNavigatorProps } from "../../components/RootNavigator/types/helpers";
 import ForceTheme from "../../components/theme/ForceTheme";
-import { TrackScreen } from "../../analytics";
+
 
 export const PreviewImage = styled.Image.attrs({
   resizeMode: "contain",
@@ -182,7 +182,7 @@ const Step2ChooseContrast = ({ navigation, route }: NavigationProps) => {
 
   return (
     <SafeAreaView edges={["bottom"]} style={{ flex: 1, justifyContent: "space-between" }}>
-      <TrackScreen category={analyticsScreenName} />
+      
       {resizedImage?.imageBase64DataUri && (
         <ImageProcessor
           ref={imageProcessorRef}

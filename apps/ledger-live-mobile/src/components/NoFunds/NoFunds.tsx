@@ -9,7 +9,6 @@ import { StyleProp, ViewStyle } from "react-native";
 import CoinsIcon from "./CoinsIcon";
 import TransferButton from "../TransferButton";
 import { NavigatorName, ScreenName } from "../../const";
-import { TrackScreen, useAnalytics, track } from "../../analytics";
 import type { NoFundsNavigatorParamList } from "../RootNavigator/types/NoFundsNavigator";
 import { StackNavigatorProps } from "../RootNavigator/types/helpers";
 import { Currency } from "@ledgerhq/types-cryptoassets";
@@ -79,10 +78,7 @@ export default function NoFunds({ route }: Props) {
   );
 
   const onReceiveFunds = useCallback(() => {
-    track("button_clicked", {
-      button: "receive",
-      page,
-    });
+    
     onNavigate(NavigatorName.ReceiveFunds, {
       screen: ScreenName.ReceiveConfirmation,
       params: {
@@ -94,20 +90,14 @@ export default function NoFunds({ route }: Props) {
   }, [account.id, currency, onNavigate, page, parentAccount?.id, track]);
 
   const onSwap = useCallback(() => {
-    track("button_clicked", {
-      button: "swap",
-      page,
-    });
+    
     onNavigate(NavigatorName.Swap, {
       screen: ScreenName.SwapForm,
     });
   }, [onNavigate, page, track]);
 
   const onBuy = useCallback(() => {
-    track("button_clicked", {
-      button: "buy",
-      page,
-    });
+    
     onNavigate(NavigatorName.Exchange, { screen: ScreenName.ExchangeBuy });
   }, [onNavigate, page, track]);
 
@@ -143,7 +133,7 @@ export default function NoFunds({ route }: Props) {
 
   return (
     <Flex style={{ height: "100%" }} justifyContent="center">
-      <TrackScreen category="NoFundsFlow" name="ServiceModal" />
+      
       <Flex mx={45}>
         <Flex alignItems="center">
           <CoinsIcon />

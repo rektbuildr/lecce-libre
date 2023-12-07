@@ -6,7 +6,7 @@ import invariant from "invariant";
 import { useTheme } from "@react-navigation/native";
 import { usePolkadotPreloadData } from "@ledgerhq/live-common/families/polkadot/react";
 import { accountScreenSelector } from "../../../reducers/accounts";
-import { TrackScreen, track } from "../../../analytics";
+
 import { ScreenName } from "../../../const";
 import PreventNativeBack from "../../../components/PreventNativeBack";
 import ValidateSuccess from "../../../components/ValidateSuccess";
@@ -41,13 +41,7 @@ export default function ValidationSuccess({ navigation, route }: Props) {
   const source = route.params.source?.name ?? "unknown";
 
   useEffect(() => {
-    track("staking_completed", {
-      currency: "DOT",
-      validator: validators,
-      source,
-      delegation: "nomination",
-      flow: "stake",
-    });
+    
   }, [source, validators]);
 
   const goToOperationDetails = useCallback(() => {
@@ -68,13 +62,7 @@ export default function ValidationSuccess({ navigation, route }: Props) {
         },
       ]}
     >
-      <TrackScreen
-        category="NominateFlow"
-        name="ValidationSuccess"
-        flow="stake"
-        action="nomination"
-        currency="dot"
-      />
+      
       <PreventNativeBack />
       <ValidateSuccess
         onClose={onClose}

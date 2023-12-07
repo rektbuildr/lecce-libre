@@ -9,7 +9,7 @@ import { getDeviceModel } from "@ledgerhq/devices";
 import { DeviceModelInfo } from "@ledgerhq/types-live";
 
 import { DeviceModelId } from "@ledgerhq/types-devices";
-import { TrackScreen, track } from "../../../analytics";
+
 import { DeviceActionDefaultRendering } from "..";
 import QueuedDrawer from "../../QueuedDrawer";
 
@@ -106,7 +106,7 @@ const InstallSetOfApps = ({
 
   if (opened) {
     onResult(true);
-    return error ? null : <TrackScreen category="Step 5: Install apps - successful" />;
+    return error ? null : 
   }
 
   return userConfirmed ? (
@@ -146,7 +146,7 @@ const InstallSetOfApps = ({
           return (
             <>
               {!shouldRestoreApps && currentAppOp?.name === appName && (
-                <TrackScreen category={`Installing ${appName}`} />
+                
               )}
               <Item
                 key={appName}
@@ -166,7 +166,7 @@ const InstallSetOfApps = ({
         onModalHide={onWrappedError}
       >
         {error instanceof UserRefusedAllowManager ? (
-          <TrackScreen category="App restoration cancelled on device" refreshSource={false} />
+          
         ) : null}
         <Flex alignItems="center">
           <Flex flexDirection="row">
@@ -177,32 +177,32 @@ const InstallSetOfApps = ({
     </Flex>
   ) : shouldRestoreApps ? (
     <>
-      <TrackScreen category="Restore Applications Start" />
+      
       <Restore
         deviceName={productName}
         deviceModelId={selectedDevice.modelId}
         lastSeenDeviceModelId={lastSeenDeviceModelId}
         onConfirm={() => {
-          track("button_clicked", { button: "Restore applications" });
+          
           setUserConfirmed(true);
         }}
         onReject={() => {
-          track("button_clicked", { button: "I'll do this later" });
+          
           onResult(false);
         }}
       />
     </>
   ) : (
     <>
-      <TrackScreen category="Install Applications Start" />
+      
       <Confirmation
         productName={productName}
         onConfirm={() => {
-          track("button_clicked", { button: "Install applications" });
+          
           setUserConfirmed(true);
         }}
         onReject={() => {
-          track("button_clicked", { button: "I'll do this later" });
+          
           onResult(false);
         }}
       />

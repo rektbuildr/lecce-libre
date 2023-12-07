@@ -11,7 +11,7 @@ import {
 } from "@ledgerhq/live-common/currencies/index";
 import { useCurrenciesByMarketcap } from "@ledgerhq/live-common/currencies/hooks";
 import { CryptoCurrency, TokenCurrency } from "@ledgerhq/types-cryptoassets";
-import TrackScreen from "../../../analytics/TrackScreen";
+
 
 import ReadOnlyAccountRow from "./ReadOnlyAccountRow";
 import { withDiscreetMode } from "../../../context/DiscreetModeContext";
@@ -73,7 +73,7 @@ function ReadOnlyAccounts({ navigation, route }: NavigationProps) {
 
   return (
     <TabBarSafeAreaView>
-      <TrackScreen category="ReadOnly" name="Assets" source={source} />
+      
       <Flex flex={1} bg={"background.main"}>
         <AccountsNavigationHeader readOnly />
         <FlatList

@@ -7,7 +7,7 @@ import { Flex, IconBox, Text } from "@ledgerhq/native-ui";
 import { CheckAloneMedium } from "@ledgerhq/native-ui/assets/icons";
 import { DeviceModelId } from "@ledgerhq/types-devices";
 import { useSelector } from "react-redux";
-import { TrackScreen, track } from "../../analytics";
+
 import Button from "../../components/Button";
 import { onboardingTypeSelector } from "../../reducers/settings";
 
@@ -25,15 +25,13 @@ export default function Paired({ device, onContinue: onContinueProps }: Props) {
 
   useEffect(() => {
     if (onboardingType) {
-      track("Onboarding success", {
-        onboarding_type: onboardingType,
-      });
+      
     }
   }, [onboardingType]);
 
   return (
     <Flex flexDirection={"column"} flex={1} justifyContent={"center"} mx={6}>
-      <TrackScreen category="PairDevices" name="Paired" />
+      
       <Flex alignItems={"center"}>
         <IconBox Icon={CheckAloneMedium} iconSize={24} boxSize={64} color={"success.c50"} />
       </Flex>

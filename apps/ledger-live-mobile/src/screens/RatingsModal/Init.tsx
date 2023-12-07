@@ -3,7 +3,6 @@ import { TouchableOpacity } from "react-native";
 import { Trans } from "react-i18next";
 import styled from "styled-components/native";
 import { Flex, Text, Button } from "@ledgerhq/native-ui";
-import { track, TrackScreen, updateIdentify } from "../../analytics";
 import useRatings from "../../logic/ratings";
 
 const NotNowButton = styled(TouchableOpacity)`
@@ -36,7 +35,6 @@ const Init = ({ closeModal, setStep }: Props) => {
       source: ratingsHappyMoment?.route_name,
       params: ratingsFeatureParams,
     });
-    updateIdentify();
   }, [setStep, handleSatisfied, ratingsHappyMoment?.route_name, ratingsFeatureParams]);
   const goToDisappointed = useCallback(() => {
     setStep("disappointed");
@@ -53,7 +51,6 @@ const Init = ({ closeModal, setStep }: Props) => {
         satisfaction: "disappointed",
       },
     );
-    updateIdentify();
   }, [
     setStep,
     ratingsHappyMoment?.route_name,
@@ -74,14 +71,7 @@ const Init = ({ closeModal, setStep }: Props) => {
 
   return (
     <Flex flex={1} alignItems="center" justifyContent="center" mt={3}>
-      <TrackScreen
-        category="Review"
-        name="page_viewed"
-        flow="review"
-        page="review_step0"
-        source={ratingsHappyMoment?.route_name}
-        params={ratingsFeatureParams}
-      />
+
       <Text
         variant="h4"
         fontWeight="semiBold"

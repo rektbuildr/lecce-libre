@@ -5,7 +5,7 @@ import { openModal } from "~/renderer/actions/modals";
 import Switch from "~/renderer/components/Switch";
 import Box from "~/renderer/components/Box";
 import Button from "~/renderer/components/Button";
-import Track from "~/renderer/analytics/Track";
+
 import { hasPasswordSelector } from "~/renderer/reducers/application";
 const PasswordButton = () => {
   const dispatch = useDispatch();
@@ -29,7 +29,7 @@ const PasswordButton = () => {
   );
   return (
     <>
-      <Track onUpdate event={hasPassword ? "PasswordEnabled" : "PasswordDisabled"} />
+      
       <Box horizontal flow={2} alignItems="center">
         {hasPassword && (
           <Button

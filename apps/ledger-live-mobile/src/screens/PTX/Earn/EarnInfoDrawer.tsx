@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Button, Flex, Text } from "@ledgerhq/native-ui";
 import { useTranslation } from "react-i18next";
 
-import { Track } from "../../../analytics";
+
 import QueuedDrawer from "../../../components/QueuedDrawer";
 import { useDispatch, useSelector } from "react-redux";
 import { earnInfoModalSelector } from "../../../reducers/earn";
@@ -30,7 +30,7 @@ export function EarnInfoDrawer() {
   return (
     <QueuedDrawer isRequestingToBeOpened={modalOpened} onClose={closeModal}>
       <Flex rowGap={52}>
-        <Track onMount event="Earn Info Modal" />
+        
         <Flex rowGap={56}>
           <Flex rowGap={16}>
             <Text variant="h4" fontFamily="Inter" textAlign="center" fontWeight="bold">

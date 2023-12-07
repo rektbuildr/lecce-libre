@@ -5,7 +5,7 @@ import { Trans } from "react-i18next";
 import { listTokensForCryptoCurrency } from "@ledgerhq/live-common/currencies/index";
 import { useTheme } from "@react-navigation/native";
 import { accountScreenSelector } from "../../../reducers/accounts";
-import { TrackScreen } from "../../../analytics";
+
 import { ScreenName } from "../../../const";
 import PreventNativeBack from "../../../components/PreventNativeBack";
 import ValidateSuccess from "../../../components/ValidateSuccess";
@@ -53,7 +53,7 @@ export default function ValidationSuccess({ navigation, route }: Props) {
         },
       ]}
     >
-      <TrackScreen category="StellarAddAsset" name="ValidationSuccess" />
+      
       <PreventNativeBack />
       <ValidateSuccess
         onClose={onClose}

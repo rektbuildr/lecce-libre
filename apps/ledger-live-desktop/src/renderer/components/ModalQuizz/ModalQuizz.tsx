@@ -6,7 +6,6 @@ import Answer from "./Answer";
 import { useTheme } from "styled-components";
 import { useTranslation } from "react-i18next";
 import CloseButton from "../ModalStepper/CloseButton";
-import { track } from "~/renderer/analytics/segment";
 
 type QuizzChoice = {
   /**
@@ -125,7 +124,7 @@ const ModalQuizz: React.FunctionComponent<Props> = ({
   const isCorrectChoice = userChoice ? userChoice.correct : undefined;
 
   useEffect(() => {
-    track(`Onboarding - Quizz step ${stepIndex}`);
+    
   }, [stepIndex]);
 
   const onClickContinue = useCallback(() => {
@@ -149,7 +148,7 @@ const ModalQuizz: React.FunctionComponent<Props> = ({
       setUserChoiceIndex(n);
       const isCorrect = choices[n].correct;
       if (isCorrect) setScore(score + 1);
-      track(`Onboarding - Quizz step ${stepIndex} ${isCorrect ? "correct" : "false"}`);
+      
     },
     [score, stepIndex, userMadeAChoice, setUserChoiceIndex, choices, setScore],
   );

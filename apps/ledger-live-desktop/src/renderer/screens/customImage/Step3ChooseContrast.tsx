@@ -5,8 +5,6 @@ import { Step, StepProps } from "./types";
 import { useTranslation } from "react-i18next";
 import StepFooter from "./StepFooter";
 import StepContainer from "./StepContainer";
-import TrackPage from "~/renderer/analytics/TrackPage";
-import { analyticsFlowName, analyticsPageNames } from "./shared";
 
 type Props = StepProps & {
   onResult: React.ComponentProps<typeof ImageGrayscalePreview>["onResult"];
@@ -50,12 +48,7 @@ const StepChooseContrast: React.FC<Props> = props => {
         />
       }
     >
-      <TrackPage
-        category={analyticsPageNames.chooseContrast}
-        type="drawer"
-        flow={analyticsFlowName}
-        refreshSource={false}
-      />
+      
       {src ? (
         <ImageGrayscalePreview
           {...src}

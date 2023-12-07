@@ -11,8 +11,8 @@ import firmwareUpdatePrepare from "@ledgerhq/live-common/hw/firmwareUpdate-prepa
 import { getEnv } from "@ledgerhq/live-env";
 import { UnexpectedBootloader } from "@ledgerhq/errors";
 import { getCurrentDevice } from "~/renderer/reducers/devices";
-import TrackPage from "~/renderer/analytics/TrackPage";
-import Track from "~/renderer/analytics/Track";
+
+
 import Box from "~/renderer/components/Box";
 import Text from "~/renderer/components/Text";
 import Interactions from "~/renderer/icons/device/interactions";
@@ -77,7 +77,7 @@ const Body = ({
   if (displayedOnDevice) {
     return (
       <>
-        <Track event={"FirmwareUpdateConfirmNewFirwmare"} onMount />
+        
         <DeviceBlocker />
         {isBlue ? (
           <Box mt={4}>
@@ -138,7 +138,7 @@ const Body = ({
 
   return (
     <>
-      <Track event={"FirmwareUpdateConfirmNewFirwmare"} onMount />
+      
       <Box mx={7} mt={5} mb={isBlue ? 0 : 5}>
         <Text ff="Inter|SemiBold" textAlign="center" color="palette.text.shade100">
           {t("manager.modal.confirmUpdate")}
@@ -258,7 +258,7 @@ const StepPrepare = ({
 
   return (
     <Container data-test-id="firmware-update-download-progress">
-      <TrackPage category="Manager" name="InstallFirmware" />
+      
       <Body
         deviceModelId={deviceModelId}
         deviceInfo={deviceInfo}

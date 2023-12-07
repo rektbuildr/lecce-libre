@@ -8,7 +8,7 @@ import { Operation } from "@ledgerhq/types-live";
 
 import byFamiliesOperationDetails from "../../generated/operationDetails";
 import { accountScreenSelector } from "../../reducers/accounts";
-import { TrackScreen } from "../../analytics";
+
 import NavigationScrollView from "../../components/NavigationScrollView";
 import Footer from "./Footer";
 import Content from "./Content";
@@ -55,7 +55,7 @@ function OperationDetails({ route }: NavigatorProps) {
 
   return (
     <SafeAreaView edges={["bottom"]} style={[styles.container]}>
-      <TrackScreen category="OperationDetails" />
+      
       <NavigationScrollView>
         <View style={styles.root}>
           <Content

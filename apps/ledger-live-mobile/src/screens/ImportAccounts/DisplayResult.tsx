@@ -20,7 +20,7 @@ import { Flex } from "@ledgerhq/native-ui";
 import { importDesktopSettings } from "../../actions/settings";
 import { importAccounts } from "../../actions/accounts";
 import { accountsSelector } from "../../reducers/accounts";
-import { TrackScreen } from "../../analytics";
+
 import { NavigatorName, ScreenName } from "../../const";
 import LText from "../../components/LText";
 import Button from "../../components/Button";
@@ -209,7 +209,7 @@ class DisplayResult extends Component<Props, State> {
     return (
       <SafeAreaView style={[styles.root]}>
         <Flex bg="background.main" flex={1}>
-          <TrackScreen category="ImportAccounts" name="DisplayResult" />
+          
           <StyledStatusBar />
           <SectionList
             style={styles.body}

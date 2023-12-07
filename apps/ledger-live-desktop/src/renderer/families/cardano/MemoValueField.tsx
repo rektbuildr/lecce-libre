@@ -8,7 +8,6 @@ import {
   Transaction,
   TransactionStatus,
 } from "@ledgerhq/live-common/families/cardano/types";
-import { track } from "~/renderer/analytics/segment";
 const MemoValueField = ({
   onChange,
   account,
@@ -27,11 +26,7 @@ const MemoValueField = ({
   const bridge = getAccountBridge(account);
   const onMemoValueChange = useCallback(
     (memo: string) => {
-      track("button_clicked", {
-        ...trackProperties,
-        button: "input",
-        memo,
-      });
+      
       onChange(
         bridge.updateTransaction(transaction, {
           memo,

@@ -2,7 +2,7 @@ import React, { PureComponent } from "react";
 import { StyleSheet, View } from "react-native";
 import { parseFramesReducer, framesToData, areFramesComplete, progressOfFrames } from "qrloop";
 import { Result as ImportAccountsResult, decode } from "@ledgerhq/live-common/cross";
-import { TrackScreen } from "../../analytics";
+
 import { ScreenName } from "../../const";
 import Scanner from "../../components/Scanner";
 import GenericErrorBottomModal from "../../components/GenericErrorBottomModal";
@@ -96,7 +96,7 @@ class Scan extends PureComponent<
     const { progress, error } = this.state;
     return (
       <View style={styles.root}>
-        <TrackScreen category="Account Import Sync" />
+        
         <Scanner onResult={this.onBarCodeRead} progress={progress} liveQrCode />
         <GenericErrorBottomModal error={error} onClose={this.onCloseError} />
       </View>

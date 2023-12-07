@@ -23,7 +23,6 @@ import { useDispatch } from "react-redux";
 import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { saveSettings } from "~/renderer/actions/settings";
-import { track } from "~/renderer/analytics/segment";
 import { HideRecoverySeed } from "~/renderer/components/Onboarding/Help/HideRecoverySeed";
 import { PinHelp } from "~/renderer/components/Onboarding/Help/PinHelp";
 import { RecoverySeed } from "~/renderer/components/Onboarding/Help/RecoverySeed";
@@ -274,7 +273,7 @@ export default function Tutorial({ useCase }: Props) {
         component: HowToGetStarted,
         useCases: [UseCase.setupDevice],
         next: () => {
-          track("Onboarding - Get started step 1");
+          
           history.push(`${path}/${ScreenId.deviceHowTo}`);
         },
         previous: () => history.push("/onboarding/select-use-case"),
@@ -322,7 +321,7 @@ export default function Tutorial({ useCase }: Props) {
         canContinue: userChosePinCodeHimself,
         next: () => {
           if (useCase === UseCase.setupDevice) {
-            track("Onboarding - Pin code step 1");
+            
           }
           history.push(`${path}/${ScreenId.pinCodeHowTo}`);
         },
@@ -344,7 +343,7 @@ export default function Tutorial({ useCase }: Props) {
         useCases: [UseCase.setupDevice, UseCase.recoveryPhrase, UseCase.recover],
         next: () => {
           if (useCase === UseCase.setupDevice) {
-            track("Onboarding - Pin code step 2");
+            
             // setHelpPinCode(true);
           }
           setHelpPinCode(true);
@@ -368,7 +367,7 @@ export default function Tutorial({ useCase }: Props) {
         canContinue: userUnderstandConsequences,
         next: () => {
           if (useCase === UseCase.setupDevice) {
-            track("Onboarding - Recovery step 1");
+            
           }
           history.push(`${path}/${ScreenId.useRecoverySheet}`);
         },
@@ -380,7 +379,7 @@ export default function Tutorial({ useCase }: Props) {
         useCases: [UseCase.setupDevice],
         next: () => {
           if (useCase === UseCase.setupDevice) {
-            track("Onboarding - Recovery step 2");
+            
           }
           history.push(`${path}/${ScreenId.recoveryHowTo3}`);
         },
@@ -408,7 +407,7 @@ export default function Tutorial({ useCase }: Props) {
         useCases: [UseCase.setupDevice],
         next: () => {
           if (useCase === UseCase.setupDevice) {
-            track("Onboarding - Recovery step 3");
+            
           }
           setHelpRecoveryPhrase(true);
         },
@@ -419,14 +418,14 @@ export default function Tutorial({ useCase }: Props) {
         component: HideRecoveryPhrase,
         props: {
           handleHelp: () => {
-            track("Onboarding - Recovery step 4 - HELP CLICK");
+            
             setHelpHideRecoveryPhrase(true);
           },
         },
         useCases: [UseCase.setupDevice],
         next: () => {
           if (useCase === UseCase.setupDevice) {
-            track("Onboarding - Recovery step 4");
+            
           }
           setHelpHideRecoveryPhrase(true);
         },
@@ -465,7 +464,7 @@ export default function Tutorial({ useCase }: Props) {
         useCases: [UseCase.setupDevice],
         next: () => {
           if (useCase === UseCase.setupDevice) {
-            track("Onboarding - Pair start");
+            
           }
           history.push(`${path}/${ScreenId.pairMyNano}`);
         },
@@ -477,7 +476,7 @@ export default function Tutorial({ useCase }: Props) {
         useCases: [UseCase.setupDevice],
         next: () => {
           if (useCase === UseCase.setupDevice) {
-            track("Onboarding - Pair start");
+            
           }
           history.push(`${path}/${ScreenId.pairMyNano}`);
         },
@@ -488,7 +487,7 @@ export default function Tutorial({ useCase }: Props) {
         component: PairMyNano,
         next: () => {
           if (useCase === UseCase.setupDevice) {
-            track("Onboarding - Genuine Check");
+            
           }
           if (useCase === UseCase.recover) {
             history.push(`${path}/${ScreenId.recoverHowTo}`);
@@ -524,7 +523,7 @@ export default function Tutorial({ useCase }: Props) {
               hasCompletedOnboarding: true,
             }),
           );
-          track("Onboarding - End");
+          
           setOnboardingDone(true);
         },
         previous: () => history.push(`${path}/${ScreenId.pairMyNano}`),

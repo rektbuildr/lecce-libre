@@ -6,7 +6,6 @@ import { capitalize } from "lodash/fp";
 import { Box, Switch, Text, Button, IconsLegacy, InfiniteLoader } from "@ledgerhq/native-ui";
 import SettingsNavigationScrollView from "../SettingsNavigationScrollView";
 import SettingsRow from "../../../components/SettingsRow";
-import { track, TrackScreen, updateIdentify } from "../../../analytics";
 import { notificationsSelector } from "../../../reducers/settings";
 import { setNotifications } from "../../../actions/settings";
 import type { State } from "../../../reducers/types";
@@ -99,7 +98,6 @@ function NotificationsSettings() {
   // Refresh user properties and send them to Segment when notifications preferences are updated
   // Also send user notifications preferences to Braze when updated
   useEffect(() => {
-    updateIdentify();
     updateUserPreferences(notifications);
   }, [notifications]);
 
@@ -123,7 +121,7 @@ function NotificationsSettings() {
 
   return (
     <SettingsNavigationScrollView>
-      <TrackScreen category="Settings" name="Notifications" />
+      
       {isNotifPermissionEnabled === null || isNotifPermissionEnabled === undefined ? (
         <InfiniteLoader />
       ) : (

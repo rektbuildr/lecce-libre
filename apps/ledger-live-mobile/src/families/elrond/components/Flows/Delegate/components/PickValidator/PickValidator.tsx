@@ -9,7 +9,7 @@ import { useSearchValidators } from "@ledgerhq/live-common/families/elrond/react
 
 import type { onSelectType, PickValidatorPropsType } from "./types";
 
-import { TrackScreen } from "../../../../../../../analytics";
+
 import { ScreenName } from "../../../../../../../const";
 
 import Item from "./components/Item";
@@ -59,13 +59,7 @@ const PickValidator = (props: PickValidatorPropsType) => {
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
-      <TrackScreen
-        category="DelegationFlow"
-        name="SelectValidator"
-        flow="stake"
-        action="delegate"
-        currency="egld"
-      />
+      
 
       <Box mx={6} mt={3} mb={4}>
         <SearchInput

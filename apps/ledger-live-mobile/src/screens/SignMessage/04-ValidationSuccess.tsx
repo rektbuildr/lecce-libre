@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
 import { CompositeScreenProps, useTheme } from "@react-navigation/native";
-import { TrackScreen } from "../../analytics";
+
 import PreventNativeBack from "../../components/PreventNativeBack";
 import ValidateSuccess from "../../components/ValidateSuccess";
 
@@ -42,7 +42,7 @@ export default function ValidationSuccess({
         },
       ]}
     >
-      <TrackScreen category="SignMessage" name="ValidationSuccess" />
+      
       <PreventNativeBack />
       <ValidateSuccess
         title={t("walletconnect.successTitle")}

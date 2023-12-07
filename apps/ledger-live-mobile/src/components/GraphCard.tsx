@@ -13,7 +13,7 @@ import { useTimeRange } from "../actions/settings";
 import getWindowDimensions from "../logic/getWindowDimensions";
 import Graph from "./Graph";
 import FormatDate from "./DateFormat/FormatDate";
-import { track } from "../analytics";
+
 import { readOnlyModeEnabledSelector } from "../reducers/settings";
 import EmptyGraph from "../icons/EmptyGraph";
 import { Item } from "./Graph/types";
@@ -64,9 +64,7 @@ function GraphCard({
 
   const updateTimeRange = useCallback(
     (index: number) => {
-      track("timeframe_clicked", {
-        timeframe: timeRangeItems[index].value,
-      });
+      
       setTimeRange(timeRangeItems[index]);
     },
     [setTimeRange, timeRangeItems],
