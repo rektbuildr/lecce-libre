@@ -1,0 +1,9 @@
+{
+  "name": "@rektbuildr/rektools",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  }
+}
