@@ -48,7 +48,7 @@ export const makeAccount = (
     seedIdentifier: xpubOrAddress,
     starred: true,
     used: true,
-    swapHistory: [],
+
     id,
     derivationMode,
     currency,
@@ -117,7 +117,7 @@ export const makeTokenAccount = (address: string, tokenCurrency: TokenCurrency):
         balances: [],
       },
     },
-    swapHistory: [],
+
   });
 };
 

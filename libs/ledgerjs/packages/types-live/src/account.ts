@@ -2,7 +2,6 @@ import type { BigNumber } from "bignumber.js";
 import type { CryptoCurrency, TokenCurrency, Unit } from "@ledgerhq/types-cryptoassets";
 import type { OperationRaw, Operation } from "./operation";
 import type { DerivationMode } from "./derivation";
-import type { SwapOperation, SwapOperationRaw } from "./swap";
 import { ProtoNFT, ProtoNFTRaw } from "./nft";
 
 export type GranularityId = "HOUR" | "DAY" | "WEEK";
@@ -40,8 +39,6 @@ export type TokenAccount = {
   // currently there are no "raw" version of it because no need to at this stage.
   // could be in future when pagination is needed.
   balanceHistoryCache: BalanceHistoryCache;
-  // Swap operations linked to this account
-  swapHistory: SwapOperation[];
   approvals?: Array<{
     sender: string;
     value: string;
@@ -67,8 +64,7 @@ export type ChildAccount = {
   // currently there are no "raw" version of it because no need to at this stage.
   // could be in future when pagination is needed.
   balanceHistoryCache: BalanceHistoryCache;
-  // Swap operations linked to this account
-  swapHistory: SwapOperation[];
+
 };
 
 /** */
@@ -175,8 +171,6 @@ export type Account = {
   // could be in future when pagination is needed.
   balanceHistoryCache: BalanceHistoryCache;
   // On some blockchain, an account can have resources (gained, delegated, ...)
-  // Swap operations linked to this account
-  swapHistory: SwapOperation[];
   // Hash used to discard tx history on sync
   syncHash?: string;
   // Array of NFTs computed by diffing NFTOperations ordered from newest to oldest
@@ -208,7 +202,6 @@ export type TokenAccountRaw = {
   balance: string;
   spendableBalance?: string;
   balanceHistoryCache?: BalanceHistoryCache;
-  swapHistory?: SwapOperationRaw[];
   approvals?: Array<{
     sender: string;
     value: string;
@@ -230,7 +223,6 @@ export type ChildAccountRaw = {
   pendingOperations: OperationRaw[];
   balance: string;
   balanceHistoryCache?: BalanceHistoryCache;
-  swapHistory?: SwapOperationRaw[];
 };
 
 /** */
@@ -262,7 +254,6 @@ export type AccountRaw = {
   endpointConfig?: string | null | undefined;
   subAccounts?: SubAccountRaw[];
   balanceHistoryCache?: BalanceHistoryCache;
-  swapHistory?: SwapOperationRaw[];
   syncHash?: string;
   nfts?: ProtoNFTRaw[];
 };

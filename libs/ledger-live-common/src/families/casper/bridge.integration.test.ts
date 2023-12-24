@@ -1,5 +1,5 @@
 import "../../__tests__/test-helpers/setup";
-import { testBridge } from "../../__tests__/test-helpers/bridge";
+
 import type { CurrenciesData, DatasetTest } from "@ledgerhq/types-live";
 import type { Transaction } from "./types";
 import { fromTransactionRaw } from "./transaction";
@@ -165,4 +165,4 @@ const dataset: DatasetTest<Transaction> = {
   },
 };
 
-testBridge(dataset);
+

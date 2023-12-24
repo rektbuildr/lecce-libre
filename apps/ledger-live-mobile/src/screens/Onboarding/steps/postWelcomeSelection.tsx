@@ -9,7 +9,6 @@ import { OnboardingNavigatorParamList } from "../../../components/RootNavigator/
 import { StackNavigatorProps } from "../../../components/RootNavigator/types/helpers";
 import { ScreenName } from "../../../const";
 import { SelectionCards } from "./Cards/SelectionCard";
-import { NoLedgerYetModal } from "./NoLedgerYetModal";
 import OnboardingView from "./OnboardingView";
 
 type NavigationProps = StackNavigatorProps<
@@ -27,9 +26,6 @@ function PostWelcomeSelection() {
 
   const openModal = () => {
     setModalOpen(true);
-    track("button_clicked", {
-      button: "I don’t have a Ledger yet",
-    });
   };
 
   const closeModal = () => setModalOpen(false);
@@ -92,7 +88,6 @@ function PostWelcomeSelection() {
         ]}
       />
 
-      <NoLedgerYetModal isOpen={modalOpen} onClose={closeModal} />
     </OnboardingView>
   );
 }

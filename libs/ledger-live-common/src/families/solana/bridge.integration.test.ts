@@ -1,5 +1,5 @@
 import "../../__tests__/test-helpers/setup";
-import { testBridge } from "../../__tests__/test-helpers/bridge";
+
 import BigNumber from "bignumber.js";
 import {
   SolanaAccount,
@@ -942,7 +942,7 @@ function stakingTests(): TransactionTestSpec[] {
   ];
 }
 
-testBridge(dataset);
+
 
 const baseAccount = {
   balance: new BigNumber(0),

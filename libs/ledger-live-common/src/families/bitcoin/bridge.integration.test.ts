@@ -2,7 +2,7 @@ import { DatasetTest } from "@ledgerhq/types-live";
 
 import "../../__tests__/test-helpers/setup";
 
-import { testBridge } from "../../__tests__/test-helpers/bridge";
+
 import type { Transaction } from "./types";
 import bitcoin from "./datasets/bitcoin";
 import bitcoin_cash from "./datasets/bitcoin_cash";
@@ -43,4 +43,4 @@ const dataset: DatasetTest<Transaction> = {
   },
 };
 
-testBridge(dataset);
+

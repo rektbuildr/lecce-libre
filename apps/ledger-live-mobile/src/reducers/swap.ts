@@ -1,5 +1,5 @@
 import { Action, handleActions, ReducerMap } from "redux-actions";
-import { AvailableProviderV3, Pair } from "@ledgerhq/live-common/exchange/swap/types";
+
 import { SwapStateType } from "./types";
 import {
   SwapActionTypes,

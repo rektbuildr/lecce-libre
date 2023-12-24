@@ -327,7 +327,6 @@ export function scan(arg: ScanCommonOpts): Observable<Account> {
               seedIdentifier: xpubOrAddress,
               starred: true,
               used: true,
-              swapHistory: [],
               id,
               derivationMode,
               currency,

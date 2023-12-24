@@ -157,7 +157,7 @@ export function buildSubAccounts({
         pendingOperations: [],
         starred: false,
         balanceHistoryCache: emptyHistoryCache,
-        swapHistory: [],
+
       };
       tokenAccountsById[tokenAccountId] = tokenAccount;
     }

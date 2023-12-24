@@ -74,7 +74,7 @@ const account: SolanaAccount = {
     keywords: ["sol", "solana"],
   },
   lastSyncDate: new Date("2023-02-10T12:26:25.152Z"),
-  swapHistory: [],
+
   balanceHistoryCache: {
     HOUR: {
       balances: [],

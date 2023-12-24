@@ -13,9 +13,9 @@ import { importStellarTokens } from "./importers/stellar";
 import { importTRC10Tokens } from "./importers/trc10";
 import { importTRC20Tokens } from "./importers/trc20";
 
-import { importBEP20Exchange } from "./exchange/bep20";
-import { importERC20Exchange } from "./exchange/erc20";
-import { importCoinsExchange } from "./exchange/coins";
+
+
+
 
 import { importERC20Signatures } from "./importers/erc20-signature";
 
@@ -41,12 +41,7 @@ const importTokens = async () => {
 };
 
 const importExchangeTokens = async () => {
-  const promises = [
-    importBEP20Exchange(outputFolder),
-    importERC20Exchange(outputFolder),
-    importCoinsExchange(outputFolder),
-  ];
-
+  const promises = [];
   await Promise.allSettled(promises);
 };
 

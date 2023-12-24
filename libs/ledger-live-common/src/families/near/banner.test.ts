@@ -59,7 +59,7 @@ const account: NearAccount = {
     keywords: ["near"],
   },
   lastSyncDate: new Date("2023-02-16T19:43:17.615Z"),
-  swapHistory: [],
+
   balanceHistoryCache: {
     HOUR: {
       balances: [],

@@ -4,12 +4,8 @@ import { useNavigation } from "@react-navigation/native";
 import { Flex, Text } from "@ledgerhq/native-ui";
 import { getAccountName, getAccountUnit } from "@ledgerhq/live-common/account/index";
 import { formatCurrencyUnit } from "@ledgerhq/live-common/currencies/index";
-import {
-  useFetchCurrencyFrom,
-  usePickDefaultAccount,
-  useSwapableAccounts,
-} from "@ledgerhq/live-common/exchange/swap/hooks/index";
-import { SwapTransactionType } from "@ledgerhq/live-common/exchange/swap/types";
+
+
 import { WarningSolidMedium } from "@ledgerhq/native-ui/assets/icons";
 import { Selector } from "./Selector";
 import { AmountInput } from "./AmountInput";

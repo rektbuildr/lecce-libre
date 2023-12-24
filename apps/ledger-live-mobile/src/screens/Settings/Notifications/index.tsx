@@ -42,10 +42,6 @@ function NotificationSettingsRow({ disabled, notificationKey, label }: Notificat
           [notificationKey]: value,
         }),
       );
-      track("toggle_clicked", {
-        toggle: `Toggle_${capitalizedKey === "Allowed" ? "Allow" : capitalizedKey}`,
-        enabled: value,
-      });
     },
     [capitalizedKey, dispatch, notificationKey],
   );
@@ -80,10 +76,6 @@ function NotificationsSettings() {
   }, [getIsNotifEnabled, setIsNotifPermissionEnabled]);
 
   const allowPushNotifications = useCallback(() => {
-    track("button_clicked", {
-      button: "Go to system settings",
-      page: pushNotificationsOldRoute,
-    });
     handlePushNotificationsPermission();
   }, [pushNotificationsOldRoute, handlePushNotificationsPermission]);
 

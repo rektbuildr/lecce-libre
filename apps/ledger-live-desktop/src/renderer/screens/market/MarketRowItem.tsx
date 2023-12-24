@@ -6,7 +6,7 @@ import styled from "styled-components";
 import { Flex, Text, Icon } from "@ledgerhq/react-ui";
 import FormattedVal from "~/renderer/components/FormattedVal";
 
-import { useGetSwapTrackingProperties } from "~/renderer/screens/exchange/Swap2/utils/index";
+
 import counterValueFormatter from "@ledgerhq/live-common/market/utils/countervalueFormatter";
 import CryptoCurrencyIcon from "~/renderer/components/CryptoCurrencyIcon";
 import { TableCell, TableRow } from "./MarketList";
@@ -15,7 +15,7 @@ import { CurrencyData } from "@ledgerhq/live-common/market/types";
 import { Button } from ".";
 import { useTranslation } from "react-i18next";
 import { openModal } from "~/renderer/actions/modals";
-import { getAvailableAccountsById } from "@ledgerhq/live-common/exchange/swap/utils/index";
+
 import { flattenAccounts } from "@ledgerhq/live-common/account/index";
 import useStakeFlow from "~/renderer/screens/stake/index";
 import { stakeDefaultTrack } from "~/renderer/screens/stake/constants";

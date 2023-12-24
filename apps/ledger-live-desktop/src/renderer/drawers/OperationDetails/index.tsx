@@ -279,11 +279,7 @@ const OperationD = (props: Props) => {
 
   return (
     <Box flow={3} px={20} mt={20}>
-      <TrackPage
-        category={location.pathname !== "/" ? "Account" : "Portfolio"}
-        name="Operation Details"
-        currencyName={currency.name}
-      />
+
       <Box alignItems="center" mt={1} mb={3}>
         {IconElement ? (
           <IconElement

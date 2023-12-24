@@ -433,7 +433,7 @@ describe("EVM Family", () => {
           operations: [tokenOperations[0], tokenOperations[1]],
           operationsCount: 2,
           starred: undefined,
-          swapHistory: [],
+
         };
         const expectedUsdtAccount = {
           ...makeTokenAccount(account.freshAddress, tokenCurrencies[1]),
@@ -442,7 +442,7 @@ describe("EVM Family", () => {
           operations: [tokenOperations[3]],
           operationsCount: 1,
           starred: undefined,
-          swapHistory: [],
+
         };
 
         expect(tokenAccounts).toEqual([expectedUsdcAccount, expectedUsdtAccount]);
@@ -481,7 +481,7 @@ describe("EVM Family", () => {
           operations: [tokenOperations[0], tokenOperations[1], tokenOperations[2]],
           operationsCount: 3,
           starred: undefined,
-          swapHistory: [],
+
         });
       });
     });

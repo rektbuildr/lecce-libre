@@ -2,7 +2,6 @@ import { log } from "@ledgerhq/logs";
 import type { Result } from "../cross";
 import { accountDataToAccount } from "../cross";
 import { checkAccountSupported } from "@ledgerhq/coin-framework/account/index";
-import joinSwapHistories from "../exchange/swap/joinSwapHistories";
 import isEqual from "lodash/isEqual";
 import type { Account } from "@ledgerhq/types-live";
 import { BridgeCacheSystem } from "../bridge/cache";
@@ -24,73 +23,6 @@ export type ImportItem = {
   account: Account;
   mode: ImportItemMode;
 };
-export const importAccountsMakeItems = ({
-  result,
-  accounts,
-  items,
-}: {
-  result: Result;
-  accounts: Account[];
-  items?: ImportItem[];
-}): ImportItem[] =>
-  result.accounts
-    .map(accInput => {
-      const prevItem = (items || []).find(item => item.account.id === accInput.id);
-      if (prevItem) return prevItem;
-
-      try {
-        const account = accountDataToAccount(accInput);
-        const error = checkAccountSupported(account);
-
-        if (error) {
-          return {
-            initialAccountId: account.id,
-            account,
-            mode: "unsupported",
-          };
-        }
-
-        const existingAccount = accounts.find(a => a.id === accInput.id);
-
-        if (existingAccount) {
-          // only the name is supposed to change. rest is never changing
-          if (
-            existingAccount.name === accInput.name &&
-            isEqual(existingAccount.swapHistory, account.swapHistory)
-          ) {
-            return {
-              initialAccountId: existingAccount.id,
-              account: existingAccount,
-              mode: "id",
-            };
-          }
-
-          return {
-            initialAccountId: existingAccount.id,
-            account: {
-              ...existingAccount,
-              name: accInput.name,
-              swapHistory: joinSwapHistories(existingAccount.swapHistory, account.swapHistory),
-            },
-            mode: "update",
-          };
-        }
-
-        return {
-          initialAccountId: account.id,
-          account,
-          mode: "create",
-        };
-      } catch (e) {
-        log("error", String(e));
-        return null;
-      }
-    })
-    .filter(Boolean)
-    .sort(
-      (a, b) =>
-        itemModeDisplaySort[(a as ImportItem).mode] - itemModeDisplaySort[(b as ImportItem).mode],
-    ) as ImportItem[];
 
 /**
  * SyncNewAccountsOutput

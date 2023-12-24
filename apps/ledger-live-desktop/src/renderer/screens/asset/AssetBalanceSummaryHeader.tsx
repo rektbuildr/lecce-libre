@@ -8,7 +8,7 @@ import Box, { Tabbable } from "~/renderer/components/Box";
 import FormattedVal from "~/renderer/components/FormattedVal";
 import Price from "~/renderer/components/Price";
 import PillsDaysCount from "~/renderer/components/PillsDaysCount";
-import { useGetSwapTrackingProperties } from "~/renderer/screens/exchange/Swap2/utils/index";
+
 import styled from "styled-components";
 import Swap from "~/renderer/icons/Swap";
 import Button from "~/renderer/components/ButtonV3";
@@ -20,7 +20,7 @@ import { useFeature } from "@ledgerhq/live-config/featureFlags/index";
 import useStakeFlow from "~/renderer/screens/stake";
 import { stakeDefaultTrack } from "~/renderer/screens/stake/constants";
 import { BalanceHistoryWithCountervalue, ValueChange } from "@ledgerhq/types-live";
-import { useFetchCurrencyAll } from "@ledgerhq/live-common/exchange/swap/hooks/index";
+
 type Props = {
   isAvailable: boolean;
   cryptoChange: ValueChange;

@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { Linking } from "react-native";
 import { Button, IconsLegacy, Link } from "@ledgerhq/native-ui";
 import { useTranslation } from "react-i18next";
-import { getProviderName } from "@ledgerhq/live-common/exchange/swap/utils/index";
+
 import { urls } from "@utils/urls";
 import QueuedDrawer from "../../../../components/QueuedDrawer";
 

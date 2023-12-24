@@ -78,10 +78,7 @@ import StyleProvider from "./StyleProvider";
 import { performanceReportSubject } from "./components/PerformanceConsole/usePerformanceReportsLog";
 import { setOsTheme } from "./actions/settings";
 import TransactionsAlerts from "./components/TransactionsAlerts";
-import {
-  useFetchCurrencyAll,
-  useFetchCurrencyFrom,
-} from "@ledgerhq/live-common/exchange/swap/hooks/index";
+
 import useAccountsWithFundsListener from "@ledgerhq/live-common/hooks/useAccountsWithFundsListener";
 import { LiveConfig } from "@ledgerhq/live-config/featureFlags/index";
 import VersionNumber from "react-native-version-number";

@@ -3,7 +3,7 @@ import Modal, { ModalBody } from "~/renderer/components/Modal";
 import Box from "~/renderer/components/Box";
 import DeviceAction from "~/renderer/components/DeviceAction";
 import { createAction } from "@ledgerhq/live-common/hw/actions/startExchange";
-import startExchange from "@ledgerhq/live-common/exchange/platform/startExchange";
+
 import connectApp from "@ledgerhq/live-common/hw/connectApp";
 const action = createAction(connectApp, startExchange);
 const StartExchange = () => {

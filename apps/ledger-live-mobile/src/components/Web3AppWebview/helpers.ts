@@ -433,7 +433,6 @@ function useUiHook(): Partial<UiHook> {
             request: {
               exchangeType: exchangeParams.exchangeType,
               provider: exchangeParams.provider,
-              exchange: exchangeParams.exchange,
               transaction: exchangeParams.transaction as Transaction,
               binaryPayload: exchangeParams.binaryPayload,
               signature: exchangeParams.signature,

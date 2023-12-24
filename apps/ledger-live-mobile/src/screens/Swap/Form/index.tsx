@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Button, Flex } from "@ledgerhq/native-ui";
-import { ExchangeRate, OnNoRatesCallback } from "@ledgerhq/live-common/exchange/swap/types";
-import { useSwapTransaction, usePageState } from "@ledgerhq/live-common/exchange/swap/hooks/index";
+
+
 import { useFeature } from "@ledgerhq/live-config/featureFlags/index";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
@@ -15,7 +15,7 @@ import {
   getFeesUnit,
 } from "@ledgerhq/live-common/account/index";
 
-import { getProviderName } from "@ledgerhq/live-common/exchange/swap/utils/index";
+
 import { TokenCurrency } from "@ledgerhq/types-cryptoassets";
 import { accountToWalletAPIAccount } from "@ledgerhq/live-common/wallet-api/converters";
 import { log } from "@ledgerhq/logs";
@@ -39,7 +39,7 @@ import { BaseNavigatorStackParamList } from "../../../components/RootNavigator/t
 import { SwapFormNavigatorParamList } from "../../../components/RootNavigator/types/SwapFormNavigator";
 import { formatCurrencyUnit } from "@ledgerhq/live-common/currencies/index";
 import type { DetailsSwapParamList } from "../types";
-import { getAvailableProviders } from "@ledgerhq/live-common/exchange/swap/index";
+
 
 type Navigation = StackNavigatorProps<BaseNavigatorStackParamList, ScreenName.Account>;
 

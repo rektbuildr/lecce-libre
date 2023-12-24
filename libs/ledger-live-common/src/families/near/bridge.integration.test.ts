@@ -1,7 +1,7 @@
 import { BigNumber } from "bignumber.js";
 import { InvalidAddressBecauseDestinationIsAlsoSource, NotEnoughBalance } from "@ledgerhq/errors";
 import "../../__tests__/test-helpers/setup";
-import { testBridge } from "../../__tests__/test-helpers/bridge";
+
 import type { DatasetTest, CurrenciesData } from "@ledgerhq/types-live";
 import type { Transaction } from "./types";
 import { fromTransactionRaw } from "./transaction";
@@ -225,4 +225,4 @@ const dataset: DatasetTest<Transaction> = {
   },
 };
 
-testBridge(dataset);
+

@@ -21,7 +21,7 @@ import { useFeature } from "@ledgerhq/live-config/featureFlags/index";
 import { FlexProps } from "styled-system";
 import { CurrencyData, MarketListRequestParams } from "@ledgerhq/live-common/market/types";
 
-import { useFetchCurrencyFrom } from "@ledgerhq/live-common/exchange/swap/hooks/index";
+
 
 export const TableCellBase: StyledComponent<"div", DefaultTheme, FlexProps> = styled(Flex).attrs({
   alignItems: "center",

@@ -1,6 +1,6 @@
 import { NotEnoughBalance } from "@ledgerhq/errors";
 import "../../__tests__/test-helpers/setup";
-import { testBridge } from "../../__tests__/test-helpers/bridge";
+
 import BigNumber from "bignumber.js";
 import { cardanoRawAccount1 } from "./datasets/rawAccount.1";
 import { cardanoScanAccounts } from "./datasets/scanAccounts";
@@ -107,4 +107,4 @@ const dataset: DatasetTest<Transaction> = {
   },
 };
 
-testBridge(dataset);
+

@@ -11,7 +11,7 @@ import type { DeviceModelId } from "@ledgerhq/devices";
 import type { CryptoCurrencyId, Currency } from "@ledgerhq/types-cryptoassets";
 import { MarketListRequestParams } from "@ledgerhq/live-common/market/types";
 import { PostOnboardingState } from "@ledgerhq/types-live";
-import { AvailableProviderV3, ExchangeRate } from "@ledgerhq/live-common/exchange/swap/types";
+
 import { Transaction } from "@ledgerhq/live-common/generated/types";
 import type { EventTrigger, DataOfUser } from "../logic/notifications";
 import type { RatingsHappyMoment, RatingsDataOfUser } from "../logic/ratings";

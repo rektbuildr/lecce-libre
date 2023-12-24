@@ -2,10 +2,10 @@ import React, { useMemo, useCallback } from "react";
 import { TouchableOpacity } from "react-native";
 import { BigNumber } from "bignumber.js";
 import { Flex, Text, Icon } from "@ledgerhq/native-ui";
-import { getProviderName } from "@ledgerhq/live-common/exchange/swap/utils/index";
+
 import { getAccountUnit } from "@ledgerhq/live-common/account/index";
 import { useTranslation } from "react-i18next";
-import { ExchangeRate } from "@ledgerhq/live-common/exchange/swap/types";
+
 import CurrencyUnitValue from "../../../components/CurrencyUnitValue";
 import ProviderIcon from "../../../components/ProviderIcon";
 import { SelectProviderParamList } from "../types";

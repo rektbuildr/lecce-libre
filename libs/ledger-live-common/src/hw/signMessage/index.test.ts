@@ -120,5 +120,5 @@ const createAccount = (crypto: CryptoCurrency): Account => ({
       latestDate: undefined,
     },
   },
-  swapHistory: [],
+
 });

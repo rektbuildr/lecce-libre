@@ -133,7 +133,6 @@ const createAccount = (id: string, crypto: CryptoCurrency = defaultEthCryptoFami
       latestDate: undefined,
     },
   },
-  swapHistory: [],
 });
 
 function createTokenAccount(id = "32", parentId = "whatever"): TokenAccount {
@@ -154,7 +153,6 @@ function createTokenAccount(id = "32", parentId = "whatever"): TokenAccount {
       HOUR: { latestDate: null, balances: [] },
       DAY: { latestDate: null, balances: [] },
     },
-    swapHistory: [],
   };
 }
 

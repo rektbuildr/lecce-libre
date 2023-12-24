@@ -9,8 +9,8 @@ import styled from "styled-components";
 import { CryptoCurrency, TokenCurrency } from "@ledgerhq/types-cryptoassets";
 import ProviderIcon from "~/renderer/components/ProviderIcon";
 import { Transaction } from "@ledgerhq/live-common/generated/types";
-import { ExchangeRate, Exchange } from "@ledgerhq/live-common/exchange/swap/types";
-import { getProviderName, getNoticeType } from "@ledgerhq/live-common/exchange/swap/utils/index";
+
+
 import { WrongDeviceForAccount, UpdateYourApp, LockedDeviceError } from "@ledgerhq/errors";
 import { LatestFirmwareVersionRequired, DeviceNotOnboarded } from "@ledgerhq/live-common/errors";
 import { DeviceModelId, getDeviceModel } from "@ledgerhq/devices";
@@ -41,7 +41,6 @@ import ProgressCircle from "~/renderer/components/ProgressCircle";
 import CrossCircle from "~/renderer/icons/CrossCircle";
 import CryptoCurrencyIcon from "~/renderer/components/CryptoCurrencyIcon";
 import { context } from "~/renderer/drawers/Provider";
-import { DrawerFooter } from "~/renderer/screens/exchange/Swap2/Form/DrawerFooter";
 import {
   Theme,
   Button as ButtonV3,
@@ -893,47 +892,33 @@ export const renderSwapDeviceConfirmation = ({
   type,
   transaction,
   exchangeRate,
-  exchange,
   amountExpectedTo,
   estimatedFees,
-  swapDefaultTrack,
 }: {
   modelId: DeviceModelId;
   type: Theme["theme"];
   transaction: Transaction;
   exchangeRate: ExchangeRate;
-  exchange: Exchange;
   amountExpectedTo?: string;
   estimatedFees?: string;
-  swapDefaultTrack: Record<string, string | boolean>;
 }) => {
   const [sourceAccountName, sourceAccountCurrency] = [
-    getAccountName(exchange.fromAccount),
-    getAccountCurrency(exchange.fromAccount),
+    null, null
   ];
   const [targetAccountName, targetAccountCurrency] = [
-    getAccountName(exchange.toAccount),
-    getAccountCurrency(exchange.toAccount),
+    null, null
   ];
-  const providerName = getProviderName(exchangeRate.provider);
-  const noticeType = getNoticeType(exchangeRate.provider);
+  const providerName = "";
+  const noticeType = "";
   const alertProperties = noticeType.learnMore ? { learnMoreUrl: urls.swap.learnMore } : {};
   return (
     <>
       <ConfirmWrapper>
-        <TrackPage
-          category="Swap"
-          name={`ModalStep-summary`}
-          sourcecurrency={sourceAccountCurrency?.name}
-          targetcurrency={targetAccountCurrency?.name}
-          provider={exchangeRate.provider}
-          {...swapDefaultTrack}
-        />
         <Box flex={0}>
           <Alert type="primary" {...alertProperties} mb={7} mx={4}>
             <Trans
               i18nKey={`DeviceAction.swap.notice.${noticeType.message}`}
-              values={{ providerName: getProviderName(exchangeRate.provider) }}
+              values={{ providerName: "" }}
             />
           </Alert>
         </Box>

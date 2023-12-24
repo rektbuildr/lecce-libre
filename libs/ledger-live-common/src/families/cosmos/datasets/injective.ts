@@ -75,7 +75,7 @@ const dataset: CurrenciesData<Transaction> = {
           withdrawAddress: "inj1hn46zvx43mxq47vsecvw84k5chjhuhwp6d62dt",
           sequence: 2,
         },
-        swapHistory: [],
+
       } as unknown as CosmosAccountRaw,
     },
   ],

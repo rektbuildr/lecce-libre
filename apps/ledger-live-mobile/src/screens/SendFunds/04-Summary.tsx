@@ -34,7 +34,7 @@ import ConfirmationModal from "../../components/ConfirmationModal";
 import NavigationScrollView from "../../components/NavigationScrollView";
 import Info from "../../icons/Info";
 import TooMuchUTXOBottomModal from "./TooMuchUTXOBottomModal";
-import { isCurrencySupported } from "../Exchange/coinifyConfig";
+
 import type { SendFundsNavigatorStackParamList } from "../../components/RootNavigator/types/SendFundsNavigator";
 import { BaseComposite, StackNavigatorProps } from "../../components/RootNavigator/types/helpers";
 import { SignTransactionNavigatorParamList } from "../../components/RootNavigator/types/SignTransactionNavigator";

@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Flex, Text, Switch } from "@ledgerhq/native-ui";
-import { SwapTransactionType } from "@ledgerhq/live-common/exchange/swap/types";
+
 
 import { sharedSwapTracking } from "../utils";
 

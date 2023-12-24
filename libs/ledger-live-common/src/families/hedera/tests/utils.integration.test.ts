@@ -43,7 +43,7 @@ const account: Account = {
     DAY: { latestDate: null, balances: [] },
     WEEK: { latestDate: null, balances: [] },
   },
-  swapHistory: [],
+
   unit: {
     name: "",
     code: "",

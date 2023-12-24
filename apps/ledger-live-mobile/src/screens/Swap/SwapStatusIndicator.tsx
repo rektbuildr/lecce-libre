@@ -1,7 +1,4 @@
-import {
-  isSwapOperationPending,
-  operationStatusList,
-} from "@ledgerhq/live-common/exchange/swap/index";
+
 import { Icon } from "@ledgerhq/native-ui";
 import { useTheme } from "@react-navigation/native";
 import React from "react";

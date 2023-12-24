@@ -11,7 +11,7 @@ import {
   getAccountUnit,
   getAccountCurrency,
 } from "@ledgerhq/live-common/account/helpers";
-import { getProviderName } from "@ledgerhq/live-common/exchange/swap/utils/index";
+
 import { flattenAccountsSelector } from "../../../reducers/accounts";
 import CurrencyUnitValue from "../../../components/CurrencyUnitValue";
 import LText from "../../../components/LText";

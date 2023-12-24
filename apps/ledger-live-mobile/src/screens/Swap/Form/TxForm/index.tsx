@@ -1,6 +1,6 @@
 import React from "react";
 import { Flex } from "@ledgerhq/native-ui";
-import { SwapTransactionType, ExchangeRate } from "@ledgerhq/live-common/exchange/swap/types";
+
 import { From } from "./From";
 import { To } from "./To";
 

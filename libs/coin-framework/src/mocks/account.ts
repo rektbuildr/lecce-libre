@@ -274,7 +274,6 @@ export function genTokenAccount(
     balance: new BigNumber(0),
     spendableBalance: new BigNumber(0),
     creationDate: new Date(),
-    swapHistory: [],
     balanceHistoryCache: emptyHistoryCache,
   };
   const operationsSize = rng.nextInt(1, 200);
@@ -309,7 +308,6 @@ export function genAccount(
   const rng = new Prando(id);
   const currency = opts.currency || rng.nextArrayItem(currencies);
   const operationsSize = opts.operationsSize ?? rng.nextInt(1, 200);
-  const swapHistorySize = opts.swapHistorySize || 0;
   const withNft = opts.withNft ?? false;
   const address = genAddress(currency, rng);
   const derivationPath = runDerivationScheme(
@@ -349,18 +347,6 @@ export function genAccount(
     pendingOperations: [],
     lastSyncDate: new Date(),
     creationDate: new Date(),
-    swapHistory: Array(swapHistorySize)
-      .fill(null)
-      .map((_, i) => ({
-        provider: "changelly",
-        swapId: `swap-id-${i}`,
-        status: "finished",
-        receiverAccountId: "receiver-id",
-        operationId: "operation-id",
-        tokenId: "token-id",
-        fromAmount: new BigNumber("1000"),
-        toAmount: new BigNumber("2000"),
-      })),
     balanceHistoryCache: emptyHistoryCache,
     ...(withNft && {
       nfts: Array(10)

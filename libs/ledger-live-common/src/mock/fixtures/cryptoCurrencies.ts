@@ -70,7 +70,7 @@ export function createFixtureTokenAccount(
         latestDate: undefined,
       },
     },
-    swapHistory: [],
+
   };
 }
 
@@ -119,6 +119,6 @@ export function createFixtureAccount(
         latestDate: undefined,
       },
     },
-    swapHistory: [],
+
   };
 }

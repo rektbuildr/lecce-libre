@@ -2,7 +2,6 @@ import React, { useCallback } from "react";
 import { TouchableOpacity, StyleSheet, View } from "react-native";
 import { useNavigation, useTheme } from "@react-navigation/native";
 import { Icon } from "@ledgerhq/native-ui";
-import type { MappedSwapOperation } from "@ledgerhq/live-common/exchange/swap/types";
 import { getAccountUnit, getAccountName } from "@ledgerhq/live-common/account/helpers";
 import LText from "../../../components/LText";
 import CurrencyUnitValue from "../../../components/CurrencyUnitValue";

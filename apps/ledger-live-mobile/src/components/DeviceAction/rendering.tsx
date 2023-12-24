@@ -14,7 +14,7 @@ import { getDeviceModel } from "@ledgerhq/devices";
 import { Device } from "@ledgerhq/live-common/hw/actions/types";
 import { AppRequest } from "@ledgerhq/live-common/hw/actions/app";
 import firmwareUpdateRepair from "@ledgerhq/live-common/hw/firmwareUpdate-repair";
-import { getProviderName, getNoticeType } from "@ledgerhq/live-common/exchange/swap/utils/index";
+
 import {
   InfiniteLoader,
   Text,
@@ -27,7 +27,7 @@ import {
 } from "@ledgerhq/native-ui";
 import { DownloadMedium } from "@ledgerhq/native-ui/assets/icons";
 import BigNumber from "bignumber.js";
-import { ExchangeRate, Exchange } from "@ledgerhq/live-common/exchange/swap/types";
+
 import {
   getAccountUnit,
   getMainAccount,
@@ -252,12 +252,10 @@ export function renderConfirmSwap({
   device: Device;
   transaction: Transaction;
   exchangeRate: ExchangeRate;
-  exchange: Exchange;
-  amountExpectedTo?: string | null;
   estimatedFees?: string | null;
 }) {
-  const providerName = getProviderName(exchangeRate.provider);
-  const noticeType = getNoticeType(exchangeRate.provider);
+  const providerName = "";
+  const noticeType = "";
   const alertProperties = noticeType.learnMore ? { learnMoreUrl: urls.swap.learnMore } : {};
   return (
     <ScrollView>

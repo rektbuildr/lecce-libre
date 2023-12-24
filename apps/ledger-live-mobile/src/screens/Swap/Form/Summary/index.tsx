@@ -2,8 +2,8 @@ import React, { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { BigNumber } from "bignumber.js";
 import { Flex, Icon, Text } from "@ledgerhq/native-ui";
-import { getProviderName } from "@ledgerhq/live-common/exchange/swap/utils/index";
-import { SwapTransactionType } from "@ledgerhq/live-common/exchange/swap/types";
+
+
 import {
   getAccountName,
   getAccountUnit,

@@ -10,7 +10,7 @@ import { isTokenAccount, getMainAccount, isAccount } from "../account/index";
 import { getAccountBridge } from "../bridge/index";
 import { Transaction } from "../generated/types";
 import { prepareMessageToSign } from "../hw/signMessage/index";
-import { Exchange } from "../exchange/platform/types";
+
 
 export function translateContent(content: string | TranslatableString, locale = "en"): string {
   if (!content || typeof content === "string") return content;
@@ -138,7 +138,6 @@ export type CompleteExchangeRequest = {
 };
 export type CompleteExchangeUiRequest = {
   provider: string;
-  exchange: Exchange;
   transaction: Transaction;
   binaryPayload: string;
   signature: string;
@@ -226,7 +225,6 @@ export function completeExchangeLogic(
 
   return uiNavigation({
     provider,
-    exchange,
     transaction: tx,
     binaryPayload,
     signature,

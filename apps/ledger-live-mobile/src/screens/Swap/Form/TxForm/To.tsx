@@ -1,13 +1,9 @@
 import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Flex, Text } from "@ledgerhq/native-ui";
-import { ExchangeRate, SwapTransactionType } from "@ledgerhq/live-common/exchange/swap/types";
+
 import { useNavigation } from "@react-navigation/native";
-import {
-  useFetchCurrencyTo,
-  usePickDefaultCurrency,
-  useSelectableCurrencies,
-} from "@ledgerhq/live-common/exchange/swap/hooks/index";
+
 import { Selector } from "./Selector";
 import { CurrencyValue } from "./CurrencyValue";
 import { ScreenName } from "../../../../const";

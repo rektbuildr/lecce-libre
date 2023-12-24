@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { ipcRenderer } from "electron";
 import { Redirect, Route, Switch, useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
-import TrackAppStart from "~/renderer/components/TrackAppStart";
 import { LiveApp } from "~/renderer/screens/platform";
 import { BridgeSyncProvider } from "~/renderer/bridge/BridgeSyncContext";
 import { SyncNewAccounts } from "~/renderer/bridge/SyncNewAccounts";
@@ -39,12 +38,7 @@ import VaultSignerBanner from "~/renderer/components/VaultSignerBanner";
 import { hasCompletedOnboardingSelector } from "~/renderer/reducers/settings";
 import { useFeature, FeatureToggle } from "@ledgerhq/live-config/featureFlags/index";
 import { enableListAppsV2 } from "@ledgerhq/live-common/apps/hw";
-import {
-  useFetchCurrencyAll,
-  useFetchCurrencyFrom,
-} from "@ledgerhq/live-common/exchange/swap/hooks/index";
 import { Flex, InfiniteLoader } from "@ledgerhq/react-ui";
-import useAccountsWithFundsListener from "@ledgerhq/live-common/hooks/useAccountsWithFundsListener";
 import { accountsSelector } from "./reducers/accounts";
 
 const PlatformCatalog = lazy(() => import("~/renderer/screens/platform"));
@@ -56,7 +50,6 @@ const Manager = lazy(() => import("~/renderer/screens/manager"));
 const Exchange = lazy(() => import("~/renderer/screens/exchange"));
 const Earn = lazy(() => import("~/renderer/screens/earn"));
 const SwapWeb = lazy(() => import("~/renderer/screens/swapWeb"));
-const Swap2 = lazy(() => import("~/renderer/screens/exchange/Swap2"));
 
 const Market = lazy(() => import("~/renderer/screens/market"));
 const MarketCoinScreen = lazy(() => import("~/renderer/screens/market/MarketCoinScreen"));
@@ -182,8 +175,6 @@ export default function Default() {
   useListenToHidDevices();
   useDeeplink();
   useUSBTroubleshooting();
-  useFetchCurrencyAll();
-  useFetchCurrencyFrom();
 
   const listAppsV2 = useFeature("listAppsV2minor1");
   useEffect(() => {
@@ -291,7 +282,6 @@ export default function Default() {
                             <Route path="/platform" render={withSuspense(PlatformCatalog)} exact />
                             <Route path="/platform/:appId?" component={LiveApp} />
                             <Route path="/earn" render={withSuspense(Earn)} />
-                            <Route exact path="/exchange/:appId?" render={withSuspense(Exchange)} />
                             <Route
                               exact
                               path="/account/:id/nft-collection"

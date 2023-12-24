@@ -58,7 +58,7 @@ function inferAccount(id: string): Account {
     seedIdentifier: xpubOrAddress,
     starred: true,
     used: true,
-    swapHistory: [],
+
     id,
     derivationMode,
     currency,

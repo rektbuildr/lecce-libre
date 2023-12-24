@@ -374,7 +374,7 @@ export const makeScanAccounts =
           currency,
           operationsCount,
           operations: [],
-          swapHistory: [],
+
           pendingOperations: [],
           unit: currency.units[0],
           lastSyncDate: new Date(),

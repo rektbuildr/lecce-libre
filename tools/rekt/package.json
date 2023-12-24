@@ -5,5 +5,8 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch"
+  },
+  "dependencies": {
+    "@ledgerhq/live-env": "^0.8.0"
   }
 }

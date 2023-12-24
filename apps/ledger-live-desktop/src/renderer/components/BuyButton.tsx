@@ -7,7 +7,7 @@ import { useDispatch } from "react-redux";
 import { Account } from "@ledgerhq/types-live";
 import { CryptoCurrency } from "@ledgerhq/types-cryptoassets";
 
-import { isCurrencySupported } from "~/renderer/screens/exchange/config";
+
 
 const BuyButton = ({ currency, account }: { currency: CryptoCurrency; account: Account }) => {
   const history = useHistory();

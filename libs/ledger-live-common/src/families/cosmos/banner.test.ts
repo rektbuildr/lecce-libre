@@ -66,7 +66,7 @@ const account: CosmosAccount = {
     ],
   },
   lastSyncDate: new Date("2022-08-02T16:11:47.343Z"),
-  swapHistory: [],
+
   balanceHistoryCache: {
     HOUR: { balances: [0, 393248, 393248], latestDate: 1661162400000 },
     DAY: { balances: [0, 393248], latestDate: 1661122800000 },

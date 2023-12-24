@@ -17,11 +17,9 @@ import LiveAppDisclaimer from "./WebPlatformPlayer/LiveAppDisclaimer";
 import { AppManifest } from "@ledgerhq/live-common/wallet-api/types";
 import DeviceAction from "~/renderer/components/DeviceAction";
 import { createAction } from "@ledgerhq/live-common/hw/actions/startExchange";
-import startExchange from "@ledgerhq/live-common/exchange/platform/startExchange";
+
 import connectApp from "@ledgerhq/live-common/hw/connectApp";
-import CompleteExchange, {
-  Data as CompleteExchangeData,
-} from "~/renderer/modals/Platform/Exchange/CompleteExchange/Body";
+
 import { Operation } from "@ledgerhq/types-live";
 
 const Divider = styled(Box)`

@@ -258,7 +258,6 @@ export const makeEmptyTokenAccount = (account: Account, token: TokenCurrency): T
   operations: [],
   pendingOperations: [],
   starred: false,
-  swapHistory: [],
   balanceHistoryCache: emptyHistoryCache,
 });
 
@@ -290,7 +289,7 @@ export const accountWithMandatoryTokens = (
       operations: [],
       pendingOperations: [],
       starred: false,
-      swapHistory: [],
+
       balanceHistoryCache: emptyHistoryCache,
     }));
   if (addition.length === 0) return account;

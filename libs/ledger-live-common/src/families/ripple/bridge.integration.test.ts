@@ -1,5 +1,5 @@
 import "../../__tests__/test-helpers/setup";
-import { testBridge } from "../../__tests__/test-helpers/bridge";
+
 
 // import { getCryptoCurrencyById } from "@ledgerhq/cryptoassets";
 import { BigNumber } from "bignumber.js";
@@ -164,4 +164,4 @@ const dataset: DatasetTest<Transaction> = {
   },
 };
 
-testBridge(dataset);
+

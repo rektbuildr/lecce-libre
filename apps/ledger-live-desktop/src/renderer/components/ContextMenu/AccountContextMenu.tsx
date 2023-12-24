@@ -14,7 +14,7 @@ import ContextMenuItem from "./ContextMenuItem";
 import { toggleStarAction } from "~/renderer/actions/accounts";
 import { useRefreshAccountsOrdering } from "~/renderer/actions/general";
 import { swapSelectableCurrenciesSelector } from "~/renderer/reducers/settings";
-import { isCurrencySupported } from "~/renderer/screens/exchange/config";
+
 
 import { ContextMenuItemType } from "./ContextMenuWrapper";
 import { IconsLegacy } from "@ledgerhq/react-ui";

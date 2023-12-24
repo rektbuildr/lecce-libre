@@ -5,8 +5,8 @@ import { useTranslation } from "react-i18next";
 import { getStackNavigatorConfig } from "../../navigation/navigatorConfig";
 import styles from "../../navigation/styles";
 import { ScreenName } from "../../const";
-import PlatformStartExchange from "../../screens/Platform/exchange/StartExchange";
-import PlatformCompleteExchange from "../../screens/Platform/exchange/CompleteExchange";
+
+
 import { PlatformExchangeNavigatorParamList } from "./types/PlatformExchangeNavigator";
 
 export default function PlatformExchangeNavigator() {

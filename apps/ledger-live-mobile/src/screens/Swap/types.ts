@@ -1,5 +1,5 @@
 import { Account } from "@ledgerhq/types-live";
-import { ExchangeRate, MappedSwapOperation } from "@ledgerhq/live-common/exchange/swap/types";
+
 import { CryptoCurrency, Currency, TokenCurrency } from "@ledgerhq/types-cryptoassets";
 import { Transaction } from "@ledgerhq/live-common/generated/types";
 import { MaterialTopTabScreenProps } from "@react-navigation/material-top-tabs";
@@ -72,5 +72,4 @@ export type DefaultAccountSwapParamList = {
 
 export type SwapFormNavParamList = {
   SwapForm: DetailsSwapParamList | DefaultAccountSwapParamList | undefined;
-  SwapHistory: undefined;
 };

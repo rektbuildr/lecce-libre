@@ -14,7 +14,7 @@ import type {
 } from "@ledgerhq/types-live";
 import type { Payload as PostOnboardingPayload } from "@ledgerhq/live-common/postOnboarding/reducer";
 import { Transaction } from "@ledgerhq/live-common/generated/types";
-import { ExchangeRate } from "@ledgerhq/live-common/exchange/swap/types";
+
 import type {
   AppState,
   FwUpdateBackgroundEvent,

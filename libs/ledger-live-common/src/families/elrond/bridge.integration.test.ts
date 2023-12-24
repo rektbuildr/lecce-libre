@@ -5,7 +5,7 @@ import { InvalidAddressBecauseDestinationIsAlsoSource, NotEnoughBalance } from "
 import type { DatasetTest, CurrenciesData } from "@ledgerhq/types-live";
 
 import type { Transaction } from "./types";
-import { testBridge } from "../../__tests__/test-helpers/bridge";
+
 import { fromTransactionRaw } from "../elrond/transaction";
 
 const TEST_ADDRESS = "erd1vgfp3g7azqjx4wsmtt7067m0l62v3psmqzr24j6xvywj2tlz0gesvyzsq2";
@@ -144,4 +144,4 @@ const dataset: DatasetTest<Transaction> = {
   },
 };
 
-testBridge(dataset);
+

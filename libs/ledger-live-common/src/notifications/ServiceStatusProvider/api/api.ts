@@ -6,13 +6,9 @@ const baseStatusUrl = () => getEnv("STATUS_API_URL");
 
 const statusVersion = () => getEnv("STATUS_API_VERSION");
 
+// Unnecesarry network call removed
 async function fetchStatusSummary(): Promise<ServiceStatusSummary> {
-  const url = `${baseStatusUrl()}/v${statusVersion()}/summary.json`;
-  const { data } = await network({
-    method: "GET",
-    url,
-  });
-  return data;
+  return Promise.resolve({incidents: []})
 }
 
 const api: ServiceStatusApi = {

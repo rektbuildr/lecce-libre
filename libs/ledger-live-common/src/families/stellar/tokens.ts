@@ -47,7 +47,7 @@ const buildStellarTokenAccount = ({
     pendingOperations: [],
     balance,
     spendableBalance,
-    swapHistory: [],
+
     creationDate: operations.length > 0 ? operations[operations.length - 1].date : new Date(),
     balanceHistoryCache: emptyHistoryCache, // calculated in the jsHelpers
   };

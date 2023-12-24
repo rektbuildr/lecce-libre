@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import type { Action, Device } from "./types";
 import type { AppState } from "./app";
 import { log } from "@ledgerhq/logs";
-import { Exchange } from "../../exchange/platform/types";
+
 import { Transaction } from "../../generated/types";
 
 type State = {
@@ -23,7 +23,6 @@ type CompleteExchangeRequest = {
   transaction: Transaction;
   binaryPayload: string;
   signature: string;
-  exchange: Exchange;
   exchangeType: number;
   rateType?: number;
   swapId?: string;
@@ -120,7 +119,7 @@ export const createAction = (
     const [state, setState] = useState(initialState);
     const reduxDeviceFrozen = useFrozenValue(reduxDevice, state?.freezeReduxDevice);
 
-    const { provider, transaction, binaryPayload, signature, exchange, exchangeType, rateType } =
+    const { provider, transaction, binaryPayload, signature, exchangeType, rateType } =
       completeExchangeRequest;
 
     useEffect(() => {
@@ -134,7 +133,6 @@ export const createAction = (
           transaction,
           binaryPayload,
           signature,
-          exchange,
           exchangeType,
           rateType,
         }),
@@ -154,7 +152,6 @@ export const createAction = (
       transaction,
       binaryPayload,
       signature,
-      exchange,
       exchangeType,
       rateType,
       reduxDeviceFrozen,

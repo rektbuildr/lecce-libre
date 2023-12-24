@@ -88,14 +88,7 @@ const OptionsButton = () => {
       >
         {item.key === "hideEmpty" ? (
           <Box mr={4}>
-            <Track
-              onUpdate
-              event={
-                hideEmptyTokenAccounts
-                  ? "hideEmptyTokenAccountsEnabled"
-                  : "hideEmptyTokenAccountsDisabled"
-              }
-            />
+
             <Switch isChecked={hideEmptyTokenAccounts} onChange={setHideEmptyTokenAccounts} />
           </Box>
         ) : item.icon ? (

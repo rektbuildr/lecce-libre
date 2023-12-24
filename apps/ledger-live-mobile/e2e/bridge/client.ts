@@ -15,10 +15,10 @@ import { BleState, SettingsState } from "../../src/reducers/types";
 import { importBle } from "../../src/actions/ble";
 import { InstallLanguageEvent } from "@ledgerhq/live-common/hw/installLanguage";
 import { LoadImageEvent } from "@ledgerhq/live-common/hw/staxLoadImage";
-import { SwapRequestEvent } from "@ledgerhq/live-common/exchange/swap/types";
+
 import { FetchImageEvent } from "@ledgerhq/live-common/hw/staxFetchImage";
 import { ExchangeRequestEvent } from "@ledgerhq/live-common/hw/actions/startExchange";
-import { CompleteExchangeRequestEvent } from "@ledgerhq/live-common/exchange/platform/types";
+
 import { RemoveImageEvent } from "@ledgerhq/live-common/hw/staxRemoveImage";
 import { RenameDeviceEvent } from "@ledgerhq/live-common/hw/renameDevice";
 import { LaunchArguments } from "react-native-launch-arguments";

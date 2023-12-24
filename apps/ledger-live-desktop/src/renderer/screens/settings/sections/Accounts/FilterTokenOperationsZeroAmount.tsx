@@ -15,14 +15,7 @@ export default function FilterTokenOperationsZeroAmount() {
       title={t("settings.accounts.filterTokenOperationsZeroAmount.title")}
       desc={t("settings.accounts.filterTokenOperationsZeroAmount.desc")}
     >
-      <Track
-        onUpdate
-        event={
-          filterTokenOperationsZeroAmount
-            ? "filterTokenOperationsZeroAmountEnabled"
-            : "filterTokenOperationsZeroAmountDisabled"
-        }
-      />
+
       <Switch
         isChecked={filterTokenOperationsZeroAmount}
         onChange={setFilterTokenOperationsZeroAmount}

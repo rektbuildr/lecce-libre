@@ -17,11 +17,11 @@ import installLanguage from "@ledgerhq/live-common/hw/installLanguage";
 import staxFetchImage from "@ledgerhq/live-common/hw/staxFetchImage";
 import staxRemoveImage from "@ledgerhq/live-common/hw/staxRemoveImage";
 import connectManager from "@ledgerhq/live-common/hw/connectManager";
-import initSwap from "@ledgerhq/live-common/exchange/swap/initSwap";
+
 import connectApp from "@ledgerhq/live-common/hw/connectApp";
 import useEnv from "@ledgerhq/live-common/hooks/useEnv";
-import startExchange from "@ledgerhq/live-common/exchange/platform/startExchange";
-import completeExchange from "@ledgerhq/live-common/exchange/platform/completeExchange";
+
+
 import {
   connectAppExecMock,
   initSwapExecMock,

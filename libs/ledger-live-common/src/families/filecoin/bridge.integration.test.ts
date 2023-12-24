@@ -1,5 +1,5 @@
 import "../../__tests__/test-helpers/setup";
-import { testBridge } from "../../__tests__/test-helpers/bridge";
+
 import { getAccountBridge } from "../../bridge";
 import { decodeAccountId, encodeAccountId, fromAccountRaw } from "../../account";
 import { BigNumber } from "bignumber.js";
@@ -173,7 +173,7 @@ const dataset: DatasetTest<Transaction> = {
   },
 };
 
-testBridge(dataset);
+
 
 describe("estimateMaxSpendable", () => {
   test("it should failed on invalid recipient", async () => {

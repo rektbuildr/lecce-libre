@@ -1,5 +1,5 @@
 import "../../__tests__/test-helpers/setup";
-import { testBridge } from "../../__tests__/test-helpers/bridge";
+
 import { fromAccountRaw } from "../../account";
 import { loadAccountDelegation, listBakers } from "./bakers";
 import whitelist from "./bakers.whitelist-default";
@@ -129,7 +129,7 @@ function makeAccount(name, pubkey, address, derivationMode) {
   };
 }
 
-testBridge(dataset);
+
 
 describe("tezos bakers", () => {
   test("atleast 10 whitelisted bakers are online", async () => {

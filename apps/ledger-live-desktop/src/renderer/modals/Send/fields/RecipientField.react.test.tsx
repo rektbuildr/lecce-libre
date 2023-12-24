@@ -68,7 +68,6 @@ const ethMockAccount: Account = {
   },
   currency: eth,
   lastSyncDate: new Date("2023-02-14T11:01:19.252Z"),
-  swapHistory: [],
   balanceHistoryCache: {
     HOUR: { balances: [], latestDate: 1676329200000 },
     DAY: { balances: [], latestDate: 1676329200000 },
@@ -109,7 +108,6 @@ const polygonMockAccount: Account = {
   },
   currency: polygon,
   lastSyncDate: new Date("2023-02-14T11:01:19.252Z"),
-  swapHistory: [],
   syncHash: "[]_6595",
   balanceHistoryCache: {
     HOUR: { balances: [], latestDate: 1676329200000 },

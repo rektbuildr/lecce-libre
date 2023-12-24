@@ -91,7 +91,7 @@ const dataset: CurrenciesData<Transaction> = {
           unbondingBalance: "0",
           withdrawAddress: "core1sel9ys8a7jlsmrxp9692zfjncnmhxkws0qr3g9",
         },
-        swapHistory: [],
+
       } as unknown as CosmosAccountRaw,
     },
   ],

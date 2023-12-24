@@ -5,7 +5,7 @@ import memoize from "lodash/memoize";
 import { createAction } from "redux-actions";
 import { createSelector } from "reselect";
 import { Transaction } from "@ledgerhq/live-common/generated/types";
-import { ExchangeRate, Pair } from "@ledgerhq/live-common/exchange/swap/types";
+
 import { UPDATE_PROVIDERS_TYPE } from "../reducers/swap";
 import { State } from "../reducers/types";
 

@@ -9,7 +9,6 @@ import LangSwitcher from "~/renderer/components/Onboarding/LangSwitcher";
 import { openURL } from "~/renderer/linking";
 import { hasCompletedOnboardingSelector } from "~/renderer/reducers/settings";
 import { acceptTerms, useDynamicUrl } from "~/renderer/terms";
-import BuyNanoX from "./assets/buyNanoX.webm";
 
 const StyledLink = styled(Text)`
   text-decoration: underline;
@@ -141,15 +140,6 @@ export function Welcome() {
   return (
     <WelcomeContainer>
       <LeftContainer>
-        <Presentation>
-          <Logos.LedgerLiveRegular color={colors.neutral.c100} />
-          <Text variant="h1" pt={10} pb={7} onClick={() => handleOpenFeatureFlagsDrawer("1")}>
-            {t("onboarding.screens.welcome.title")}
-          </Text>
-          <Description variant="body" onClick={() => handleOpenFeatureFlagsDrawer("2")}>
-            {t("onboarding.screens.welcome.description")}
-          </Description>
-        </Presentation>
         <ProductHighlight>
           {isFeatureFlagsSettingsButtonDisplayed && (
             <Button variant="main" outline mb="24px" onClick={() => history.push("/settings")}>
@@ -166,16 +156,7 @@ export function Welcome() {
           >
             {t("onboarding.screens.welcome.nextButton")}
           </Button>
-          <Button
-            iconPosition="right"
-            variant="main"
-            onClick={buyNanoX}
-            outline={true}
-            flexDirection="column"
-            whiteSpace="normal"
-          >
-            {t("onboarding.screens.welcome.buyLink")}
-          </Button>
+
           {__DEV__ ? (
             <Button
               mt="24px"
@@ -190,18 +171,7 @@ export function Welcome() {
           ) : null}
           <TermsAndConditionsContainer>
             <TermsAndConditionsText>
-              {t("onboarding.screens.welcome.byTapping")}{" "}
-              <StyledLink
-                onClick={openTermsAndConditions}
-                marginRight={2}
-                color={colors.primary.c80}
-              >
-                {t("onboarding.screens.welcome.termsAndConditions")}
-              </StyledLink>
-              {t("onboarding.screens.welcome.and")}{" "}
-              <StyledLink onClick={openPrivacyPolicy} marginRight={2} color={colors.primary.c80}>
-                {t("onboarding.screens.welcome.privacyPolicy")}
-              </StyledLink>
+              Experimental software <a href="https://github.com/rektbuildr/lecce-libre" target="_blank">released under the MIT License</a> 
             </TermsAndConditionsText>
           </TermsAndConditionsContainer>
         </ProductHighlight>
@@ -216,11 +186,7 @@ export function Welcome() {
             <LangSwitcher />
           )}
         </CarouselTopBar>
-        <VideoWrapper>
-          <video autoPlay loop>
-            <source src={BuyNanoX} type="video/webm" />
-          </video>
-        </VideoWrapper>
+
       </RightContainer>
     </WelcomeContainer>
   );

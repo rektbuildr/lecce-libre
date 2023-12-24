@@ -9,7 +9,7 @@ import { isTokenAccount, isAccount, getMainAccount, makeEmptyTokenAccount } from
 import { Transaction } from "../generated/types";
 import { prepareMessageToSign } from "../hw/signMessage/index";
 import { getAccountBridge } from "../bridge";
-import { Exchange } from "../exchange/swap/types";
+
 import { findTokenById } from "@ledgerhq/cryptoassets";
 
 export function translateContent(content: string | TranslatableString, locale = "en"): string {
@@ -245,7 +245,6 @@ export type CompleteExchangeRequest = {
 };
 export type CompleteExchangeUiRequest = {
   provider: string;
-  exchange: Exchange;
   transaction: Transaction;
   binaryPayload: string;
   signature: string;
@@ -358,7 +357,6 @@ export function completeExchangeLogic(
 
   return uiNavigation({
     provider,
-    exchange,
     transaction: tx,
     binaryPayload,
     signature,

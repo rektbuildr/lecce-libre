@@ -1,23 +1,17 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Operation, SignedOperation } from "@ledgerhq/types-live";
-import { Exchange } from "@ledgerhq/live-common/exchange/platform/types";
-import { Exchange as SwapExchange } from "@ledgerhq/live-common/exchange/swap/types";
-import { setBroadcastTransaction } from "@ledgerhq/live-common/exchange/swap/setBroadcastTransaction";
-import { getUpdateAccountWithUpdaterParams } from "@ledgerhq/live-common/exchange/swap/getUpdateAccountWithUpdaterParams";
 import { useBroadcast } from "@ledgerhq/live-common/hooks/useBroadcast";
 import { Transaction } from "@ledgerhq/live-common/generated/types";
 import { TokenCurrency } from "@ledgerhq/types-cryptoassets";
 import { updateAccountWithUpdater } from "~/renderer/actions/accounts";
 import Box from "~/renderer/components/Box";
 import { BodyContent } from "./BodyContent";
-import { getMagnitudeAwareRate } from "@ledgerhq/live-common/exchange/swap/webApp/index";
 import { BigNumber } from "bignumber.js";
 import { AccountLike } from "@ledgerhq/types-live";
 
 export type Data = {
   provider: string;
-  exchange: Exchange;
   transaction: Transaction;
   binaryPayload: string;
   signature: string;
@@ -97,7 +91,6 @@ const Body = ({ data, onClose }: { data: Data; onClose?: () => void | undefined 
           });
           const params = getUpdateAccountWithUpdaterParams({
             result,
-            exchange: exchange as SwapExchange,
             transaction: transactionParams,
             magnitudeAwareRate,
             provider,

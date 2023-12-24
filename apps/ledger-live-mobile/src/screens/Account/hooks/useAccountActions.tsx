@@ -20,7 +20,7 @@ import ZeroBalanceDisabledModalContent from "../../../components/FabActions/moda
 import { ActionButtonEvent } from "../../../components/FabActions";
 import { useCanShowStake } from "./useCanShowStake";
 import { PtxToast } from "../../../components/Toast/PtxToast";
-import { useFetchCurrencyAll } from "@ledgerhq/live-common/exchange/swap/hooks/index";
+
 
 type Props = {
   account: AccountLike;

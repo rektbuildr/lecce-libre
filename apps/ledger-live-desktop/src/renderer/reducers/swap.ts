@@ -1,5 +1,5 @@
 import { handleActions } from "redux-actions";
-import { AvailableProviderV3, Pair, ExchangeRate } from "@ledgerhq/live-common/exchange/swap/types";
+
 import { Transaction } from "@ledgerhq/live-common/generated/types";
 import { Handlers } from "./types";
 

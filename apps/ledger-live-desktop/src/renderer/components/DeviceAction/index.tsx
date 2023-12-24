@@ -55,7 +55,7 @@ import {
   renderLockedDeviceError,
   RenderDeviceNotOnboardedError,
 } from "./rendering";
-import { useGetSwapTrackingProperties } from "~/renderer/screens/exchange/Swap2/utils";
+
 import {
   Account,
   AccountLike,
@@ -63,7 +63,7 @@ import {
   DeviceInfo,
   DeviceModelInfo,
 } from "@ledgerhq/types-live";
-import { Exchange, ExchangeRate, InitSwapResult } from "@ledgerhq/live-common/exchange/swap/types";
+
 import { Transaction, TransactionStatus } from "@ledgerhq/live-common/generated/types";
 import { AppAndVersion } from "@ledgerhq/live-common/hw/connectApp";
 import { Device } from "@ledgerhq/types-devices";
@@ -113,7 +113,6 @@ type States = PartialNullable<{
   passWarning: () => void;
   initSwapRequested: boolean;
   initSwapError: Error;
-  initSwapResult: InitSwapResult | null;
   installingLanguage: boolean;
   languageInstallationRequested: boolean;
   signMessageRequested: AnyMessage;
@@ -216,7 +215,7 @@ export const DeviceActionDefaultRendering = <R, H extends States, P>({
 
   const dispatch = useDispatch();
   const preferredDeviceModel = useSelector(preferredDeviceModelSelector);
-  const swapDefaultTrack = useGetSwapTrackingProperties();
+  const swapDefaultTrack = null;
 
   const type = useTheme().colors.palette.type;
 
@@ -327,13 +326,11 @@ export const DeviceActionDefaultRendering = <R, H extends States, P>({
       case 0x00: {
         const {
           transaction,
-          exchange,
           provider,
           rate = 1,
           amountExpectedTo = 0,
         } = request as {
           transaction: Transaction;
-          exchange: Exchange;
           provider: string;
           rate: number;
           amountExpectedTo: number;
@@ -348,8 +345,6 @@ export const DeviceActionDefaultRendering = <R, H extends States, P>({
             provider,
             rate: new BigNumber(rate),
           } as ExchangeRate,
-          exchange,
-          swapDefaultTrack,
           amountExpectedTo: amountExpectedTo.toString() ?? undefined,
           estimatedFees: estimatedFees?.toString() ?? undefined,
         });
@@ -369,9 +364,8 @@ export const DeviceActionDefaultRendering = <R, H extends States, P>({
   }
 
   if (initSwapRequested && !initSwapResult && !initSwapError) {
-    const { transaction, exchange, exchangeRate } = request as {
+    const { transaction, exchangeRate } = request as {
       transaction: Transaction;
-      exchange: Exchange;
       exchangeRate: ExchangeRate;
     };
     const { amountExpectedTo, estimatedFees } = hookState;
@@ -380,7 +374,6 @@ export const DeviceActionDefaultRendering = <R, H extends States, P>({
       type,
       transaction,
       exchangeRate,
-      exchange,
       amountExpectedTo: amountExpectedTo ?? undefined,
       estimatedFees: estimatedFees ?? undefined,
       swapDefaultTrack,

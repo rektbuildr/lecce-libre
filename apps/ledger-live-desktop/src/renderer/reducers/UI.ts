@@ -2,7 +2,6 @@ import { handleActions } from "redux-actions";
 import { LiveAppManifest } from "@ledgerhq/live-common/platform/types";
 import { State } from "~/renderer/reducers";
 import { Handlers } from "./types";
-import { Data as CompleteExchangeData } from "~/renderer/modals/Platform/Exchange/CompleteExchange/Body";
 
 export type PlatformAppDrawerInfo = {
   type: "DAPP_INFO";

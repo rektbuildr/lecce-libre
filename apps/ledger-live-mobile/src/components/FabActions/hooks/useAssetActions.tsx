@@ -13,7 +13,7 @@ import { readOnlyModeEnabledSelector } from "../../../reducers/settings";
 import { ActionButtonEvent } from "..";
 import ZeroBalanceDisabledModalContent from "../modals/ZeroBalanceDisabledModalContent";
 import { sharedSwapTracking } from "../../../screens/Swap/utils";
-import { useFetchCurrencyAll } from "@ledgerhq/live-common/exchange/swap/hooks/index";
+
 import { flattenAccountsSelector } from "../../../reducers/accounts";
 import { PtxToast } from "../../Toast/PtxToast";
 

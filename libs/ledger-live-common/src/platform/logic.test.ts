@@ -689,7 +689,7 @@ function createTokenAccount(id = "32"): TokenAccount {
       HOUR: { latestDate: null, balances: [] },
       DAY: { latestDate: null, balances: [] },
     },
-    swapHistory: [],
+
   };
 }
 

@@ -1,11 +1,9 @@
 import React from "react";
-import { Exchange } from "@ledgerhq/live-common/exchange/platform/types";
 import { Account, AccountLike, SignedOperation } from "@ledgerhq/types-live";
 import { Transaction } from "@ledgerhq/live-common/generated/types";
 import connectApp from "@ledgerhq/live-common/hw/connectApp";
 import { createAction } from "@ledgerhq/live-common/hw/actions/completeExchange";
 import { createAction as txCreateAction } from "@ledgerhq/live-common/hw/actions/transaction";
-import completeExchange from "@ledgerhq/live-common/exchange/platform/completeExchange";
 import { TokenCurrency } from "@ledgerhq/types-cryptoassets";
 import DeviceAction from "~/renderer/components/DeviceAction";
 import BigSpinner from "~/renderer/components/BigSpinner";
@@ -26,7 +24,6 @@ type BodyContentProps = {
   } | null;
   request: {
     provider: string;
-    exchange: Exchange;
     transaction: Transaction;
     binaryPayload: string;
     signature: string;

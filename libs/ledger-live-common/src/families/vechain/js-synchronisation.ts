@@ -74,7 +74,7 @@ const getAccountShape: GetAccountShape = async info => {
         balanceHistoryCache:
           (initialAccount?.subAccounts && initialAccount.subAccounts[0]?.balanceHistoryCache) ||
           emptyHistoryCache,
-        swapHistory: [],
+
       },
     ],
   };

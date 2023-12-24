@@ -53,7 +53,7 @@ const dataset: CurrenciesData<Transaction> = {
           WEEK: { balances: [0], latestDate: 1696111200000 },
         },
         xpub: "sei1gyauvl44q2apn3u3aujm36q8zrj74vryc50pfg",
-        swapHistory: [],
+
         pendingOperations: [],
         operations: [],
       },

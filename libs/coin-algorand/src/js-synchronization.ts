@@ -330,7 +330,7 @@ async function buildSubAccount({
     pendingOperations: [],
     balance,
     spendableBalance: balance,
-    swapHistory: [],
+
     creationDate: operations.length > 0 ? operations[operations.length - 1].date : new Date(),
     balanceHistoryCache: emptyHistoryCache,
   };

@@ -13,7 +13,7 @@ import EntryButton from "~/renderer/components/EntryButton/EntryButton";
 import CoinsIcon from "./assets/CoinsIcon";
 import { stakeDefaultTrack } from "~/renderer/screens/stake/constants";
 import { CryptoCurrency } from "@ledgerhq/types-cryptoassets";
-import { useFetchCurrencyAll } from "@ledgerhq/live-common/exchange/swap/hooks/index";
+
 
 const useText = (entryPoint: "noFunds" | "getFunds", currency: CryptoCurrency) => {
   const { t } = useTranslation();

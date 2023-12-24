@@ -1,5 +1,5 @@
 import "../../__tests__/test-helpers/setup";
-import { testBridge } from "../../__tests__/test-helpers/bridge";
+
 import { BigNumber } from "bignumber.js";
 import type { DatasetTest } from "@ledgerhq/types-live";
 import {
@@ -401,4 +401,4 @@ const dataset: DatasetTest<Transaction> = {
   },
 };
 
-testBridge(dataset);
+

@@ -155,7 +155,7 @@ function createAccount(): PolkadotAccount {
         latestDate: undefined,
       },
     },
-    swapHistory: [],
+
     polkadotResources: {
       controller: null,
       stash: null,

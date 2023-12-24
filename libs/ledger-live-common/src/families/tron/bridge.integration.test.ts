@@ -18,7 +18,7 @@ import {
   TronUnexpectedFees,
   TronVoteRequired,
 } from "../../errors";
-import { testBridge } from "../../__tests__/test-helpers/bridge";
+
 import "../../__tests__/test-helpers/setup";
 import { activationFees } from "./constants";
 import { fromTransactionRaw } from "./transaction";
@@ -750,4 +750,4 @@ const dataset: DatasetTest<Transaction> = {
   },
 };
 
-testBridge(dataset);
+

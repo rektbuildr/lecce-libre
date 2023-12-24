@@ -18,8 +18,8 @@ import MODAL_SYSTEM_LANGUAGE_AVAILABLE from "./SystemLanguageAvailable";
 import MODAL_START_STAKE from "./StartStake";
 import MODAL_TERM_OF_USE_UPDATE from "./TermOfUseUpdate";
 import MODAL_EXCHANGE_CRYPTO_DEVICE from "./ExchangeDeviceConfirm";
-import MODAL_PLATFORM_EXCHANGE_START from "./Platform/Exchange/StartExchange";
-import MODAL_PLATFORM_EXCHANGE_COMPLETE from "./Platform/Exchange/CompleteExchange";
+
+
 import MODAL_CONNECT_DEVICE from "./ConnectDevice";
 import MODAL_LOTTIE_DEBUGGER from "./LottieDebugger";
 import MODAL_STORYLY_DEBUGGER from "./StorylyDebugger";
@@ -57,8 +57,6 @@ const globalModals: GlobalModals = {
   MODAL_START_STAKE,
   MODAL_PROTECT_DISCOVER,
   // Platform
-  MODAL_PLATFORM_EXCHANGE_START,
-  MODAL_PLATFORM_EXCHANGE_COMPLETE,
   MODAL_CONNECT_DEVICE,
 
   // Vault,

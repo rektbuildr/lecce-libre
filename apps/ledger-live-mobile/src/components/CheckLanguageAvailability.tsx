@@ -49,11 +49,7 @@ export default function CheckLanguageAvailability() {
 
   return (
     <>
-      <Track
-        onMount
-        event={`Discoverability - Prompt - ${defaultLanguage}`}
-        eventProperties={{ language: defaultLanguage }}
-      />
+
       <QueuedDrawer isRequestingToBeOpened onClose={onRequestClose}>
         <ModalBottomAction
           title={<Trans i18nKey="systemLanguageAvailable.title" />}

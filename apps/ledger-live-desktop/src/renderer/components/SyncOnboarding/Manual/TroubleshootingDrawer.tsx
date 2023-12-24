@@ -29,13 +29,7 @@ const TroubleshootingDrawer: React.FC<Props> = ({ onClose, lastKnownDeviceId }) 
 
   return (
     <>
-      <TrackPage
-        category="drawer troubleshoot USB connection"
-        type="drawer"
-        flow={""}
-        error="troubleshoot USB connection"
-        refreshSource={false}
-      />
+
       <Flex flexDirection="column" height="100%" px={14}>
         <Flex flexDirection="column" flex={1} justifyContent={"center"}>
           <Animation

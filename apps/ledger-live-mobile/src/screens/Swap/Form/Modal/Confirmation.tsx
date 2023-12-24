@@ -5,19 +5,13 @@ import { useTranslation } from "react-i18next";
 import { useNavigation } from "@react-navigation/native";
 import { getEnv } from "@ledgerhq/live-env";
 import type { Transaction } from "@ledgerhq/live-common/generated/types";
-import {
-  Exchange,
-  ExchangeRate,
-  InitSwapResult,
-  SwapTransaction,
-  SwapTransactionType,
-} from "@ledgerhq/live-common/exchange/swap/types";
+
 import { SyncSkipUnderPriority } from "@ledgerhq/live-common/bridge/react/index";
-import addToSwapHistory from "@ledgerhq/live-common/exchange/swap/addToSwapHistory";
+
 import { addPendingOperation, getMainAccount } from "@ledgerhq/live-common/account/index";
 import { AccountLike, DeviceInfo, Operation, SignedOperation } from "@ledgerhq/types-live";
 import { Device } from "@ledgerhq/live-common/hw/actions/types";
-import { postSwapAccepted, postSwapCancelled } from "@ledgerhq/live-common/exchange/swap/index";
+
 import { InstalledItem } from "@ledgerhq/live-common/apps/types";
 import { useBroadcast } from "@ledgerhq/live-common/hooks/useBroadcast";
 import { renderLoading } from "../../../../components/DeviceAction/rendering";
@@ -115,16 +109,7 @@ export function Confirmation({
           accountId: mainAccount.id,
           updater: account =>
             addPendingOperation(
-              addToSwapHistory({
-                account,
-                operation,
-                transaction: swapTx.current.transaction as Transaction,
-                swap: {
-                  exchange,
-                  exchangeRate: exchangeRate.current,
-                },
-                swapId,
-              }),
+              null,
               operation,
             ),
         }),

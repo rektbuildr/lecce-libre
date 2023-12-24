@@ -31,7 +31,7 @@ export const vechain1: AccountRaw = {
       pendingOperations: [],
     },
   ],
-  swapHistory: [],
+
 };
 
 export const vechain2: AccountRaw = {
@@ -62,7 +62,7 @@ export const vechain2: AccountRaw = {
       pendingOperations: [],
     },
   ],
-  swapHistory: [],
+
 };
 
 // account with vtho but no vet
@@ -94,5 +94,5 @@ export const vechain3: AccountRaw = {
       pendingOperations: [],
     },
   ],
-  swapHistory: [],
+
 };

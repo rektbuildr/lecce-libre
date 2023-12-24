@@ -12,7 +12,7 @@ import { NavigatorName, ScreenName } from "../../const";
 import type { NoFundsNavigatorParamList } from "../RootNavigator/types/NoFundsNavigator";
 import { StackNavigatorProps } from "../RootNavigator/types/helpers";
 import { Currency } from "@ledgerhq/types-cryptoassets";
-import { useFetchCurrencyAll } from "@ledgerhq/live-common/exchange/swap/hooks/index";
+
 
 const useText = (entryPoint: "noFunds" | "getFunds", currency: Currency) => {
   const { t } = useTranslation();
