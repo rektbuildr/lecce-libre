@@ -295,7 +295,6 @@ export default function Default() {
                             <Route path="/account/:parentId/:id" render={withSuspense(Account)} />
                             <Route path="/account/:id" render={withSuspense(Account)} />
                             <Route path="/asset/:assetId+" render={withSuspense(Asset)} />
-                            <Route path="/swap" render={withSuspense(Swap2)} />
                             <Route
                               path="/market/:currencyId"
                               render={withSuspense(MarketCoinScreen)}
@@ -332,7 +331,6 @@ export default function Default() {
         </BridgeSyncProvider>
       </IsUnlocked>
 
-      {process.env.ANALYTICS_CONSOLE ? <AnalyticsConsole /> : null}
     </>
   );
 }

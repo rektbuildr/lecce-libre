@@ -3,7 +3,6 @@ import { useDispatch } from "react-redux";
 import { Currency, CryptoCurrency, TokenCurrency, Unit } from "@ledgerhq/types-cryptoassets";
 
 import { setCountervalueFirst } from "~/renderer/actions/settings";
-import { BalanceTotal, BalanceDiff } from "~/renderer/components/BalanceInfos";
 import Box, { Tabbable } from "~/renderer/components/Box";
 import FormattedVal from "~/renderer/components/FormattedVal";
 import Price from "~/renderer/components/Price";
@@ -15,7 +14,6 @@ import Button from "~/renderer/components/ButtonV3";
 
 import { useHistory } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useRampCatalog } from "@ledgerhq/live-common/platform/providers/RampCatalogProvider/useRampCatalog";
 import { useFeature } from "@ledgerhq/live-config/featureFlags/index";
 import useStakeFlow from "~/renderer/screens/stake";
 import { stakeDefaultTrack } from "~/renderer/screens/stake/constants";
@@ -41,8 +39,6 @@ export default function AssetBalanceSummaryHeader({
   currency,
   unit,
 }: Props) {
-  const { data: currenciesAll } = useFetchCurrencyAll();
-  const swapDefaultTrack = useGetSwapTrackingProperties();
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const history = useHistory();
@@ -69,18 +65,12 @@ export default function AssetBalanceSummaryHeader({
     }
   }, [countervalueFirst, data]);
   const primaryKey = data[0].unit.code;
-  const secondaryKey = data[1].unit.code;
-  const { isCurrencyAvailable } = useRampCatalog();
-
-  const availableOnBuy = !!currency && isCurrencyAvailable(currency.id, "onRamp");
 
   const startStakeFlow = useStakeFlow();
   const stakeProgramsFeatureFlag = useFeature("stakePrograms");
   const listFlag = stakeProgramsFeatureFlag?.params?.list ?? [];
   const stakeProgramsEnabled = stakeProgramsFeatureFlag?.enabled ?? false;
   const availableOnStake = stakeProgramsEnabled && currency && listFlag.includes(currency?.id);
-
-  const availableOnSwap = currenciesAll.includes(currency.id);
 
   const onBuy = useCallback(() => {
     
@@ -102,7 +92,7 @@ export default function AssetBalanceSummaryHeader({
         defaultCurrency: currency,
       },
     });
-  }, [currency, history, swapDefaultTrack]);
+  }, [currency, history, null]);
 
   const onStake = useCallback(() => {
     
@@ -120,65 +110,8 @@ export default function AssetBalanceSummaryHeader({
             <Swap />
           </SwapButton>
         )}
-        <BalanceTotal
-          key={primaryKey}
-          style={{
-            cursor: isAvailable ? "pointer" : "",
-            overflow: "hidden",
-            flexShrink: 1,
-          }}
-          onClick={() => setCountervalueFirst(!countervalueFirst)}
-          showCryptoEvenIfNotAvailable
-          isAvailable={isAvailable}
-          totalBalance={data[0].balance || 0}
-          unit={data[0].unit}
-        >
-          <Wrapper
-            style={{
-              marginTop: 4,
-            }}
-          >
-            <div
-              style={{
-                width: "auto",
-                marginRight: 20,
-              }}
-            >
-              {typeof data[1].balance === "number" && (
-                <FormattedVal
-                  key={secondaryKey}
-                  animateTicker
-                  disableRounding
-                  alwaysShowSign={false}
-                  color="warmGrey"
-                  unit={data[1].unit}
-                  fontSize={6}
-                  showCode
-                  val={data[1].balance}
-                />
-              )}
-            </div>
-            <Price
-              unit={unit}
-              from={currency}
-              withActivityCurrencyColor
-              withEquality
-              fontSize={6}
-              iconSize={16}
-            />
-          </Wrapper>
-        </BalanceTotal>
-        {availableOnBuy && (
-          <Button buttonTestId="asset-page-buy-button" variant="color" mr={1} onClick={onBuy}>
-            {t("accounts.contextMenu.buy")}
-          </Button>
-        )}
+       
 
-        {availableOnSwap && (
-          <Button buttonTestId="asset-page-swap-button" variant="color" mr={1} onClick={onSwap}>
-            {t("accounts.contextMenu.swap")}
-          </Button>
-        )}
 
         {availableOnStake && (
           <Button variant="color" onClick={onStake} buttonTestId="asset-page-stake-button">
@@ -193,12 +126,7 @@ export default function AssetBalanceSummaryHeader({
         justifyContent={isAvailable ? "space-between" : "flex-end"}
         flow={7}
       >
-        <BalanceDiff
-          totalBalance={data[0].balance || 0}
-          valueChange={data[0].valueChange}
-          unit={data[0].unit}
-          isAvailable={isAvailable}
-        />
+        
         <PillsDaysCount />
       </Box>
     </Box>

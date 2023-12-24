@@ -79,7 +79,6 @@ export default function DashboardPage() {
     <>
       <TopBannerContainer>
         <ClearCacheBanner />
-        <CurrencyDownStatusAlert currencies={currencies} hideStatusIncidents />
       </TopBannerContainer>
       {showCarousel ? <Carousel /> : null}
       <RecoverBanner />

@@ -1,7 +1,6 @@
 import React, { useCallback } from "react";
 import { useSelector } from "react-redux";
 import { BigNumber } from "bignumber.js";
-import { formatShort } from "@ledgerhq/live-common/currencies/index";
 import { Currency } from "@ledgerhq/types-cryptoassets";
 import { BalanceHistoryData, PortfolioRange } from "@ledgerhq/types-live";
 import Chart from "~/renderer/components/Chart";
@@ -9,7 +8,6 @@ import Box, { Card } from "~/renderer/components/Box";
 import FormattedVal from "~/renderer/components/FormattedVal";
 import PlaceholderChart from "~/renderer/components/PlaceholderChart";
 import { discreetModeSelector } from "~/renderer/reducers/settings";
-import BalanceInfos from "~/renderer/components/BalanceInfos";
 import { usePortfolio } from "~/renderer/actions/portfolio";
 import FormattedDate from "~/renderer/components/FormattedDate";
 type Props = {
@@ -30,15 +28,6 @@ export default function PortfolioBalanceSummary({ range, chartColor, counterValu
   );
   return (
     <Card p={0} py={5}>
-      <Box px={6}>
-        <BalanceInfos
-          unit={counterValue.units[0]}
-          isAvailable={portfolio.balanceAvailable}
-          valueChange={portfolio.countervalueChange}
-          totalBalance={portfolio.balanceHistory[portfolio.balanceHistory.length - 1].value}
-        />
-      </Box>
-
       <Box
         px={5}
         ff="Inter"
