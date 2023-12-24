@@ -1,4 +1,3 @@
-import * as braze from "@braze/web-sdk";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -12,20 +11,8 @@ import { setNotificationsCards } from "~/renderer/actions/dynamicContent";
 
 
 export function useNotifications() {
-  const [cachedNotifications, setCachedNotifications] = useState<braze.Card[]>([]);
   const dispatch = useDispatch();
   const notificationsCards = useSelector(notificationsContentCardSelector);
-
-  useEffect(() => {
-    const cards = braze
-      .getCachedContentCards()
-      .cards.filter(
-        card =>
-          card.extras?.platform === Platform.Desktop &&
-          card.extras?.location === LocationContentCard.NotificationCenter,
-      );
-    setCachedNotifications(cards);
-  }, []);
 
   function startOfDayTime(date: Date): number {
     const startOfDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -67,9 +54,6 @@ export function useNotifications() {
 
   const logNotificationImpression = useCallback(
     (cardId: string) => {
-      const currentCard = cachedNotifications.find(card => card.id === cardId);
-
-      braze.logContentCardImpressions(currentCard ? [currentCard] : []);
 
       const cards = (notificationsCards ?? []).map(n => {
         if (n.id === cardId) {
@@ -81,39 +65,14 @@ export function useNotifications() {
 
       dispatch(setNotificationsCards(cards));
     },
-    [notificationsCards, cachedNotifications, dispatch],
+    [notificationsCards, null, dispatch],
   );
 
   const onClickNotif = useCallback(
     (card: ContentCard) => {
-      const currentCard = cachedNotifications.find(c => c.id === card.id);
 
-      if (currentCard) {
-        // For some reason braze won't log the click event if the card url is empty
-        // Setting it as the card id just to have a dummy non empty value
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        currentCard.url = currentCard.id;
-        braze.logContentCardClick(currentCard);
-      }
-
-      track("contentcard_clicked", {
-        contentcard: card.title,
-        link: card.path || card.url,
-        campaign: card.id,
-        page: "notification_center",
-      });
     },
-    [cachedNotifications],
+    [null],
   );
 
-  return {
-    groupNotifications,
-    startOfDayTime,
-    braze,
-    cachedNotifications,
-    notificationsCards,
-    logNotificationImpression,
-    onClickNotif,
-  };
 }

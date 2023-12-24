@@ -67,7 +67,6 @@
   },
   "dependencies": {
     "@azure/core-asynciterator-polyfill": "^1.0.2",
-    "@braze/react-native-sdk": "^8.0.0",
     "@formatjs/intl-locale": "^3.0.0",
     "@formatjs/intl-pluralrules": "^5.0.0",
     "@formatjs/intl-relativetimeformat": "^11.1.8",
