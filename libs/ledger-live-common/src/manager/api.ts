@@ -526,6 +526,10 @@ const genuineCheck = (
   }).pipe(
     map(e => {
       if (e.type === "result") {
+
+        console.log("Genuine Check");
+        console.log(e.payload);
+
         return {
           type: "result",
           payload: String(e.payload || ""),
