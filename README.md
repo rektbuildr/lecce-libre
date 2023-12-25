@@ -1,4 +1,4 @@
-# REKT's Ledger Libre Fork
+# REKT's Lecce Libre Fork
 
 A Ledger Live version without user tracking 
 

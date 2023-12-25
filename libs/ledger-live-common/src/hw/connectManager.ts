@@ -73,6 +73,8 @@ const cmd = ({ deviceId, request }: Input): Observable<ConnectManagerEvent> =>
                 } as ConnectManagerEvent);
               }
 
+              //asdf
+
               return concat(
                 of({
                   type: "listingApps",

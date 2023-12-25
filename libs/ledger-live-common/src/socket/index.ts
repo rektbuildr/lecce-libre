@@ -52,8 +52,8 @@ export function createDeviceSocket(
     let inBulkMode = false; // we have an array of apdus to exchange, without the need of more WS messages.
     let allowSecureChannelTimeout: NodeJS.Timeout | null = null; // allows to delay/cancel the user confirmation event
 
-    console.log("createDeviceSocket");
-    console.log(url)
+    //console.log("createDeviceSocket");
+    //console.log(url)
 
     const ws = new WS(url);
 
@@ -97,8 +97,8 @@ export function createDeviceSocket(
       deviceError = null; // If we continue to receive messages, the cached error is obsolete.
 
       try {
-        console.log("ws.onmessage")
-        console.log(e.data)
+        //console.log("ws.onmessage")
+        //console.log(e.data)
         const input = JSON.parse(e.data);
         tracer.trace("Socket in", { type: input.query });
 
