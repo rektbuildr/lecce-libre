@@ -66,9 +66,6 @@ const AppDepsUninstallModal = ({ app, dependents, dispatch, onClose }: Props) =>
       centered
       subTitle={
         <>
-          <IconsSection>
-            <AppTree uri={manager.getIconUrl(app.icon)} />
-          </IconsSection>
           <Trans
             i18nKey="manager.apps.dependencyUninstall.title"
             values={{
@@ -115,7 +112,7 @@ const AppDepsUninstallModal = ({ app, dependents, dispatch, onClose }: Props) =>
               <ListTreeLine size={55} />
             </ListIcon>
             <Box ml={4} mr={2}>
-              <Image alt="" resource={manager.getIconUrl(a.icon)} width={22} height={22} />
+             
             </Box>
             <Text ff="Inter|SemiBold" color="palette.text.shade100" fontSize={4}>
               {a.name}

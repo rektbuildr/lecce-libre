@@ -63,22 +63,6 @@ const AppDepsInstallModal = ({ app, dependencies, dispatch, onClose }: Props) =>
       centered
       subTitle={
         <>
-          <IconsSection>
-            <Image alt="" resource={manager.getIconUrl(app.icon)} width={40} height={40} />
-            <Separator />
-            <LinkIconWrapper>
-              <LinkIcon size={20} />
-            </LinkIconWrapper>
-            <Separator />
-            {
-              <Image
-                alt=""
-                resource={manager.getIconUrl(dependencies[0].icon)}
-                width={40}
-                height={40}
-              />
-            }
-          </IconsSection>
           <Trans
             i18nKey="manager.apps.dependencyInstall.title"
             values={{

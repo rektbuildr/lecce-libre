@@ -49,24 +49,6 @@ type Props = {
   app: App;
 };
 function AppIcon({ app }: Props) {
-  const { currencyId, icon } = app;
-  const [loading, setLoading] = useState(true);
-  const onLoad = useCallback(() => setLoading(false), []);
-  const iconUrl = manager.getIconUrl(icon);
-  const currency = currencyId && findCryptoCurrencyById(currencyId);
-  const currencyColor = currency && getCurrencyColor(currency);
-  const IconCurrency = currency && getCryptoCurrencyIcon(currency);
-  return IconCurrency ? (
-    <Container color={currencyColor ?? undefined}>
-      <IconCurrency size={size} color="#FFF" />
-    </Container>
-  ) : (
-    <IconContainer loading={loading} size={size}>
-      <ManagerAppIconContainer>
-        <ManagerAppIconPlaceholder size={size} />
-      </ManagerAppIconContainer>
-      <Image alt="" onLoad={onLoad} resource={iconUrl} width={size} height={size} />
-    </IconContainer>
-  );
+  return <span></span>;
 }
 export default AppIcon;

@@ -34,7 +34,7 @@ const CacheAPI = {
   // When ready, the manager api will return an icon url instead of a name
   getIconUrl: (icon: string): string => {
     const icn = ICONS_FALLBACK[icon] || icon;
-    return `https://cdn.live.ledger.com/icons/${icn}.png`;
+    return `/#icons/${icn}.png`;
   },
   getFirmwareVersion: (firmware: OsuFirmware): string => firmware.name.replace("-osu", ""),
   // TO BE CONFIRMED – LL-2568

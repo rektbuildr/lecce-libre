@@ -27,7 +27,7 @@ const IconContainer = styled(Flex).attrs({
 function AppIcon({ size = 38, app, icon: defaultIcon = "", radius = 14 }: Props) {
   const { currencyId, icon } = app || {};
 
-  const uri = useMemo(() => manager.getIconUrl(icon || defaultIcon), [icon, defaultIcon]);
+  const uri = null;
 
   const currency = currencyId && findCryptoCurrencyById(currencyId);
   const currencyColor = (currency && getCurrencyColor(currency)) || undefined;
@@ -43,17 +43,10 @@ function AppIcon({ size = 38, app, icon: defaultIcon = "", radius = 14 }: Props)
         borderRadius: radius,
       }}
     >
-      <IconContainer>
-        <IconComponent size={size * 0.9} color="#FFFFFF" />
-      </IconContainer>
+      <span></span>
     </Flex>
   ) : uri ? (
-    <Image
-      source={{ uri }}
-      style={{ width: size, height: size }}
-      defaultSource={ManagerAppIcon}
-      fadeDuration={0}
-    />
+
   ) : null;
 }
 

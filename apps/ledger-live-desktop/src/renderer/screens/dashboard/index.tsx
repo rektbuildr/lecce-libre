@@ -26,9 +26,7 @@ import uniq from "lodash/uniq";
 import EmptyStateInstalledApps from "~/renderer/screens/dashboard/EmptyStateInstalledApps";
 import EmptyStateAccounts from "~/renderer/screens/dashboard/EmptyStateAccounts";
 import { useRefreshAccountsOrderingEffect } from "~/renderer/actions/general";
-import CurrencyDownStatusAlert from "~/renderer/components/CurrencyDownStatusAlert";
 import PostOnboardingHubBanner from "~/renderer/components/PostOnboardingHub/PostOnboardingHubBanner";
-import FeaturedButtons from "~/renderer/screens/dashboard/FeaturedButtons";
 import { AccountLike, Operation } from "@ledgerhq/types-live";
 
 // This forces only one visible top banner at a time
@@ -83,7 +81,6 @@ export default function DashboardPage() {
       {showCarousel ? <Carousel /> : null}
       <RecoverBanner />
       {isPostOnboardingBannerVisible && <PostOnboardingHubBanner />}
-      <FeaturedButtons />
       
       <Box flow={7} id="portfolio-container" data-test-id="portfolio-container">
         {!hasInstalledApps ? (

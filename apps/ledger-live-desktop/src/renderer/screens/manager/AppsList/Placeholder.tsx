@@ -51,7 +51,6 @@ const Placeholder = ({ query, addAccount, dispatch, installed, apps }: Props) =>
   const goToAccounts = useCallback(() => addAccount(found), [addAccount, found]);
   return found && parent ? (
     <Box alignItems="center" pt={5} py={6}>
-      <Image alt="" resource={manager.getIconUrl(parent.icon)} width={40} height={40} />
       <Box mt={2} ff="Inter|Regular" fontSize={5} color="palette.text.shade100">
         <Trans
           i18nKey="manager.applist.item.useAppForToken"

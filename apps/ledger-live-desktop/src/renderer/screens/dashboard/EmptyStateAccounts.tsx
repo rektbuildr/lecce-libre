@@ -34,66 +34,18 @@ const EmptyStateAccounts = ({ theme }: { theme: DefaultTheme }) => {
         margin: "auto",
       }}
     >
-      <NoAccounts size={250} />
       <Box mt={5} alignItems="center">
-        <Text
-          ff="Inter|SemiBold"
-          color="palette.text.shade100"
-          fontSize={5}
-          data-test-id="portfolio-empty-state-title"
-        >
-          {t("emptyState.accounts.title")}
-        </Text>
-        <Box mt={3}>
-          <Text
-            ff="Inter|Regular"
-            color="palette.text.shade60"
-            textAlign="center"
-            fontSize={4}
-            style={{
-              maxWidth: 440,
-            }}
-          >
-            {t("emptyState.accounts.desc")}
-          </Text>
-        </Box>
-        <Box
-          mt={5}
-          mb={5}
-          horizontal
-          style={{
-            width: 300,
-          }}
-          flow={3}
-          justifyContent="center"
-        >
-          <Button
-            primary
-            onClick={openAddAccounts}
-            data-test-id="portfolio-empty-state-add-account-button"
-          >
-            {t("emptyState.accounts.buttons.addAccount")}
-          </Button>
-        </Box>
+  
         <FakeLink
           underline
-          fontSize={3}
+          fontSize={10}
           color="palette.text.shade80"
           onClick={handleInstallApp}
           data-e2e="accounts_empty_InstallApps"
         >
           {t("emptyState.accounts.buttons.installApp")}
         </FakeLink>
-        <Box mt={5} justifyContent="center">
-          <LinkHelp
-            style={{
-              color: theme.colors.palette.text.shade60,
-            }}
-            iconSize={14}
-            label={<Trans i18nKey="emptyState.accounts.buttons.help" />}
-            onClick={() => openURL(urlFaq)}
-          />
-        </Box>
+
       </Box>
     </Box>
   );
