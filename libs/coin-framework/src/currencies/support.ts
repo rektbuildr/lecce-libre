@@ -81,19 +81,56 @@ async function initializeUserSupportedFiats() {
 
 export async function fetchSupportedFiatsTokens(): Promise<string[]> {
   try {
-    const response = await fetch("https://countervalues.live.ledger.com/v2/supported-to", {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Request failed with status ${response.status}`);
-    }
-
-    const data: string[] = await response.json();
-    return data;
+    return [
+      "aed",
+      "ars",
+      "aud",
+      "bdt",
+      "bhd",
+      "bmd",
+      "brl",
+      "cad",
+      "chf",
+      "clp",
+      "cny",
+      "czk",
+      "dkk",
+      "eur",
+      "gbp",
+      "gel",
+      "hkd",
+      "huf",
+      "idr",
+      "ils",
+      "inr",
+      "jpy",
+      "krw",
+      "kwd",
+      "lkr",
+      "mmk",
+      "mxn",
+      "myr",
+      "ngn",
+      "nok",
+      "nzd",
+      "php",
+      "pkr",
+      "pln",
+      "rub",
+      "sar",
+      "sek",
+      "sgd",
+      "thb",
+      "try",
+      "twd",
+      "uah",
+      "usd",
+      "vnd",
+      "xag",
+      "xau",
+      "xdr",
+      "zar"
+  ];
   } catch (error) {
     // Handle any network or parsing errors here
     console.error("Error:", error);

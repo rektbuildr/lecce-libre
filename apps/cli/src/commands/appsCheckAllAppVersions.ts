@@ -412,6 +412,7 @@ export default {
                 defer(() =>
                   from(
                     new Promise((resolve, reject) => {
+                      console.log("ManagerAPI.listInstalledApps on appsCheckAllAppVersions")
                       ManagerAPI.listInstalledApps(t, {
                         targetId: deviceInfo.targetId,
                         perso: "perso_11",

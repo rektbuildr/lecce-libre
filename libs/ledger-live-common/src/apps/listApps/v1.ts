@@ -43,6 +43,7 @@ const listApps = (transport: Transport, deviceInfo: DeviceInfo): Observable<List
       const installedP: Promise<[{ name: string; hash: string }[], boolean]> = new Promise<
         { name: string; hash: string; hash_code_data: string }[]
       >((resolve, reject) => {
+        console.log("ManagerAPI.listInstalledApps on v1")
         sub = ManagerAPI.listInstalledApps(transport, {
           targetId: deviceInfo.targetId,
           perso: "perso_11",
@@ -172,7 +173,7 @@ const listApps = (transport: Transport, deviceInfo: DeviceInfo): Observable<List
                 });
               }
             } catch (e) {
-              console.error("invalid compatibleWalletsJSON for " + version.name, e);
+              //console.error("invalid compatibleWalletsJSON for " + version.name, e);
             }
           }
 

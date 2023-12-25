@@ -58,6 +58,8 @@ export const useGenuineCheck = ({
   deviceId,
   lockedDeviceTimeoutMs = 1000,
 }: UseGenuineCheckArgs & UseGenuineCheckDependencies): UseGenuineCheckResult => {
+
+  console.log("entering useGenuineCheck")
   const [genuineState, setGenuineState] = useState<GenuineState>("unchecked");
   const [devicePermissionState, setDevicePermissionState] =
     useState<DevicePermissionState>("unrequested");
@@ -74,6 +76,9 @@ export const useGenuineCheck = ({
       return;
     }
 
+    console.log("useGenuineCheck");
+    console.log(deviceId);
+
     const sub = getGenuineCheckFromDeviceId({
       deviceId,
       lockedDeviceTimeoutMs,
@@ -89,6 +94,7 @@ export const useGenuineCheck = ({
               break;
             case "result":
               if (socketEvent.payload === SOCKET_EVENT_PAYLOAD_GENUINE) {
+                console.log(socketEvent.payload);
                 setGenuineState("genuine");
               } else {
                 setGenuineState("non-genuine");
@@ -120,6 +126,13 @@ export const useGenuineCheck = ({
       sub.unsubscribe();
     };
   }, [isHookEnabled, deviceId, lockedDeviceTimeoutMs, getGenuineCheckFromDeviceId]);
+
+  console.log({
+    genuineState,
+    devicePermissionState,
+    error,
+    resetGenuineCheckState,
+  })
 
   return {
     genuineState,

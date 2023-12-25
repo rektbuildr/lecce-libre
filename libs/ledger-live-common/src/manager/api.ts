@@ -576,7 +576,7 @@ const listInstalledApps = (
     url: URL.format({
       pathname: `${getEnv("BASE_SOCKET_URL")}/apps/list`,
       query: {
-        targetId,
+        //targetId,
         perso,
         livecommonversion,
       },
@@ -584,6 +584,10 @@ const listInstalledApps = (
   }).pipe(
     remapSocketError("listInstalledApps"),
     map<any, ListInstalledAppsEvent>(o => {
+
+      console.log("createDeviceSocket pipe map")
+      console.log(o)
+
       if (o.type === "result") {
         return {
           type: "result",

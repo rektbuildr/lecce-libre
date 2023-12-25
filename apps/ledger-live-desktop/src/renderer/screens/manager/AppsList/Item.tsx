@@ -84,13 +84,8 @@ const Item = ({
     [app.name, state.apps],
   );
 
-  // FIXME No explicit mapping between Currency.id and FeatureId
-  const flag = useFeature(camelCase(`currency_${currencyId}`) as FeatureId);
-
-  // when the flag doesn't exist it's equivalent to being enabled
-  const currencyFlagEnabled = !flag || flag.enabled;
-  const currencySupported = !!currency && isCurrencySupported(currency) && currencyFlagEnabled;
-  const isLiveSupported = currencySupported || ["swap", "plugin"].includes(type);
+  const currencySupported = false;
+  const isLiveSupported = false;
 
   const bytes = useMemo(
     () =>
@@ -104,11 +99,8 @@ const Item = ({
   return (
     <AppRow id={`managerAppsList-${name}`}>
       <Box flex="0.7" horizontal>
-        <AppIcon app={app} />
         <AppName>
-          <Text ff="Inter|Bold" color="palette.text.shade100" fontSize={3}>{`${app.displayName}${
-            currency ? ` (${currency.ticker})` : ""
-          }`}</Text>
+          <Text ff="Inter|Bold" color="palette.text.shade100" fontSize={3}>{`${app.displayName}`}</Text>
           <Text ff="Inter|Regular" color="palette.text.shade60" fontSize={3}>
             <Trans
               i18nKey="manager.applist.item.version"
@@ -125,27 +117,6 @@ const Item = ({
           </Text>
         </AppName>
       </Box>
-      <Box flex="0.7" horizontal alignContent="center" justifyContent="flex-start" ml={5}>
-        {isLiveSupported && currencyFlagEnabled ? (
-          <>
-            <Box>
-              <IconCheckFull size={16} />
-            </Box>
-            <Ellipsis ml={2} ff="Inter|Regular" color="palette.text.shade60" fontSize={3}>
-              <Trans i18nKey="manager.applist.item.supported" />
-            </Ellipsis>
-          </>
-        ) : currency ? (
-          <>
-            <Box>
-              <IconInfoCircleFull size={16} />
-            </Box>
-            <Ellipsis ml={2} ff="Inter|Regular" color="palette.text.shade60" fontSize={3}>
-              <Trans i18nKey="manager.applist.item.not_supported" />
-            </Ellipsis>
-          </>
-        ) : null}
-      </Box>
 
       <AppActions
         state={state}
@@ -161,7 +132,7 @@ const Item = ({
         setAppUninstallDep={setAppUninstallDep}
         isLiveSupported={isLiveSupported}
         addAccount={onAddAccount}
-        featureFlagActivated={currencyFlagEnabled}
+        featureFlagActivated={false}
       />
     </AppRow>
   );

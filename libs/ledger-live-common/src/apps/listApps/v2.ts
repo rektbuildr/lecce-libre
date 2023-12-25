@@ -61,12 +61,17 @@ const listApps = (transport: Transport, deviceInfo: DeviceInfo): Observable<List
         // ask the device for the installed applications instead of going through a scriptrunner,
         // this is a performance optimization, part of a larger rework with Manager API v2.
         tracer.trace("Using direct apdu listapps");
+        console.log("listapps/v2 apdu")
+          console.log(deviceInfo)
         listAppsResponsePromise = hwListApps(transport);
       } else {
         // Fallback to original web-socket list apps
         tracer.trace("Using scriptrunner listapps");
 
         listAppsResponsePromise = new Promise<ListAppResponse>((resolve, reject) => {
+          console.log("listapps/v2 websoket")
+          console.log(deviceInfo)
+          console.log("ManagerAPI.listInstalledApps on v2")
           sub = ManagerAPI.listInstalledApps(transport, {
             targetId: deviceInfo.targetId,
             perso: "perso_11",

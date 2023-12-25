@@ -28,7 +28,7 @@ export function troubleshoot(): Troubleshoot[] {
       ...websocketConnects(
         `${getEnv(
           "BASE_SOCKET_URL",
-        )}/apps/list?targetId=856686596&perso=perso_11&livecommonversion=27.7.2`, // TODO have a dummy echo endpoint
+        )}/REMOVE-apps/list?targetId=856686596&perso=perso_11&livecommonversion=27.7.2`, // TODO have a dummy echo endpoint
       ),
     },
     {
