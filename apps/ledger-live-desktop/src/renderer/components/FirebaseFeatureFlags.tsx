@@ -13,7 +13,6 @@ import { overriddenFeatureFlagsSelector } from "../reducers/settings";
 import { setOverriddenFeatureFlag, setOverriddenFeatureFlags } from "../actions/settings";
 
 export const FirebaseFeatureFlagsProvider = ({ children }: Props): JSX.Element => {
-  const remoteConfig = useFirebaseRemoteConfig();
 
   const localOverrides = useSelector(overriddenFeatureFlagsSelector);
   const dispatch = useDispatch();

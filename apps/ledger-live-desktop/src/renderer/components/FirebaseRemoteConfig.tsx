@@ -59,8 +59,6 @@ export const FirebaseRemoteConfigProvider = ({ children }: Props): JSX.Element |
   }
 
   return (
-    <FirebaseRemoteConfigContext.Provider value={config}>
-      {children}
-    </FirebaseRemoteConfigContext.Provider>
+    <span></span>
   );
 };

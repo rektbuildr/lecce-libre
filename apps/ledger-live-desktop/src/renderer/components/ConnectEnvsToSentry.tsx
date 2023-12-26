@@ -52,7 +52,6 @@ export const ConnectEnvsToSentry = () => {
 
       setSentryTagsEverywhere(tags);
     };
-    // We need to wait firebase to load the data and then we set once for all the tags
     const timeout = setTimeout(syncTheTags, 5000);
     // We also try to regularly update them so we are sure to get the correct tags (as these are dynamic)
     const interval = window.setInterval(syncTheTags, 60000);

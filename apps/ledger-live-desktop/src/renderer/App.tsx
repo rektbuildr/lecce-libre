@@ -13,8 +13,6 @@ import StyleProvider from "~/renderer/styles/StyleProvider";
 import { UpdaterProvider } from "~/renderer/components/Updater/UpdaterContext";
 import ThrowBlock from "~/renderer/components/ThrowBlock";
 import LiveStyleSheetManager from "~/renderer/styles/LiveStyleSheetManager";
-import { FirebaseRemoteConfigProvider } from "~/renderer/components/FirebaseRemoteConfig";
-import { FirebaseFeatureFlagsProvider } from "~/renderer/components/FirebaseFeatureFlags";
 import CountervaluesProvider from "~/renderer/components/CountervaluesProvider";
 import DrawerProvider from "~/renderer/drawers/Provider";
 import Default from "./Default";
@@ -57,8 +55,6 @@ const InnerApp = ({ initialCountervalues }: { initialCountervalues: CounterValue
           }
         }}
       >
-        <FirebaseRemoteConfigProvider>
-          <FirebaseFeatureFlagsProvider>
             <ConnectEnvsToSentry />
             <UpdaterProvider>
               <CountervaluesProvider initialState={initialCountervalues}>
@@ -81,8 +77,6 @@ const InnerApp = ({ initialCountervalues }: { initialCountervalues: CounterValue
                 </ToastProvider>
               </CountervaluesProvider>
             </UpdaterProvider>
-          </FirebaseFeatureFlagsProvider>
-        </FirebaseRemoteConfigProvider>
       </ThrowBlock>
     </StyleProvider>
   );
