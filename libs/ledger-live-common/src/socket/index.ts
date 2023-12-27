@@ -45,6 +45,7 @@ export function createDeviceSocket(
   tracer.trace("Starting web socket communication", { url, unresponsiveExpectedDuringBulk });
 
   return new Observable(o => {
+    
     let deviceError: Error | null = null; // error originating from device (connection/response/rejection...)
     let unsubscribed = false; // subscriber wants to stops everything
     let bulkSubscription: null | { unsubscribe: () => void } = null; // subscription to the bulk observable
@@ -177,13 +178,18 @@ export function createDeviceSocket(
             }
 
             const data = r.slice(0, r.length - 2);
-            o.next({
+            console.log("APDU Exchange")
+
+            const apdu_msg : SocketEvent = {
               type: "exchange",
               nonce,
               apdu,
               status,
               data,
-            });
+            } 
+
+            console.log(apdu_msg)
+            o.next(apdu_msg);
 
             const msg = {
               nonce,

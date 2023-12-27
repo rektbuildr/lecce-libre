@@ -44,6 +44,7 @@ const listApps = (transport: Transport, deviceInfo: DeviceInfo): Observable<List
         { name: string; hash: string; hash_code_data: string }[]
       >((resolve, reject) => {
         console.log("ManagerAPI.listInstalledApps on v1")
+        console.log(deviceInfo)
         sub = ManagerAPI.listInstalledApps(transport, {
           targetId: deviceInfo.targetId,
           perso: "perso_11",

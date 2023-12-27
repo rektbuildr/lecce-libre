@@ -199,6 +199,8 @@ const EarlySecurityChecks = ({
     }
 
     if (genuineState === "genuine") {
+      console.log("genuineState genuine")
+      console.log(device)
       setGenuineCheckStatus(SoftwareCheckStatus.completed);
     }
 

@@ -2254,6 +2254,8 @@ const genuineCheck = (
     return createMockSocket(secureChannelMock(false), resultMock("0000"));
   }
 
+  console.log("manager genuineCheck")
+
   log("manager", "genuineCheck", {
     targetId,
     perso,

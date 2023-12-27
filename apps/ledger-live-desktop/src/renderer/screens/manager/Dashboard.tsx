@@ -35,6 +35,10 @@ const Dashboard = ({
 }: Props) => {
   const { search } = useLocation();
 
+  console.log("dashboard")
+  console.log(device.deviceId)
+  console.log(device)
+
   const currentDevice = useSelector(getCurrentDevice);
   const [firmwareUpdateOpened, setFirmwareUpdateOpened] = useState(false);
   const hasDisconnectedDuringFU = useRef(false);

@@ -41,6 +41,8 @@ export function GenuineCheck({ connectedDevice, setConnectedDevice }: Props) {
   useEffect(() => {
     if (!device) return;
     setConnectedDevice(device);
+    console.log("export function GenuineCheck")
+    console.log(device)
   }, [device, setConnectedDevice]);
 
   const [passed, setPassed] = useState<unknown>(null);
